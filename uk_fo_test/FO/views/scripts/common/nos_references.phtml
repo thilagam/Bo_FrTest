@@ -1,0 +1,25 @@
+<section class="gray">
+    <div class="container padding pull-top">
+		<div class="center-block">
+			<h1>Our clients</h1>
+		</div>
+		<div class="page-inner">
+			<h2>Our clients</h2>				
+			<hr>
+			{foreach from=$referencelist item=ref_item}			
+				<div class="mod media">
+					<a  class="pull-right" target="_blank" href="http://{$ref_item.website}">
+						<img class="media-object"  src="/FO/images/logos/references/{$ref_item.logoname}" alt="Aufeminin.fr" title="Aufeminin.fr" width="245" height="45"/>
+					</a>
+				
+					<div class="media-body">
+						<h4 class="media-heading">{$ref_item.name}</h4>
+						<p class="org muted">{$ref_item.website}</p>
+						{$ref_item.description}
+					</div>
+				</div>
+			{/foreach}
+		<p>&nbsp;</p>		 
+		</div>   
+	</div>   
+</section>

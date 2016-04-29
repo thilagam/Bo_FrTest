@@ -1,0 +1,997 @@
+{literal}
+<link href="/BO/theme/gebo/css/mission-followup.css" rel="stylesheet" />
+<style>
+.otherdetails .image
+{
+	margin:0;
+	height:32px;
+	width:32px;
+}
+</style>
+<script type="text/javascript">	
+var usertype={/literal}"{$user_type}"{literal};
+
+$(document).ready(function() {
+	
+	if(usertype=="superadmin" || usertype=="prodmanager")
+	{
+		/*$('#openedList').dataTable({
+				"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"iDisplayLength":50
+				"aaSorting": [],
+				"bSortCellsTop": true,
+				"aoColumns": [
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "eu_date" },
+					{ "sType": "eu_date" },
+					{ "sType": "string" },
+					{ "sType": "string","bSortable": false  }
+				]
+			});
+			
+			$('#validateList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+			"aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "eu_date" },
+                { "sType": "eu_date" },
+                { "sType": "string" },
+                { "sType": "string","bSortable": false  }
+            ]
+        });*/
+	}
+	else
+	{
+		/*$('#openedList').dataTable({
+				"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 0, "asc" ]],
+				"iDisplayLength":50,
+				"aoColumns": [
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "eu_date" },
+					{ "sType": "eu_date" },
+					{ "sType": "string" }
+				]
+		});
+		
+		$('#validateList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+			"aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "eu_date" },
+                { "sType": "eu_date" },
+                { "sType": "string" }
+            ]
+        });*/
+	}
+	
+				
+	
+	
+	/*$('#closedList, #deletedList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "eu_date" },
+                { "sType": "eu_date" },
+                { "sType": "string" }
+            ]
+        });*/
+		
+		
+		$(document).on("click","[name=closemission\\[\\]]",function(){
+			if($("[name=closemission\\[\\]]:checked").length)
+				$("#showcmclose").show();
+			else
+				$("#showcmclose").hide();
+		})
+		
+		$(document).on("click",".closevalidatemissions",function(){
+			if($(".closevalidatemissions:checked").length)
+				$("#showcmclose1").show();
+			else
+				$("#showcmclose1").hide();
+		})
+});	
+
+	function closemissions(txt)
+	{
+		return smoke.confirm("Are you sure? Want to "+txt+" this mission",function(e)
+		{
+			if(e)
+			{
+				if(txt=='close')
+					$(".bulkstatus").val('closed');
+				else
+					$(".bulkstatus").val('deleted');
+				$("#closemission").submit();
+			}
+			else
+			return false;
+				
+		});
+	}
+	
+	function closebulkmissions(txt)
+	{
+		return smoke.confirm("Are you sure? Want to "+txt+" this mission",function(e)
+		{
+			if(e)
+			{
+				if(txt=='close')
+					$(".bulkstatus").val('closed');
+				else
+					$(".bulkstatus").val('deleted');
+				$("#cmclosebulk").submit();
+			}
+			else
+			return false;
+				
+		});
+	}
+</script>
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+    	<h1 class="heading pull-left">Missions List
+    		<select data-placeholder="All Client" id="allclient" class="cselect">
+				<option value="">All Client</option>
+				{foreach from=$clientlist item=contractclint name=contractclint key=cltkey}
+				<option value="{$cltkey}" {if $smarty.get.client_id==$cltkey} selected{/if}>{$contractclint}</option>
+				{/foreach}
+			</select>
+			<select data-placeholder="All Contracts" id="allcontract" class="cselect">
+				<option value="">All Contracts</option>
+				{foreach from=$contractlist item=contract name=contracts key=contrkey}
+				<option value="{$contrkey}" {if $smarty.get.contract_id==$contrkey} selected{/if}>{$contract}</option>
+				{/foreach}
+			</select>
+			<select data-placeholder="All Sales" id="pm" class="cselect">
+						<option value="">All User</option>
+						{foreach from=$alluserlist item=user key=key name=users}
+							   <option value="{$key}" {if $smarty.get.pmid==$key} selected{/if} >{$user}</option>
+							{/foreach}
+					</select>
+					
+					<select data-placeholder="All Language" id="langauges" class="cselect">
+						<option value="">All Language</option>
+						{foreach from=$alllanguagelist key=k item=v}
+						   <option value="{$k}" >{$v}</option>
+						{/foreach}
+					</select>
+			
+		</h1>
+		<div class="clearfix"></div>
+		<div class="row-fluid otherdetails">
+			<ul class="nav nav-tabs">
+				<li class="{if $smarty.get.active eq ''} active {/if} assignopened"><a href="#opened" data-toggle="tab">Ongoing</a></li>
+				{if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+				<li class="{if $smarty.get.active eq 'validate'} active {/if} assigntab"><a href="#validate" data-toggle="tab">To assign&nbsp;<span class="badge badge-warning" id="assigncount"></span></a></li>
+				{/if}
+				<li class="{if $smarty.get.active eq 'finished'} active {/if}"><a href="#finished" data-toggle="tab">Validated / Closed</a></li>
+				<li class="{if $smarty.get.active eq 'deleted'} active {/if}"><a href="#deletedtab" data-toggle="tab">Deleted</a></li>
+			</ul>	
+			<div class="tab-content allmissions">
+				<!-- Opened Starts -->
+				<div class="tab-pane {if $smarty.get.active eq ''} active {/if}" id="opened"  style="min-height:400px">
+					{if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+					<div class="row-fluid">
+					{*<select data-placeholder="All Sales" id="pm" class="cselect">
+						<option value="">All User</option>
+						{foreach from=$assigned_pms item=user key=key name=users}
+							   <option value="{$key}" {if $smarty.get.pmid==$key} selected{/if} >{$user}</option>
+							{/foreach}
+					</select>
+					
+					<select data-placeholder="All Language" id="langauges" class="cselect">
+						<option value="">All Language</option>
+						{foreach from=$ongoing_languages key=k item=v}
+						   <option value="{$k}" >{$v}</option>
+						{/foreach}
+					</select>
+					
+					<select data-placeholder="All Contracts" id="openedcontracts" class="cselect">
+						<option value="">All Contracts</option>
+						{foreach from=$contractlist item=contract name=contracts}
+						   <option value="{$contract.quotecontractid}" {if $smarty.get.contract_id==$contract.quotecontractid} selected{/if}>{$contract.contractname}</option>
+						{/foreach}
+					</select>
+					*}
+					</div>
+					{/if}
+
+					<form class="" action="/contractmission/close-bulk-mission" name="" id="closemission" method="POST" enctype='multipart/form-data'>
+					<div class="missionsopenreplace">
+					<table class="table table-bordered table-hover table_vam" id="openedList" >
+						<thead>
+							<tr>
+							   <th style="display:none"></th>
+							   <!--<th>Company Name</th>-->
+							   <th></th>
+							   <th>Mission</th>
+							   <th>Nb words</th>
+							   <th>Source Language</th>
+							   <th>Destination Language</th>
+							   <th>% Done</th>							   
+							   <th>Expected Launch</th>
+							   <th>Expected End</th>
+							   <th>Action</th>
+							   {if $user_type=="superadmin" ||  $user_type=="prodmanager"}
+							   <th class="no-sort">
+								<input type="checkbox" id="checkopened" />
+							   </th>
+							   {/if}
+							</tr>
+						</thead>
+
+						{if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+						<tbody>
+							{if  $contractmissionsopened|@count>0 }
+							{foreach from=$contractmissionsopened item="clients" key=key name="contractclients"}
+							{if $clients.company_name neq ""}
+							<tr>
+								<td colspan="10" ><h3><span class="pull-left"><img src="{$fo_path}profiles/clients/logos/{$key}/{$key}_global.png?12345"  alt="{$clients.company_name}" width="60"> {$clients.company_name}</span></h3></td>
+							</tr>
+							{/if}
+							{foreach from=$clients.contract_list item="missions" name="contractids" key="contractid"}
+							{if $clients.$contractid.contractname neq ""}
+							<tr>
+								<th colspan="10"><span class="pull-left">{$clients.$contractid.contractname}</span></th>
+							</tr>
+							{/if}
+							
+							{foreach from=$missions.mission_list item="mission" name="contracts" }
+							
+							<tr>
+								<td  style="display:none"></td>
+								<!--<td>
+								<a class="hint--right" data-hint="{$mission.client_name}" target="_blank" href="/quote/create-client?uaction=view&client_id={$mission.client_id}&submenuId=ML13-SL1">
+									{$mission.company_name}
+								</a>
+								</td>-->
+								<td>
+								{if $mission.pmid}
+								<a class="hint--right" data-hint="{$mission.pmnew}">
+								<img src="{$fo_path}/profiles/bo/{$mission.pmid}/logo.jpg?123" class="image rd_30" alt="{$mission.pmnew}">
+								</a>
+								{else}
+								-
+								{/if}
+								</td>
+								<td>
+								<a href="/followup/{$mission.type}?submenuId=ML13-SL4&cmid={$mission.cmid}&index={$mission.index}" class="pull-left" class="pull-left">{$mission.title}</a>
+								</td>
+								<td>{$mission.nb_words}</td>
+								<td>{$mission.source_language}</td>
+								<td>{$mission.destination_language}</td>
+								<td>{if $mission.percentage=="%"}-{else}{$mission.percentage}{/if}</td>							
+								<td>{$mission.ldate|date_format:'%d/%m/%Y'}</td>
+								<td>{$mission.edate|date_format:'%d/%m/%Y'}</td>
+								<td>
+								{if $mission.type!="sales"}
+								<div class="btn-group">
+									<a href="/followup/{$mission.type}?submenuId=ML13-SL4&cmid={$mission.cmid}&index={$mission.index}" class="btn">View mission</a>
+									<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+									<ul class="dropdown-menu">
+									  <li><a href="/contractmission/assign-mission?submenuId=ML13-SL3&type={$mission.type}&contract_id={$mission.cid}&cmid=&index={$mission.index}"><i class="icon-user"></i> Reassign</a></li>
+										  {if $mission.edate|strtotime < $smarty.now}
+									<li>	 <a href="/contractmission/close-mission?submenuId=ML13-SL3&type={$mission.type}&contract_id={$mission.cid}&cmid={$mission.cmid}" class="closemission"><i class="icon-remove"></i> Close Mission</a>  </li>
+										  {/if}
+									</ul>
+								</div>
+								{else}
+									<a href="/followup/{$mission.type}?submenuId=ML13-SL4&cmid={$mission.cmid}&index={$mission.index}" class="btn">View mission</a>
+								{/if}
+								</td>
+								{if $user_type=="superadmin" ||  $user_type=="prodmanager"}
+									<td>
+									{* {if $mission.edate|strtotime < $smarty.now} *}
+										<input type="checkbox" name="closemission[]" value="{$mission.cmid}" />
+											{* {else}
+										-
+									{/if} *}
+									</td>
+								{/if}
+							</tr>
+							
+							{/foreach}
+							
+							{/foreach}
+							
+							{/foreach}
+							{else}
+							<tr>
+							<td colspan="10">Pas d'information disponible</td>
+							</tr>
+							{/if}
+						</tbody>
+						{else}
+						<tbody>
+							{if  $contractmissionsopened|@count>0 }
+							{foreach from=$contractmissionsopened item="clients" key=key name="contractclients"}
+							{if $clients.company_name neq ""}
+							<tr>
+								<th colspan="9" ><h3><span class="pull-left"><img src="{$fo_path}profiles/clients/logos/{$key}/{$key}_global.png?12345"  alt="{$clients.company_name}" width="60"> {$clients.company_name}</span></h3></th>
+							</tr>
+							{/if}
+							{foreach from=$clients.contract_list item="missions" name="contractids" key="contractid"}
+							{if $clients.$contractid.contractname neq ""}
+							<tr>
+								<th colspan="9"><span class="pull-left">{$clients.$contractid.contractname}</span></th>
+							</tr>
+							{/if}
+							
+							{foreach from=$missions.mission_list item="mission" name="contracts" }
+							<tr>
+								<td  style="display:none"></td>
+								<!--<td>
+								<a class="hint--right" data-hint="{$mission.client_name}" target="_blank" href="/quote/create-client?uaction=view&client_id={$mission.client_id}&submenuId=ML13-SL1">
+									{$mission.company_name}
+								</a>
+								</td>-->
+								<td>
+									<a class="hint--right" data-hint="{$mission.pmnew}">
+										<img src="{$fo_path}/profiles/bo/{$mission.pmid}/logo.jpg?123" class="image rd_30" alt="{$mission.pmnew}">
+									</a>
+								</td>
+								<td>
+								<a href="/followup/{$mission.type}?submenuId=ML13-SL4&cmid={$mission.cmid}&index={$mission.index}" target="_blank" class="pull-left">
+									<span  class="" style="cursor:pointer">{$mission.title}
+								</a>
+								</td>
+								<td>{$mission.source_language}</td>
+								<td>{$mission.destination_language}</td>
+								<td>{if $mission.percentage=="%"}-{else}{$mission.percentage}{/if}</td>
+								<td>{$mission.nb_words}</td>
+								<td>{$mission.ldate|date_format:'%d/%m/%Y'}</td>
+								<td>{$mission.edate|date_format:'%d/%m/%Y'}</td>
+								<td><a href="/followup/{$mission.type}?submenuId=ML13-SL4&cmid={$mission.cmid}" class="btn">View mission</a></td>
+							</tr>
+							{/foreach}
+							{/foreach}
+							{/foreach}
+							{else}
+							<tr>
+							<td colspan="9">Pas d'information disponible</td>
+							</tr>
+							{/if}
+							
+						</tbody>
+						{/if}
+					</table>
+					</div>
+					<div style="position:fixed;top:35%;right:0;display:none" id="showcmclose">
+						<input type="button" name="cmclose1" id="cmclose" onclick="return closemissions('close')" value="Close" class="btn btn-danger" />
+						<input type="button" name="cmclose2" id="" onclick="return closemissions('delete')" value="Delete" class="btn btn-danger" />
+						<input type="hidden" name="cmclose" value="1">
+						<input type="hidden" name="bulkstatus" class="bulkstatus" value="" />
+					</div> 
+					</form>
+				</div>
+				
+				<!-- Toassign Starts -->
+				{if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+				<div class="tab-pane {if $smarty.get.active eq 'validate'} active {/if}" id="validate"  style="min-height:400px">
+					{*<select data-placeholder="All Language" id="assign_lang" class="cselect">
+						<option value="">All Language</option>
+						{foreach from=$toassign_languages key=k item=v}
+						   <option value="{$k}" >{$v}</option>
+						{/foreach}
+					</select>*}
+					<form class="" action="/contractmission/close-bulk-mission" name="" id="cmclosebulk" method="POST" enctype='multipart/form-data'>
+					<div class="missionsassignreplace">
+					<table class="table table-bordered table-hover table_vam" id="validateList" >
+						<thead>
+							<tr>
+							   <th style="display:none"></th>
+							   <!--<th>Company Name</th>-->
+							   <th>Mission</th>
+							   <th>Nb words</th>
+							   <th>Turnover</th>
+							   <th>Source Language</th>
+							   <th>Destination Language</th>    
+							   <th>Expected Launch</th>
+							   <th>Expected End</th>                                     
+							   <th>Action</th> 
+							   {if $user_type=="superadmin" ||  $user_type=="prodmanager"}
+								<th>	
+								<input type="checkbox" id="checktoassign" />
+								</th>
+								{/if}
+							</tr>
+						</thead>
+						<tbody>
+							{if  $contractmissionstoassign|@count>0 }
+							{assign var=toassigncount value=0}
+							{if $user_type=='superadmin'}
+							{foreach from=$contractmissionstoassign item="clients" key=key name="contractclients"}
+							{if $clients.company_name neq ""}
+							<tr>
+								<th colspan="9" ><h3><span class="pull-left"><img src="{$fo_path}profiles/clients/logos/{$key}/{$key}_global.png?12345"  alt="{$clients.company_name}" width="60"> {$clients.company_name}</span></h3></th>
+							</tr>
+							{/if}
+							{foreach from=$clients.contract_list item="missions" name="contractids" key="contractid"}
+							{if $clients.$contractid.contractname neq ""}
+							<tr>
+								<th colspan="9"><span class="pull-left">{$clients.$contractid.contractname}</span></th>
+							</tr>
+							{/if}
+							{foreach from=$missions.mission_list item="mission" name="contracts" }		
+							<tr>
+								<td  style="display:none"></td>
+								<!--<td>
+									<a class="hint--right" data-hint="{$mission.client_name}" target="_blank" href="/quote/create-client?uaction=view&client_id={$mission.client_id}&submenuId=ML13-SL1">
+										{$mission.company_name}
+									</a>
+								</td>-->
+								<td>
+								<a href="/contractmission/assign-mission?submenuId=ML13-SL4&contract_id={$mission.cid}&type={$mission.type}&index={$mission.index}" class="pull-left">
+								{$mission.title}
+								 </a> 
+								</td>
+								<td>{$mission.nb_words}</td>
+								<td>{if $mission.turnover eq 'Gratuit'}Gratuit{else}{$mission.turnover|zero_cut_t:2} &{$mission.currency};{/if}</td>
+								<td>{$mission.source_language}</td>
+								<td>{$mission.destination_language}</td>
+								<td>{$mission.ldate|date_format:'%d/%m/%Y'}</td>
+								<td>{$mission.edate|date_format:'%d/%m/%Y'}</td>
+								<td>
+								<div class="btn-group">
+								<a href="/contractmission/assign-mission?submenuId=ML13-SL4&contract_id={$mission.cid}&type={$mission.type}&index={$mission.index}"  class="btn">Assign mission</a>
+								<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+									<ul class="dropdown-menu">
+									  <li>
+									  <a href="/contractmission/close-mission?submenuId=ML13-SL3&type={$mission.type}&contract_id={$mission.cid}&cmid=&qmid={$mission.qmid}&tid={$mission.tech_id}&sid={$mission.sid}" class="closemission"><i class="icon-remove"></i> Close Mission</a>
+									  </li>
+									</ul>
+								</div>
+								</td>
+								
+								<td>
+								{if $mission.qmid}
+									<input type="checkbox" class="closevalidatemissions" name="closemission[{$mission.qmid}]" value="{$mission.type}_{$mission.cid}" />
+								{elseif $mission.tech_id}
+									<input type="checkbox" class="closevalidatemissions" name="closemission[{$mission.tech_id}]" value="{$mission.type}_{$mission.cid}" />
+								{elseif $mission.sid}
+									<input type="checkbox" class="closevalidatemissions" name="closemission[{$mission.sid}]" value="{$mission.type}_{$mission.cid}" />
+								{/if}
+								</td>
+								
+							</tr>
+							{assign var=toassigncount value=$toassigncount+1}
+							{/foreach}
+							{/foreach}
+							{/foreach}
+							{else}
+							{foreach from=$contractmissionstoassign item="clients" key=key name="contractclients"}
+							{if $clients.company_name neq ""}
+							<tr>
+								<th colspan="8" ><h3><span class="pull-left"><img src="{$fo_path}profiles/clients/logos/{$key}/{$key}_global.png?12345"  alt="{$clients.company_name}" width="60"> {$clients.company_name}</span></h3></th>
+							</tr>
+							{/if}
+							{foreach from=$clients.contract_list item="missions" name="contractids" key="contractid"}
+							{if $clients.$contractid.contractname neq ""}
+							<tr>
+								<th colspan="9"><span class="pull-left">{$clients.$contractid.contractname}</span></th>
+							</tr>
+							{/if}
+							{foreach from=$missions.mission_list item="mission" name="contracts" }			
+							<tr>
+								<td  style="display:none"></td>
+								<!--<td>
+									<a class="hint--right" data-hint="{$mission.client_name}" target="_blank" href="/quote/create-client?uaction=view&client_id={$mission.client_id}&submenuId=ML13-SL1">
+										{$mission.company_name}
+									</a>
+								</td>-->
+								<td>
+								<a href="/contractmission/assign-mission?submenuId=ML13-SL4&contract_id={$mission.cid}&type={$mission.type}&index={$mission.index}" class="pull-left" >
+								{$mission.title}
+								 </a> 
+								</td>
+								<td>{$mission.nb_words}</td>
+								<td>{if $mission.turnover eq 'Gratuit'}Gratuit{else}{$mission.turnover|zero_cut_t:2} &{$mission.currency};{/if}</td>
+								<td>{$mission.source_language}</td>
+								<td>{$mission.destination_language}</td>
+								<td>{$mission.ldate|date_format:'%d/%m/%Y'}</td>
+								<td>{$mission.edate|date_format:'%d/%m/%Y'}</td>
+								<td>
+								<a href="/contractmission/assign-mission?submenuId=ML13-SL4&contract_id={$mission.cid}&type={$mission.type}&index={$mission.index}"  class="btn">Assign mission</a>
+								</td>
+								{if $user_type=="prodmanager"}
+								<td>
+								{if $mission.qmid}
+									<input type="checkbox" class="closevalidatemissions" name="closemission[{$mission.qmid}]" value="{$mission.type}_{$mission.cid}" />
+								{elseif $mission.tech_id}
+									<input type="checkbox" class="closevalidatemissions" name="closemission[{$mission.tech_id}]" value="{$mission.type}_{$mission.cid}" />
+								{elseif $mission.sid}
+									<input type="checkbox" class="closevalidatemissions" name="closemission[{$mission.sid}]" value="{$mission.type}_{$mission.cid}" />
+								{/if}
+								</td>
+								{/if}
+							</tr>
+							{assign var=toassigncount value=$toassigncount+1}
+							{/foreach}
+							{/foreach}
+							{/foreach}
+							{/if}
+							{else}
+							<tr>
+							<td colspan="9">Pas d'information disponible</td>
+							</tr>
+							{/if}
+						</tbody>
+					</table>
+					</div>
+					<div style="position:fixed;top:35%;right:0;display:none" id="showcmclose1">
+						<input type="button" name="cmclosebulk1" id="" onclick="return closebulkmissions('close')" value="Close" class="btn btn-danger" />
+						<input type="button" name="cmclosebulk2" id="" onclick="return closebulkmissions('delete')" value="Delete" class="btn btn-danger" />
+						<input type="hidden" name="cmclosebulk" value="1" />
+						<input type="hidden" name="bulkstatus" class="bulkstatus" value="" />
+					</div>
+					</form>
+				</div>
+				{/if}
+				<!-- Closed Starts -->
+				<div class="tab-pane {if $smarty.get.active eq 'finished'} active {/if}" id="finished"  style="min-height:400px">
+					{if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+					<div class="row-fluid">
+						{*<select data-placeholder="All Sales" id="pm1" class="cselect">
+							<option value="">All User</option>
+							{foreach from=$finished_pms item=user key=key name=users}
+							   <option value="{$key}" {if $smarty.get.pmid==$key} selected{/if} >{$user}</option>
+							{/foreach}
+						</select>
+						
+						<select data-placeholder="All Language" id="langauges1" class="cselect">
+							<option value="">All Language</option>
+							{foreach from=$finished_languages key=k item=v}
+							   <option value="{$k}" >{$v}</option>
+							{/foreach}
+						</select>
+						
+						<select data-placeholder="All Contracts" id="openedcontracts1" class="cselect">
+							<option value="">All Contracts</option>
+							{foreach from=$contractlist item=contract name=contracts}
+							   <option value="{$contract.quotecontractid}" {if $smarty.get.contract_id==$contract.quotecontractid} selected{/if}>{$contract.contractname}</option>
+							{/foreach}
+						</select> *}
+					</div>
+				    {/if}
+					<div class="missionsfinished">
+					<table class="table table-bordered table-hover table_vam" id="closedList" >
+						<thead>
+							<tr>
+							<th style="display:none"></th>
+							   <!--<th>Company Name</th>-->
+							   <th></th>
+							   <th>Mission</th>
+							   <th>Nb words</th>
+							   <th>Source Language</th>
+							   <th>Destination Language</th>  
+							   <th>% Done</th>							   
+							   <th>Expected Launch</th>
+							   <th>Expected End</th>                   
+							   <th>Action</th>                   
+							</tr>
+						</thead>
+						<tbody>
+
+							{if  $contractmissionsfinished|@count>0 }
+							{foreach from=$contractmissionsfinished item="clients" key=key name="contractclients"}
+							{if $clients.company_name neq ""}
+							<tr>
+								<th colspan="9" ><h3><span class="pull-left"><img src="{$fo_path}profiles/clients/logos/{$key}/{$key}_global.png?12345"  alt="{$clients.company_name}" width="60"> {$clients.company_name}</span></h3></th>
+							</tr>
+							{/if}
+							{foreach from=$clients.contract_list item="missions" name="contractids" key="contractid"}
+							{if $clients.$contractid.contractname neq ""}
+							<tr>
+								<th colspan="9"><span class="pull-left">{$clients.$contractid.contractname}</span></th>
+							</tr>
+							{/if}
+							{foreach from=$missions.mission_list item="mission" name="contracts" }	
+							
+							<tr>
+								<td  style="display:none"></td>
+								<!--	<td><a class="hint--right" data-hint="{$mission.client_name}" target="_blank" href="/quote/create-client?uaction=view&client_id={$mission.client_id}&submenuId=ML13-SL1">
+									{$mission.company_name}
+								</a></td>-->
+								<td>
+								{if $mission.pmid}
+								<a class="hint--right" data-hint="{$mission.pmnew}">
+								<img src="{$fo_path}/profiles/bo/{$mission.pmid}/logo.jpg?123" class="image rd_30" height="50" alt="{$mission.pmnew}">
+								</a>
+								{else}
+								-
+								{/if}
+								</td>
+								<td>
+								<a href="/followup/{$mission.type}?submenuId=ML13-SL4&cmid={$mission.cmid}&index={$mission.index}" target="_blank" class="pull-left">
+								{$mission.title}
+								</a>
+								</td>
+								<td>{$mission.nb_words}</td>
+								<td>{$mission.source_language}</td>
+								<td>{$mission.destination_language}</td>
+								<td>{if $mission.percentage=="%"}-{else}{$mission.percentage}{/if}</td>						
+								<td>{$mission.ldate|date_format:'%d/%m/%Y'}</td>
+								<td>{$mission.edate|date_format:'%d/%m/%Y'}</td>
+								<td><a href="/followup/{$mission.type}?submenuId=ML13-SL4&cmid={$mission.cmid}&index={$mission.index}" class="btn">View mission</a></td>
+							</tr>
+							{/foreach}
+							{/foreach}
+							{/foreach}
+							{else}
+							<tr>
+							<td colspan="9">Pas d'information disponible</td>
+							</tr>
+							{/if}
+							
+						</tbody>
+					</table>
+					</div>
+				</div>
+				
+				<!-- Deleted Starts -->
+				
+				<div class="tab-pane {if $smarty.get.active eq 'deleted'} active {/if}" id="deletedtab"  style="min-height:400px">
+					{if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+					<div class="row-fluid">
+						{*<select data-placeholder="All Sales" id="pmdeleted" class="cselect">
+							<option value="">All User</option>
+							{foreach from=$deleted_pms item=user key=key name=users}
+							   <option value="{$key}" {if $smarty.get.pmid==$key} selected{/if} >{$user}</option>
+							{/foreach}
+						</select>
+						
+						<select data-placeholder="All Language" id="langaugesdeleted" class="cselect">
+							<option value="">All Language</option>
+							{foreach from=$deleted_languages key=k item=v}
+							   <option value="{$k}" >{$v}</option>
+							{/foreach}
+						</select>
+						
+						<select data-placeholder="All Contracts" id="openedcontracts1" class="cselect">
+							<option value="">All Contracts</option>
+							{foreach from=$contractlist item=contract name=contracts}
+							   <option value="{$contract.quotecontractid}" {if $smarty.get.contract_id==$contract.quotecontractid} selected{/if}>{$contract.contractname}</option>
+							{/foreach}
+						</select> *}
+					</div>
+				    {/if}
+					<div class="missionsdeleted">
+					<table class="table table-bordered table-hover table_vam" id="deletedList" >
+						<thead>
+							<tr>
+							<th style="display:none"></th>
+							   <!--<th>Company Name</th>-->
+							   <th></th>                          
+							   <th>Mission</th>
+							   <th>Nb words</th>
+							   <th>Source Language</th>
+							   <th>Destination Language</th>  
+							   <th>% Done</th>							   
+							   <th>Expected Launch</th>
+							   <th>Expected End</th>                   
+							   <th>Action</th>                   
+							</tr>
+						</thead>
+						<tbody>
+							{if  $contractmissionsdeleted|@count>0 }
+							{foreach from=$contractmissionsdeleted item="clients" key=key name="contractclients"}
+							{if $clients.company_name neq ""}
+							<tr>
+								<th colspan="10" ><h3><span class="pull-left"><img src="{$fo_path}profiles/clients/logos/{$key}/{$key}_global.png?12345"  alt="{$clients.company_name}" width="60"> {$clients.company_name}</span></h3></th>
+							</tr>
+							{/if}
+							{foreach from=$clients.contract_list item="missions" name="contractids" key="contractid"}
+							{if $clients.$contractid.contractname neq ""}
+							<tr>
+								<th colspan="10"><span class="pull-left">{$clients.$contractid.contractname}</span></th>
+							</tr>
+							{/if}
+							{foreach from=$missions.mission_list item="mission" name="contracts" }
+							
+							<tr>
+								<td  style="display:none"></td>
+								<!--<td><a class="hint--right" data-hint="{$mission.client_name}" target="_blank" href="/quote/create-client?uaction=view&client_id={$mission.client_id}&submenuId=ML13-SL1">
+									{$mission.company_name}
+								</a></td>-->
+								<td>
+								{if $mission.pmid}
+								<a class="hint--right" data-hint="{$mission.pmnew}">
+								<img src="{$fo_path}/profiles/bo/{$mission.pmid}/logo.jpg?123" class="image rd_30" height="50" alt="{$mission.pmnew}">
+								</a>
+								{else}
+								-
+								{/if}
+								</td>
+								<td>
+								<a href="/followup/{$mission.type}?submenuId=ML13-SL4&cmid={$mission.cmid}&index={$mission.index}" target="_blank" class="pull-left">
+								{$mission.title}
+								</a>
+								</td>
+								<td>{$mission.nb_words}</td>
+								<td>{$mission.source_language}</td>
+								<td>{$mission.destination_language}</td>
+								<td>{if $mission.percentage=="%"}-{else}{$mission.percentage}{/if}</td>							
+								<td>{$mission.ldate|date_format:'%d/%m/%Y'}</td>
+								<td>{$mission.edate|date_format:'%d/%m/%Y'}</td>
+								<td><a href="/followup/{$mission.type}?submenuId=ML13-SL4&cmid={$mission.cmid}&index={$mission.index}" class="btn">View mission</a></td>
+							</tr>
+							{/foreach}
+							{/foreach}
+							{/foreach}
+							{else}
+							<tr>
+							<td colspan="10">Pas d'information disponible</td>
+							</tr>
+							{/if}
+							
+						</tbody>
+					</table>
+					</div>
+				</div>
+				
+				<!-- Deleted End -->
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+{literal}
+<script>
+var id1 = "week1";
+var id2 = "week2";
+var assigncount =  {/literal}"{$toassigncount}"{literal};
+var user_type = {/literal}"{$user_type}"{literal};
+	
+$(document).ready(function() {
+	if(assigncount>0)
+	{
+		$("#assigncount").text(assigncount);
+		$("#assigncount").removeClass('hide');
+	}
+	else
+	$("#assigncount").addClass('hide');
+	$(".uni_style").uniform();
+	$(".uni_style2").uniform();
+	/* $('.tooltips').tooltipster(
+	 {
+		contentAsHTML: true,
+		theme: 'tooltipster-noir',
+		position: 'bottom',
+		positionTracker:true,
+		interactive: true,
+	 });  */
+		
+	$(".cselect").chosen({allow_single_deselect:false,search_contains: true});
+	
+	$(".tooltips").popover({ trigger: "manual" ,placement: 'top', html: true, animation:false})
+	.on("mouseenter", function () {
+		var _this = this;
+		$(this).popover("show");
+		$(".popover").on("mouseleave", function () {
+			$(_this).popover('hide');
+		});
+	}).on("mouseleave", function () {
+		var _this = this;
+		setTimeout(function () {
+			if (!$(".popover:hover").length) {
+				$(_this).popover("hide");
+			}
+		}, 300);
+	});
+	
+	$(document).on("click",".uni_style",function(){
+		 $(".uni_style").uniform();
+			 $(".tooltips").popover({ trigger: "manual" ,placement: 'top', html: true, animation:false})
+			.on("mouseenter", function () {
+				var _this = this;
+				$(this).popover("show");
+				$(".popover").on("mouseleave", function () {
+					$(_this).popover('hide');
+				});
+			}).on("mouseleave", function () {
+				var _this = this;
+				setTimeout(function () {
+					if (!$(".popover:hover").length) {
+						$(_this).popover("hide");
+					}
+				}, 300);
+			});
+	  })
+	  
+	
+});
+
+	  $('#pm').on('change', function(evt, params) {
+		$(".missionsopenreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'table':1,'opened':1,'lang':$("#langauges").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsopenreplace").html(data)})
+		$(".missionsfinished").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'table':1,'opened':2,'lang':$("#langauges").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsfinished").html(data)})
+		$(".missionsdeleted").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'table':1,'opened':4,'lang':$("#langauges").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsdeleted").html(data)})
+		$(".missionsassignreplace").html('<center><b>Please wait Loading...</b></center>');
+			$.post('/contractmission/loadmissions/',{'pmid':'','table':1,'opened':0,'lang':$("#langauges").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsassignreplace").html(data)})
+	  });
+
+	  /*$('#pm1').on('change', function(evt, params) {
+		$(".missionsfinished").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm1").val(),'table':1,'opened':2,'lang':$("#langauges").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsfinished").html(data)})
+		
+	  });
+	  
+	  $('#pmdeleted').on('change', function(evt, params) {
+		$(".missionsdeleted").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pmdeleted").val(),'table':1,'opened':4,'lang':$("#langaugesdeleted").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsdeleted").html(data)})
+	  });
+	  
+	   $('#langaugesdeleted').on('change', function(evt, params) {
+		$(".missionsdeleted").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pmdeleted").val(),'table':1,'opened':4,'lang':$("#langaugesdeleted").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsdeleted").html(data)})
+	  });*/
+	  
+	  $('#langauges').on('change', function(evt, params) {
+	  $(".missionsopenreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'table':1,'opened':1,'lang':$("#langauges").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsopenreplace").html(data)})
+
+		$(".missionsfinished").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'table':1,'opened':2,'lang':$("#langauges").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsfinished").html(data)})
+
+		$(".missionsassignreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':'','table':1,'opened':0,'lang':$("#langauges").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsassignreplace").html(data)})
+
+		$(".missionsdeleted").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'table':1,'opened':4,'lang':$("#langauges").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsdeleted").html(data)})
+	  });
+	  
+	  /* $('#langauges1').on('change', function(evt, params) {
+	  $(".missionsfinished").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm1").val(),'table':1,'opened':2,'lang':$("#langauges1").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsfinished").html(data)})
+	  });
+	  
+	  $('#assign_lang').on('change', function(evt, params) {
+	  $(".missionsassignreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':'','table':1,'opened':0,'lang':$("#assign_lang").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsassignreplace").html(data)})
+	  });
+	  
+	  $('#assigncontracts').on('change', function(evt, params) {
+	  $(".missionsassignreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'table':1,'opened':0,'lang':$("#assign_lang").val(),'cid':$("#assigncontracts").val(),'client_id':$("#allclient").val()},function(data){$(".missionsassignreplace").html(data)})
+	  });
+	  
+	  $('#openedcontracts').on('change', function(evt, params) {
+	  $(".missionsopenreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'table':1,'opened':1,'lang':$("#langauges").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsopenreplace").html(data)})
+	  });
+	  
+	  $('#openedcontracts1').on('change', function(evt, params) {
+	  $(".missionsfinished").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm1").val(),'table':1,'opened':2,'lang':$("#langauges1").val(),'cid':$("#allcontract").val(),'client_id':$("#allclient").val()},function(data){$(".missionsfinished").html(data)})
+	  });*/
+	  
+	  $(document).on("click",".uni_style2",function(){
+		$(".uni_style2").uniform();
+	  })
+	  
+	  $(document).on("click",".uni_style",function(){
+		$(".uni_style").uniform();
+	  })
+	  
+	  $("#allcontract").on('change',function(evt, params){
+/* 		  $(".allmissions").html('<center><b>Please wait Loading...</b></center>');
+		  $(".nav-tabs li").removeClass('active');
+		  $(".assignopened").addClass('active');
+		  $.post('/contractmission/loadmissions/',{'pmid':'','opened':3,'table':1,'lang':'','cid':$("#allcontract").val()},function(data){$(".allmissions").html(data)})
+
+ */	  	clientval=$("#allclient").val();
+ 		if(clientval)
+ 		{
+ 			url="&client_id="+$('#allclient').val()+"&submenuId=ML13-SL4";
+ 		}
+ 		else{
+ 			url="&submenuId=ML13-SL4";
+ 		}
+
+		location.href= '/contractmission/missions-list?contract_id='+$("#allcontract").val()+url;
+	})
+	  $("#allclient").on('change',function(evt, params){
+		location.href= '/contractmission/missions-list?client_id='+$("#allclient").val()+'&submenuId=ML13-SL4';
+	})
+
+	  $("ul.nav-tabs li a").on('click',function(evt, params){
+		if($(this).attr('href')=='#validate'){
+			$('#pm_chzn').hide();
+		}
+		else
+		{
+			$('#pm_chzn').show();
+		}
+	})
+	  
+	  $(document).on("click",".closemission",function(e){
+		  e.preventDefault();
+		  var thisref = $(this);
+		  smoke.confirm("Are you sure? Want to close this mission",function(e)
+			{
+				if(e)
+				{
+					var href = thisref.attr("href");
+					$.post(href,function(success){if(success){location.reload();}});
+				}
+			});
+	  });
+	 
+	$(document).on("click","#checkopened",function(e){
+		  if($("#checkopened:checked").length)
+		  {
+			  $("[name=closemission\\[\\]]").prop("checked",true);
+			  if($("[name=closemission\\[\\]]:checked").length)
+			  $("#showcmclose").show();
+		  }
+		  else
+		  {
+			  $("[name=closemission\\[\\]]").removeAttr("checked");
+			  $("#showcmclose").hide();
+		  }
+			 
+	  });
+	$(document).on("click","#checktoassign",function(e){
+		  if($("#checktoassign:checked").length)
+		  {
+			 $(".closevalidatemissions").prop("checked",true);  
+			 if($(".closevalidatemissions:checked").length)
+			 $("#showcmclose1").show();
+		  }
+		  else
+		  {
+			 $(".closevalidatemissions").removeAttr("checked"); 
+			 $("#showcmclose1").hide();
+		  }
+	  });
+</script>
+{/literal}

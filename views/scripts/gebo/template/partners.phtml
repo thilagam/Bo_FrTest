@@ -1,0 +1,204 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/ajaxupload.3.5.js"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/jQuery.fileinput.js"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/jquery.Jcrop.min.js"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/css/jquery.Jcrop.css" />
+<script type="text/javascript" >
+$(document).ready(function() {
+		$("#partnerform").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+      $('#our_partners').dataTable({
+                "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 1, "asc" ]],
+					"aoColumns": [
+						{ "sType": "formatted-num" },
+						{ "sType": "string" },
+						{ "sType": "string" },
+						{ "sType": "eu_date" },
+						{ "sType": "string" },
+						{ "sType": "html" }
+					],
+					"aaSorting": [[ 0, "asc" ]],
+                });
+});
+
+ $(function(){
+        var btnUpload=$('#partnerlogo');
+       
+        new AjaxUpload(btnUpload, {
+            action: 'uploadpartnerpic',
+            name: 'uploadpic',
+            data:{from:'partner'},
+            onSubmit: function(file, ext){   //  alert(userid);
+                if (! (ext && /^(jpg|jpeg|gif|png)$/.test(ext))){
+                    // extension is not allowed
+                    $('#file_nameprofile').text("Merci d'uploaded uniquement des fichiers JPG.").css('color','#FF0000');
+                    return false;
+                }
+
+                $('#file_nameprofile').html('<div align="right"><img src="http://ep-test.edit-place.com/FO/images/loading-b.gif" /></div>') ;
+            },
+            onComplete: function(file, response){ 
+                //On completion clear the status
+                $('#file_nameprofile').text('');
+                $('#file_nameprofile').html('');
+                //Add uploaded file to list
+                var obj = $.parseJSON(response);
+                var approot="http://ep-test.edit-place.com/FO/";
+                if(obj.status=="success"){
+                    $("#cropbox").attr('src','#');
+                    $(".jcrop-holder").remove();
+                    $("#cropbox").removeData('Jcrop');
+                    $("#cropbox").attr("src",approot+obj.path+ '?' + (new Date()).getTime());
+
+                    $("#cropbox").show();
+                    $('#cropbox').Jcrop({
+                        aspectRatio: 2,
+                        addClass: 'jcrop-dark',
+                        //setSelect: [ 60, 110, 150, 200 ],
+                        setSelect: [ 0, 0, 0, 0 ],
+						//minSize:[245,35],
+                        onSelect: updateCoords
+                    });
+                   
+                    $("#identy").val(obj.identifier); 
+                    $("#from").val('partner'); 
+                    $("#extension").val(obj.ext); 
+						var logo="PartnerLogo_"+obj.identifier+"."+obj.ext;
+                    $("#logoname").val(logo);  
+                    $('#cropimagepopup').modal('show');
+                    /*if(file.length>25)
+                        $('#file_name'+type).html(file.substr(0,25)+".. Uploaded").css('color','#006600');
+                    else
+                        $('#file_name'+type).html(file+" Uploaded").css('color','#006600');*/
+                }
+                else if(obj.status=="smallfile"){
+                    $('#file_nameprofile').html("L'image est trop petite, merci d'en uploader une autre").css('color','#FF0000');
+                }
+                else{
+                    $('#file_nameprofile').html('Error in upload').css('color','#FF0000');
+                }
+            }
+        });
+        jQuery('img').each(function(){
+            jQuery(this).attr('src',jQuery(this).attr('src')+ '?' + (new Date()).getTime());
+        });
+    });
+	   
+	function clearform()
+	{
+		$("#name").val("");
+		$("#website").val("");
+		$("#description").val("");
+		$("#status").val("");
+	}	
+</script>
+{/literal}
+<div class="row-fluid">
+	<div class="span13">
+		<div class="alert alert-warning" align="center"><b>OUR PARTNERS</b></div>
+		<br/>
+		<div class="span5">
+			<table class="table table-bordered table-striped table_vam" id="our_partners" >
+				<thead>
+					<tr>
+						<th>ID N&deg;</th>
+						<th>Name</th>
+						<th>Logo</th>
+						<th>Created at</th>
+						<th>Status</th>
+						<th>ACTION</th>
+					</tr>
+				</thead>
+				<tbody>
+					{foreach from=$partnerlist item=part_item name=part_loop}
+					  <tr>
+						   <td>{$smarty.foreach.part_loop.index+1}</td>
+						   <td style="text-align:left">{$part_item.name|stripslashes}</td>
+						   <td style="text-align:left"><img src="http://ep-test.edit-place.com/FO/images/logos/partners/{$part_item.logoname}" width="30" height="20" /></td>
+						   <td>{$part_item.created_at|date_format:"%d/%m/%Y %H:%M:%S"}</td>
+						   <td style="text-align:left">{$part_item.status|ucfirst}</td>
+						   <td>
+								<a href="/template/partners?submenuId=ML4-SL12&act=edit&id={$part_item.id}"><i class="splashy-application_windows_edit"></i></a>
+						   </td>
+					  </tr>
+					{/foreach}
+				</tbody>
+			</table>
+		</div>
+		
+		<div class="span6">
+			<form  action="/template/partners?submenuId=ML4-SL12" method="post" id="partnerform" name="partnerform" enctype="multipart/form-data">	
+				<a href="/template/partners?submenuId=ML4-SL12" class="btn btn-warning" style="float:right">Add New</a> 
+				<h4 align="center">Add Partner</h4>
+				<table cellpadding="4" cellspacing="4" align="center" width=100%>
+					<tr ><td>&nbsp;</td></tr>
+					<tr valign="top">
+						<td><b>Name :</b></td>
+						<td><span><input type="text" id="name" name="name" value="{$editpartner[0].name}" class="span9 validate[required]"/></span></td>
+					</tr>
+					<tr valign="top">
+						<td><b>Logo :</b></td>
+						<td>
+							<div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" value="" name="">
+								<span class="btn btn-file"><span class="fileupload-new">Select file</span>
+								<span class="fileupload-exists">Change</span>
+									<input type="file" name="partnerlogo" id="partnerlogo" value="clogo"/>
+								</span>
+								<span class="fileupload-preview"></span>
+									<a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>
+								<div id="file_nameprofile"></div>
+								<label style="color:red">( Upload logo with minimum dimension 150 x 30 for better display )</label>
+							</div>
+							
+								<img {if $smarty.get.act=='edit'}src="http://ep-test.edit-place.com/FO/images/logos/partners/{$editpartner[0].logoname}" {else}style="display:none;"{/if} id="plogo" width="30" height="20" />
+							
+						</td>
+					</tr>
+					<tr valign="top">
+						<td><b>Website :</b></td>
+						<td><span><input type="text" id="website" name="website" value="{$editpartner[0].website}" class="span9 validate[required]" placeholder="www.example.com"/></span></td>
+					</tr>
+					<tr valign="top">
+						<td><b>Description :</b></td>
+						<td><span><textarea name="description" id="description" class="span9 auto_expand validate[required]">{$editpartner[0].description}</textarea></span></td>
+					</tr>
+					<tr valign="top">
+						<td><b>Status :</b></td>
+						<td>
+							<select name="status" id="status">
+								<option value="active" {if $editpartner[0].status=="active"}selected{/if}>Active</option>
+								<option value="inactive" {if $editpartner[0].status=="inactive"}selected{/if}>Inactive</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>	
+							<input type="hidden" id="logoname" name="logoname" value="{$editpartner[0].logoname}">
+							<input type="hidden" id="partid" name="partid" value="{$editpartner[0].id}">
+							<input type="submit" id="partner_submit" name="partner_submit" value="Save" class="btn btn-info"/>
+							<a href="javascript:void(0);" class="btn btn-danger" onclick="clearform();";>Clear</a> 
+						</td>
+					</tr>
+				</table>		
+			</form>
+		</div>
+	</div>
+</div>
+
+<!--///when republish the popup comes for edit details and mail for republish article///-->
+<div class="modal hide fade" id="cropimagepopup">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('cropimagepopup');">&times;</button>
+        <h3>Crop logo</h3>
+    </div>
+    <div class="modal-body alignright">
+        {include file="gebo/template/logo_crop.phtml"}
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>

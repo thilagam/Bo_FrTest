@@ -1,0 +1,207 @@
+{literal}
+<script type="text/javascript" charset="ISO-8859-1" src="/BO/theme/gebo/js/custom/validations_poll.js"></script>
+<script>
+	$(document).ready(function() {
+		$("#contrib").chosen({ allow_single_deselect: true });	
+		$('#black_contribcheck').toggleButtons({ 
+			label:{enabled: "Oui",disabled: "Non"}
+		});
+		$('#send_mailcheck').toggleButtons({
+			label:{enabled: "Oui",disabled: "Non"}
+		});
+		
+		var cat=$('#cat').val();
+		countmails(cat)
+	});
+
+	function countmails(cat)
+	{
+		var black=$("input[name='black_contrib']:checked").val();
+		var utype=$("#contrib").val();
+	
+	
+		 var target_page = "/ao/countpollmails?users="+utype+"&black="+black+"&category="+cat;
+
+            $.post(target_page, function(data){ 
+				if(data!="0")
+				{
+					data='<a class="contribPopupTrigger" style="cursor: pointer;" rel="'+utype+','+black+','+cat+'">'+data+'</a>';
+				}
+				$("#mailcount").html(data);
+			});
+	}
+	
+	$(function()
+	{
+		var hideDelay = 50;
+		var hideTimer = null;
+	  
+		// One instance that's reused to show info for the current user
+		var container = $('#contribPopupContainer');
+		$('body').append(container);
+	  
+		$('.contribPopupTrigger').live('mouseover', function()
+		{
+		  // format of 'rel' tag: usertype,blacl,category
+		  var params = $(this).attr('rel');
+		  var variables=params.split(","); //alert(variables[0]);
+		  
+		  var usertype=variables[0];
+		  var blacklist=variables[1];
+		  var category=variables[2];
+
+		  if (hideTimer)
+			  clearTimeout(hideTimer);
+
+		  var pos = $(this).offset();
+		  var width = $(this).width();
+		  container.css({
+			  left: (pos.left + width) + 'px',
+			  top: pos.top - 80 + 'px'
+		  });
+
+		  $('#contribPopupContent').html('');
+		  $('#contribPopupContent').html('<img src="http://www.h2obazaar.com/h2obazaarlogin/images/loading.gif" />');
+
+		  $.ajax({
+			  type: 'GET',
+			  url: '/ao/pollusers',
+			  data: 'userty=' + usertype + '&black=' + blacklist + '&cat='+category,
+			  
+			  success: function(data)
+			  {   
+					  var text = $(data).find('.contribPopupResult').html();
+					  $('#contribPopupContent').html(data);
+
+			  }
+		  });
+
+		  container.css('display', 'block');
+		});
+
+		  $('.contribPopupTrigger').live('mouseout', function()
+		  {
+			  if (hideTimer)
+				  clearTimeout(hideTimer);
+			  hideTimer = setTimeout(function()
+			  {
+				  container.css('display', 'none');
+			  }, hideDelay);
+		  });
+
+		  // Allow mouse over of details without hiding details
+		  $('#contribPopupContainer').mouseover(function()
+		  {
+			  if (hideTimer)
+				  clearTimeout(hideTimer);
+		  });
+
+		// Hide after mouseout
+		  $('#contribPopupContainer').mouseout(function()
+		  {
+			  if (hideTimer)
+				  clearTimeout(hideTimer);
+			  hideTimer = setTimeout(function()
+			  {
+				  container.css('display', 'none');
+			  }, hideDelay);
+		  });
+	});
+	
+</script>
+<style>
+	#contribPopupContainer{ position:absolute; left:0; top:0; display:none; z-index: 1000; }
+	#contribPopupContent { background-color: #FFF; min-width: 250px; min-height: 150px; z-index: 1000; }
+	.contribPopupPopup .personPopupImage { margin: 0px; margin-right: 5px; }
+	.contribPopupPopup .corner { width: 19px; height: 15px; }
+	.contribPopupPopup .topLeft { background: url(/BO/theme/gebo/img/balloon_topLeft.png) no-repeat; }
+	.contribPopupPopup .bottomLeft { background: url(/BO/theme/gebo/img/balloon_bottomLeft.png) no-repeat; }
+	.contribPopupPopup .left { background: url(/BO/theme/gebo/img/balloon_left.png) repeat-y; }
+	.contribPopupPopup .right { background: url(/BO/theme/gebo/img/balloon_right.png) repeat-y; }
+	.contribPopupPopup .topRight { background: url(/BO/theme/gebo/img/balloon_topRight.png) no-repeat; }
+	.contribPopupPopup .bottomRight { background: url(/BO/theme/gebo/img/balloon_bottomRight.png) no-repeat; }
+	.contribPopupPopup .toptool { background: url(/BO/theme/gebo/img/balloon_top.png) repeat-x; }
+	.contribPopupPopup .bottomtool { background: url(/BO/theme/gebo/img/balloon_bottom.png) repeat-x; text-align: center; }
+</style>
+{/literal}
+
+<form action="/ao/createpoll3?submenuId=ML2-SL15" method="POST">
+<div class="row-fluid">
+  	<div class="span12">
+		<h3 class="heading">
+			<span align="right">
+				<img src="/BO/theme/gebo/img/path-3.png" width="120" height="35" border="0" usemap="#Map" style="float:right;" />
+				<map name="Map" id="Map">
+				{if $nav_1==1}	
+					<area shape="circle" coords="18,18,17" href="/ao/createpoll?submenuId=ML2-SL15" />
+				{/if}
+				{if $nav_2==1}
+					<area shape="circle" coords="60,18,17" href="/ao/createpoll1?submenuId=ML2-SL15"/>
+				{/if}
+				</map>
+			</span> 
+		</h3>
+		
+			<table align="center" cellpadding="4" cellspacing="4" width="78%">
+				<tr>
+					<td>Inclure les r&eacute;dacteurs blacklist&eacute;s</td>
+					<td>
+						<div id="black_contribcheck">
+							<input type="checkbox" name="black_contrib" id="black_contrib" onChange="countmails('{$category}');" {if $black_contrib=="on"}checked="checked"{/if}/>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>R&eacute;dacteurs concern&eacute;s</td>
+					<td>
+						<select name="contrib" id="contrib" onChange="countmails('{$category}');">
+							<option value="0">Senior Contributors</option>
+							<option value="1">Junior Contributors</option>
+							<option value="3">Sub-Junior Contributors</option>
+							<option value="2" selected>Both Senior and Junior</option>
+							<option value="4" >All</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Pr&eacute;venir par email</td>
+					<td>
+						<div id="send_mailcheck">
+							<input type="checkbox" name="send_mail" id="send_mail" {if $send_mail=="on"}checked="checked"{/if}/>
+						</div>
+						<b>[<span id="mailcount"></span> mails]</b>
+					</td>
+				</tr>
+			</table>
+		
+		<div style="float:right;padding-right:230px;padding-top:50px">
+			<input type="submit" value="Cr&eacute;er sondage" class="btn btn-success"/>
+		</div>
+	
+	<div class="Clear"></div>
+</table>
+<input type="hidden" name="cat" id="cat" value="{$category}" />
+</form>
+	</div>
+</div>
+	
+<!-- Participation tool tip -->
+	<div id="contribPopupContainer">
+		<table width="" border="0" cellspacing="0" cellpadding="0" align="center" class="contribPopupPopup" width="auto">
+			<tr>
+				<td class="corner topLeft"></td>
+				<td class="toptool"></td>
+				<td class="corner topRight"></td>
+			</tr>
+			<tr>
+				<td class="left">&nbsp;</td>
+				<td><div id="contribPopupContent" style="height:200px;overflow:hidden;overflow-y:scroll;"></div></td>
+				<td class="right">&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="corner bottomLeft">&nbsp;</td>
+				<td class="bottomtool">&nbsp;</td>
+				<td class="corner bottomRight"></td>
+			</tr>
+		</table>
+     </div>

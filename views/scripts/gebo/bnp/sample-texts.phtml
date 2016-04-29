@@ -1,0 +1,50 @@
+{if $sampletexts|@count > 0}
+<form class="form-horizontal"  action="" method="get" id="sampletxt_form2">
+    <table class="table" id="sampletext_table">
+        <thead>
+        <tr>
+            <th colspan="2" style="text-align:left"><h2> Sample texts for Token </h2></th>
+        </tr>
+        </thead>
+        {foreach from=$sampletexts item=sample name=sample}
+        <tr>
+            <td>
+                <input type="radio" name="sampletextid" class="icheck validate[required]" id="{$sample.sample_id}" value="{$sample.sample_id}" {if $sample.sample_id eq $sample_id} checked="checked" {/if}/>
+            </td>
+            <td>
+                <label for="{$sample.sample_id}">{$sample.description|utf8_encode|htmlentities}</label>
+            </td>
+        </tr>
+        {/foreach}
+    </table>
+    <div class="control-group topset2">
+        <div class="pull-center">
+            <button class="btn btn-primary" id="" type="submit">Select</button>
+            <button class="btn" id=""  data-dismiss="modal" type="reset">Annular</button>
+        </div>
+    </div>
+</form>
+{else}
+<table class="table">
+    <thead>
+    <tr>
+        <th> No Sample texts found! </th>
+    </tr>
+    </thead>
+</table>
+{/if}
+
+{literal}
+<script type="text/javascript">
+
+    $("#sampletxt_form2").validationEngine({prettySelect : true,useSuffix: "_chzn",onValidationComplete: function(form, status){
+        if(status===true)
+        {
+            $("#sampletext, #seeall").val($("[name='sampletextid']:checked").val());
+            $("#sampletxt_text").html($("[name='sampletextid']:checked").closest("tr").find("label").html());
+            $("#seeall").text("Change Selection");
+            $('#sampletexts').modal('hide');
+        }
+    }});
+</script>
+{/literal}

@@ -1,0 +1,112 @@
+{literal}
+<script type="text/javascript" >
+    $(document).ready(function() {	
+ $("#articles").chosen({ allow_single_deselect: true,search_contains: true });	
+		//refreshing the modal /////
+		$("#linkidrefresh").live('click',function(e) {
+			e.preventDefault();
+			var href = $(this).attr('href');
+			$("#ao_history").removeData('modal');
+			$('#ao_history .modal-body').load(href);
+			$("#ao_history").modal();
+			$(".modal-backdrop:gt(0)").remove();
+		}); 
+	});	
+	
+//load article history	
+function fnloadhistory(ao_id,article_id)
+{	
+	if(article_id=='all')
+		article_id='';
+	var href='/ongoing/ao-history?ao_id='+ao_id+'&article_id='+article_id;
+	$("#ao_history").removeData('modal');
+	$('#ao_history .modal-body').load(href);
+	$("#ao_history").modal();
+	$(".modal-backdrop:gt(0)").remove();
+}
+//load AO history	
+function fnloadsuperclientAOhistory(client_id,ao_id)
+{		
+	var href='/ongoing/ao-history?ao_id='+ao_id+'&client_id='+client_id;
+	$("#ao_history").removeData('modal');
+	$('#ao_history .modal-body').load(href);
+	$("#ao_history").modal();
+	$(".modal-backdrop:gt(0)").remove();
+}
+
+//show refusal reasons
+function showRefusalReasons(reason_id)
+{
+	var href='/ongoing/get-refusal-reason?reason_id='+reason_id;		
+		alert(target_page);		
+		$("#refusal_reasons").removeData('modal');
+		$('#refusal_reasons .modal-body').load(href);
+		$("#refusal_reasons").modal();
+		$(".modal-backdrop:gt(0)").remove();		
+	//});	
+}
+//show message to client
+function showClientMessages(message_id)
+{
+    var href='/ongoing/get-mail-content?message_id='+message_id;
+    //alert(target_page);
+    $("#clientmessage").removeData('modal');
+    $('#clientmessage .modal-body').load(href);
+    $("#clientmessage").modal();
+    $(".modal-backdrop:gt(0)").remove();
+    //});
+}
+	
+</script>
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+		<div  id="search_block" class="span10">
+			<form action="" id="searchform" name="searchform" >				
+				 <input type="hidden" id="submenuId" name="submenuId"  value="{$submenuId}"/>				  
+				 <table id="searchtable" cellspacing="5" cellpadding="5">
+					<tr>
+						{if $smarty.get.client_id}								
+						<td>S&eacute;lectionner AO :</td>
+						<td id="aolistall">
+							<select name="delivery_id" id="articles" onchange="fnloadsuperclientAOhistory('{$smarty.get.client_id}',this.value);"  data-placeholder="Articles">
+								{html_options  options=$article_array  selected=$smarty.get.ao_id}				  
+							</select>
+						</td>	
+						{else}
+						<td>S&eacute;lectionner Article :</td>
+						<td id="aolistall">
+							<select name="article_id" id="articles" onchange="fnloadhistory('{$smarty.get.ao_id}',this.value);"  data-placeholder="Articles">
+								{html_options  options=$article_array  selected=$smarty.get.article_id}				  
+							</select>
+						</td>					
+						{/if}							
+					</tr>
+				</table>				
+			</form>			
+		</div>
+		<div class="span2">
+			<a href="/ongoing/ao-history?ao_id={$smarty.get.ao_id}&article_id={$smarty.get.article_id}" id="linkidrefresh" data-hint="Reload Historique" class="alignright btn hint--left hint"><img alt="" src="/BO/theme/gebo/img/gCons/reload.png"></a>
+		</div>	
+		
+		{if $aoHistory|@count gt 0}
+			<table class="table table-hover">
+				<tbody>
+					{foreach item=details from=$aoHistory name="historyDetails"} 	
+						<tr>
+							<td>{$details.action_at}</td>
+							
+								{if $details.action eq 'Corrector Validation'}
+									<td style="text-align:left">{$details.action_sentence|stripslashes}</td>
+								{else}
+									<td>{$details.action_sentence|utf8_encode|stripslashes}</td>
+								{/if}	
+							
+						</tr>
+					{/foreach}
+				</tbody>	
+			</table>
+		{/if}
+	</div>
+</div>

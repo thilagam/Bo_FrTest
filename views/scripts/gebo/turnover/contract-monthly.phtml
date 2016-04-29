@@ -1,0 +1,227 @@
+{literal}
+<style>
+	.cost_detail{
+		width:40px;
+		text-align: center;
+		color:#ff6464 !important;
+		}
+	.margin_detail{
+			width:40px;
+			color:#1fbba6 !important;
+			text-align: center;
+			}
+	.split_details{
+			width:40px;
+			text-align: center;
+			
+		}
+	.contract_val, .contract_name{
+	   vertical-align: middle !important;
+		}
+	.contract_val b{
+	   padding-left: 8px !important;
+		}
+		.subhead{
+	border-top: 1px solid #ddd;
+		}
+		.subhead label{
+		font-size: .65rem;
+		color: #222;
+		line-height: 50%;
+		}
+		
+		div.displayInfos{
+			width:20% !important;
+			}
+			.monthView .displayDatas{
+				width: 79.9% !important;
+				}
+	</style>
+	<script>
+		$(document).ready(function(){
+		
+		$('.fa-angle-right').on('click',function(){
+			
+			var target = $(this).attr("href");
+			$("#contractmonthly .modal-body").load(target, function() { 
+				 
+				$("#contractmonthly").modal("show"); 
+			});
+				});
+				
+			$('.fa-angle-left').on('click',function(){
+				
+			var target = $(this).attr("href");
+			$("#contractmonthly .modal-body").load(target, function() { 
+				
+				$("#contractmonthly").modal("show"); 
+			});
+			
+				});
+		});
+		</script>
+{/literal}
+	{if $contract_details|count >0}
+
+			<div class="container-fluid">
+					<div class="monthView">
+						<header>
+							<i href="/turnover/contract-monthly-details?client_id={$client_details.client_id}&month={$year_val}-{$prev_month}"  role="button" data-toggle="modal" class="fa fa-angle-left"></i>
+							<span class="selectedMonth">{$month_val} - {$year_val}</span>
+							<i href="/turnover/contract-monthly-details?client_id={$client_details.client_id}&month={$year_val}-{$next_month}"  role="button"  data-toggle="modal"  class="fa fa-angle-right"></i>
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true" ><i class="fa fa-times-circle"></i></button>
+						</header>
+						<div class="displayInfos">
+							<div class="clientName">
+								<h4>{$client_details.client_name}</h4>
+								
+							</div>
+
+							<table>
+								<tbody>
+									<tr>
+										<td class="salesName" colspan="2">
+										<!--	<a class="hint--right"  data-hint="{$sales_details.sales_owner}">
+								<img src="{$fo_path}/profiles/bo/{$sales_details.sales_creator_id}/logo.jpg?123" class="image rd_30" alt="{$sales_details.sales_owner}"></a> -->
+								</td>
+									</tr>
+									<tr>
+										<td>Client ID</td>
+										<td>{$client_details.client_code}</td>
+									</tr>
+									<!--<tr>
+										<td>launch date</td>
+										<td>15/09/2015</td>
+									</tr>
+									<tr>
+										<td>end date</td>
+										<td>15/09/2015</td>
+									</tr>  -->
+									<tr>
+										<td>Show Costs</td>
+										<td>
+											<input type="checkbox" name="my-checkbox" id="cost_display" checked>
+										</div>
+									</td>
+								</tr>	
+								<tr>
+									<td>Show margin</td>
+									<td>
+										<input type="checkbox" name="my-checkbox" id="margin_display" checked>
+									</div>
+								</td>
+							</tr>																					
+						</tbody>
+					</table>
+				</div>
+				<div class="displayDatas">
+					<table class="mainTable">
+						<thead>
+							<tr>
+								<th  style="width:35%">Mission Name</th>
+								<th colspan="3" class="missionhead">Real</th>
+								<th colspan="3" class="missionhead">theorical</th>
+								<th  colspan="3" class="missionhead">Difference</th>
+							</tr>
+							
+							<tr>
+								<th></th>
+								<th class="subhead split_details"><label for="">normal</label></th>
+								<th class="subhead cost_detail" ><label for="">Cost</label></th>
+								<th class="subhead margin_detail"><label for="">Margin</label></th>
+								<th class="subhead split_details"><label for="">normal</label></th>
+								<th class="subhead cost_detail"><label for="">Cost</label></th>
+								<th class="subhead margin_detail" ><label for="">Margin</label></th>
+								<th class="subhead split_details"><label for="">normal</label></th>
+								<th class="subhead cost_detail"><label for="">Cost</label></th>
+								<th class="subhead margin_detail"><label for="">Margin</label></th>
+									
+							</tr>
+						</thead>
+						<tbody>
+					{foreach from=$contract_details item=contract_item name=contract_loop}
+						{assign var=quotecontract_id value=$contract_item.quotecontractid}
+						{assign var=month_year value=$smarty.get.month}
+					{if $quotecontract_id neq ""}
+							<tr class="contractRow active">
+								<td style="width:35%;"><span class="contractName">{$contract_item.contractname}</span> </td>
+								
+								<td  class="split_details"><span>{$contract_details.contract_Contrat_details.$quotecontract_id.realturnover|zero_cut_t:2}</span></td>
+								<td class="cost_detail"><span >{$contract_details.contract_Contrat_details.$quotecontract_id.realcostturnover|zero_cut_t:2}</span></td>
+								{assign var=marginreal  value=$contract_details.contract_Contrat_details.$quotecontract_id.realturnover-$contract_details.contract_Contrat_details.$quotecontract_id.realcostturnover}
+								{assign var=marginper_det  value=$marginreal/$contract_details.contract_Contrat_details.$quotecontract_id.realturnover}
+								{assign var=marginper_tag  value=$marginper_det*100}
+								<td class="margin_detail"><span >{$marginper_tag|zero_cut_t:2} %</span></td>
+								
+								
+								<td class="split_details"><span >{$contract_details.contract_Contrat_details.$quotecontract_id.$month_year|zero_cut_t:2}</span></td>
+								<td class="cost_detail"><span >{$contract_details.contract_Contrat_details.$quotecontract_id.costtotal|zero_cut_t:2}</span></td>
+								{assign var=margincontract  value=$contract_details.contract_Contrat_details.$quotecontract_id.$month_year-$contract_details.contract_Contrat_details.$quotecontract_id.costtotal}
+								{assign var=margincostper  value=$margincontract/$contract_details.contract_Contrat_details.$quotecontract_id.$month_year}
+								{assign var=marginpercentage  value=$margincostper*100}
+								<td class="margin_detail"><span >{$marginpercentage|zero_cut_t:2} %</span></td>
+								
+								{assign var=diff_cont_normal value=$contract_details.contract_Contrat_details.$quotecontract_id.realturnover-$contract_details.contract_Contrat_details.$quotecontract_id.$month_year}
+								<td  class="split_details"><span>{$diff_cont_normal|zero_cut_t:2}</span></td>
+								{assign var=diff_cont_real value=$contract_details.contract_Contrat_details.$quotecontract_id.realcostturnover-$contract_details.contract_Contrat_details.$quotecontract_id.costtotal}
+								<td class="cost_detail"><span >{$diff_cont_real|zero_cut_t:2}</span></td>
+								{*{assign var=diff_cont_diff value=$marginreal-$margincontract}
+								{assign var=diff_cont_dis value=$diff_cont_diff/$marginreal}*}
+								{assign var=diff_cont_mar value=$marginper_tag-$marginpercentage}
+								<td class="margin_detail"><span >{$diff_cont_mar|zero_cut_t:2} %</span></td>
+							</tr>
+							<!-- END CONTRACT ROW -->
+									{assign var=mission_array value=""}
+												{assign var=mission_array value=$contract_details.contract_Contrat_details.$quotecontract_id}
+												{foreach from=$mission_array item=mission_item name=mission_loop}
+												{assign var=mission_id value=$mission_item}
+													{if $mission_id neq "" && $mission_array.$mission_id.mission_type && $mission_array.$mission_id|is_array}
+											<tr class="{$mission_id}">
+												<td style="width:35%;"><span class="missionName">
+													{if $mission_array.$mission_id.assigned_to}
+															<a class="hint--right" data-hint="{$mission_array.$mission_id.assigned_name}">
+																<img src="{$fo_path}profiles/bo/{$mission_array.$mission_id.assigned_to}/logo.jpg?123" class="image rd_30" alt="{$mission_array.$mission_id.assigned_name}"  >
+															</a>
+														{else}
+															-
+														{/if}{$mission_array.$mission_id.mission_type}</span> </td>
+											<!---- Real-->
+												<td class="split_details"><span>
+												{assign var=real_month_year value='real_'|cat:$month_year}
+												{$mission_array.$mission_id.$real_month_year|zero_cut_t:2}</span></td>
+												<td class="cost_detail"><span >{assign var=realcost_month_year value='realcost_'|cat:$month_year}
+												{$mission_array.$mission_id.$realcost_month_year|zero_cut_t:2}</span></td>
+												{assign var=margin_mission_real value=$mission_array.$mission_id.$real_month_year-$mission_array.$mission_id.$realcost_month_year}
+												{assign var=margin_mission_per value=$margin_mission_real/$mission_array.$mission_id.$real_month_year}
+												{assign var=margin_missiontage value=$margin_mission_per*100}
+												<td class="margin_detail"><span>{$margin_missiontage|zero_cut_t:2} %</span></td>
+											<!---- Theoritical-->	
+												
+												<td class="split_details"><span >{$mission_array.$mission_id.$month_year|zero_cut_t:2}</span></td>
+												<td class="cost_detail"><span >{$mission_array.$mission_id.cost.$month_year|zero_cut_t:2}</span></td>
+													{assign var=marginmission value=$mission_array.$mission_id.$month_year-$mission_array.$mission_id.cost.$month_year}
+													{assign var=marginmissionper value=$marginmission/$mission_array.$mission_id.$month_year}
+													{assign var=marginmissiontage value=$marginmissionper*100}
+												<td class="margin_detail"><span >{$marginmissiontage|zero_cut_t:2} %</span></td>
+											
+												<!---- Difference-->
+												{assign var=normal_diff value=$mission_array.$mission_id.$real_month_year-$mission_array.$mission_id.$month_year}
+												<td class="split_details"><span>{$normal_diff|zero_cut_t:2}</span></td>
+												{assign var=real_diff value=$mission_array.$mission_id.$realcost_month_year-$mission_array.$mission_id.cost.$month_year}
+												<td class="cost_detail"><span >{$real_diff|zero_cut_t:2}</span></td>
+												{*{assign var=diff_diff value=$margin_mission_real-$marginmission}
+												{assign var=diff_diffper value=$diff_diff/$normal_diff}*}
+												{assign var=diff_difftage value=$margin_missiontage-$marginmissiontage}
+												<td class="margin_detail"><span >{$diff_difftage|zero_cut_t:2} %</span></td>
+											</tr>
+										
+							<!-- END MISSION ROW -->
+                          {/if}
+							{/foreach}
+						</tbody>
+						{/if}
+						{/foreach}
+					</table>
+				</div>				
+			{/if}
+			

@@ -1,0 +1,401 @@
+{literal}
+    <style>
+        #days .f_error label.error{padding-top:25px !important;}
+    </style>
+{/literal}
+<form class="form_validation_reg" method="POST" action="/seotool/twitter-tool" name="importcsv" id="seo" ENCTYPE="multipart/form-data">
+        <div class="span10">
+
+            <h3 class="heading">Twitter Tool</h3>
+                        
+            <div class="control-group formSep" id="seotool-notify" style="display: none;">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                            <div id="seo-message">{$msg}</div>
+                    </div>
+                </div>
+            </div>    
+            
+            <div class="control-group formSep" id="clientRow" {if $outputs.frequency_system_id neq ''}style="display:block;"{/if}>
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3"><span class="error_placement">Feed name</span></label>
+                        <input type="text" name="feedname" value="{$outputs.feed_name}" id="feedname" class="span5"/>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Type </label>
+                        <label class="uni-radio"><input type="radio" name="word_type" class="uni_style"  value="1" {if $word_type neq '2'} checked {/if} id="csvxls">CSV / XLS</label>
+                            <label class="uni-radio"><input type="radio" name="word_type" class="uni_style"  value="2" {if $word_type eq '2'} checked {/if} id="opt_text">Text</label>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="csv" {if $word_type eq '2'} style="display:none" {/if}>
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Keywords<span class="f_req">*</span></label>
+                        
+                        <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" />
+                            <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" />
+                                <div class="input-append">
+                                    <div class="uneditable-input span2"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input name="keyword_file" id="keyword_file" type="file" /></span><a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="text_words" {if $word_type neq '2'} style="display:none"{/if} >
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="span3 control-label">Keywords<span class="f_req">*</span></label>
+                        <div class="span8 controls">
+                            <textarea name="kw" id="txtarea_sp" cols="1" rows="4" class="span10">{$kw}</textarea>
+                            <span class="help-block">Enter Multiple keywords in separate line</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="fromto" {if $outputs.frequency_system_id neq ''} style="display:none;"{/if}>
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Date<span class="f_req">*</span></label>
+                        <div class="span2 no-margin-first">
+                            <span class="help-block">From</span>
+                            <div class="input-append date" id="dp_start">
+                                <input class="span6" name="from_date" type="text" readonly="readonly" style="width:90px;" value="{$outputs.start_date}" /><span class="add-on"><i class="splashy-calendar_day_up"></i></span>
+                            </div>
+                        </div>
+                        <div class="span3">
+                            <span class="help-block">To</span>
+                            <div class="input-append date" id="dp_end">
+                                <input class="span6" name="to_date" type="text" readonly="readonly" style="width:90px;" value="{$outputs.end_date}" /><span class="add-on"><i class="splashy-calendar_day_down"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep form-inline">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="span3 control-label">Location<span class="f_req">*</span></label>
+                        <label class="uni-radio"><input type="radio" name="location" class="uni_style" value="france" {if $outputs.userlocation eq 'france'} checked{/if}>france</label>
+                        <label class="uni-radio"><input type="radio" name="location" class="uni_style" value="india" {if $outputs.userlocation eq 'india'} checked{/if}>india</label>
+                        <label class="uni-radio"><input type="radio" name="location" class="uni_style" value="uk" {if $outputs.userlocation eq 'uk'} checked{/if}>uk</label>
+                        <label class="uni-radio"><input type="radio" name="location" class="uni_style" value="nil" {if $outputs.userlocation eq 'nil'} checked{/if}>nil</label>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Frequency</label>
+                        <label class="uni-checkbox">
+                            <input type="checkbox" {if $outputs.frequency_system_id neq ''} checked{/if} name="frequency" id="frequency" class="uni_style" value="1">
+                            <span id="select_all" {if $outputs.frequency_system_id neq ''}style="display:block;"{/if}><a class="select-all" href="javascript:void(0);">Select all</a></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="fr" {if $outputs.frequency_system_id neq ''}style="display:block;"{/if}>
+                <div class="row-fluid">
+                    <div class="span12" id="days">
+                        <label class="span3">&nbsp;</label>
+                        <div class="span2 no-margin-first">
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" {if $outputs.sunday eq '1'} checked{/if} id="day1" class="uni_style" value="sunday">
+                                sunday
+                            </label>
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" {if $outputs.thursday eq '1'} checked{/if} id="day2" class="uni_style" value="thursday">
+                                Thursday
+                            </label>
+                        </div>
+                        <div class="span2">
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" {if $outputs.monday eq '1'} checked{/if} id="day3" class="uni_style" value="monday">
+                                Monday
+                            </label>
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" {if $outputs.friday eq '1'} checked{/if} id="day4" class="uni_style" value="friday">
+                                Friday
+                            </label>
+                        </div>
+                        <div class="span2">
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" {if $outputs.tuesday eq '1'} checked{/if} id="day5" class="uni_style" value="tuesday">
+                                Tuesday
+                            </label>
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" {if $outputs.saturday eq '1'} checked{/if} id="day6" class="uni_style" value="saturday">
+                                Saturday
+                            </label>
+                        </div>
+                        <div class="span2">
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" {if $outputs.wednesday eq '1'} checked{/if} id="day7" class="uni_style" value="wednesday">
+                                Wednesday
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="fr_end_date" {if $outputs.frequency_system_id neq ''}style="display:block;"{/if} >
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Frequency end Date<span class="f_req">*</span></label>
+                        <div  id="frequencyEndDate" class="input-append date" >
+                              <input data-format="dd/mm/YYYY" id="enddate" name="enddate" type="text" value=""   class="input-append date" readonly="readonly" />
+                                <span class="add-on">
+                                  <i class="icon-calendar" data-time-icon="icon-time" data-date-icon="icon-calendar">
+                                  </i>
+                                </span>
+                          </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="cron_email" {if $outputs.frequency_system_id neq ''}style="display:block;"{/if} >
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Email<span class="f_req">*</span></label>
+                        <div class="span8 form-inline no-margin-first">
+                            <input type="text" name="email" id="email" value="{$outputs.emailid}" class="span5"/>
+                            <span class="help-inline">Enter Multiple emails separated by comma.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <input type="hidden" name="id" value="{$outputs.id}" />
+                        <button class="btn btn-gebo" name="update" type="submit">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+</form>
+
+<div id="data">
+    
+</div>
+
+{literal}
+    <script type="text/javascript">
+	$.validator.addMethod("csvextension", function(value, element, param) {
+		param = typeof param === "string" ? param.replace(/,/g, '|') : "xls|csv";
+		return this.optional(element) || value.match(new RegExp(".(" + param + ")$", "i"));
+	}, $.format("Please use only csv/xls file."));
+
+        $(document).ready(function() {
+            $(".uni_style").uniform();
+            gebo_validation.reg();
+            gebo_chosen.init();
+            gebo_datepicker.init();
+            $('#from_date1').datepicker({
+                language : 'pt-BR',
+                format : 'dd/mm/yyyy',
+                pickSeconds : false,
+                pick12HourFormat : false
+            });
+            $('#to_date1').datepicker({
+                language : 'pt-BR',
+                format : 'dd/mm/yyyy',
+                pickSeconds : false,
+                pick12HourFormat : false
+            });
+            $('#frequencyEndDate').datepicker({
+                language: 'pt-BR',
+                format: 'dd/mm/yyyy',
+                pickSeconds: false,
+                pick12HourFormat: false
+            });
+        });
+        $("input[name='word_type']").change(function() {
+            var type=$('input[name=word_type]:checked').val();
+            if(type==1)
+            {
+                $("#text_words").hide();
+                $("#csv").show();
+            }
+            else
+            {
+                $("#text_words").show();
+                $("#csv").hide();
+            }
+        });        
+        gebo_chosen = {
+            init: function(){
+                $(".chzn_a").chosen({
+                    allow_single_deselect: true,
+                    disable_search: true
+                });
+                $(".chzn_b").chosen({
+                    allow_single_deselect: true,
+                    disable_search: true
+                });
+            }
+        };
+        gebo_validation = {
+            reg: function() {
+                reg_validator = $('.form_validation_reg').validate({
+                    onkeyup: false,
+                    errorClass: 'error',
+                    validClass: 'valid',
+                    highlight: function(element) {
+                        $(element).closest('div').addClass("f_error");
+                        $(element).closest('div').css("color", "black");
+                    },
+                    unhighlight: function(element) {
+                        $(element).closest('div').removeClass("f_error");
+                    },
+                    submitHandler: function(element) {
+                        $('#seotool-notify').show();
+                    },
+                    errorPlacement: function(error, element) {
+                        $('#seotool-notify').hide();
+                        $(element).closest('div').append(error);
+                        $('.error').css("font-size", "10px");
+                        $('.error').css("padding-top", "5px");
+                    },
+                    rules: {
+                               kw: {required: function(element) {
+                                  return $('input:radio[name=word_type]:checked').val()==2;
+                                 }
+                              },
+                     keyword_file: {required: function(element) {
+                                  return $('input:radio[name=word_type]:checked').val()==1;
+                                 },
+				 csvextension: "xls|csv"
+                              },
+                              feedname : {
+                                  required : function(element) {
+                                    return ($('input:checkbox[name=frequency]:checked').val()==1);
+                                  }
+                              },
+                              from_date : {
+                                  required : function(element) {
+                                    return (!$('input:checkbox[name=frequency]:checked').val());
+                                  }
+                              },
+                              to_date : {
+                                  required : function(element) {
+                                    return (!$('input:checkbox[name=frequency]:checked').val());
+                                  }
+                              },
+                                    enddate: {required: function(element) {
+                                              return ($('input:checkbox[name=frequency]:checked').val()==1);
+                                             }
+                                          },
+                                      email: {required: function(element) {
+                                              return ($('input:checkbox[name=frequency]:checked').val()==1);
+                                             }
+                                          },
+                                      'day[]': {required: function(element) {
+                                              return ($('input:checkbox[name=frequency]:checked').val()==1);
+                                             }
+                                          }
+                    },
+                    messages: {
+                              kw: "Please enter keyword(s).",
+                    keyword_file: {required: "Please selects csv/xls file.", accept: "Accept only xls or csv."},
+                      feedname : "Please enter feed name.",
+                      from_date : "Please select from date.",
+                        to_date : "Please select end date.",
+                        enddate : "Please select end date.",
+                        email : "Invalid or empty email.",
+                        'day[]' : "Please select frequency."
+                    },
+                    invalidHandler: function(form, validator) {
+                        $.sticky("There are some errors. Please corect them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
+                    }
+                })
+            }
+        };
+
+        gebo_datepicker = {
+            init: function() {
+                $('#dp1').datepicker();
+                $('#dp2').datepicker();
+                
+                $('#dp_start').datepicker({format: "mm/dd/yyyy"}).on('changeDate', function(ev){
+                    var dateText = $(this).data('date');
+                    
+                    var endDateTextBox = $('#dp_end input');
+                    if (endDateTextBox.val() != '') {
+                        var testStartDate = new Date(dateText);
+                        var testEndDate = new Date(endDateTextBox.val());
+                        if (testStartDate > testEndDate) {
+                            endDateTextBox.val(dateText);
+                        }
+                    }
+                    else {
+                        endDateTextBox.val(dateText);
+                    };
+                    $('#dp_end').datepicker('setStartDate', dateText);
+                    $('#dp_start').datepicker('hide');
+                });
+                $('#dp_end').datepicker({format: "mm/dd/yyyy"}).on('changeDate', function(ev){
+                    var dateText = $(this).data('date');
+                    var startDateTextBox = $('#dp_start input');
+                    if (startDateTextBox.val() != '') {
+                        var testStartDate = new Date(startDateTextBox.val());
+                        var testEndDate = new Date(dateText);
+                        if (testStartDate > testEndDate) {
+                            startDateTextBox.val(dateText);
+                        }
+                    }
+                    else {
+                        startDateTextBox.val(dateText);
+                    };
+                    $('#dp_start').datepicker('setEndDate', dateText);
+                    $('#dp_end').datepicker('hide');
+                });
+                $('#dp_modal').datepicker();
+            }
+        };
+            
+        $('input[name=frequency]').change(function(){
+            if($('input[name=frequency]').is(':checked'))
+            {
+                $('#fr').show();
+                $('#fr_end_date').show();
+                $('#select_all').show();
+                $('#clientRow').show();
+                $('#cron_email').show();
+                 $('#fromto').hide();
+            } 
+            else 
+            {
+                 $('#fr').hide();
+                 $('#fr_end_date').hide();
+                 $('#select_all').hide();
+                 $('#clientRow').hide();
+                 $('#cron_email').hide();
+                 $('#fromto').show();
+                 var $b = $('input[name=day\\[\\]]');
+                 $b.attr('checked', false); 
+                 $('a.select-all').text('Select all');
+            }
+        });
+
+        $('a.select-all').bind('click', function() {
+            for (var i = 1; i <= 7; i++) {
+                $('#day'+i).click();
+            }
+            if(this.innerHTML.indexOf('Deselect') != -1) {
+                //var $b = $('input[name=day\\[\\]]');
+                    //$b.attr('checked', false); 
+                $(this).text('Select all');
+            } else {
+                $(this).text('Deselect all');
+                //var $b = $('input[name=day\\[\\]]');
+                //$b.attr('checked', true);                
+                //$(this).closest("span").addClass("uni-checked");
+            }
+        });
+    </script>
+{/literal}

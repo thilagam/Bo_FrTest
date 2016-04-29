@@ -1,0 +1,411 @@
+{literal}
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/countdown.js"></script>
+<style type="text/css">
+    .pagination{ color : red; height:150px; !important;}
+    .floterpan{ position:relative;margin-top:-110px;padding:10px;z-index:750px;}
+</style>
+<script type="text/javascript">
+$(document).ready(function() {
+
+        var loginuserId = {/literal}{$loginuserId}{literal};
+        if (loginuserId == '110823103540627'){
+            var aaoColumns = [
+                null,
+                null,
+                null,
+                {"bSortable": false},
+                null,
+                null,
+                null,
+                null,
+                {"bSortable": false},
+                {"bSortable": false},
+                {"bSortable": false},
+                {"bSortable": false}
+            ];
+        }
+        else
+        {
+            var aaoColumns = [
+                null,
+                null,
+                null,
+                {"bSortable": false},
+                null,
+                null,
+                null,
+                null,
+                {"bSortable": false},
+                {"bSortable": false},
+                {"bSortable": false}
+            ];
+        }
+
+         mytab = $('#requestgrid').dataTable({
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/ftv/loadftvrequests",
+            "aaSorting": [[ 1, "desc" ]],
+            "oTableTools": {
+                "aButtons": [
+                    "copy",
+                    "print",
+                    {
+                        "sExtends": "collection",
+                        "sButtonText": 'Sauvegarder <span class="caret" />',
+                        "aButtons": ["csv", "xls", "pdf"]
+                    }
+                ],
+                "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+            },
+             "aoColumns":aaoColumns,
+            //"fnInitComplete" : myCallback,
+             "fnDrawCallback": function(){
+                myCallback();
+             }
+
+        });
+    });
+    var myCallback = function (){
+            updateTimers();
+    $(".bouserasgn").chosen({ allow_single_deselect: true,search_contains: true});
+    $(".status").chosen({ allow_single_deselect: true,search_contains: true});
+    };
+    function updateTimers(){
+        //console.log($('#requestgrid'))
+    //////////show timer//////////
+    $("[id^=time_]").each(function(i) {
+            var assignedat= $(this).attr('id').split("_"); //alert(assignedat);
+        var requestid = assignedat[1];
+        var assignedtime=assignedat[2];
+        setInterval(function(){
+            var dt = assignedtime.split(" ");
+            var date = dt[0];
+            var dateSplit = date.split("-");
+            var finalDate = dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+                var future = new Date(dateSplit[1]+" "+dateSplit[2]+" "+dateSplit[0]+" "+dt[1]+" GMT+0200"); //alert(future);
+            var now = new Date();
+                //  var difference = Math.floor((now.getTime() - future.getTime()) / 1000);
+                var difference = Math.floor((now - future) / 1000);
+
+            var seconds = fixIntegers(difference % 60);
+            difference = Math.floor(difference / 60);
+
+            var minutes = fixIntegers(difference % 60);
+            difference = Math.floor(difference / 60);
+
+            var hours = fixIntegers(difference % 24);
+                difference = Math.floor(difference / 24);  //alert(hours);
+
+            var days = difference;
+
+            if(seconds != 0)
+            {
+                $("#seconds_"+requestid).show();
+                $("#seconds_"+requestid).text(seconds + "s");
+            }
+            if(minutes != 0)
+            {
+                $("#minutes_"+requestid).show();
+                $("#minutes_"+requestid).text(minutes + "m");
+            }
+            if(hours != 0)
+            {
+                $("#hours_"+requestid).show();
+                $("#hours_"+requestid).text(hours + "h");
+            }
+            if(days != 0)
+            {
+                $("#days_"+requestid).show();
+                $("#days_"+requestid).text(days + "j");
+            }
+        }, 1000);
+    });
+    }
+function fixIntegers(integer)
+{
+    if (integer < 0)
+        integer = 0;
+    if (integer < 10)
+        return "0" + integer;
+    return "" + integer;
+}
+function assignUser(requestId)
+{
+    var userId = $("#bouserasgn_"+requestId).val(); //alert(requestId); alert(userId);
+    smoke.confirm("Do you really want to assign this user to request",function(e){
+        if (e)
+        {
+            var target_page = "/ftv/assignuser?requestId="+requestId+"&userId="+userId;
+            $.post(target_page, function(data){  //alert(data);
+               // smoke.alert("user assigned");
+                window.location.reload();
+            });
+        }
+        else
+        {
+            return false;
+        }
+    });
+}
+function changeStatus(requestId)
+{
+    var status = $("#status_"+requestId).val();
+    smoke.confirm("Do you really want to change the status of request",function(e){
+        if (e)
+        {
+            var target_page = "/ftv/changestatus?requestId="+requestId+"&status="+status;
+            $.post(target_page, function(data){  //alert(data);
+               // smoke.alert("Status Changed");
+                window.location.reload();
+                // refreshModel(artid);
+            });
+        }
+        else
+        {
+            return false;
+        }
+    });
+}
+///deleting the request//
+function deleteRequest(requestId)
+{
+    smoke.confirm("Do you really want to delete request",function(e){
+        if (e)
+        {
+            var target_page = "/ftv/deleterequest?requestId="+requestId;
+            $.post(target_page, function(data){  //alert(data);
+                window.location.reload();
+            });
+        }
+        else
+        {
+            return false;
+        }
+    });
+}
+function pauseTime(type, requestId)
+{
+
+    smoke.confirm("Do you really want to "+type,function(e){
+        if (e)
+        {
+            if(type == 'pause')
+            {
+                var target_page = "/ftv/pausetime?requestId="+requestId+"&type="+type;
+                $.post(target_page, function(data){  //alert(data);
+                    //$("#pausetime"+requestId).hide();
+                    //  $("#resumetime"+requestId).show();
+                   // smoke.alert("The request has been paused");
+                    window.location.reload();
+                });
+            }else
+            {
+                var target_page = "/ftv/pausetime?requestId="+requestId+"&type="+type;
+                $.post(target_page, function(data){  //alert(data);
+                    //$("#pausetime"+requestId).show();
+                    // $("#resumetime"+requestId).hide();
+                   // smoke.alert("The request has been resumed");
+                    window.location.reload();
+                });
+            }
+        }
+        else
+        {
+            return false;
+        }
+    });
+}
+
+</script>
+{/literal}
+<h3 class="heading" >Ftv Requests<a href="#searchblock"  onclick="showSearch();"  class="label label-inverse alignright">Search</a></h3>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="hide" id="searchblock" >
+            <form action={$smarty.server.REQUEST_URI} method="get" id="searchform" name="searchform" >
+                <input type="hidden" id="submenuId" name="submenuId"  value="{$submenuId}"/>
+                <table id="searchtable" class="table tdleftalign">
+                    <tr><td class="span1"><input type="text" placeholder="From" id="dp1" name="startdate" data-date-format="dd-mm-yyyy" value="{$smarty.get.startdate}"/></td>
+                        <td class="span1"><input type="text"  placeholder="To" id="dp2" name="enddate" data-date-format="dd-mm-yyyy" value="{$smarty.get.enddate}"/></td>
+                        <td class="span5">
+                            <select id="contactId" name="contactId"  data-placeholder="Contacts" class="span12">
+                                <option value="0"> </option>
+                                {html_options  options=$contacts_array   selected=$smarty.get.contactId}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="span1">
+                            <select  name=quandId id=quandId data-placeholder="Quand" class="span12">
+                                <option value="0"> </option>
+                                {html_options options=$quands_array selected=$smarty.get.quandId}
+                            </select>
+                        </td>
+                        <td class="span1"> <select name="containsId" id="containsId" data-placeholder="CONTENUS" class="span12">
+                                <option value="0"> </option>
+                                {html_options options=$contains_array selected=$smarty.get.containsId}
+                            </select></td>
+                        <td  class="span5">
+                            <select  name=broadcastId id=broadcastId data-placeholder="EMISSIONS" class="span12">
+                                <option value="0"> </option>
+                                {html_options  options=$broadcast_array  selected=$smarty.get.broadcastId}
+                            </select>
+                        </td>
+
+                        <td class="span1"><button class="btn btn-info pull-center" id="search" name="search" type="submit" value="search" onclick="return validateSearch();" >Search</button></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+      <table id="requestgrid" class="table table-bordered table-striped table_vam">
+          <thead>
+          <tr>
+              <th>Contact Client</th>
+              <th>Date et heure de la demande</th>
+              <th>Object de la demande</th>
+              <th>Ajouter un fichier</th>
+              <th>Quand</th>
+              <th>Contenus &agrave; modifier</th>
+              <th>Emissions &agrave; modifier</th>
+              <th>Demand</th>
+              <th {if $loginuserId != '110823103540627'} class="hide" {/if}>Assignation </th>
+              <th>Etat de la demande</th>
+              <th>Ajouter un commentaire</th>
+              <th>Temps pass&eacute;</th>
+          </tr>
+          </thead>
+
+      </table>
+        <tr><td><span class="label label-alert pull-right floterpan" >Global Time - {$globaltime}</span></td></tr>
+  </div>
+</div>
+
+<div class="modal hide fade" id="addcomment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:5px;width:800px;">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Add Comments</h3>
+    </div>
+    <div class="modal-body" id="add_comment">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<div class="modal hide fade" id="fileupload" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:5px;width:800px;">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Upload file</h3>
+    </div>
+    <div class="modal-body" id="file_upload">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<div class="modal2 hide fade" id="editrequest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Edit Request</h3>
+    </div>
+    <div class="modal-body" id="edit_editorequest">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--///when participate time is extended///-->
+<div class="modal hide fade" id="editassigntime">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Edit assign time</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+{literal}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".uni_style").uniform();
+        $(".bouserasgn").chosen({ allow_single_deselect: true,search_contains: true});
+        $(".status").chosen({ allow_single_deselect: true,search_contains: true});
+        $("#quandId").chosen({ allow_single_deselect: true,search_contains: true});
+        $("#containsId").chosen({ allow_single_deselect: true,search_contains: true});
+        $("#broadcastId").chosen({ allow_single_deselect: true,search_contains: true});
+        $("#contactId").chosen({ allow_single_deselect: true,search_contains: true});
+        // $("#dayrange").chosen({ allow_single_deselect: true,search_contains: true});
+        $('.row').css('height', '100px');
+        $('#requestgrid_info').css('height', '100px');
+        $('.span6').css('height', '100px');
+        $('.chzn-results').css('height', '100px');
+        /*$('#requestgrid').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "iDisplayLength" : 50,
+            "aaSorting": [[ 0, "asc" ]],
+            "aoColumns": [
+                { "sType": "formatted-num" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" }
+            ]
+        });*/
+        //////////show timer//////////
+        $("[id^=time_]").each(function(i) {
+            var assignedat= $(this).attr('id').split("_"); alert(assignedat);
+            var requestid = assignedat[1];
+            var assignedtime=assignedat[2];
+            setInterval(function(){
+                var dt = assignedtime.split(" ");
+                var date = dt[0];
+                var dateSplit = date.split("-");
+                var finalDate = dateSplit[2] + "-" + dateSplit[1] + "-" + dateSplit[0];
+                var future = new Date(dateSplit[1]+" "+dateSplit[2]+" "+dateSplit[0]+" "+dt[1]+" GMT+0200");
+                var now = new Date();
+                //  var difference = Math.floor((now.getTime() - future.getTime()) / 1000);
+                var difference = Math.floor((now - future) / 1000);
+                var seconds = fixIntegers(difference % 60);
+                difference = Math.floor(difference / 60);
+                var minutes = fixIntegers(difference % 60);
+                difference = Math.floor(difference / 60);
+                var hours = fixIntegers(difference % 24);
+                difference = Math.floor(difference / 24);  //alert(hours);
+                var days = difference;
+                if(seconds != 0)
+                {
+                    $("#seconds_"+requestid).show();
+                    $("#seconds_"+requestid).text(seconds + "s");
+                }
+                if(minutes != 0)
+                {
+                    $("#minutes_"+requestid).show();
+                    $("#minutes_"+requestid).text(minutes + "m");
+                }
+                if(hours != 0)
+                {
+                    $("#hours_"+requestid).show();
+                    /* if(hours > 1)
+                     $("#hours_"+requestid).text(hours-1 + "h");
+                     else
+                     $("#hours_"+requestid).text(0 + "h");*/
+                    $("#hours_"+requestid).text(hours + "h");
+                }
+                if(days != 0)
+                {
+                    $("#days_"+requestid).show();
+                    $("#days_"+requestid).text(days + "j");
+                }
+            }, 1000);
+        });
+    });
+   </script>
+{/literal}

@@ -1,0 +1,27 @@
+{literal}
+<script>
+	$(document).ready(function()
+	{
+		$('.bxslider').bxSlider({
+			infiniteLoop: false,
+			hideControlOnEnd: true,
+			pager:false
+		});
+	})
+</script>
+<style>
+
+</style>
+{/literal}
+{* <p>Title:<strong> {$title}</strong></p> *}
+<ul class="bxslider">
+  {foreach from=$qns item=qns key=qn_id name="questions"}  
+	  <li>
+		<p><strong>{$smarty.foreach.questions.iteration}. {$qns|utf8_encode}</strong><span class="pull-right">Question {$smarty.foreach.questions.iteration}/{$smarty.foreach.questions.total}</span></p>
+		{foreach from=$ans.$qn_id key=qn_optn item=question_optn name="question_options"}
+			<p class="offsetleft {if $question_optn.ans_id==$question_optn.r_ans_id} correct {/if}">{$nums[$smarty.foreach.question_options.index]}.&nbsp;{$question_optn.option|utf8_encode}</p>			
+		{/foreach}
+	  </li>
+  {/foreach}
+</ul>
+<input type="hidden" name="quiz_status" id="quiz_status" value="{$quiz_status}" />

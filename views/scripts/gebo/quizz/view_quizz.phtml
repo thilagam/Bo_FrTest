@@ -1,0 +1,34 @@
+{literal}
+<style>
+    tr#qnSep{border-bottom:2px solid #ccc;}
+    h3.qn{display:inline;float:left;padding:10px 0 0;}
+    table td.c{color:green;font-size:15px;font-weight:bold;padding-left:25px;}
+    table td.w{color:red;font-size:15px;font-weight:bold;padding-left:25px;}
+</style>
+    <script>
+
+    </script>
+{/literal}
+
+  <div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">Titre du Quizz : {$quizz_title}</h3>
+		<table align="left" cellpadding="4" cellspacing="4" width="100%">
+		    {assign var='qn_count' value='1'}
+		    {foreach from=$qns key=id item=val}
+		         {assign var='an_count' value='1'} 
+                 <tr><td><h3 class="qn">{$qn_count}. {$val}</h3</td></tr>
+                {foreach from=$ans.$id key=id1 item=val1}
+                    <tr><td class="{if $val1.ans_id eq $val1.r_ans_id}c{else}w{/if}">{$nums[$an_count]}. {$val1.option}</td></tr>
+                    {assign var='an_count' value=$an_count+1} 
+                {/foreach}
+                <tr id="qnSep"><td></td></tr>
+                {assign var='qn_count' value=$qn_count+1}
+            {/foreach}
+			
+		</table>
+		<div align="right" style="padding-right:150px;padding-top:50px">
+		    
+		</div>
+	</div>
+</div>

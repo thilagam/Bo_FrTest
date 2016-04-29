@@ -1,0 +1,82 @@
+{literal}
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#content_type").chosen({ disable_search: true });
+});
+</script>
+
+<style>
+	input {text-transform:none !important;}
+	textarea {text-transform:none !important;}
+</style>
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">Edit Quotes History</h3>
+		<form action="/ao/quoteshistory?submenuId=ML2-SL29" method="post">
+			<table cellpadding="4" cellspacing="4" width="80%" align="center">
+				<tr>
+					<td>Type</td>
+					<td>
+						<input type="radio" name="type" id="type" value="writing" {if $history[0].type=="writing"}checked{/if}/>R&eacute;daction&nbsp;
+						<input type="radio" name="type" id="type" value="translation" {if $history[0].type=="translation"}checked{/if}/>Traduction
+					</td>
+				</tr>
+				<tr>	
+					<td>Language</td>
+					<td><textarea name="language" id="language">{$history[0].language}</textarea></td>
+				</tr>
+				<tr>
+					<td>Content type</td>
+					<td>
+						<select name="content_type" id="content_type">
+							<option value="seo" {if $history[0].content_type=="seo"}selected{/if}>Article seo</option>
+							<option value="desc" {if $history[0].content_type=="desc"}selected{/if}>Descriptifs produit</option>
+							<option value="blog" {if $history[0].content_type=="blog"}selected{/if}>Article de blog</option>
+							<option value="news" {if $history[0].content_type=="news"}selected{/if}>News</option>
+							<option value="guide"{if $history[0].content_type=="guide"}selected{/if}>Guide</option>
+							<option value="other" {if $history[0].content_type=="other"}selected{/if}>Autre</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Volume</td>
+					<td>
+						<input type="radio" name="volume" id="volume" value="liberte" {if $history[0].volume=="liberte"}checked{/if}/>Liberte&nbsp;
+						<input type="radio" name="volume" id="volume" value="premium" {if $history[0].volume=="premium"}checked{/if}/>Premium
+					</td>
+				</tr>
+				<tr>
+					<td>Variation per quote</td>
+					<td><input type="text" name="variation" id="variation" value="{$history[0].variation}"/></td>
+				</tr>
+				<tr>
+					<td>Prod Cost</td>
+					<td><input type="text" name="prod_cost" id="prod_cost" value="{$history[0].prod_cost}"/></td>
+				</tr>
+				<tr>
+					<td>Reference</td>
+					<td><input type="text" name="reference" id="reference" value="{$history[0].reference}"/></td>
+				</tr>
+				<tr>
+					<td>Margin</td>
+					<td><input type="text" name="margin" id="margin" value="{$history[0].margin}"/></td>
+				</tr>
+				<tr>
+					<td>Language var</td>
+					<td><input type="text" name="language_var" id="language_var" value="{$history[0].language_var}"/></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<input type="submit" value="SUBMIT" name="historysubmit" class="btn btn-info">
+						<input type="button" value="CANCEL" onClick="window.location='/ao/quoteshistory?submenuId=ML2-SL29'" class="btn btn-info"/>
+						<input type="hidden" value="{$history[0].id}" name="historyid" id="historyid"/>
+					</td>
+				</tr>
+			</table>	
+		</form>
+	</div>
+</div>	
+

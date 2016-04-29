@@ -1,0 +1,168 @@
+{literal}
+<script language="javascript">
+$(document).ready(function() {
+	$(".lessdetails").hide();
+		$(document).on('click','.moredetails',function(){
+			$(this).hide();
+			$(".lessdetails").show();
+			$(".slide").slideDown();
+		});
+		
+		$(document).on('click','.lessdetails',function(){
+			$(this).hide();
+			$(".moredetails").show();
+			$(".slide").slideUp();
+		});
+});
+</script>
+{/literal}
+<div class="mission-details">
+	<div class="prod-mission-product">Mission Overview</div>
+	
+	<table class="table mission-table">
+		<tr>
+			<th>TYPE</th>
+			<th style="width:30%">LANGUE</th>
+			<th style="width:30%">PRODUIT</th>
+			<th style="width:20%">VOLUME</th>
+			<th style="width:20%">NB MOTS</th>
+		</tr>
+		<tr class="misson-details-text">
+			<td>{$quoteMission.product_name}</td>
+			<td>
+				
+				{if $quoteMission.product eq 'translation'}															
+					{$quoteMission.language_source_name} > 	{$quoteMission.language_dest_name} 
+				{else}
+					{$quoteMission.language_source_name}
+				{/if}								
+			</td>
+			<td>
+					{if $quoteMission.product_type_name} 
+						{$quoteMission.product_type_name}
+					{else}
+						{$quoteMission.product_name}
+					{/if}
+				
+			</td>
+			<td>{$quoteMission.volume}</td>										
+			<td>{$quoteMission.nb_words}</td>
+		</tr>
+	</table>
+	<div class="row-fluid">
+		{assign var="_tempo_value" value=$quoteMission.tempo}
+		{assign var="_delivery_volume_option" value=$quoteMission.delivery_volume_option}
+		{assign var="_tempo_length_option" value=$quoteMission.tempo_length_option}
+		<div class="mission-details">
+			<div class="mission-prod-product">
+				<span>Tempo Details</span>
+			</div>
+			<div class="row-fluid">								
+				<label class="span3 moveright">Staffing set up</label>
+				<div class="span3">
+					<div class="span4">
+					<h4>
+						{if $quoteMission.staff_time}
+							{$quoteMission.staff_time} {if $quoteMission.staff_time_option eq 'days'} Jours {else} Heures {/if}
+						{else}
+							/
+						{/if}
+					</h4>
+					</div>
+				</div>	
+			</div>	
+			{if $quoteMission.oneshot}
+				<div class="row-fluid">								
+					<label class="span3 moveright">One shot</label>
+					<div class="span3">
+						<h4>
+						{if $quoteMission.oneshot eq 'yes'}
+							OUI
+						{else if $quoteMission.oneshot eq 'no'}
+							NON
+						{/if}
+						</h4>
+					</div>
+				</div>
+			{/if}
+			<div class="row-fluid">								
+				<label class="span3 moveright">Dur&eacute;e la mission</label>
+				<div class="span6">
+					<div class="span3">
+						<h4>{$quoteMission.mission_length} {if $quoteMission.mission_length_option eq 'days'} Jours {else} Heures {/if}</h4>
+					</div>		
+					{if $quoteMission.duration_dont_know eq 'yes'} 															
+					<div class="span8" style="margin-left: 0px">
+						* Duration not specified by sales																
+					</div>
+					{/if}
+				</div>
+				
+			</div>
+			{if $quoteMission.oneshot eq 'no'}
+				<div class="row-fluid">								
+					<label class="span3 moveright">Volume</label>														
+					<div class="span9" id="tempo_details_{$quoteMission.identifier}" {if $quoteMission.oneshot eq 'yes'} style="display:none" {/if}>
+						<div class="span4">		
+							<h4>
+								{$quoteMission.volume_max} {$tempo_array.$_tempo_value} {$volume_option_array.$_delivery_volume_option} {$quoteMission.tempo_length} {$tempo_duration_array.$_tempo_length_option}
+							</h4>	
+						</div>														
+					</div>
+				</div>
+			{/if}	
+		</div>
+	</div>	
+</div>
+<div class="w-box {if $details} slide {/if}">
+	<div class="w-box-header"> Brief and Comments from Quote</div>
+	<div class="w-box-content cnt_a">
+		<div class="row-fluid">
+			<div class="media mission-comment">
+				<a class="pull-left imgframe">
+					<img class="media-object" width="60px" src="{$fo_path}profiles/bo/{$quoteMission.quote_by}/logo.jpg">
+				</a>
+				<div class="media-body">
+					{if $quoteMission.sales_owner}
+						<a>{$quoteMission.sales_owner}</a> {$quoteMission.sales_comment_time}<br>
+					{/if}
+					{$quoteMission.sales_comment}
+				</div>
+			</div>
+			<!--Quote mission comments-->
+			{if $quoteMission.quoteMissionComments}
+				<div class="media mission-comment">
+					<a class="pull-left imgframe">
+						<img class="media-object" width="60px" src="{$fo_path}profiles/bo/{$quoteMission.missionCreated_by}/logo.jpg">
+					</a>
+					<div class="media-body">
+						<a>{$quoteMission.mission_created_name}</a> {$quoteMission.qm_comment_time}<br>
+						{$quoteMission.quoteMissionComments}
+					</div>
+				</div>	
+			{/if}								
+			
+			<!--Contract mission comments-->
+			{if $quoteMission.contractMissionComments}
+				<div class="media mission-comment">
+					<a class="pull-left imgframe">
+						<img class="media-object" width="60px" src="{$fo_path}profiles/bo/{$quoteMission.updated_by}/logo.jpg">
+					</a>
+					<div class="media-body">
+						<a>{$quoteMission.cm_assigned_name}</a> {$quoteMission.cm_comment_time}<br>
+						{$quoteMission.contractMissionComments}
+					</div>
+				</div>	
+			{/if}
+		
+	</div>
+	{if $quotefiles}
+		<div class="row-fluid">
+			<p><strong>Related Files</strong></p>
+			<table class="onsuccessrepquote table">
+			{$quotefiles}
+			</table>
+		</div>
+	{/if}	
+	</div>	
+</div>

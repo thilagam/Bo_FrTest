@@ -1,0 +1,700 @@
+{literal}
+<!-- custom scrollbar plugin -->
+
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<link href="/BO/theme/gebo/css/jquery.datetimepicker.css" rel="stylesheet">
+<script src="/BO/theme/gebo/js/jquery.datetimepicker.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	var editor=false;
+	$(document).ready(function() {	
+		
+		$("#splitturnoverform").validationEngine('attach');	
+		
+		$('.filter-list').hide();
+		 
+		var client_id={/literal}{if $smarty.get.clientid}{$smarty.get.clientid} {else}{literal}""{/literal}{/if}{literal};
+		
+		$("#yearlist").chosen({allow_single_deselect:false,search_contains: true});
+	  	  
+		$("#all_clients").chosen({allow_single_deselect:true,search_contains: true });
+			  
+		$("#all_sales").chosen({allow_single_deselect:true,search_contains: true});
+		
+		$("#product_type").chosen({allow_single_deselect:true,search_contains: true,disable_search: true});
+		
+		$("#product_name").chosen({allow_single_deselect:true,search_contains: true,disable_search: true});
+			  
+			  
+		 //search form submit
+		$('#search-filter').live('click', function(evt, params) {
+				$("#search_form").submit();
+		});
+	
+	  if(client_id)
+	  {
+		 	 //validation
+			
+			  // Edit if the td value Empty
+			  $("[id^=splitturnover_]").live('keypress', function(event)
+			  {
+				  
+				  	$("#splitturnoverform").validationEngine('validate');	
+					if(event.which==13) 
+					{
+						
+						 var floatRegex = /^[0-9.,]+$/;
+						 var monthid = $(this).attr('id');		
+						 var split_id = monthid.split('_');
+						 var spitval=$("#splitturnover_"+split_id[1]+'_'+split_id[2]+'_'+split_id[3]).val();
+						 
+							if (spitval.match(floatRegex)!=null) 
+							 {     
+								 $("#splitturnover_"+split_id[1]+'_'+split_id[2]+'_'+split_id[3]).closest('td').html('<img style="text-align:center;" src="/BO/theme/gebo/img/ajax_loader.gif">');
+								missionsplitmonth(split_id[1],split_id[2],split_id[3],spitval,client_id);    
+								editor=false;                   
+							 }
+							else
+							{ 
+								editor=true;
+								
+							}
+							
+					}
+							
+			  });
+		
+		
+			$("#back-button").show();
+			$('.filter-list').show();
+			/*$('#client_details_view').dataTable({
+						"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+						"iDisplayLength" : 50,
+						 "aaSorting": [],
+						"bSortCellsTop": true,
+						"aoColumns": [
+							{  "sType": "string" ,"bSortable": false},
+							{ "sType": "string","bSortable": false},
+							{ "sType": "natural","bSortable": false },
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false},
+							{ "sType": "natural" ,"bSortable": false}
+						]
+						   
+						});*/
+					
+										
+		
+				//chart Integration
+			
+				var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+		
+						var lineChartData = {
+							
+							labels : ["JAN","FEB","MAR","APR","MAY","JUN","JUIL","AUG","SEP","OCT","NOV", "DEC"],
+							datasets : [
+							{
+								label: "turnover",
+								fillColor : "rgba(240,240,240,0)",
+								strokeColor : "rgba(240,240,240,1)",
+								pointColor : "rgba(240,240,240,1)",
+								pointStrokeColor : "#fff",
+								pointHighlightFill : "#fff",
+								pointHighlightStroke : "rgba(240,240,240,1)",
+								data : [parseFloat($("#month_01").val().replace(',','.')),parseFloat($("#month_02").val().replace(',','.')),parseFloat($("#month_03").val().replace(',','.')),
+								parseFloat($("#month_04").val().replace(',','.')),parseFloat($("#month_05").val().replace(',','.')),parseFloat($("#month_06").val().replace(',','.')),parseFloat($("#month_07").val().replace(',','.')),
+								parseFloat($("#month_08").val().replace(',','.')),parseFloat($("#month_09").val().replace(',','.')),parseFloat($("#month_10").val().replace(',','.')),
+								parseFloat($("#month_11").val().replace(',','.')),parseFloat($("#month_12").val().replace(',','.'))]
+							}
+							]
+
+						};
+						options = {
+						responsive: true,
+						maintainAspectRatio: true
+						};
+
+					
+						window.onload = function()
+						{
+							var ctx = document.getElementById("canvas").getContext("2d");
+							ctx.width = window.innerWidth-6;
+							
+								window.myLine = new Chart(ctx).Line(lineChartData, options);
+							
+						}	
+					
+				
+			
+		}
+		else
+		{
+		
+				$("#client_details_view").hide();
+				$("#back-button").hide();
+				$("#date-search").show();
+				$('#contract-invoice').show();
+				$('.filter-list').show();
+				$('#contract-invoice').dataTable({
+							"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+							"sPaginationType": "bootstrap",
+							"iDisplayLength" : 50,
+							 "aaSorting": [[ 0, "asc" ]],
+							"aoColumns": [
+								{ "sType": "string"  },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" },
+								{ "sType": "natural" }
+							]
+							});	
+					
+		}
+	
+	var user_type='{/literal}{$user_type}{literal}';
+	
+	if(user_type=='superadmin' || user_type=='facturation'){
+		
+		
+		
+		$('#client_details_view td.mission-val').on('click',function(e)
+		{
+			$(".formError").css("display","none");
+			 					
+			if(editor==false)
+			{
+				var tdwidth= $(this).width();
+				
+						$("#client_details_view td.mission-val").find('input').css("display","none");
+						$("#client_details_view td.mission-val").find('p').show();	
+										
+						if($(this).find('input').val()!="")
+						{
+						$(this).find('p').hide();
+						$(this).find('input').css("display","block");
+						}
+						else
+						{
+						$(this).find('p').hide();
+						$(this).find('input').css("display","block");
+						}
+						$(this).find(".formError").css("display","block");
+						if(tdwidth)
+						{
+						$(this).css("width",tdwidth);
+						$(this).find('input').css("width",tdwidth-20);
+						
+						}
+						
+			}
+			
+		});
+		
+		$(document).mouseup(function (e) {
+			
+		if ($(e.target).has("#client_details_view").length > 0) {
+			$('#client_details_view td.mission-val').find(".formError").css("display","none");
+			$("#client_details_view td.mission-val").find('input').css("display","none");
+			$("#client_details_view td.mission-val").find('p').show();	
+			}
+			});
+		$("#client_details_view td").on('click',function (e) {
+			if(!$(this).hasClass('mission-val'))
+			{
+			$('#client_details_view td.mission-val').find(".formError").css("display","none");
+			$("#client_details_view td.mission-val").find('input').css("display","none");
+			$("#client_details_view td.mission-val").find('p').show();	
+			}
+		
+			});
+			
+	}
+	
+	
+	
+		var dateNow = new Date();
+	$('#start_date').datetimepicker({
+		   	format:'Y-m-d',
+			lang:'fr',
+			defaultDate: dateNow,
+			timepicker:false		
+		});
+	$('#end_date').datetimepicker({
+		   	format:'Y-m-d',
+			lang:'fr',
+			defaultDate: dateNow,
+			timepicker:false		
+		});
+		
+		
+		$("#cost_display").on('change',function(){
+			if($("#cost_display").is(':checked')){
+			$('.cost_detail').css("display","block");
+			}else{
+			$('.cost_detail').css("display","none");
+				}
+			
+			});
+
+		
+});
+
+
+	function missionsplitmonth(mission_id,month_year,contract_id,spitval,client_id){
+			var val=spitval.replace(',','.');
+		if(val!=0){
+			
+			$.post('/followup/update-followp-turnover/',{
+					'mission_id':mission_id,
+					'month_year':month_year,
+					'contract_id': contract_id,
+					'turnover': val,
+					'clientid':client_id
+					},function(data){
+						if(data)
+						{
+							
+							$("#client_contract_details").html(data);
+							
+						}	 
+					})
+			
+			}
+		
+		}	
+		
+		$(document).on("click",".sales_details",function(){
+
+			$("#salesProfileView").modal('show');
+			$("#salesProfileView").removeClass( "hide" ).addClass("in");
+			
+	});
+		$(document).on("click",".monthActionList a",function(){
+
+			$("#contractmonthly").modal('show');
+			$("#contractmonthly").removeClass( "hide" ).addClass("in");
+			
+	});
+		$(document).on("click",".close",function(){
+
+			$(".modal-backdrop").modal('hide');
+					
+	});
+		$(document).on("click",".modal-backdrop",function(){
+
+			$(".modal-backdrop").modal('hide');
+					
+	});
+		
+	$(document).on('change',"#cost_display",function(){
+		
+		
+		 if($("#cost_display").is(":checked") &&  $("#margin_display").prop("checked")==false){
+			 $('th.missionhead').attr("colspan","2");
+			 $('.cost_detail').show();
+			
+			}
+			else if(($("#margin_display").is(":checked")) && ($("#cost_display").is(":checked")))
+			{
+				$('th.missionhead').attr("colspan","3");
+				$('.margin_detail').show();
+				$('.cost_detail').show();
+				
+					}
+			else{
+				if($("#margin_display").is(":checked")){
+						$('.cost_detail').hide();
+						$('th.missionhead').attr("colspan","2");
+					}else{
+					$('.cost_detail').hide();
+					$('.margin_detail').hide();
+					$('th.missionhead').attr("colspan","1");
+						}
+			
+			}
+		
+		});
+		
+	$(document).on('change',"#margin_display",function(){
+		
+	 if($("#margin_display").is(":checked") && $("#cost_display").prop("checked")==false)
+		 {
+				$('th.missionhead').attr("colspan","2");
+				 $('.margin_detail').show();
+				
+				
+		}
+		else if($("#margin_display").is(":checked") && $("#cost_display").is(":checked"))
+			{
+				
+				$('.cost_detail').show();
+				$('.margin_detail').show();
+				$('th.missionhead').attr("colspan","3");
+				
+				
+				
+		}
+		else{
+			if($("#cost_display").is(":checked")){
+					$('.margin_detail').hide();
+					$('th.missionhead').attr("colspan","2");
+				}
+				else{
+					$('.cost_detail').hide();
+					$('.margin_detail').hide();
+					$('th.missionhead').attr("colspan","1");
+					}
+			}
+		
+		});
+		
+		
+				
+</script>
+<style>
+	.wrapper .table thead th {
+    background-color: inherit !important;
+	}
+	.image {
+     height: 50px;
+    text-align: center;
+    width: 50px;
+	}
+  #search-filter,input#start_date,input#end_date,#back-button{
+	  margin-bottom: 23px;
+  }
+  
+  input.turnover{
+	  margin-bottom: 23px;
+  }
+  
+.fullscreen {
+    left: 0% !important;
+    margin-left: 10% !important;
+     width: 80%;
+}
+img.image{
+	margin:5px;
+	}
+.modal-backdrop.fade.in{
+	opacity: 0.8 !important;
+	}
+ p.entered_val{
+	color:#FF0000 !important;
+	}
+.wrapper table {
+   width: 100% !important;
+  }
+ 
+td.mission-val{ 
+white-space: nowrap;
+text-align:center;
+}
+.wrapper table thead th:last-child {
+    background-color: #1fbba6 !important;
+}
+.wrapper table tr td{
+white-space: nowrap;
+	}
+	
+</style>
+
+
+{/literal}
+<section id="WrapSection">
+
+	<h1>Annual turnover {$invoce}{if $client_details.client_name}: {$client_details.client_name}{/if}</h1>
+		
+		<div style="margin-top:20px">
+			<form name="search_form" id="search_form" method="get" action="">
+				<select data-placeholder="Years" id="yearlist" class='yearselect' name="year" >
+									<option></option>
+										{foreach from=$year_list item=year name=year_loop}
+										{if $year eq $default_year}
+										   <option value="{$year}" selected="selected" >{$year}</option>
+										   {else}
+										   <option value="{$year}" >{$year}</option>
+										   {/if}
+										{/foreach}
+									</select>
+				{if $client_details|count>0}
+							
+								<input type="hidden" value="{$smarty.get.clientid}" name="clientid">	
+									
+									<select data-placeholder="All Sales" id="all_sales" class='saleselect' name="sales_id" >
+										<option></option>
+											{foreach from=$salesusers item=user name=users}
+											{if $user.identifier eq $smarty.get.sales_id}
+										<option value="{$user.identifier}" selected="selected">{if $user.first_name || $user.last_name}{$user.first_name}&nbsp;{$user.last_name}{else}{$user.email}{/if}</option>
+												{else}
+											<option value="{$user.identifier}" >{if $user.first_name || $user.last_name}{$user.first_name}&nbsp;{$user.last_name}{else}{$user.email}{/if}</option>
+											{/if}
+									
+										{/foreach}
+									</select>
+									
+									<select data-placeholder="All Mission Type" id="product_type" class='producttypeselect' name="p_type" >
+										<option></option>
+									{foreach from=$product_type item=type_item name=product_loop key=product_type_key}
+											{if $product_type_key eq $smarty.get.p_type}
+											<option value="{$product_type_key}" selected="selected">{$type_item}</option>
+											{else}
+											<option value="{$product_type_key}" >{$type_item}</option>
+											{/if}
+									{/foreach}
+									</select>
+									
+									<select data-placeholder="All Mission Product" id="product_name" class='productselect' name="product">
+										<option></option>
+											<option value="redaction" {if $smarty.get.product eq 'redaction'} selected="selected"{else}{/if}>R&#233;daction</option>
+											<option value="translation" {if $smarty.get.product eq 'translation'} selected="selected"{else}{/if}>Traduction</option>
+											<option value="seo_audit" {if $smarty.get.product eq 'seo_audit'} selected="selected"{else}{/if}>SEO Audit</option>
+											<option value="smo_audit" {if $smarty.get.product eq 'smo_audit'} selected="selected"{else}{/if}>SMO Audit</option>
+									</select>
+					{else}
+							
+							<select data-placeholder="All Clients" id="all_clients" class='clientselect' name="client_id" >
+								<option></option>
+										{foreach from=$clients item=user name=users}
+										{if $user.identifier eq $smarty.get.client_id}
+										<option value="{$user.identifier}" selected="selected">{$user.company_name}</option>
+										{else}
+										<option value="{$user.identifier}" >{$user.company_name}</option>
+									{/if}
+								{/foreach}
+							</select>
+							<span id="date-search" style="display:none">
+							<span id="start_text"><input type="text" id="start_date" placeholder="Start Date" name="start_date" value="{$smarty.get.start_date}" class="validate[required]"></span>
+							<span id="end_text"><input type="text" id="end_date" name="end_date" placeholder="End Date"  value="{$smarty.get.end_date}" class="validate[required]"></span>
+							</span>
+					{/if}
+					<a class="btn btn-gebo pull-center" id="search-filter" >Search</a>
+					<a class="btn btn-info pull-right" href="/turnover/split-month-turnover?submenuId=ML13-SL3" style="display:none;"  id="back-button" >Back</a>
+					</form>
+				</div>
+	<div class="row-fluid wrapper">	
+			<table class="table table-hover table-striped" id="contract-invoice" style="display:none;">
+						<thead>
+							<tr class="displayDatas">
+							    <th style="width:250px">Client Name</th>
+							    {foreach from=$month_array_val item=monthhead name=monthloop }
+							    <th>{$monthhead}</th>
+							   {/foreach}
+							   <th class="total-row">TOTAL <span class="yearTotal">{$default_year}</span></th>
+							  
+							</tr>
+						</thead>
+						
+					{if $quotecontractlist|@count>0}
+					<tbody>	
+					{assign var=toconcount value=1}
+				{foreach from=$quotecontractlist item=contract_item name=contracts_loop}
+				{assign var=conclient_id value=$contract_item.client_id}
+							
+							<tr>
+								
+								<td><a href="/followup/split-month-turnover?submenuId=ML13-SL3&clientid={$contract_item.client_id}&year={$default_year}">{$contract_item.client_name}</a></td>
+														
+								{foreach from=$contract_item.monthlist name=split_loop item=split_month_item}
+								{assign var=month_year value=$default_year|cat:'-'|cat:$split_month_item}
+										<td>{if $contract_item.splitmonth.$conclient_id.$month_year eq 0}{$contract_item.splitmonth.$conclient_id.$month_year|zero_cut_t:2}{else}{$contract_item.splitmonth.$conclient_id.$month_year|zero_cut_t:2}{/if}</td>
+									{/foreach}							
+							   <td>{if $contract_item.splitmonth.$conclient_id.turnover eq 0}{$contract_item.splitmonth.$conclient_id.turnover|zero_cut_t:2}{else}{$contract_item.splitmonth.$conclient_id.turnover|zero_cut_t:2} &{$contract_item.splitmonth.$conclient_id.sales_suggested_currency};{/if}</td>
+								{assign var=toconcount value=$toconcount+1}
+								</tr>
+							
+				{/foreach}
+				<tbody>
+				{/if}
+				
+					</table>
+				</div>
+				
+				{if $client_details|@count>0}
+				
+				<div id="clientFocus" class="row-fluid" >
+					
+						<div class="clientFocusHeader">					
+							<h3 id="myModalLabel" ><strong>{$client_details.client_name}-{$default_year}</strong></h3>
+							</div>
+						<canvas id="canvas" width="1291px" height="309px;"  class='img-responsive' ></canvas>
+												
+				
+				<div id="client_contract_details">
+					
+					<form method="POST" name="splitturnoverform" id="splitturnoverform" enctype="multipart/form-data" class="form-horizontal">
+				<table class="focusTable" id="client_details_view">
+					<thead>
+						<tr>
+						    <th >SALES</th>
+							<th ><span class="pull-left">CLIENT/CONTRACTS</span></th>
+							 {foreach from=$month_array_val item=monthhead name=monthloop key=mkey}
+							<th class="months">{$monthhead}<span class="monthViewCta">
+								<i class="fa fa-plus" id="monthActions"></i>
+								<div class="monthActionList">
+									<a role="button" href="/turnover/contract-monthly-details?client_id={$client_details.client_id}&month={$default_year}-{$mkey}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly"  data-hint="{$salesownerdetail.$quotecontract_id.sales_owner}"><i class="fa fa-eye"></i></a>						
+								</div>
+							</span>	</th>
+							{/foreach}
+							
+						    <th class="months">TOTAL </th>
+						</tr>
+					</thead>
+					<tbody>
+					<tr class="contractRow">
+					{assign var=client_identifier value=$client_details.client_id}	
+					<td></td>
+					<td><span class="contractName pull-left">{$client_details.client_name}</span></td>
+						{foreach from=$monthlist item=month_item name=month_loop}
+						{assign var=month_year value=$default_year|cat:'-'|cat:$month_item}
+						<td class="months"><div class="dataFocus">
+								<span class="singleData">{if $contract_details.totalclient.$client_identifier.$month_year eq 0}
+								{$contract_details.totalclient.$client_identifier.$month_year|zero_cut_t:2}
+								<input type="hidden" id="month_{$month_item}"  value="0">
+								{else}
+								{$contract_details.totalclient.$client_identifier.$month_year|zero_cut_t:2}
+								<input type="hidden" id="month_{$month_item}"  value="{$contract_details.totalclient.$client_identifier.$month_year}">
+							{/if}</span>	
+							</div>
+						</td>
+						
+					{/foreach}
+					 <td class="months"><div class="dataFocus">
+								<span class="singleData">{if $contract_details.totalclient.$client_identifier.turnover eq 0}
+								{$contract_details.totalclient.$client_identifier.turnover|zero_cut_t:2}
+								{else}
+							    {$contract_details.totalclient.$client_identifier.turnover|zero_cut_t:2} &{$contract_details.totalclient.$client_identifier.sales_suggested_currency};
+						{/if}</span>	
+							</div>
+					</td>	
+					</tr>	
+					
+					
+					{foreach from=$contract_details item=contract_item name=contract_loop}
+						{assign var=quotecontract_id value=$contract_item.quotecontractid}
+					{if $quotecontract_id neq ""}
+					<tr class="contractRow active">					
+							<td>
+							<a class="hint--right sales_details" href="/turnover/sales-details?sales_id={$salesownerdetail.$quotecontract_id.sales_creator_id}" role="button" data-toggle="modal"  data-target="#salesProfileView"  data-hint="{$salesownerdetail.$quotecontract_id.sales_owner}">
+								<img src="{$fo_path}/profiles/bo/{$salesownerdetail.$quotecontract_id.sales_creator_id}/logo.jpg?123" class="image rd_30" alt="{$salesownerdetail.$quotecontract_id.sales_owner}"></a>
+							</td>
+							<td><span class="contractName pull-left">{if $contract_details.contract_Contrat_details.$quotecontract_id|count eq 0}<a href="/contractmission/contract-edit?contract_id={$quotecontract_id}&submenuId=ML13-SL3">{$contract_item.contractname}</a>{else}<b>{$contract_item.contractname}</b>{/if}</span>
+							<i class="fa fa-caret-up pull-right"></i></td>
+							
+								{foreach from=$monthlist item=month_item name=month_loop}
+								{assign var=month_year value=$default_year|cat:'-'|cat:$month_item}
+								<td><div class="dataFocus">
+								<span class="singleData">{if $contract_details.contract_Contrat_details.$quotecontract_id.$month_year eq 0}
+								{$contract_details.contract_Contrat_details.$quotecontract_id.$month_year|zero_cut_t:2}{else}
+								{$contract_details.contract_Contrat_details.$quotecontract_id.$month_year|zero_cut_t:2}
+								{/if}</span>	
+							</div>
+								</td>
+								
+							{/foreach}
+							 <td ><div class="dataFocus">
+								<span class="singleData">
+								 {if $contract_details.contract_Contrat_details.$quotecontract_id.turnover eq 0}
+									   {$contract_details.contract_Contrat_details.$quotecontract_id.turnover|zero_cut_t:2}
+									   {else}
+										{$contract_details.contract_Contrat_details.$quotecontract_id.turnover|zero_cut_t:2} &{$contract_details.contract_Contrat_details.$quotecontract_id.sales_suggested_currency};
+								{/if}</span>	
+							</div>
+							</td>		
+							</tr>
+								{assign var=missioncount value=0}
+								{assign var=mission_array value=""}
+								{assign var=mission_array value=$contract_details.contract_Contrat_details.$quotecontract_id}
+								{foreach from=$mission_array item=mission_item name=mission_loop}
+								{assign var=mission_id value=$mission_item}
+									{if $mission_id neq "" && $mission_array.$mission_id.turnover }
+							<tr class="missionRow active">
+									<td>
+										-
+									</td>
+								<td ><span class="contractName pull-left">{$mission_array.$mission_id.mission_type}</span></td>
+													{foreach from=$monthlist item=mission_month_item name=mission_month_item_loop}
+															{assign var=mission_month_year value=$default_year|cat:'-'|cat:$mission_month_item}
+															{if $mission_array.$mission_id.$mission_month_year eq 0}
+																<td class="mission-val"><div class="dataFocus">
+														<span class="singleData"><p >{$mission_array.$mission_id.$mission_month_year|zero_cut_t:2}</p>
+														<input type="text" class="validate[required, custom[onlyCommaSp]]" id="splitturnover_{$mission_id}_{$mission_month_year}_{$quotecontract_id}" style="display:none;" /></td>
+															</span></div>{else}
+																<td class="mission-val" ><div class="dataFocus">
+															<span class="singleData">
+																	{assign var=followup value=$mission_month_year|cat:'-from_followup'}
+																{if $mission_array.$mission_id.$followup eq 1}
+																<p class="entered_val">{$mission_array.$mission_id.$mission_month_year|zero_cut_t:2}</p>
+																<input type="text"  class="validate[required, custom[onlyCommaSp]]" id="splitturnover_{$mission_id}_{$mission_month_year}_{$quotecontract_id}" value="{$mission_array.$mission_id.$mission_month_year+0}" style="display:none;"/>
+																{else}
+																{$mission_array.$mission_id.$mission_month_year|zero_cut_t:2}
+																{/if}
+																</span></div></td>
+																{/if}
+															
+													{/foreach}
+												<td><div class="dataFocus">
+															<span class="singleData">
+													 {if $mission_array.$mission_id.turnover eq 0}
+														   {$mission_array.$mission_id.turnover|zero_cut_t:2}
+														   {else}
+															{$mission_array.$mission_id.turnover|zero_cut_t:2} &{$contract_details.contract_Contrat_details.$quotecontract_id.sales_suggested_currency};
+													{/if}</span></div>
+												</td>	
+													
+											
+										</tr>
+										{/if}
+										{assign var=missioncount value=$missioncount+1}
+							{/foreach}
+							
+			{/if}
+		{/foreach}
+				    </tbody>
+				</table>
+				
+				<!-- MOdel Popup for sales details -->
+				
+				</form>
+				</div>
+				</div>
+				<div class="row-fluid">
+					<div class="modal hide fade" id="salesProfileView"  aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1">
+							
+						<div class="modal-body">
+							
+						</div>
+					</div>
+				</div>
+				 <div class="row-fluid">
+					<div class="modal hide fade fullscreen" id="contractmonthly"  aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1">
+						 
+						<div class="modal-body">
+							
+						</div>
+					</div>
+					</div>
+				{/if}
+			<a class="btn btn-primary" href="/followup/split-month-report?download=pdf{if $smarty.get.client_id}&client_id={$smarty.get.client_id}{/if}{if $default_year}&year={$default_year}{/if}{if $smarty.get.sales_id}&sales_id={$smarty.get.sales_id}{/if}{if $smarty.get.clientid}&client_id={$smarty.get.clientid}{/if}{if $smarty.get.product}&product={$smarty.get.product}{/if}{if $smarty.get.p_type}&p_type={$smarty.get.p_type}{/if}">Export PDF</a>
+			<a class="btn btn-primary" href="/followup/split-month-report{if $default_year}?year={$default_year}{/if}{if $smarty.get.client_id}&client_id={$smarty.get.client_id}{/if}{if $smarty.get.sales_id}&sales_id={$smarty.get.sales_id}{/if}{if $smarty.get.clientid}&client_id={$smarty.get.clientid}{/if}{if $smarty.get.product}&product={$smarty.get.product}{/if}{if $smarty.get.p_type}&p_type={$smarty.get.p_type}{/if}">Export XLS</a>
+	</section>
+

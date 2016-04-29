@@ -1,0 +1,318 @@
+<form class=""  action="#" method="POST" id="quizvalidate" enctype="multipart/form-data">
+
+		<section>
+
+			<div class="control-group">
+
+				<div class="row-fluid">
+
+				<div class="span3">
+
+					<label>Category</label>
+
+						{html_options name=quiz_cat id=quiz_cat options=$Contrib_cats|utf8_encode selected=$quiz_cat class="validate[required]" onChange="updatequizlist(0);}
+
+				</div>
+
+				<div class="span3">
+
+					<label>Quiz Name</label>
+
+					<div class="quizlist">
+
+						{$quiz_list|utf8_encode}
+
+					</div>
+
+				</div>
+
+				<div class="span3">
+
+					<label>Minimum good answer</label>
+
+					<input type="text" class="validate[required] span8" id="min_good_answer" value="{$mini_good_answer}" name="min_good_answer">	
+
+				</div>
+
+				<div class="span3" style="margin-left:0px">
+
+					<label>Quiz Duration</label>
+
+					<input type="text" class="validate[required] span8" id="quiz_duration" value="{$quiz_duration}" name="quiz_duration">	Mins	
+
+				</div>
+
+				</div>
+
+			</div>
+
+			
+
+			<div class="w-box">
+
+				<div class="w-box-header">Quiz Questions</div>
+
+				<div class="w-box-content cnt_a">
+
+					<div class="row-fluid loadtemplate">
+
+						{if $quiz_id}
+
+						{* <p>Title:<strong> {$title}</strong></p> *}
+
+						<ul class="bxslider">
+
+						  {foreach from=$qns item=qns key=qn_id name="questions"}  
+
+							  <li>
+
+								<p><strong>{$smarty.foreach.questions.iteration}. {$qns|utf8_encode}</strong><span class="pull-right">Question {$smarty.foreach.questions.iteration}/{$smarty.foreach.questions.total}</span></p>
+
+								{foreach from=$ans.$qn_id key=qn_optn item=question_optn name="question_options"}
+
+									<p class="offsetleft {if $question_optn.ans_id==$question_optn.r_ans_id} correct {/if}">{$nums[$smarty.foreach.question_options.index]}.&nbsp;{$question_optn.option|utf8_encode}</p>			
+
+								{/foreach}
+
+							  </li>
+
+						  {/foreach}
+
+						</ul>
+						<input type="hidden" name="quiz_status" id="quiz_status" value="{$quiz_status}" />
+						{else}
+
+						<p style="text-align:center;font-weight:bold">Quiz Not Found</p>
+
+					{/if}
+
+					</div>
+
+				</div>
+
+			</div>
+
+			
+
+			<div class="control-group topset2">
+
+				<div class="controls pull-center">
+
+					<button class="btn" data-dismiss="modal" onclick="return removeQuiz()">Annuler</button>
+
+					<button class="btn btn-primary" type="submit">Valider</button>
+
+					{if $unlink}
+
+					<button class="btn btn-primary" id="unlinkquiz" type="button">Unlink Quiz</button>
+
+					{/if}
+
+				</div>
+
+			</div>
+
+		</section>
+
+</form>	
+
+{literal}
+
+<script>
+
+	$("#quiz_cat").chosen({ allow_single_deselect:false,disable_search: true });
+
+	$("#quiz").chosen({ allow_single_deselect:false,disable_search: true });
+
+	$('.bxslider').bxSlider({
+
+			infiniteLoop: false,
+
+			hideControlOnEnd: true,
+
+			pager:false
+
+		});
+
+	
+
+$(document).ready(function(){	
+
+		var cat = "", quiz = "", min_good = "", quiz_dur = "";
+
+		// Quiz Validation
+
+		$('#min_good_answer,#quiz_duration,.quiz_chznformError').attr('data-prompt-position','topLeft');
+
+		$('#min_good_answer,#quiz_duration,.quiz_chznformError').data('promptPosition','topLeft');
+
+		$("#quizvalidate").validationEngine({prettySelect : true,useSuffix: "_chzn",onValidationComplete: function(form, status){
+
+			if(status==true)
+
+			{
+
+				quiz = $('#quiz').val();
+
+				cat = $("#quiz_cat").val();
+
+				quiz_dur = $("#quiz_duration").val();
+
+				min_good = $("#min_good_answer").val();
+
+				var formdata = new FormData();
+
+				var other_data = $('#quizvalidate').serializeArray();
+
+				$.each(other_data,function(key,input){
+
+					formdata.append(input.name,input.value);
+
+				});
+
+				
+
+				$.ajax({
+
+					url:'/recruitment/set-quiz-data/',
+
+					data: formdata,
+
+					async:false,
+
+					type:'POST',
+
+					contentType: false,
+
+					processData: false,
+
+					success:function(data)
+					{
+
+						
+
+					}
+
+				});
+
+				
+				$(".createquiz").text('Edit');
+				if($("#quiz_status").val())
+					status = '<span class="label label-success">active</span>';
+				else
+					status = '<span class="label label-important">not active</span>';
+				var editquiz = '<h4>'+$('#quiz_chzn .chzn-single').text()+' &nbsp;&nbsp;&nbsp;'+status+'</h4><p>Duration: '+$("#quiz_duration").val()+' Mins</p>';
+			
+				$("#create_quiz").modal('hide');
+				$("#editquiz").html(editquiz);
+				$(".createquiz").removeClass('btn-info');
+			}
+
+		}});
+		
+	});
+
+
+
+	function removeQuiz()
+
+	{
+	
+		$("#hidden_quiz").val(0);
+		
+	}
+
+	
+
+	function loadquiz()
+
+	{
+
+		var quiz_id = $("#quiz").val();
+
+		$(".loadtemplate").html('<p style="text-align:center;font-weight:bold">Please wait loading quiz ... </p>');
+
+		if(quiz_id)
+
+		{
+
+			$.post('/recruitment/loadquiz/',{"quiz_id":quiz_id},function(html){
+
+			$(".loadtemplate").html(html);
+
+			});
+
+		}
+
+		else
+
+		{
+
+			$(".loadtemplate").html('<p style="text-align:center;font-weight:bold">Quiz Not Found</p>');
+
+		}
+
+	}
+
+	
+
+	function updatequizlist(parameter)
+
+	{
+
+		var qcat=$("#quiz_cat").val();
+
+		if(qcat)
+
+		{
+
+			$.post('/recruitment/getquizlist/',{"category":qcat},function(html){
+
+				$(".quizlist").html(html);
+
+				$("#quiz").chosen({ disable_search: true });
+
+				$(".loadtemplate").html('<p style="text-align:center;font-weight:bold">Quiz Not Found</p>');
+
+			});
+
+		}
+
+	}
+
+		
+
+	/* To Unlink Quiz */
+
+	$(document).on('click',"#unlinkquiz",function(){
+
+		$.post('/recruitment/unlink-quiz',{"rid":''},function(result){			
+
+			$("#create_quiz").modal('hide');
+
+			$("#quizvalidate")[0].reset();
+
+			$("#quiz").val('');
+
+			$("#quiz").trigger("liszt:updated");
+
+			//$("#quiz_chzn .chzn-single span").text('Select');
+
+			$(".loadtemplate").html('<p style="text-align:center;font-weight:bold">Quiz Not Found</p>');
+
+			$("#unlinkquiz, #editquiz").css('display','none');
+
+			$(".createquiz").html('cr&eacute;er ou rechercher un quiz');
+			$(".createquiz").addClass('btn-info');
+
+			$.sticky("Unlinked Quiz Successfully", {autoclose : 10000, position: "top-center", type: 'st-success' });
+
+		});
+
+	});		
+
+	
+
+</script>
+
+{/literal}

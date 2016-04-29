@@ -1,0 +1,74 @@
+{literal}
+<script language="javascript">
+$(document).ready(function() {
+    $('#plagstuckartsgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" }
+        ]
+    });
+});
+
+</script>
+{/literal}
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="heading">List of stuck up aritcle versions in plagiarism</h3>
+        <table id="plagstuckartsgrid" class="table table-bordered table-striped table_vam">
+            <thead>
+            <tr>
+                <th>Titre Article</th>
+                <th>Version</th>
+                <th>article path</th>
+                <th>Contributeur</th>
+                <th>DATE</th>
+                <th>download</th>
+                <th>PHP</th>
+                <th>Ruby</th>
+                <th>Comments</th>
+            </tr>
+            </thead>
+            <tbody>
+            {if $stuckartversions neq 'NO'}
+            {foreach from=$stuckartversions key=stuckarts_key item=stuckarts_item name=stuckarts_loop}
+            <tr>
+                <td><a href="/proofread/stage-articles?submenuId=ML3-SL11&aoId={$stuckarts_item.aoid}" >{$stuckarts_item.title|escape:'htmlall'|wordwrap:20:"\n":true}</a></td>
+                <td>{$stuckarts_item.version}</td>
+                <td>{$stuckarts_item.article_path}</td>
+                <td>{if $stuckarts_item.first_name neq ''}{$stuckarts_item.first_name}{else}{$stuckarts_item.email}{/if}</td>
+                <td>{$stuckarts_item.article_sent_at|date_format:"%d/%m/%Y"}</td>
+                <td><a class="label label-warning" data-hint="download article"  href="/proofread/downloadfile?submenuId=ML3-SL11&path={$stuckarts_item.id}" ><i class="splashy-download"></i></a></td>
+                <td>{$stuckarts_item.php}</td>
+                <td>{$stuckarts_item.ruby}</td>
+                <td><a class="btn hint--bottom hint--info" data-hint="Commenter"  data-target="#comments" data-toggle="modal"  name="send_comment"  href="/proofread/plagstuckcomments?userId={$loginuserId}&artprocid={$stuckarts_item.id}" ><i class="splashy-comments_reply"></i></a></td>
+
+            </tr>
+            {/foreach}
+            {/if}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--///BO user send comments to for the participant ///-->
+<div class="modal4 hide fade" id="comments">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('comments');">&times;</button>
+        <h3>Ajouter Un Commentaires</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+
+    </div>
+</div>
+

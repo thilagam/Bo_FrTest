@@ -1,0 +1,711 @@
+{literal}
+<link href="/BO/theme/gebo/css/mission-followup.css" rel="stylesheet" />
+<script src="/BO/theme/gebo/js/jquery.MultiFileQuote.js" type="text/javascript" charset="utf-8"></script>
+<style>
+	.time1
+	{
+		padding-bottom:0px;
+		padding-top:0px;
+	}
+	
+	td .icon-time
+	{
+		top:1px;
+	}
+
+	.alert
+	{
+		padding:5px 10px;
+	}
+	
+	.pointer
+	{
+		cursor: pointer;
+		display:none;
+	}
+	
+	.mouseover
+	{
+		background-color:#f5f5f5;
+		padding:15px;
+	}
+	
+	.rightcontent
+	{
+		background-color:#114dbd;
+		padding:0 6px;
+		border-radius: 5px;
+		color:#fff;
+	}
+	
+	.deletetask
+	{
+		cursor:pointer;
+	}
+	
+	.otherdetails .image
+	{
+		margin: 0 5px ;
+	}
+	
+	h3 .content
+	{
+		font-weight: normal;
+		font-size: 12px;
+	}
+</style>
+
+<link rel="stylesheet" href="/BO/theme/gebo/lib/iCheck/skins/square/blue.css" type="text/css"/>
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- custom scrollbar plugin -->
+<link rel="stylesheet" href="/BO/theme/gebo/lib/scrollbar/jquery.mCustomScrollbar.css">
+<script src="/BO/theme/gebo/lib/scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/countdown.js"></script>
+<script>
+var cmid={/literal}"{$viewarray.cmid}"{literal};
+var cid={/literal}"{$viewarray.cid}"{literal};
+var qmid={/literal}"{$viewarray.qmid}"{literal};
+var assigned_to={/literal}"{$viewarray.assigned}"{literal};
+var to_date={/literal}"{$viewarray.to_date}"{literal};
+var title={/literal}"{$viewarray.title}"{literal};
+var quote_id={/literal}"{$quote_details.identifier}"{literal};
+var cur_date={/literal}{$smarty.now}{literal};
+$(document).ready(function(){
+	$("#deliverysort").chosen({ allow_single_deselect:false,disable_search: true });
+	////////////to show the timer in selection profile page///////
+    var js_date=(new Date().getTime())/ 1000;
+    var diff_date=Math.floor(js_date-cur_date);
+    //////////show timer//////////
+	$("[id^=time_]").each(function(i) {
+        var article=$(this).attr('id').split("_");
+        var ts=article[1];
+        var ts2 =article[2];
+        $("#time_"+article[1]).countdown({
+            timestamp   : ts,
+            diff_date  : diff_date,
+            callback    : function(days, hours, minutes, seconds){
+                var message = "";
+                message += days + "j"  +" ";
+                message += hours + "h" +" ";
+                message += minutes + "mns"+ " ";
+				if(minutes<1)	
+			    message += seconds + "s";
+                $("#time_"+article[2]).html(message);
+                if(days==0 && hours==0 && minutes==0 && seconds==0)
+                {
+                    //window.location.reload();
+                }
+            }
+        });
+    });
+	
+	$(".deliveryhover,.recruitmenthover").mouseover(function(){
+		$(this).addClass('mouseover');
+		$(this).find('.pointer').css('display','block');
+	})
+	
+	$(".deliveryhover,.recruitmenthover").mouseleave(function(){
+		$(this).removeClass('mouseover');
+		$(this).find('.pointer').css('display','none');
+	})
+	
+	$(".scroll1").mCustomScrollbar({
+									scrollButtons:{enable:true,scrollType:"stepless"},
+									keyboard:{scrollType:"stepless"},
+									mouseWheel:{scrollAmount:100},
+									theme:"rounded-dark",
+									autoHideScrollbar:true
+									});
+								
+	$("#asideheight").css("max-height",$(".leftcontent").height()+'px');
+	$("#asideheight").mCustomScrollbar({
+									scrollButtons:{enable:true,scrollType:"stepless"},
+									keyboard:{scrollType:"stepless"},
+									mouseWheel:{scrollAmount:100},
+									theme:"rounded-dark",
+									autoHideScrollbar:true
+									});
+	
+	
+	
+	$('#surveyList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":10,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" }
+            ]
+        });
+		
+	$('#deliveryList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 1, "desc" ]],
+			"iDisplayLength":10,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" }
+            ]
+        });	
+	
+	$('#recruitmentList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 1, "desc" ]],
+			"iDisplayLength":10,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" }
+            ]
+        });	
+	
+	$("#validate").click(function(){
+		$(this).text('Validated');
+		$.post('/followup/validate-mission/',{"cmid":cmid,'to_date':to_date,'title':title,'type':'prod','mission_id':qmid,'contract_id':cid,'quote_id':quote_id,'assigned_to':assigned_to},function(data){location.reload();}); 
+	})
+	
+	$(".tooltips").popover({ trigger: "manual" ,placement: 'top', html: true, animation:false})
+	.on("mouseenter", function () {
+		var _this = this;
+		$(this).popover("show");
+		$(".popover").on("mouseleave", function () {
+			$(_this).popover('hide');
+		});
+	}).on("mouseleave", function () {
+		var _this = this;
+		setTimeout(function () {
+			if (!$(".popover:hover").length) {
+				$(_this).popover("hide");
+			}
+		}, 300);
+	});
+	
+});
+
+function loadhistory(val){
+
+		$("#historycontent").html("<span>Please wait loading ...</span>");
+		$.post('/followup/loadhistory',{'did':val,'cmid':cmid,'cid':cid,'qmid':qmid},function(data){
+			$("#historycontent").html(data);
+		})
+}
+
+</script>
+{/literal}
+
+<div class="row-fluid">    
+	<div class="span9 leftcontent shownavright">
+		<div class="followup-header">
+			<h2 class="heading">{$viewarray.title} <span class="headerdim"> &middot; {$viewarray.from_date} - {$viewarray.to_date}</span>		
+			</h2>
+			{if $viewarray.tempo_text}
+				{$viewarray.tempo_text}
+			{else}
+				{if $user_type =="superadmin"}
+				<a href="/followup/add-tempo?qmid={$viewarray.qmid}&cmid={$viewarray.cmid}&cid={$viewarray.cid}" class="btn btn-primary bottomset" data-toggle="modal" role="button" data-target="#add_tempo">Add Tempo</a> 
+				{/if}
+			{/if}
+			<div class="row-fluid">    
+				<div class="header-info">
+					<div class="span3" style="padding-top:20px">
+						<div class="span9" style="padding:0">
+						<div class="sepH_b progress progress-success">
+							<div class="bar" style="width: {$viewarray.percentage}%;background-image:linear-gradient({$viewarray.colorcode}, {$viewarray.colorcode})"></div> 
+						</div>
+						</div>
+						<div><strong>&nbsp;&nbsp;{$viewarray.percentage}%</strong></div>
+					</div>
+					<div class="span2" style="padding-left:0">
+						<span class="upper">Delivered</span>
+						<span class="bottom">{$viewarray.published_articles} / {$viewarray.volume}</span>
+					</div>
+					<div class="span2">
+						<span class="upper">Type</span>
+						<span class="bottom">{$viewarray.mission_type}</span>
+					</div>
+					<div class="span3">
+						<span class="upper">Production Cost</span>
+						<span class="bottom">{$viewarray.published_price|zero_cut_t:2} &{$viewarray.currency}; / {$viewarray.total_price|zero_cut_t:2}  &{$viewarray.currency};</span>
+					</div>
+					<div class="span2">
+						<span class="upper">Turnover</span>
+						<span class="bottom">{if $viewarray.turnover eq 'Gratuit'}Gratuit{else}{$viewarray.cm_turnover|zero_cut_t:2} &{$viewarray.currency};{/if}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="otherdetails">
+			<div class="span4">
+				<h4>Client</h4>
+					<div class="image">
+						<img alt="{$viewarray.cname}" src="{$fo_path}profiles/clients/logos/{$viewarray.client_id}/{$viewarray.client_id}_global.png?12345" title="{$viewarray.cname}">
+					</div>
+					<p>
+					<a href="/quote/create-client?uaction=view&client_id={$viewarray.client_id}&submenuId=ML13-SL1" target="_blank">{$viewarray.cname}</a>
+					</p>
+					{if $viewarray.client_code}
+						<p>Client code: {$viewarray.client_code}</p>
+					{/if}
+					{if $viewarray.cano}
+					<p>CA info: {$viewarray.cano|zero_cut_t:2}</p>
+					{/if}
+					<!--p>Category: {$viewarray.category_name}</p--> 
+				</div>	
+		
+		
+			<div class="span5">
+				<h4>Related Contract / Quote</h4>
+
+				{if $viewarray.contract_files}
+					<a href='/followup/download-po?cid={$viewarray.cid}'>{$viewarray.contract_name}</a>
+				{else}
+					{$viewarray.contract_name}
+				{/if}
+					<p>
+						{$viewarray.contract_date}
+					</p>
+					<p style="margin-top:10px">
+					{if $quote_details.is_new_quote eq '1'}
+					<a href="/quote-new/sales-final-validation?qaction=briefing&quote_id={$quote_details.identifier}" target="_followup">{$quote_details.title}</a>
+					{else}
+					<a href="/quote/quote-followup?quote_id={$quote_details.identifier}&submenuId=ML13-SL2" target="_followup">{$quote_details.title}</a>
+					{/if}
+					</p>
+
+					<p>{$viewarray.quote_signed_at}</p>
+			</div>	
+			<div class="span3">
+				<h4>Team</h4><br>
+					<a href="mailto:{$viewarray.mailto}" class="hint--left" data-hint="{$viewarray.sales_owner}"><img src="{$fo_path}/profiles/bo/{$viewarray.sales_id}/logo.jpg" class="image rd_30" ></a>
+					{if ($user_type=='superadmin' || $user_type=='prodmanager') && $viewarray.cm_status!="closed" && $viewarray.assigned}
+					<a class="tooltips hint--right" data-content="&lt;a href=&quot;/contractmission/assign-mission?submenuId=ML13-SL3&type=prod&contract_id={$viewarray.cid}&cmid=&index={$smarty.get.index} &quot; target=&quot;_blank &quot; &gt; Modify &lt;/a&gt;" data-hint="{$viewarray.prod_name}">
+					<img src="{$fo_path}/profiles/bo/{$viewarray.assigned}/logo.jpg" class="image rd_30" alt="{$viewarray.prod_name}">
+					</a>
+					{elseif $viewarray.assigned}
+					<a class="hint--right" data-hint="{$viewarray.prod_name}">
+					<img src="{$fo_path}/profiles/bo/{$viewarray.assigned}/logo.jpg" class="image rd_30" alt="{$viewarray.prod_name}">
+					</a>
+					{/if}
+			</div>	
+		</div>
+		<div style="clear:both"></div>
+		<div class="row-fluid">
+			<div class="act-task">
+			<ul class="nav nav-tabs" style="background-color:#fff">
+				<li class="{if $smarty.get.active=='delivery' || $smarty.get.active==''}active{/if}"><a href="#deliveries" data-toggle="tab">My deliveries</a></li>
+				{if $viewarray.survey=='yes'}
+				<li class="{if $smarty.get.active=='survey'}active{/if}"><a href="#survey" data-toggle="tab">My survey</a></li>
+				{/if}
+				{if $viewarray.recruitment=='yes'}
+				<li class="{if $smarty.get.active=='recruitment'}active{/if}"><a href="#recruitment" data-toggle="tab">My recruitment</a></li>
+				{/if}
+				<li class=""><a href="#activity1" data-toggle="tab">Activities</a></li>
+			</ul>	
+		
+			<div class="tab-content">
+				<div class="tab-pane" id="activity1">
+					<div class="row-fluid">
+					{if $deliveries|@count > 0 || $recruitments|@count > 0}
+								<select name="" id="deliverysort" onchange="loadhistory(this.value)">
+									<option value="">Most Recent</option>
+									{foreach from=$deliveries item=delivery}
+										<option value="{$delivery.id}">{$delivery.title}</option>	
+									{/foreach}
+									{foreach from=$recruitments item=delivery}
+										<option value="{$delivery.id}">{$delivery.title}</option>	
+									{/foreach}
+										<option value='delay'>Delay</option>
+								</select>
+								{/if}
+					<div class="media mission-comment " id="" style="min-height:100px">
+						
+						<div class="row-fluid" id="historycontent" style="margin-top:0">
+						<div class="scroll1">
+							{if $logs|@count > 0}
+							{foreach from=$logs item=history}
+							<div class="media act-comment">
+								<a class="pull-left imgframe">
+									{if $history.type=='superclient'}
+										<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/superclients/logos/{$history.user_id}/{$history.user_id}.png">
+									{elseif $history.type=='contributor'}
+										<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/contrib/pictures/{$history.user_id}/{$history.user_id}_h.jpg">
+									{elseif $history.type=='client'}
+										<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/clients/logos/{$history.user_id}/{$history.user_id}.png">
+									{else}
+										<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$history.user_id}/logo.jpg">
+									{/if}
+								</a>
+								<div class="media-body">
+									{if $history.first_name}
+										<a>{$history.first_name} {$history.last_name}</a> {$history.action_at|time_ago}{$history.time}<br>
+									{/if}
+									{$history.action_sentence}
+									<div>{$history.comments|stripslashes|strip_tags|nl2br}</div>
+								</div>
+							</div>
+							{/foreach} 
+							{* {foreach from=$logs item=log}
+								<div class="media act-comment">
+									<a class="pull-left imgframe">
+									<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$log.user_id}/logo.jpg">
+									</a>
+									<div class="media-body">
+										{if $log.first_name}
+											<a>{$log.first_name} {$log.last_name}</a> {$log.action_at|time_ago}<span class="pull-right rightcontent">{$log.time}</span><br>
+										{/if}
+										{$log.action_sentence}
+										<div>{$log.comments|stripslashes|strip_tags|nl2br}</div>
+									</div>
+								</div>
+							{/foreach} *}
+							{/if}
+						</div>
+						</div>
+					</div>
+					</div>
+				</div>
+				<div class="tab-pane {if $smarty.get.active=='delivery' || $smarty.get.active==''}active{/if}" id="deliveries">
+					<div class="row-fluid">
+						<div class="media mission-comment">
+						{if $deliveries|@count > 0}
+							<table class="table table-bordered table-striped table_vam" id="deliverylist">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Date of Launch</th>
+									<th>End of Proofreading</th>
+									<th>Delivery date<!--Delivery date validated with client--></th>
+									<th>Final date of approval of articles</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$deliveries item=delivery}
+									<tr>
+										<td>
+										<a href='/followup/delivery?ao_id={$delivery.id}&client_id={$viewarray.client_id}&submenuId=ML13-SL4'>
+											{$delivery.title}
+										</a>
+										</td>
+										<td>{$delivery.publishdate}</td>
+										<td>
+											{if $delivery.correction eq 'internal'}
+												Internal
+											{elseif $delivery.proofread_end}
+												{$delivery.proofread_end|date_format:"%d %b %Y"}
+											{else}
+												-
+											{/if}
+										</td>
+										<td>{$delivery.max_delivered_updated_at}</td>
+										<td>{$delivery.max_date}</td>
+									</tr>
+								{/foreach}
+							</tbody>
+							</table>
+						{else}
+							<div class="pull-center">No Delivery Found</div>
+						{/if}
+						</div>
+					</div>
+				</div>
+				{if $viewarray.survey=='yes'}
+				<div class="tab-pane {if $smarty.get.active=='survey'}active{/if}" id="survey">
+					<div class="row-fluid">
+						<div class="media mission-comment">
+							<table class="table table-bordered table-striped table_vam" id="surveyList" >
+						<thead>
+							<tr>
+							   <th>Poll Name</th>
+							   <th>Date of Launch</th>
+							   <th>End Date</th>
+							   <th>Count Down</th>                                                   
+							   <th>Closed Date</th>                         
+							</tr>
+						</thead>
+						<tbody>
+							{if  $surveys|@count>0 }
+							{foreach from=$surveys item="survey" name="surveys"}
+							<tr>
+								<td><a href="/survey/followup?survey_id={$survey.pollid}&cmid={$viewarray.cmid}&submenuId=ML13-SL4">{$survey.ptitle}</a></td>
+								<td>{$survey.startdate|date_format:"%d %b %Y"}</td>
+								<td>{$survey.enddate|date_format:"%d %b %Y"}</td>
+								<td>
+									<span id="time_{$survey.expires}_{$survey.pollid}" class="alert alert-danger">
+										<i class="icon-time"></i>
+										<span id="time_{$survey.pollid}"></span>
+									</span>
+								</td>
+								<td>{$survey.closed_at|date_format:"%d %b %Y"}</td>
+							</tr>
+							{/foreach}
+							{/if}
+						</tbody>
+					</table>
+						</div>
+					</div>
+				</div>
+				{/if}
+				
+				{if $viewarray.recruitment=='yes'}
+				<div class="tab-pane {if $smarty.get.active=='recruitment'}active{/if}" id="recruitment">
+					<div class="row-fluid">
+						<div class="media mission-comment">
+						{if $recruitments|@count > 0}
+							<table class="table table-bordered table-striped table_vam" id="recruitmentList" >
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Date of Launch</th>
+									<th>End of Proofreading</th>
+									<th>Delivery date validated with client</th>
+									<th>Closed</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$recruitments item=recruitment}
+									<tr>
+										<td>
+										<a href='/recruitment/follow-up?recruitment_id={$recruitment.id}&cmid={$smarty.get.cmid}&submenuId=ML13-SL4'>
+										{$recruitment.title}
+										</a>
+										</td>
+										<td>{$recruitment.publishdate}</td>
+										<td>
+											{if $recruitment.correction eq 'internal'}
+												Internal
+											{elseif $recruitment.proofread_end}
+												{$recruitment.proofread_end|date_format:"%d %b %Y"}
+											{else}
+												-
+											{/if}
+										</td>
+										<td>{$viewarray.to_date}</td>
+										<td>{$recruitment.recruitment_closed_at|date_format:"%d %b %Y"}</td>
+									</tr>
+								{/foreach}
+								
+							</tbody>
+							</table>
+							{else}
+							<div class="pull-center">No Recruitments Found</div>
+						{/if}
+						</div>
+					</div>
+				</div>
+				{/if}
+				
+			</div>
+			</div>
+		</div>
+		
+		<h3> Brief and Comments from Quote</h3>
+			
+				<div class="row-fluid">
+				{if $quote_details.sales_comment}
+					<div class="media mission-comment">
+						<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$quote_details.created_by}/logo.jpg">
+						</a>
+						<div class="media-body">
+							{if $quote_details.created_name}
+								<a>{$quote_details.created_name}</a> {$quote_details.created_time}<br>
+							{/if}
+							{$quote_details.sales_comment|stripslashes|strip_tags|nl2br}
+						</div>
+					</div>
+				{/if}
+				{if $prodcomments.comments}
+					<div class="media mission-comment">
+						<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$prodcomments.created_by}/logo.jpg">
+						</a>
+						<div class="media-body">
+							{if $prodcomments.created_name}
+								<a>{$prodcomments.created_name}</a> {$prodcomments.created_time}<br>
+							{/if}
+							{$prodcomments.comments|stripslashes|strip_tags|nl2br}
+						</div>
+					</div>
+				{/if}
+				{if $contractcomments.comment}
+					<div class="media mission-comment">
+						<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$contractcomments.created_by}/logo.jpg">
+						</a>
+						<div class="media-body">
+							{if $contractcomments.created_name}
+								<a>{$contractcomments.created_name}</a> {$contractcomments.created_time}<br>
+							{/if}
+							{$contractcomments.comment|stripslashes|strip_tags|nl2br}
+						</div>
+					</div>
+				{/if}
+				{if $contractmissioncomments.comment}
+					<div class="media mission-comment">
+						<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$contractmissioncomments.created_by}/logo.jpg">
+						</a>
+						<div class="media-body">
+							{if $contractmissioncomments.created_name}
+								<a>{$contractmissioncomments.created_name}</a> {$contractmissioncomments.created_time}<br>
+							{/if}
+							{$contractmissioncomments.comment|stripslashes|strip_tags|nl2br}
+						</div>
+					</div>
+				{/if}
+				</div>
+				<form action="/followup/prodfilesupload" name="" method="post" enctype="multipart/form-data">
+				{if $files}
+					<div class="row-fluid">
+						<h4>Related Files</h4>
+						<div class="pull-right" style="margin-bottom:5px">
+							<a href="/quote/download-document?type=cm_prod&index=-1&quote_id={$quote_details.identifier}&mission_id={$smarty.get.cmid}" class="btn btn-small">Download Zip</a>
+						</div>
+						<table class="onsuccessrep table">
+						{$files}
+						</table>
+					</div>
+				{/if}
+				<input type="file" name="seo_documents[]" accept="doc|xls|zip|docx|xlsx" class="multi" id=""/>
+				<div class="row-fluid topset2" style="text-align:center">
+					<button type="submit" name="save" onclick="removeDisabled()" class="btn btn-primary">Submit</button>
+				</div>
+				<input type="hidden" name="cmid" value="{$smarty.get.cmid}" />
+				</form>
+	</div>
+	
+	<div class="span3">
+		<aside>
+			<div class="followup-aside" id="asideheight">
+					{if $viewarray.cm_status == 'validated'}
+					<button class="btn btn-primary disabled btn-block" id=""><i class="icon-ok icon-white"></i> Validated</button>
+					{elseif $viewarray.published_articles>=$viewarray.volume}
+					<button class="btn btn-primary btn-block" id="validate">Validate</button>
+					{/if}
+					
+					<h3 class="heading">
+					{if $deliveries|@count>0 || $recruitments|@count>0 || $surveys|@count > 0} 
+						{math equation="x + y + z" x=$deliveries|@count y=$recruitments|@count z=$surveys|@count }
+					{/if} TASK(S)
+					</h3>
+					{* checking if any one recruitment or survey is closed or not if mission contains recruitment or survey, is contract mission closed or deleted, or freezed delivery to restrict creation of delivery  *}
+					{if ($viewarray.create_delivery !=0 && $viewarray.cm_status!='closed' && !$viewarray.freeze_delivery && $viewarray.cm_status!='deleted')}
+						<a class="btn btn-warning btn-block" href="/quotedelivery/delivery-prod1?mission_id={$viewarray.cmid}&submenuId=ML13-SL4&daction=new" target="_blank" title="New Delivery">
+							<i class="icon-plus icon-white"></i> New Delivery
+						</a>
+					{elseif $viewarray.freeze_delivery}
+						<h3>Mission is freezed till {$viewarray.freeze_end_date|date_format:"%d %b %Y"}</h3>
+					{/if}
+					{if $deliveries|@count > 0}
+					{foreach from=$deliveries item=delivery}
+						<div class="deliveryhover tasks">
+						<span style="margin-left:5px; border-left: 1px solid #dadada;padding-left: 5px" class="pointer pull-right">
+							<a class="" href="/quotedelivery/delivery-prod1?mission_id={$viewarray.cmid}&ao_id={$delivery.id}&daction=duplicate&submenuId=ML13-SL4" target="_blank">
+								<i class="splashy-document_copy"></i></a></span>
+						<span class="pointer pull-right"><a href="/deliveryongoing/edit-ao?ao_id={$delivery.id}&client_id={$delivery.user_id}&view=prod&cmid={$smarty.get.cmid}" data-toggle="modal" role="button" data-target="#edit_ao_modal" id="edit_ao" data-toggle="tooltip" title="Edit delivery">
+								<i class="icon-pencil"></i></a></span>
+							
+							<h4><a href="/followup/delivery?ao_id={$delivery.id}&client_id={$viewarray.client_id}&index={$smarty.get.index}&submenuId=ML13-SL4">{$delivery.title}</a></h4>
+							<p class="headerdim">{$delivery.publishdate} - {$delivery.enddate}</p>
+							<a href='/followup/delivery?ao_id={$delivery.id}&client_id={$viewarray.client_id}&submenuId=ML13-SL4' class="btn btn-block btn-default">View Taskboard</button></a>
+						</div>
+					{/foreach}
+					{/if}	
+					
+					{if $viewarray.recruitment=='yes'}
+					<p class="pull-center topset2"><i class="splashy-group_grey"></i></p>
+					<p class="pull-center">
+					<a href="/recruitment/recruitment-prod1?contract_missionid={$viewarray.cmid}&submenuId=ML13-SL4" title="New Recruitment">
+						<button class="btn btn-mini"><i class="splashy-add_small"></i> New Recruitment</button>
+					</a>
+					</p>
+					{if $recruitments|@count > 0}
+					{foreach from=$recruitments item=delivery}
+					<div class="tasks">
+						<p>{$delivery.title}</p>
+						<p class="headerdim">{$delivery.publishdate} - {$delivery.enddate}</p>
+						<a href="/recruitment/follow-up?recruitment_id={$delivery.id}&cmid={$viewarray.cmid}&submenuId=ML13-SL4" class="btn btn-block btn-default">View Taskboard</a></p>
+					</div>
+					{/foreach}
+					{/if}
+					{/if}
+					
+					{if $viewarray.survey=='yes'}
+					<p class="pull-center topset2"><i class="splashy-group_grey"></i></p>
+					<p class="pull-center">
+					<a href='/survey/create-survey?contract_missionid={$viewarray.cmid}&cid={$viewarray.cid}&mid={$viewarray.qmid}&qid={$quote_details.identifier}&submenuId=ML13-SL4' target='_blank'>
+						<button class="btn btn-mini"><i class="splashy-add_small"></i> Create Survey</button>
+					</a>
+					</p>
+					{if $surveys|@count > 0}
+					{foreach from=$surveys item=survey}
+					<div class="tasks">
+						<p>{$survey.ptitle}</p>
+						<p class="headerdim">{$survey.startdate|date_format:"%d %b %Y"} - {$survey.enddate|date_format:"%d %b %Y"}</p>
+						<p class="pull-center"><a href="/survey/followup?survey_id={$survey.pollid}&cmid={$viewarray.cmid}&submenuId=ML13-SL4"><button class="btn btn-mini btn-primary" name="">View Taskboard</button></a></p>
+					</div>
+					{/foreach}
+					{/if}
+					{/if}
+					
+					{if $techmissions|@count > 0 || $seoMissionDetails|@count > 0}
+					<h3 class="heading">TECH & SEO MISSION</h3>
+					{/if}
+					{if $techmissions|@count > 0}
+					{foreach from=$techmissions item=tmission}
+					<div class="tasks">
+						<h4>{if $tmission.title}{$tmission.title}{else}New Tech Mission{/if}</h4>
+						<p class="headerdim">{$tmission.to_date} - {$tmission.from_date}</p>
+					</div>
+					{/foreach}
+					{/if}
+					{if $seoMissionDetails|@count > 0}
+					{foreach from=$seoMissionDetails item=smission}
+					<div class="tasks">
+						<h4>{$smission.title}</h4>
+						<p class="headerdim">{$smission.to_date} - {$smission.from_date}</p>
+					</div>
+					{/foreach}
+					{/if}
+			</div>
+			</div>	
+		</aside>
+	</div>
+	
+</div>
+
+<!--///for the ao edit popup///-->
+<div class="modal fullscreen hide fade" id="edit_ao_modal">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>&Eacute;diter L'AO</h3>		
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+<!--///for the add tempo popup///-->
+<div class="modal container hide fade" id="add_tempo">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>Add tempo</h3>		
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+
+<script>
+// tooltip activation
+    $("[rel=tooltip]").tooltip();
+</script>

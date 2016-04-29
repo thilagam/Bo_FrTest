@@ -1,0 +1,124 @@
+<table class="table selecttable" id="selecttable">
+	<thead>
+		<tr>
+			<th>R&eacute;dacteurs</th>
+			<th>Tempo</th>
+			<th>Prix per article</th>
+			{if $show_quiz eq 'yes'}
+			<th>Quizz</th>
+			{/if}
+			<th>Note & article</th>
+			<th>Hire</th>
+		</tr>
+	</thead>
+		{if $participation_details|@count gt 0}
+			{foreach from=$participation_details item=row name="pd" }
+				{assign var=hire value=true}
+				<tr>
+					<td style="width:20%">
+						<div class="imageHolder">
+							<a href="/user/contributor-edit?submenuId=ML10-SL6&tab=viewcontrib&userId={$row.user_id}" target="_blank">
+								<img class="media-object  img-circle" width="50px" height="50px"  src="{$fo_path}/{$row.image}" >
+							</a>
+							<span class="caption label label-level">
+								<i class="icon-bookmark"></i>
+								{$row.profiletype}
+							</span>
+						</div>
+						<div class="nameHolder">
+							{if $row.first_name!=""}
+								<b>{$row.first_name}&nbsp;{$row.last_name}</b>
+							{else}
+								<b>{$row.email}</b>
+							{/if}
+						</div>
+					</td>									
+					<td><img src="/BO/theme/gebo/img/gCons/copy-item.png" alt="" /><div class="text">{$row.articles_per_week}/week</div></td>
+					<td><img src="/BO/theme/gebo/img/gCons/dollar.png" alt="" /><div class="text">{$row.price_user|zero_cut:2} &euro; / art	</div></td>
+					{if $row.link_quiz && $row.quiz}
+						
+						{if $row.qualified eq 'yes' && $row.percent eq '100'}
+						<td>
+							<img src="/BO/theme/gebo/img/gCons/button_ok.png" alt="" />
+							<div class="text">Quizz {$row.num_correct} / {$row.num_total}</div>
+						{elseif $row.qualified eq 'yes'}
+						<td>
+							<img src="/BO/theme/gebo/img/gCons/button_ok_orange.png" alt="" />
+							<div class="text">Quizz {$row.num_correct} / {$row.num_total}</div>
+						{else}
+							<td class="disable_hire">
+							{assign var=hire value=false}
+							<div class="smiley">:(</div>
+							<div class="text">Lost</div>
+						{/if}
+						</td>
+					{/if}
+					
+					<td>
+						{if $row.status =='under_study' || $row.status =='plag_exec' || $row.status =='published' || $row.status =='disapproved'}
+						<a class="btn btn-small {if $row.marks &&  $row.marks < $row.min_mark}under_marks{/if}" href="/BO/download_article.php?article_id={$row.article_id}&type=writer"><i class="icon-download"></i> {if $row.marks}{$row.marks|zero_cut:2}/10{/if}</a>
+						{elseif $row.article_submit_expires eq 0}
+							-
+						{elseif $smarty.now>$row.article_submit_expires}
+							<strong>Article Test Time Out</strong>											
+						{else}
+						<span id="time_{$row.article_submit_expires}_{$row.rpid}" class="alert alert-danger">
+							<i class="icon-time"></i>
+							<span id="time_{$row.rpid}"></span>
+						</span>
+						{/if}
+					</td>										
+					<td>
+						<!--<input type="checkbox" name="hire[]" value="{$row.rpid}" data-prompt-position="topLeft:-120" {if $row.is_hired == 'yes'} checked="checked" {/if}  class="validate[minCheckbox[1]]" {if !$hire}disabled="disabled"{/if} /> <!-- class="validate[minCheckbox[{$row.no_contrib}],maxCheckbox[{$row.no_contrib}]]" -->
+					<!--	<label>{if $row.is_hired == 'yes'} Hired {else} Hire {/if}</label>-->												<div id="hireaction_{$row.rpid}">							{if $row.is_hired=="yes"}								<span class="label label-success">Hired</span>							{elseif $row.is_hired=="no"}								<span class="label label-inverse">Not Hired</span>							{else}								<button type="button" name="hire_yes_{$row.rpid}" id="hire_yes_{$row.rpid}" data-loading-text="Loading..." value="yes"  class="btn btn-default" onClick="hireparticipant('yes','{$row.rpid}','{$row.user_id}')">YES</button>								<button type="button" name="hire_no_{$row.rpid}" id="hire_no_{$row.rpid}" data-loading-text="Loading..."  value="no"  class="btn btn-default" onClick="hireparticipant('no','{$row.rpid}','{$row.user_id}')">NO</button>							{/if}						</div>						<div id="loadingmessage_{$row.rpid}" style="display:none;"<i class="icon-refresh"></i></div>
+					</td>
+				</tr>
+			{/foreach}
+		{/if}
+	</table>
+	{literal}
+<script type="text/javascript">
+
+	$(".disable_hire").closest("tr").addClass('changebackground');
+	
+
+$('input[name="hire[]"]').each(function(){
+			var self = $(this),
+			  label = self.next(),
+			  label_text = label.text();
+
+			label.remove();
+			self.iCheck({
+			  checkboxClass: 'icheckbox_line-grey',
+			  radioClass: 'iradio_line-grey',
+			  insert: '<div class="icheck_line-icon"></div>' + label_text
+			});
+		  });
+
+	
+		  
+{/literal}
+{if $participation_details|@count gt 0}
+{literal}
+	  //data table
+	$('#selecttable').dataTable({
+             "bPaginate":   false,
+             "bSort":   false,
+            "aoColumns": [
+                null,
+                null,
+                null,                
+                {/literal}{if $show_quiz eq 'yes'}{literal}
+                null,
+				{/literal}
+				{/if}				
+				{literal}
+				null,
+                null,
+            ]
+        });
+{/literal}
+{/if}
+{literal}
+</script>
+{/literal}

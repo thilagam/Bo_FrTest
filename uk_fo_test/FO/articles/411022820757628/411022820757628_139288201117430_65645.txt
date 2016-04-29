@@ -1,0 +1,58 @@
+
+SL.NO
+Task( Status )    
+Module
+File  realted to task 
+
+KT to  Thilagam:
+Kt: Creating pages/controllers/Models
+Task:  Display all the users from DB in  dataTable and allow editing of user, make use of ajax wherever required so that the process is fast. 
+BO(FR)
+TEST
+Created KT/user.php
+KtController.php
+
+
+http://ticket.edit-place.com/bugs/item?id=A01241:
+create log entries while the BO user edits the mission/article
+http://www.awesomescreenshot.com/02d5qfm019  
+BO(FR)
+Added new row to    ArticleActions
+controllers/DeliveryongoingController.php{
+saveDeliveryAction
+saveArticleAction
+}
+models/Ep/Controller/Action.php{
+articleHistory
+}
+models/Ep/Ongoing/Delivery.php{
+getDeliveryArticleDetails
+}
+
+Query which has message and ticket Table need to be indexed.
+
+
+
+		
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

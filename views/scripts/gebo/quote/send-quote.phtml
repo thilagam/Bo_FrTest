@@ -1,0 +1,831 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+
+<link rel="stylesheet" href="/BO/theme/gebo/lib/iCheck/skins/square/blue.css" type="text/css"/>
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script><script src="/BO/theme/gebo/js/jquery.MultiFileQuote.js" type="text/javascript" charset="utf-8"></script>
+
+<link href="/BO/theme/gebo/css/jquery.datetimepicker.css" rel="stylesheet">
+<script src="/BO/theme/gebo/js/jquery.datetimepicker.js" type="text/javascript" charset="utf-8"></script>
+
+ <style>
+	.delete
+	{
+		color:#000;
+		margin: 0 5px;
+		cursor: pointer;
+	}
+	.closequote{
+		margin-right:5px;
+		}
+ </style>
+<script language="javascript">
+$(document).ready(function() {
+	
+	
+
+	//validation
+	$("#send_quote").validationEngine();
+	$('#quote_updated_comments').attr('data-prompt-position','topLeft');
+	$('#quote_updated_comments').data('promptPosition','topLeft');
+	
+	$("#quote_updated,#quote_updated_prod").click(function(){
+		if($("#send_quote").validationEngine('validate'))
+		{
+			$("#quote_updated_pop").modal('show');
+			$("#quote_updated_pop").removeClass( "hide" ).addClass("in");
+		}
+	});
+	
+	$(".assign_pop_over").popover({trigger: 'click'});
+	$("#delivery_time").spinner({min:1});
+	/* var client_know='{/literal}{$send_quote.client_know}{literal}';
+	if(client_know=='yes')
+	{
+		$("#delivery_time").spinner({ disabled: true });
+	} */
+	
+	$("#delivery_option").chosen({ allow_single_deselect: false,search_contains: true});
+	
+	$("#send_quote select").chosen({ allow_single_deselect: false,search_contains: true});
+	
+	/** activate icheck plugin **/
+	  $('input').iCheck({
+		checkboxClass: 'icheckbox_square-blue',
+		radioClass: 'iradio_square-blue',
+		//increaseArea: '20%' // optional
+	 }); 
+	 
+	 $('#urgent').on('ifClicked', function(event){
+		
+		$("#urgent_details").toggle();
+		$("#prod_button").toggle();
+		
+	});	
+	
+	//disable if click on client does n't know checkbox
+	$('#client_know').on('ifChecked', function(event){
+		$("#delivery_time").spinner({ disabled: true });	
+		$("#delivery_option").prop('disabled', true).trigger("liszt:updated");
+		$("#delivery_time_disable").val($("#delivery_time").val());
+		$("#delivery_time_disable_option").val($("#delivery_time_disable_option").val());
+		
+	});	
+	$('#client_know').on('ifUnchecked', function(event){
+		$("#delivery_time").spinner({ disabled: false });		
+		$("#delivery_option").prop('disabled', false).trigger("liszt:updated");
+	});	
+		
+	$('input[name="quote_send_team"]').on('ifClicked', function (event) {
+		var value=this.value;
+		if(value=='send_sales_team')
+			$("#skip_details").show();	
+		else	
+			$("#skip_details").hide();	
+		
+	});	
+	
+	$('input[name="market_team_sent"]').on('ifClicked', function (event) {
+		var value=this.value;
+		if(value=='yes')
+			$("#from_platform_details").show();
+		else	
+			$("#from_platform_details").hide();
+	});	
+	
+	$(document).on("click",".closequote",function (event) {
+	$("#close_quote_popup").modal('show');
+	$("#close_quote_popup").removeClass( "hide" ).addClass("in");
+	});	
+	
+	$(document).on("click",".delete",function(){
+	var id_identifier = $(this).attr("rel");
+		if(confirm("Are you sure? Want to delete this File"))
+		{
+			$(this).closest(".topset2").remove();
+			$(".onsuccessrep").html("Please Wait Deleting File.");
+			$.post("/quote/delete-document-quote",{"identifier":id_identifier,"type":"quote"},function(result){
+				
+				$(".onsuccessrep").html(result);
+				if($.trim(result)=="")
+				{
+					$(".MultiFile-applied").addClass("validate[required]");
+				}
+			}); 
+		}	
+	})
+	
+	//alert when click on submit button
+	var edited='no';
+	{/literal}
+		{if $custom.action eq 'edit' && $custom.create_new_version neq 'yes'}
+			{literal}
+				edited='yes'; 
+			{/literal}
+		{/if}
+		{literal}
+		
+	var sales_review='{/literal}{$send_quote.sales_review}{literal}';
+	
+	
+	$("#send_big_quote,#send_low_quote").live('click', function(event) {
+		event.preventDefault();
+		var quote_send_team=$('input[name="quote_send_team"]:checked').val();
+		var msg='';
+		if(quote_send_team=='send_tech_prod_team')
+			msg='Are you sure to skip the SEO team ?';
+		else if(quote_send_team=='send_seo_prod_team')
+			msg='Are you sure to skip the TECH team ?';	
+		else if(quote_send_team=='send_prod_team')
+			msg='Are you sure to skip the TECH and SEO team ?';
+		else if(quote_send_team=='send_sales_team')
+			msg='Are you sure to skip the TECH,SEO and PROD team ?';
+		else if(quote_send_team=='send_tech_team')
+			msg='Are you sure to skip the SEO and PROD team ?';
+		else if(quote_send_team=='send_seo_team')
+			msg='Are you sure to skip the TECH and PROD team ?';			
+		else
+			msg='';
+				
+		if($("#send_quote").validationEngine('validate'))
+		{				
+			if(msg)
+			{		
+				smoke.confirm(msg,function(e){
+					if (e)
+					{	
+						if(edited=='yes' && sales_review!='to_be_approve')
+						{								
+							$("#quote_updated_pop").modal('show');
+                            $("#quote_updated_pop").removeClass( "hide" ).addClass("in");
+						}
+						else
+						{
+                            $("#send_quote").submit();
+							return true;
+						}					
+					}
+					else
+					{
+						return false;
+					}
+				});
+			}
+			else
+			{
+				if(edited=='yes' && sales_review!='to_be_approve')
+				{					
+					$("#quote_updated_pop").modal('show');
+                    $("#quote_updated_pop").removeClass( "hide" ).addClass("in");
+				}
+				else{
+
+                    $("#send_quote").submit();
+                }
+			}
+		}	
+	
+	});
+	
+	
+	//new questions in send quote	
+	$('.priority').chosen();
+	
+	$('input[name="client_aims[]"]').on('ifChanged', function(event){
+		
+			var value = "";
+			var check_length=$('input[name="client_aims[]"]:checked').length;
+			
+			var checkd_value=$(this).val();
+			$("#div_priority_"+checkd_value).toggle();
+			if(check_length==0)
+			{				
+				$('#aim_4').iCheck('enable');
+				$('#client_aims_comments_div').hide();
+			}
+			else{
+				$('#client_aims_comments_div').show();
+			}
+			
+			
+			$('input[name="client_aims[]"]:checked').each(function(){
+				value = $(this).val();				
+				if(value!='autre')
+				{
+					$('#aim_4').iCheck('uncheck');
+					$('#aim_4').iCheck('disable');
+				}
+				
+			});
+	});	
+
+
+	$('input[name="content_ordered_agency"]').on('ifChanged', function(event){		
+		var checkd_value=$(this).val();
+		if(checkd_value=='yes')
+		{
+			$("#agency_details").show();
+			$("#internal_team_details").hide();
+		}
+		else if(checkd_value=='no')
+		{
+			$("#agency_details").hide();
+			$("#internal_team_details").show();
+		}
+		
+		
+	});		
+	//volume option  radio changed
+	$('input[name="volume_option"]').on('ifChanged', function(event){		
+		$('input[name="volume_option"]:checked').each(function(){
+			value = $(this).val();
+			if(value=='one')
+			{
+				$('#volume_option_multi_div').hide();
+				$('#volume_option_multi_every_div').hide();
+			}
+			else if(value=='per')
+			{
+				$('#volume_option_multi_div').show();
+				$('#volume_option_multi_every_div').hide();
+			}
+			else if(value=='every')
+			{
+				$('#volume_option_multi_div').hide();
+				$('#volume_option_multi_every_div').show();
+			}
+				
+		});
+		
+	});	
+	
+	
+	//agency name toggle
+	 $('#agency').on('ifClicked', function(event){		
+		$("#agency_name_div").toggle();	
+	
+	});
+	
+	$('#budget_marketing').on('ifClicked', function(event){		
+		$("#budget_div").toggle();	
+	
+	});
+	
+	//estimate sign date 
+		$('#estimate_sign_date').datetimepicker({
+			format:'Y-m-d',
+			lang:'fr',
+			timepicker:false
+		});
+
+});
+//Assign quote to some other user
+function fnassignQuote(ep_user_id)
+{				
+	var msg = "Do you want to assign this quote to some other user ?";
+	smoke.confirm(msg,function(e){
+		if (e){
+				var target="/quote/assign-quote?ep_user_id="+ep_user_id;
+				$.post(target,function(response){
+					var obj = $.parseJSON(response);
+					//alert(response);
+					
+					if(obj.status=='same_user')
+					{
+						smoke.alert("Please assign quote to some other user it is currently assigned to same user");
+					}
+					else if(obj.status=='success')
+					{
+						location.reload(); 
+					}
+				});      
+			}
+		else{
+			return false;
+		}
+	});	
+	
+}
+</script>	
+{/literal}
+
+<div class="row-fluid">    
+	<div class="span12">
+		<div class="row-fluid">
+			<ul id="validate_wizard-titles" class="stepy-titles clearfix">
+				<li id="validate_wizard-title-0" class="current-step"><div>Creation</div><span class="stepNb">1</span></li>
+				<li id="validate_wizard-title-1"><div>TECH review</div><span class="stepNb">2</span></li>
+				<li id="validate_wizard-title-2"><div>SEO review</div><span class="stepNb">3</span></li>
+				<li id="validate_wizard-title-3"><div>Prod review</div><span class="stepNb">4</span></li>
+				<li id="validate_wizard-title-4"><div>Validation</div><span class="stepNb">5</span></li>
+			</ul>
+		</div>
+		<h1 class="heading topset2">{$create_mission.quote_title}</h1>
+		<div class="alert alert-info">
+			<a data-dismiss="alert" class="close">&times;</a>
+			{if $select_missions.total_suggested_price >=5000}
+				<b>Parfait! Merci de transf&eacute;rer votre demande &agrave; la tech-seo-prod</b>
+			{else}
+				<b>Ce devis est inf&eacute;rieur &agrave; 5K euros. vous pouvez valider votre devis imm&eacute;diatement ou l'envoyer &agrave; la Prod.</b>
+			{/if}			
+		</div>
+		<div class="row-fluid">
+			<div class="span8">
+				<form id="send_quote" class="step form-horizontal" method="POST" action="/quote/save-send-quote" enctype="multipart/form-data">
+					<fieldset>
+						{if $select_missions.total_suggested_price >=5000}
+							<legend>El&eacute;ments de pr&eacute;cision</legend>
+						{else}
+							<legend>El&eacute;ments de pr&eacute;cision</legend>
+						{/if}	
+						<div class="formSep control-group">
+							<label for="bo_comments" class="control-label">Vos remarques globales sur ce devis</label>
+							<!--<label for="bo_comments" class="control-label">Votre commentaire global sur ce devis</label> -->
+							<div class="controls">
+								<textarea name="bo_comments" id="bo_comments" class="validate[required] span12">{$send_quote.sales_comment}</textarea>
+							</div>
+						</div>
+						<div class="formSep control-group">
+							<label for="client_email" class="control-label">Copiez-collez les &eacute;changes de mails avec le client</label>
+							<div class="controls">
+								<textarea name="client_email" id="client_email" class="validate[required] span12">{$send_quote.client_email_text}</textarea>
+							</div>
+						</div>
+						<div class="formSep control-group">
+							<label for="quote_documents" class="control-label">Fichiers joints <span class="help-block">doc,xls,zip,.dot, .html .pdf  .jpg .png, .xml</span></label>
+						<!--	<div class="controls">
+								<div data-provides="fileupload" class="span12 fileupload fileupload-new">
+									<input type="hidden" value="" name="">
+									<span class="btn btn-file span4" style="margin-left:0px">
+										<span class="fileupload-new"><img src="/BO/theme/gebo/img/gCons/pin.png" alt="" /> Upload files</span>
+										<span class="fileupload-exists">Change</span>
+										<input type="file" name="quote_documents" id="quote_documents" class="validate[required]" />
+									 </span>
+									<span class="fileupload-preview"></span>
+									<a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>
+									<div id="file_name"></div>							
+								</div>
+							</div> -->							
+						<div class="controls">	
+							{if $send_quote.documents}
+								<input type="file" name="quote_documents[]"  id="upload" class="multi span5" accept="doc|xls|zip|docx|xlsx|dot|html|pdf|jpg|png|xml" />
+								<div class="onsuccessrep">
+									{$send_quote.documents}
+							{else}
+							<input type="file" name="quote_documents[]"  id="upload" class="multi span5" accept="doc|xls|zip|docx|xlsx" />
+								<div class="onsuccessrep">
+								{/if}
+								</div>
+							</div>
+						</div>
+						<div class="formSep control-group">
+							<label class="control-label">Besoin(s) du client</label>
+							<div class="controls">
+								<span class="row-fluid">
+									<span class="span3"><input type="checkbox" class="validate[minCheckbox[1]]" id="aim_1" name="client_aims[]" {if in_array("seo",$send_quote.client_aims)}checked {/if}  value="seo"> SEO</span>										
+									<span id="div_priority_seo" {if !in_array("seo",$send_quote.client_aims)} style="display:none" {/if}>
+										<label  class="control-label">Prio :</label>
+										<select name="priority_seo" id="priority_seo" class="priority">					
+												<option value="1" {if $send_quote.priority_seo eq '1'} selected{/if} >1</option>
+												<option value="2" {if $send_quote.priority_seo eq '2'} selected{/if} >2</option>
+												<option value="3" {if $send_quote.priority_seo eq '3'} selected{/if} >3</option>
+										</select>
+									</span>
+								</span>									
+								<span class="row-fluid">
+									<span class="span3"><input type="checkbox" class="validate[minCheckbox[1]]" id="aim_2" name="client_aims[]" {if in_array("social",$send_quote.client_aims)}checked {/if}  value="social"> Social</span>									
+									<span id="div_priority_social" {if !in_array("social",$send_quote.client_aims)} style="display:none" {/if}>
+										<label  class="control-label">Prio :</label>
+										<select name="priority_social" id="priority_social" class="priority">					
+												<option value="1" {if $send_quote.priority_social eq '1'} selected{/if} >1</option>
+												<option value="2" {if $send_quote.priority_social eq '2'} selected{/if} >2</option>
+												<option value="3" {if $send_quote.priority_social eq '3'} selected{/if} >3</option>
+										</select>
+									</span>
+								</span>									
+								<span class="row-fluid">
+									<span class="span3"><input type="checkbox" class="validate[minCheckbox[1]]" id="aim_3" name="client_aims[]" {if in_array("conversion",$send_quote.client_aims)}checked {/if}  value="conversion"> Conversion</span>
+									<span id="div_priority_conversion" {if !in_array("conversion",$send_quote.client_aims)} style="display:none" {/if}>
+										<label  class="control-label">Prio :</label>
+										<select name="priority_conversion" id="priority_conversion" class="priority">					
+												<option value="1" {if $send_quote.priority_conversion eq '1'} selected{/if} >1</option>
+												<option value="2" {if $send_quote.priority_conversion eq '2'} selected{/if} >2</option>
+												<option value="3" {if $send_quote.priority_conversion eq '3'} selected{/if} >3</option>
+										</select>
+									</span>	
+								</span>									
+								<span class="row-fluid">
+									<span class="span3"><input type="checkbox" class="validate[minCheckbox[1]]" id="aim_4" name="client_aims[]"  value="autre"> Autre</span>
+								</span>
+							</div>
+						</div>
+						
+						<div class="formSep control-group" id="client_aims_comments_div" {if !$send_quote.client_aims_comments} style="display:none"{/if}>
+								<div class="controls">
+									<textarea placeholder="comments..." name="client_aims_comments" id="client_aims_comments" class="span12">{$send_quote.client_aims_comments}</textarea>
+								</div>
+						</div>
+						<div class="formSep control-group">
+							<label class="control-label">Projet urgent ?</label>
+							<div class="controls">
+								<input type="radio" class="validate[required]" {if $send_quote.urgent eq 'yes'} checked{/if} name="urgent"  value="yes">Oui&nbsp;
+								<input type="radio" class="validate[required]" {if $send_quote.urgent eq 'no'} checked{/if} name="urgent"  value="no">Non
+							</div>
+						</div>
+						<div class="formSep control-group">
+							<label class="control-label">Le client a-t-il command&eacute; du contenu dans une  autre agence ?</label>
+							<div class="controls">
+								<input type="radio" class="validate[required]" {if $send_quote.content_ordered_agency eq 'yes'} checked{/if} name="content_ordered_agency"  value="yes">Oui&nbsp;
+								<input type="radio" class="validate[required]" {if $send_quote.content_ordered_agency eq 'no'} checked{/if} name="content_ordered_agency"  value="no">Non
+							</div>
+						</div>
+						<div class="formSep control-group" id="agency_details" {if $send_quote.content_ordered_agency neq 'yes'} style="display:none"{/if}>
+							<label class="control-label">Nom de l'agence ?</label>
+							<div class="controls">								
+								<div class="span4">
+									<label class="checkbox inline">
+										<input type="checkbox" {if $send_quote.agency eq 'dont_know'} checked{/if} id="agency" name="agency"  value="dont_know">Je ne sais pas
+									</label>
+								</div>	
+								<div class="span8" id="agency_name_div" {if $send_quote.agency eq 'dont_know'} style="display:none"{/if} >
+									<input type="text" class="span8 validate[required]" id="agency_name" value="{$send_quote.agency_name}" name="agency_name">
+								</div>
+							</div>
+						</div>
+						<div class="formSep control-group" id="internal_team_details" {if $send_quote.content_ordered_agency neq 'no'} style="display:none"{/if}>
+							<label class="control-label">Le  client a-t-il une &eacute;quipe interne pour son contenu ?</label>
+							<div class="controls">
+								<input type="radio" class="validate[required]" {if $send_quote.client_internal_team eq 'yes'} checked{/if} name="client_internal_team"  value="yes">Oui&nbsp;
+								<input type="radio" class="validate[required]" {if $send_quote.client_internal_team eq 'no'} checked{/if} name="client_internal_team"  value="no">Non
+								<input type="radio" class="validate[required]" {if $send_quote.client_internal_team eq 'dont_know'} checked{/if} name="client_internal_team"  value="dont_know">Je ne sais pas
+							</div>
+						</div>
+						<div class="formSep control-group">
+							<label class="control-label">Le client souhaite-t-il conna&icirc;tre les r&eacute;dacteurs  qui vont travailler pour lui ?</label>
+							<div class="controls">
+								<input type="radio" class="validate[required]" {if $send_quote.client_know_writers eq 'yes'} checked{/if} name="client_know_writers"  value="yes">Oui&nbsp;
+								<input type="radio" class="validate[required]" {if $send_quote.client_know_writers eq 'no'} checked{/if} name="client_know_writers"  value="no">Non
+							</div>
+						</div>
+						{*<!--<div class="formSep control-group">
+							<label class="control-label">Quelle est la fr&eacute;quence de livraison ?</label>
+							<div class="controls">
+								<div class="span12">
+									<label class="radio inline span3">
+										<input type="radio" class="validate[required]" {if $send_quote.volume_option eq 'one'} checked {/if}  name="volume_option" value="one" class="icheck validate[required]" />One shot
+									</label>
+									<label class="radio inline span2">
+										<input type="radio" class="validate[required]" {if $send_quote.volume_option eq 'per'} checked {/if} name="volume_option" value="per" class="icheck validate[required]" />Per
+									</label>
+									<span id="volume_option_multi_div" {if $send_quote.volume_option neq 'per'} style="display:none" {/if} >
+										<span class="row-fluid span2">
+											<select name="volume_option_multi" class="span12">
+												<option value="day"   {if $send_quote.volume_option_multi eq 'day'} selected{/if}>Day</option>
+												<option value="week"  {if $send_quote.volume_option_multi eq 'week'} selected{/if}>Week</option>
+												<option value="month" {if $send_quote.volume_option_multi eq 'month'} selected{/if}>Month</option>
+												<option value="year"  {if $send_quote.volume_option_multi eq 'year'} selected{/if}>Year</option>
+											</select>
+										</span>
+									</span>	
+									<label class="radio inline span2">
+										<input type="radio" class="validate[required]" {if $send_quote.volume_option eq 'every'} checked {/if} name="volume_option" value="every" class="icheck validate[required]" />Every
+									</label>
+									<span id="volume_option_multi_every_div" {if $send_quote.volume_option neq 'every'} style="display:none" {/if} >
+										<span class="span1">
+											<input type="text" name="volume_every" value="{$send_quote.volume_every}" class="icheck validate[required] span12" />
+										</span>
+										<span class="span2">
+											<select name="volume_option_multi_every" class="span12">
+												<option value="day"   {if $send_quote.volume_option_multi eq 'day'} selected{/if}>Day</option>
+												<option value="week"  {if $send_quote.volume_option_multi eq 'week'} selected{/if}>Week</option>
+												<option value="month" {if $send_quote.volume_option_multi eq 'month'} selected{/if}>Month</option>
+												<option value="year"  {if $send_quote.volume_option_multi eq 'year'} selected{/if}>Year</option>
+											</select>
+										</span>
+									</span>	
+								</div>	
+								
+							</div>
+						</div>-->*}
+						<div class="formSep control-group">
+							<label class="control-label">Quel est son budget {$smarty.now|date_format:"%Y"} pour le contenu marketing ?</label>
+							<div class="controls">
+								<div class="span4">
+									<label class="checkbox inline">
+										<input type="checkbox" {if $send_quote.budget_marketing eq 'dont_know'} checked{/if} id="budget_marketing" name="budget_marketing"  value="dont_know">Je ne sais pas
+									</label>
+								</div>	
+								<div class="span6" id="budget_div" {if $send_quote.budget_marketing eq 'dont_know'} style="display:none"{/if} >
+									<span class="span3">
+										<input type="text" class="span12 validate[required]" value="{$send_quote.budget}" name="budget">
+									</span>
+									<span class="span6">	
+										<select name="budget_currency" class="span8">
+											<option value="euros"   {if $send_quote.budget_currency eq 'euros'} selected{/if}>Euros</option>
+											<option value="pounds"  {if $send_quote.budget_currency eq 'pounds'} selected{/if}>Pounds</option>
+											<option value="dollars" {if $send_quote.budget_currency eq 'dollars'} selected{/if}>Dollars</option>
+										</select>
+									</span>	
+								</div>
+							</div>
+						</div>
+						<div class="formSep control-group">
+							<label class="control-label">% estim&eacute; de signature</label>
+							<div class="controls">
+								<div class="span9">														
+									<select name="estimate_sign_percentage" id="estimate_sign_percentage" class="span5" style="margin-top: -10px;">					
+										<option value="20" {if $send_quote.estimate_sign_percentage eq '20'} selected {/if}>20</option>
+										<option value="40" {if $send_quote.estimate_sign_percentage eq '40'} selected {/if}>40</option>
+										<option value="60" {if $send_quote.estimate_sign_percentage eq '60'} selected {/if}>60</option>
+										<option value="80" {if $send_quote.estimate_sign_percentage eq '80'} selected {/if}>80</option>
+										
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="formSep control-group">
+							<label class="control-label">Estimation de la date de signature</label>
+							<div class="controls">
+								<div class="span9">														
+									<div class="input-append date">
+										<input class="span12 validate[required]" value="{$send_quote.estimate_sign_date}" type="text" name="estimate_sign_date" id="estimate_sign_date"/><span class="add-on"><i class="splashy-calendar_day_up"></i></span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="formSep control-group">
+							<label class="control-label">Commentaire(s)</label>
+							<div class="controls">
+								<div class="span12">														
+									<textarea name="estimate_sign_comments" id="estimate_sign_comments" class="span12">{$send_quote.estimate_sign_comments}</textarea>
+								</div>
+							</div>
+						</div>
+						
+						{*<!--<div class="formSep control-group">
+							<label for="delivery_time" class="control-label">D&eacute;lai de livraison total souhait&eacute;</label>
+							<div class="controls">
+								<div class="span2">									
+									<input type="text" id="delivery_time" name="delivery_time" class="span12 validate[required]" value="{if $send_quote.sales_delivery_time}{$send_quote.sales_delivery_time}{else}3{/if}" />		
+								</div>	
+								<div class="span3">									
+									<select name="delivery_option" id="delivery_option" class="span12">					
+										<option value="days"{if $send_quote.sales_delivery_time_option eq 'days'} selected{/if}>Jours</option>
+										<option value="hours" {if $send_quote.sales_delivery_time_option eq 'hours'} selected{/if}>Hours</option>									
+									</select>									
+								</div>
+							</div>
+						</div>-->*}
+						{if $select_missions.total_suggested_price >=5000}
+						{*<!--<div class="formSep control-group">
+							<label class="control-label">Est-ce que devis vous a &eacute;t&eacute; envoy&eacute; par le  marketing ?</label>
+							<div class="controls">
+								<input type="radio" {if $send_quote.market_team_sent eq 'yes'} checked{/if} name="market_team_sent"  value="yes">Oui&nbsp;
+								<input type="radio" {if $send_quote.market_team_sent neq 'yes'} checked{/if} name="market_team_sent"  value="no">Non
+							</div>
+						</div>
+						<div class="formSep control-group" id="from_platform_details" {if $send_quote.market_team_sent neq 'yes'}style="display:none"{/if}>
+							<label class="control-label">Depuis la plateforme ?</label>
+							<div class="controls">
+								<input type="radio" {if $send_quote.from_platform eq 'yes'} checked{/if} name="from_platform"  value="yes">Oui&nbsp;
+								<input type="radio" {if $send_quote.from_platform neq 'yes'} checked{/if} name="from_platform"  value="no">Non
+							</div>
+						</div> -->*}
+						<div class="formSep control-group">
+							<div class="controls">
+								{if $custom.action eq 'edit' && $send_quote.sales_review neq 'to_be_approve'}									
+									{if ($custom.action eq 'edit' && $custom.mission_added neq 'yes')}
+										<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_tech_team'} checked{/if} name="quote_send_team"  value="send_tech_team"> Envoi devis &agrave; tech</label>
+										<label><input type="radio" {if $send_quote.quote_send_team eq 'send_seo_team'} checked{/if} name="quote_send_team"  value="send_seo_team"> Envoi devis &agrave; seo</label>
+									{/if}	
+								{/if}
+								<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_tech_prod_team'} checked{/if} name="quote_send_team"  value="send_tech_prod_team"> Envoi devis &agrave; tech & prod </label>
+								<label><input type="radio" {if $send_quote.quote_send_team eq 'send_seo_prod_team'} checked{/if} name="quote_send_team"  value="send_seo_prod_team"> Envoi devis &agrave; seo & prod</label>
+								<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_prod_team'} checked{/if} name="quote_send_team"  value="send_prod_team"> Envoi devis &agrave; la prod uniquement</label>
+								<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_all_team' || !$send_quote.quote_send_team } checked{/if} name="quote_send_team"  value="send_all_team"> Envoi devis &agrave; tous</label>
+								
+								{if $custom.action eq 'edit' && $send_quote.sales_review neq 'to_be_approve' && $custom.mission_added neq 'yes'}
+									<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_sales_team'} checked{/if} name="quote_send_team"  value="send_sales_team"> Finaliser le devis seul</label>
+								{/if}	
+							</div>
+						</div>
+						<div class="control-group">
+							<div class="controls">																
+								<button type="submit" id="send_big_quote" name="send_big_quote" class="finish btn btn-primary" ><i class="icon-ok icon-white"></i> Valider </button>
+								<input type="hidden" name="send_big_quote">
+								
+								{if  ($user_type eq 'salesuser' || $user_type eq 'salesmanager' || $user_type eq 'superadmin')  &&  $send_quote.sales_review eq 'to_be_approve'}
+								<div class="finish">
+								<a href="/quote/close-quote-sale?qid={$custom.quote_id}" class="btn btn-default closequote" 
+								data-toggle="modal" tabindex="-1" role="menuitem" data-target="#close_quote_popup" >Perdu</a>
+								</div>
+								<div class="modal hide fade" id="close_quote_popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+											<div class="modal-header">
+												<button class="close" data-dismiss="modal" >&times;</button>
+												<h3>Fermer devis</h3>
+											</div>
+											<div class="modal-body">
+												
+											</div>
+											<div class="modal-footer">
+											</div>
+									</div>
+								{/if}
+							</div>	
+						</div>
+						{*<!--<div class="control-group">		
+							<div class="span12">
+								{if $custom.action eq 'edit' && $custom.create_new_version neq 'yes'}
+									<button id="quote_updated" type="button" name="send_all_team" class="btn btn-primary"><i class="icon-ok icon-white"></i> Mise &agrave; jour</button>
+									<button id="quote_updated_prod" type="button" name="send_prod_team" class="btn btn-warning"><i class="icon-ok icon-white"></i> Envoi devis &agrave; la prod uniquement</button>
+								{else}									
+									<button id="tech_prod_button" type="submit" name="send_tech_prod_team" class="btn btn-info"><i class="icon-ok icon-white"></i> Envoi devis &agrave; tech & prod</button>
+									<button id="seo_prod_button" type="submit" name="send_seo_prod_team" class="btn btn-gebo"><i class="icon-ok icon-white"></i> Envoi devis &agrave; seo & prod</button>
+									<button id="prod_button" type="submit" name="send_prod_team" class="btn btn-warning"><i class="icon-ok icon-white"></i> Envoi devis &agrave; la <br> prod uniquement</button>
+									<button type="submit" name="send_all_team" class="btn btn-primary"><i class="icon-ok icon-white"></i> Envoi devis &agrave; tous</button>
+								{/if}
+								
+							</div>	
+						</div>-->*}
+						{else}
+						{*	<!-- <div class="formSep control-group">
+								<label class="control-label">Est-ce que devis vous a &eacute;t&eacute; envoy&eacute; par le  marketing ?</label>
+								<div class="controls">
+									<input type="radio" {if $send_quote.market_team_sent eq 'yes'} checked{/if} name="market_team_sent"  value="yes">Oui&nbsp;
+									<input type="radio" {if $send_quote.market_team_sent neq 'yes'} checked{/if} name="market_team_sent"  value="no">Non
+								</div>
+							</div>
+							<div class="formSep control-group" id="from_platform_details" {if $send_quote.market_team_sent neq 'yes'}style="display:none"{/if}>
+								<label class="control-label">Depuis la plateforme ?</label>
+								<div class="controls">
+									<input type="radio" {if $send_quote.from_platform eq 'yes'} checked{/if} name="from_platform"  value="yes">Oui&nbsp;
+									<input type="radio" {if $send_quote.from_platform neq 'yes'} checked{/if} name="from_platform"  value="no">Non
+								</div>
+							</div>--->*}
+							<div class="formSep control-group">
+								<div class="controls">
+									<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_tech_team'} checked{/if} name="quote_send_team"  value="send_tech_team"> Envoi devis &agrave; tech</label>
+									<label><input type="radio" {if $send_quote.quote_send_team eq 'send_seo_team'} checked{/if} name="quote_send_team"  value="send_seo_team"> Envoi devis &agrave; seo</label>
+									<label><input type="radio" {if $send_quote.quote_send_team eq 'send_tech_seo_team'} checked{/if} name="quote_send_team"  value="send_tech_seo_team"> Envoi devis &agrave; tech & seo</label>
+									<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_tech_prod_team'} checked{/if} name="quote_send_team"  value="send_tech_prod_team"> Envoi devis &agrave; tech & prod </label>
+									<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_seo_prod_team'} checked{/if} name="quote_send_team"  value="send_seo_prod_team"> Envoi devis &agrave; seo & prod</label>
+									<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_prod_team' || !$send_quote.quote_send_team} checked{/if} name="quote_send_team"  value="send_prod_team"> Envoi devis &agrave; la prod uniquement</label>
+									<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_all_team'} checked{/if} name="quote_send_team"  value="send_all_team"> Envoi devis &agrave; tous</label>									
+									<label><input type="radio" class="validate[required]" {if $send_quote.quote_send_team eq 'send_sales_team'} checked{/if} name="quote_send_team"  value="send_sales_team"> Finaliser le devis seul</label>									
+								</div>
+							</div>
+							<div class="formSep control-group" id="skip_details" {if $send_quote.quote_send_team eq 'send_sales_team'}style="display:block"{else}style="display:none"{/if}>
+								<div class="controls">
+									<textarea placeholder="comments..." name="skip_prod_comments" id="skip_prod_comments" class="span12">{$send_quote.skip_prod_comments}</textarea>
+								</div>
+							</div>							
+							<div class="control-group">
+								<div class="controls">																
+									<button type="submit" id="send_low_quote" name="send_low_quote" class="finish btn btn-primary"><i class="icon-ok icon-white"></i> Valider </button>
+									<input type="hidden" name="send_low_quote">
+									
+									{if  ($user_type eq 'salesuser' || $user_type eq 'salesmanager' || $user_type eq 'superadmin')  &&  $send_quote.sales_review eq 'to_be_approve'}
+									<div class="finish">
+								<a href="/quote/close-quote-sale?qid={$custom.quote_id}" class="btn btn-default closequote" 
+								data-toggle="modal" tabindex="-1" role="menuitem" data-target="#close_quote_popup">Fermer</a>
+								</div>
+							<div class="modal hide fade" id="close_quote_popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+											<div class="modal-header">
+												<button class="close" data-dismiss="modal" >&times;</button>
+												<h3>Fermer devis</h3>
+											</div>
+											<div class="modal-body">
+												
+											</div>
+											<div class="modal-footer">
+											</div>
+									</div>
+								{/if}
+								</div>	
+							</div>
+						{/if}
+					</fieldset>	
+					<!--popup to show quote updated in edit mode-->
+					{if $custom.action eq 'edit' && $custom.create_new_version neq 'yes'}
+					<div class="modal hide fade" id="quote_updated_pop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-header">
+							<button class="close" data-dismiss="modal" >&times;</button>
+							<h3>Mise &agrave; jour</h3>
+						</div>
+						<div class="modal-body">
+							<section>
+								<div class="row-fluid">
+									<div class="media">
+										<br>
+										{if $custom.mission_added eq 'yes'}
+										<h3>Vous avez modifi&eacute;/ajout&eacute; une mission. Le devis sera donc renvoy&eacute; &agrave; la prod </h3>
+										{/if}
+										<br>
+										<a class="pull-left imgframe">
+											<img width="60px" src="{$fo_path}/profiles/bo/{$userId}/logo.jpg" class="media-object">
+										</a>
+										<div class="media-body" id="quote_textarea">
+                                            <textarea name="quote_updated_comments" placeholder="Tell team what you have changed and SEND" id="quote_updated_comments" class="span12 validate[required]" ></textarea>
+										</div>
+									</div>
+								</div>	
+								<div class="row-fluid">
+									<div class="span12">
+										<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Annuler</button>
+										{if $select_missions.total_suggested_price >=5000}
+											<button type="submit" name="send_big_quote" class="btn btn-primary">Mettre &agrave; jour</button>
+										{else}	
+											<button type="submit" name="send_low_quote" class="btn btn-primary">Mettre &agrave; jour</button>
+										{/if}	
+									</div>
+								</div>										
+							</section>
+						</div>
+						<div class="modal-footer">
+						</div>
+					</div>
+					
+					
+					{/if}
+					
+				</form>
+				<div class="row-fluid">
+					<div class="span5 topset2">
+						<a class="btn btn-default" href="/quote/select-quote-mission?submenuId=ML13-SL2"><i class="icon-chevron-left"></i> Retour</a>							
+					</div>					
+				</div>
+			</div>
+			<div class="span4">
+				<aside>
+					<div class="aside-bg">
+						<div class="aside-block" id="">
+							<div class="">
+								<h2 class="heading">Liste missions</h2>
+								{if $quote_missions|@count gt 0}
+									{foreach from=$quote_missions item=mission name="misson"}
+									{assign var=gn_index value=$smarty.foreach.misson.index}
+									{assign var=ms_index value=$smarty.foreach.misson.index+1}	
+										<h3>Mission {$ms_index} </h3>
+										<ul>
+											<li>Type : {$mission.product_name} </li>
+											<li>Langue : {$mission.language_name} {if $mission.product=='translation'} to {$mission.languagedest_name} {/if} </li>
+											<li>Produit : {$mission.producttype_name} {if $mission.producttype eq 'autre'}({$mission.producttypeother}){/if}</li>
+											<li>Nb mots : {$mission.nb_words} </li>
+											<li>Volume : {$mission.volume} </li>
+											{foreach from=$select_missions.single_article_price item=articlePrices name="articlePrices"}
+												{if $smarty.foreach.articlePrices.index eq $gn_index}
+													<li>Prix de vente/{$mission.producttype_name} : {$articlePrices|zero_cut:2} &{$create_step1.currency}; </li>
+												{/if}	
+											{/foreach}
+											{foreach from=$select_missions.mission_ca item=missionPrice name="missionPrice"}
+												{if $smarty.foreach.missionPrice.index eq $gn_index}
+													<li>CA mission : {$missionPrice|zero_cut:2} &{$create_step1.currency}; </li>
+												{/if}	
+											{/foreach}											
+											
+										</ul>
+									{/foreach}
+								{/if}	
+								{if $select_missions.total_suggested_price >=5000}
+									<hr><h3>CA potentiel : {$select_missions.total_suggested_price|zero_cut:2} &{$create_step1.currency}; </h3>
+								{else}
+									<div class="mission-product-error">CA potentiel : {$select_missions.total_suggested_price|zero_cut:2} &{$create_step1.currency}; </div>
+								{/if}		
+							</div>
+						</div>
+						<div class="aside-block" id="selected-client">
+							<div class="editor-container">
+								<h2 class="heading">Info client</h2>
+								<img title="{$create_mission.company_name}" src="{$fo_path}/profiles/clients/logos/{$create_mission.client_id}/{$create_mission.client_id}_global.png?12345">
+								<p class="editor-name"><a href="/quote/create-client?uaction=view&client_id={$create_mission.client_id}&submenuId=ML13-SL1" target="_blank">{$create_mission.company_name}</a></p>
+								<p class="editor-info">
+								CA info : {$create_mission.ca_number|zero_cut_t} euros<br>
+								Cat&eacute;gorie : {$create_mission.category_name}<br><br>
+								<label class="label label-info">Sites internet</label><br>
+									{foreach from=$create_step1.client_websites item=site}
+										<a href="{$site}">{$site|domain_url}</a> <br/>
+									{/foreach}
+								</p>
+							</div>
+						</div>
+						<div class="aside-block" id="selected-bouser">
+							<div class="editor-container">
+								<h2 class="heading">Devis r&eacute;alis&eacute; par</h2>
+								<img title="{$create_mission.quote_user_name}" src="{$fo_path}/profiles/bo/{$create_step1.quote_by}/{$create_step1.quote_by}_p.jpg">
+								<p class="editor-name">{$create_mission.quote_user_name}</p>
+								<p class="editor-info">
+								T&eacute;l : {$create_mission.phone_number}<br>
+								Email :<a href="mailto:{$create_mission.email}"> {$create_mission.email}</a><br><br>
+								</p>
+								<!--<a class="btn btn-info assign_pop_over" data-content='<select name="quote_by" id="quote_by" onChange="fnassignQuote(this.value);">	
+	{html_options  options=$assign_contacts  selected=$create_step1.quote_by}	
+</select>' data-html="true" data-original-title="Sales list" data-placement="left">I'm not the sales incharge</a>-->
+							</div>
+						</div>
+					</div>	
+				</aside>
+			</div>
+		</div>
+	</div>
+</div>

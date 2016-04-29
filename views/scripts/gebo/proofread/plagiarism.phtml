@@ -1,0 +1,69 @@
+{literal}
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#refusemail").removeData('modal');
+    $(".pop_over").popover({trigger: 'hover'});
+});
+function palgiarismCutoff()
+{
+    var artpro=$("#apid").val();
+    var cutoff=$("#percent").val();
+    var words=$("#words").val();
+
+    var popBox=$("#light1");
+    var overLay=$("#fade");
+    var target_page = "/proofread/contentplagiarism?artprocessId="+artpro+"&cutoff="+cutoff+"&words="+words;
+
+    $.post(target_page, function(data){
+        popBox.html(data);
+    });
+}
+</script>
+{/literal}
+
+<table id="grptabledetails" class="table btn-gebo">
+	<tr>
+		<td><b>Article :</b></td>
+		<td>{$ArtPro_detail[0].title}</td>
+		<td><b>Words Grouping :</b></td>
+		<td><input type="text" name="words" id="words" size="4" value="{$words_value}" /></td>
+	</tr>
+	<tr>
+		<td><b>Document name :</b></td>
+		<td>{$ArtPro_detail[0].article_name|utf8_encode}</td>
+		<td><b>Percent cut-off :</b></td>
+		<td><input type="text" name="percent" id="percent" size="4" value="{$percent_value}" /></td>
+	</tr>
+	<tr>
+		<td><b>Writer :</b></td>
+		<td>{$ArtPro_detail[0].first_name}&nbsp;{$ArtPro_detail[0].last_name}</td>
+        <td></td>
+        <td><button type="button" name="show" class="btn btn-info" onClick="return palgiarismCutoff();">Show</button></td>
+	</tr>
+</table>
+<table class="table">
+  <thead>
+    <th>Document</th>
+    <th>Article Title</th>
+    <th>Writer</th>
+    <th>Status</th>
+    <th>Percent</th>
+  </thead>
+{foreach from=$plag_array item=plag}
+<tr>
+    <td>{$plag.article_name}</td>
+    <td>{$plag.title}</td>
+    <td>{$plag.first_name}&nbsp;{$plag.last_name}</td>
+    <td>{$plag.status}</td>
+    <td>
+        {if $plag.percent>0}
+            <a class="pop_over" data-placement="top" data-original-title="Plagiarism Details" data-content="{$plag.common_content|utf8_encode}">{$plag.percent}</a>
+        {else}
+            {$plag.percent}
+        {/if}
+    </td>
+</tr>
+<tr><td colspan="5"><hr></td></tr>
+{/foreach}
+</table>
+<input type="hidden" name="apid" id="apid" value="{$apid}" />

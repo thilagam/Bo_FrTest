@@ -1,0 +1,156 @@
+{literal}
+<script type="text/javascript" charset="ISO-8859-1" src="/BO/theme/gebo/js/custom/validations_poll.js"></script>
+<script type="text/javascript">
+
+	$(function(){
+	var today = new Date(); 
+       $('#poll_date').datetimepicker({
+			showSecond: true,
+			timeFormat: 'hh:mm:ss',
+			//minDate: new Date(),
+			stepHour: 1,
+			stepMinute: 1,
+			stepSecond: 10,
+			timeOnlyTitle: 'Choisir une heure',
+			timeText: 'Heure',
+			hourText: 'Heures',
+			minuteText: 'Minutes',
+			secondText: 'Secondes',
+			currentText: 'Maintenant',
+			closeText: 'Termin&eacute;',
+
+		});
+		
+		 $('#publish_time').datetimepicker({
+			showSecond: true,
+			timeFormat: 'hh:mm:ss',
+			numberOfMonths: 1,
+			minDate: 1,
+			maxDate: new Date(today.getTime() + (24 * 60 * 60 * 1000)),   
+			ampm: false,
+			stepHour: 1,
+			hourMin:10,
+			hourMax:today.getHours(),
+			hour:today.getHours(),
+			minute:today.getMinutes(),
+			second:today.getSeconds(),
+			timeOnlyTitle: 'Choisir une heure',
+			timeText: 'Heure',
+			hourText: 'Heures',
+			minuteText: 'Minutes',
+			secondText: 'Secondes',
+			currentText: 'Maintenant',
+			closeText: 'Termin&eacute;',
+
+		});
+	});
+	
+	$(document).ready(function(){
+		$("#client_list").chosen({ allow_single_deselect: true });	
+		$("#categoryedit").chosen({ allow_single_deselect: true });	
+		$('#send_mailcheck').toggleButtons({
+			label:{enabled: "Oui",disabled: "Non"}
+		});
+	});	  
+	
+	//Spec re upload
+	$(function(){
+			var btnUpload=$('#uploadspec');
+			var status=$('#fname');
+
+			new AjaxUpload(btnUpload, {
+				action: 'uploadpollspecdoc',
+				name: 'uploadfile',
+
+				onSubmit: function(file, ext){
+				 if (! (ext && /^(doc|docx|rtf|zip)$/.test(ext))){
+						status.html('Uniquement doc, docx, zip et rtf').css('color','#FF0000');
+						return false;
+					}
+					status.html('<img src="/FO/images/loading.gif" />');
+				},
+
+				onComplete: function(file, response){ 
+					if(response!="error"){
+					status.html('').css('color','#000000');
+						var fname=response.split("#"); 
+						$('#poll_spec_file').val(fname[1]);
+						$('#fname').html(fname[1]);
+					}
+				}
+			 });
+	});
+	
+</script>
+
+{/literal}	
+
+<form name="pollform" method="post">
+	<table cellpadding="4" cellspacing="2" width="85%" align="center">
+		<tr>
+			<td valign="top">Client</td>
+			<td>{html_options name=client_list id=client_list options=$client_list selected=$poll_detail[0].client }
+			</td>
+		</tr>
+		<tr>
+			<td>Nom de cet appel d'offres</td>
+			<td>
+				<input type="text" name="title" id="title1" value="{$poll_detail[0].title|utf8_encode|stripslashes}"/>
+				<span id="title_err"></span>
+			</td>
+		</tr>
+		<tr>
+			<td>Date fin sondage</td>
+			<td><input type="text" id="poll_date" name="poll_date" readonly="readonly" value="{$poll_detail[0].poll_date|date_format:'%d/%m/%Y %H:%M:%S'}"/></td>
+		</tr>
+		<tr>
+			<td>Cat&eacute;gorie </td>
+			<td>{html_options name=categoryedit id=categoryedit options=$EP_ARTICLE_CATEGORY selected=$poll_detail[0].category} </td>
+		</tr>
+		<tr>
+			<td valign="top">Brief sondage</td>
+			<td valign="top">
+				<div id="uploadspec">
+					<span class="btn btn-file">
+							<span class="fileupload-new">Change poll brief</span>
+							<input type="file" name="file" id="file" />
+					</span>	
+					<br>
+						<a href="/ao/downloadbrief2?submenuId=ML2-SL17&poll={$poll_detail[0].id}&smic=1" target="_blank" class="hint--left hint--info" data-hint="Download"><div id="fname">{$poll_detail[0].file_name|utf8_encode}</div></a>
+			   </div>
+			</td>
+		</tr>
+		{if $poll_detail[0].created_by!='client'}
+		<tr>
+			<td>Nb de r&eacute;ponses max</td>
+			<td> 
+				<input type="text" id="poll_max" name="poll_max" value="{$poll_detail[0].poll_max}" class="span1"/>
+			</td>
+		</tr>
+		<tr>
+			<td>Date publication</td>
+			<td> <input type="text" id="publish_time" name="publish_time" readonly="readonly" value="{$poll_detail[0].publish_time|date_format:'%d/%m/%Y %H:%M:%S'}"/>
+				<span id="publishtime_err"></span>
+			</td>
+		</tr>
+		<tr>
+			<td>Pr&eacute;venir par email</td>
+			<td>
+				<div id="send_mailcheck">
+					<input type="checkbox" name="send_mail" id="send_mail" value="yes" {if $send_mail=="on"}checked="checked"{/if}/>
+				</div>
+			</td>
+		</tr>
+		{/if}
+		<tr><td>&nbsp;</td></tr>
+		<tr>
+			<td colspan="2" align="center">
+				<input type="submit" name="submit_poll" value="Update" class="btn btn-info" onClick="return editsubmit();"></input>
+				<input type="button" name="cancel" value="Cancel" data-dismiss="modal" class="btn btn-info"></input>
+			</td>
+		</tr>
+		<tr><td>&nbsp;</td></tr>
+	</table>
+<input type="hidden" name="poll" id="poll" value="{$poll_detail[0].id}" />
+<input type="hidden" id="poll_spec_file" name="poll_spec_file" value="" />
+</form>

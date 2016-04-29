@@ -1,0 +1,6 @@
+<?xml version="1.0"?><plag>
+  <article>
+    <title id="resultFile">Stencils_plagiarism_21121.xlsx</title>
+    <results><result class="bgplain" id="1" onclick="plagres(1)" tokenname="Key1"><url><b>URL :</b><p class="bluelink">NoResult</p></url><percentage><b>PLAG PERCENTAGE :</b><p class="yellowlink">0.0</p></percentage><content><b>content:</b><p class="contentwrap"></p></content></result><result class="bgplain" id="2" onclick="plagres(2)" tokenname="Key2"><url><b>URL :</b><p class="bluelink">NoResult</p></url><percentage><b>PLAG PERCENTAGE :</b><p class="yellowlink">0.0</p></percentage><content><b>content:</b><p class="contentwrap"></p></content></result></results>
+  </article>
+</plag>

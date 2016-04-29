@@ -1,0 +1,81 @@
+{literal}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#pResults').html('<tr><td colspan="7"><span class="ploader"><img alt="" src="/BO/theme/gebo/img/ajax_loader.gif"></span></td></tr>');
+    $.post( "/seotool/subject-proposals?load=1", function( data ) {
+        $('#pResults').html(data);
+        $('#subject_proposals').dataTable({
+            "sPaginationType": "bootstrap",
+            "sDom": "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+            "oTableTools": {
+                "aButtons": [
+                    "copy",
+                    "print",
+                    {
+                        "sExtends":    "collection",
+                        "sButtonText": 'Sauvegarder <span class="caret" />',
+                        "aButtons":    [ "csv", "xls", "pdf" ]
+                    }
+                ],
+                "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+            }
+        });
+    });
+});
+
+function pdownload(fil)
+{
+    $('#dwn'+fil).hide();
+    $('#del'+fil).css("background-color", "#fff");
+    $('#del'+fil).html('<img width="16px" height="16px" border="0" src="/BO/theme/gebo/img/small-loading.gif">');
+    $.post( "/seotool/subject-proposals?download=1&id="+fil, function( data ) {
+        data = data.trim();
+        $('#del'+fil).html('');
+        $('#dwn'+fil).show();
+        if(data)
+            window.location = '/BO/download_proposal.php?tool=subjecttool&file='+data;
+    });
+}
+</script>
+<style>
+    .table, #seoviewresultspage .heading, #seoviewresultspage .row {
+        margin: auto!important;
+        width: 100%!important;
+    }
+    .ploader{
+        float: left;
+        text-align: center;
+        width: 100%;
+        margin-left: -10px;
+    }
+    table#subject_proposals td.dataTables_empty{
+        text-align:center!important;
+    }
+</style>
+{/literal}
+
+<div class="row-fluid">
+  <div class="span12" style="">
+    <h3 class="heading">Subject tool results</h3>
+        <table id="subject_proposals" class="table table-bordered table-striped table_vam">
+            <thead>
+            <tr>
+                <th>SL.NO</th>
+                <th>Site</th>
+                <th>Limit</th>
+                <th>Email</th>
+                <th>Version</th>
+                <th>Creation date</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody id="pResults">
+            
+            </tbody>
+        </table>
+   </div>
+</div>
+
+<div id="data">
+    
+</div>

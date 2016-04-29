@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>{$page_title}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" type="image/x-icon" href="/FO/favicon.ico" />
+		{foreach from=$javascriptList item=javascript}
+			<script language="JavaScript" type="text/javascript" src="/FO/script/{$javascript}"></script>
+		{/foreach}
+
+		{foreach from=$cssList item=css}
+			<link href="/FO/css/{$css}" type="text/css" rel="stylesheet" />
+		{/foreach}
+		<!-- Le styles -->
+
+		<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+		<!--[if lt IE 9]>
+		  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+	{if $clientidentifier!=""}
+	<body id="client" class="secondnav-on">
+	{else}
+	<body>	
+	{/if}
+		{foreach from=$headerList item=frame}
+			{include file="$frame"}
+		{/foreach}
+		
+		{foreach from=$mainList item=frame}
+			{include file="$frame"}
+		{/foreach} 	
+		
+		{foreach from=$footerList item=frame}
+			{include file="$frame"}
+		{/foreach}
+	
+	<script>
+		// tooltip activation
+		$("[rel=tooltip]").tooltip();
+		$("[rel=popover]").popover();
+		
+	
+	     
+	</script>
+	
+  </body>
+</html>
+

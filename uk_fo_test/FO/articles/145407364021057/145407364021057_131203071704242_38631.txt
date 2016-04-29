@@ -1,0 +1,9 @@
+
+Assigned by arun:
+    • change Email template for  email sent during creation on contract
+      https://trello.com/c/99tBWsTY/95-clean-contract-page (PENDING)
+
+    • select the contact client and also save it in the DB(By defult msin
+      contact to be selected) and displayed in the email as well.(PENDING)
+
+

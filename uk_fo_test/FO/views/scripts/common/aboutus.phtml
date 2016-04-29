@@ -1,0 +1,20 @@
+<section class="gray">
+    <div class="container padding pull-top">
+		<div class="center-block">
+			<h1>Meet the team</h1>
+		</div>
+		<div class="page-inner">
+			<h2>Meet the team</h2>
+			
+			{foreach from=$teamlist item=team_item}		
+				<hr>
+				<blockquote>{$team_item.name}</blockquote>
+				<p class="org muted">{$team_item.designation}</p>
+				{$team_item.description}
+			
+			{/foreach}	
+			<hr>
+		</div>	 
+		<p>&nbsp;</p>		
+	</div>   
+</section>

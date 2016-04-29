@@ -1,0 +1,158 @@
+{if $pages->pageCount gt 1}
+    <ul>
+        <!-- Previous page link -->
+        { if isset($pages->previous)}
+            {if $smarty.get|@count eq 1 && $smarty.get.page}
+				<li><a href="{$pageURL}?page={$pages->previous}">&laquo;</a></li>
+			{elseif $smarty.get|@count gt 0}
+				<li><a href="{$pageURL}&page={$pages->previous}">&laquo;</a></li>
+			{else}	
+				<li><a href="{$pageURL}?page={$pages->previous}">&laquo;</a></li>
+			{/if}	
+		{else}
+			<li class="disabled"><a href="#">&laquo;</a></li>
+        {/if}	
+		
+		{assign var=adjacents value=2}
+		{if $pages->pageCount < (7 + ($adjacents * 2))}
+			{math equation="x+1" x=$pages->pageCount assign=total}
+			{section name=counter loop=$total start=1}
+						
+				{if $smarty.section.counter.index != $pages->current}
+					{if $smarty.get|@count eq 1 && $smarty.get.page}
+						<li><a href="{$pageURL}?page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a></li>
+					{elseif $smarty.get|@count gt 0}
+						<li><a href="{$pageURL}&page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a></li>
+					{else}
+						<li><a href="{$pageURL}?page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a></li>
+					{/if}		
+				{else}
+					 <li class="active"><a href="#">{$smarty.section.counter.index}</a></li>
+				{/if}
+			
+			{/section}
+			
+		{elseif $pages->pageCount > (7 + ($adjacents * 2))}
+            
+                
+				{if $pages->current < (1 + ($adjacents * 2))}     
+                
+                    {math equation="(4+(x* 2))" x=$adjacents assign=total}
+					{section name=counter loop=$total start=1 }
+						{if $smarty.section.counter.index != $pages->current}
+							{if $smarty.get|@count eq 1 && $smarty.get.page}
+								<li><a href="{$pageURL}?page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a></li>
+							{elseif $smarty.get|@count gt 0}
+								<li><a href="{$pageURL}&page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a></li>
+							{else}
+								<li><a href="{$pageURL}?page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a></li>
+							{/if}		
+						{else}
+							 <li class="active"><a href="#">{$smarty.section.counter.index}</a></li>
+						{/if}	 
+					{/section}
+						<li class="disabled"><a href="#">...</a></li>		
+						{if $smarty.get|@count eq 1 && $smarty.get.page}
+							<li><a href="{$pageURL}?page={$pages->pageCount-1}">{$pages->pageCount-1}</a></li>
+							<li><a href="{$pageURL}?page={$pages->pageCount}">{$pages->pageCount}</a></li> 
+						{elseif $smarty.get|@count gt 0}
+							<li><a href="{$pageURL}&page={$pages->pageCount-1}">{$pages->pageCount-1}</a></li>
+							<li><a href="{$pageURL}&page={$pages->pageCount}">{$pages->pageCount}</a></li> 
+						{else}	
+							<li><a href="{$pageURL}?page={$pages->pageCount-1}">{$pages->pageCount-1}</a></li>
+							<li><a href="{$pageURL}?page={$pages->pageCount}">{$pages->pageCount}</a></li> 
+						{/if}	
+						
+				                
+                {elseif ($pages->pageCount-($adjacents * 2)) > $pages->current && $pages->current > ($adjacents * 2)}
+					{if $smarty.get|@count eq 1 && $smarty.get.page}
+						<li><a href="{$pageURL}?page=1">1</a></li>
+						<li><a href="{$pageURL}?page=2">2</a></li>
+					{elseif $smarty.get|@count gt 0}	
+						<li><a href="{$pageURL}&page=1">1</a></li>
+						<li><a href="{$pageURL}&page=2">2</a></li>
+					{else}	
+						<li> <a href="{$pageURL}?page=1">1</a></li>
+						<li><a href="{$pageURL}?page=2">2</a></li>
+					{/if}	
+                    <li class="disabled"><a href="#">...</a></li>
+					{math equation="x+y+1" x=$pages->current y=$adjacents assign=total}
+					{math equation="(x-y)" x=$pages->current y=$adjacents assign=start}
+					
+					{section name=counter loop=$total start=$start}
+						{if $smarty.section.counter.index != $pages->current}
+							{if $smarty.get|@count eq 1 && $smarty.get.page}
+								<li><a href="{$pageURL}?page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a></li>
+							{elseif $smarty.get|@count gt 0}
+								<li><a href="{$pageURL}&page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a></li>
+							{else}
+								<li><a href="{$pageURL}?page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a> </li>	
+							{/if}		
+						{else}
+							 <li class="active"><a href="#">{$smarty.section.counter.index}</a></li>
+						{/if}	 
+							 
+					{/section}
+					<li class="disabled"><a href="#">...</a></li>		
+					{if $smarty.get|@count eq 1 && $smarty.get.page}
+						<li><a href="{$pageURL}?page={$pages->pageCount-1}">{$pages->pageCount-1}</a></li>
+						<li><a href="{$pageURL}?page={$pages->pageCount}">{$pages->pageCount}</a></li> 
+					{elseif $smarty.get|@count gt 0}
+						<li><a href="{$pageURL}&page={$pages->pageCount-1}">{$pages->pageCount-1}</a></li>
+						<li><a href="{$pageURL}&page={$pages->pageCount}">{$pages->pageCount}</a></li> 
+					{else}	
+						<li><a href="{$pageURL}?page={$pages->pageCount-1}">{$pages->pageCount-1}</a></li>
+						<li><a href="{$pageURL}?page={$pages->pageCount}">{$pages->pageCount}</a></li> 
+					{/if}	
+                
+				{else}
+                
+                    {if $smarty.get|@count eq 1 && $smarty.get.page}
+						<li> <a href="{$pageURL}?page=1">1</a></li>
+						<li> <a href="{$pageURL}?page=2">2</a></li>
+					{elseif $smarty.get|@count gt 0}	
+						<li><a href="{$pageURL}&page=1">1</a></li>
+						<li><a href="{$pageURL}&page=2">2</a></li>
+					{else}	
+						<li><a href="{$pageURL}?page=1">1</a></li>
+						<li><a href="{$pageURL}?page=2">2</a></li>
+					{/if}
+                    <li class="disabled"><a href="#">...</a></li>
+					{math equation="(x-(2+(y*2)))" x=$pages->pageCount y=$adjacents assign=start }
+					{math equation="x+1" x=$pages->pageCount assign=total}
+					
+					{section name=counter loop=$total start=$start}
+						{if $smarty.section.counter.index != $pages->current}
+							{if $smarty.get|@count eq 1 && $smarty.get.page}
+								<li><a href="{$pageURL}?page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a></li>
+							{elseif $smarty.get|@count gt 0}
+								<li><a href="{$pageURL}&page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a></li>
+							{else}
+								<li><a href="{$pageURL}?page={$smarty.section.counter.index}">{$smarty.section.counter.index}</a> </li>	
+							{/if}		
+						{else}
+							 <li class="active"><a href="#">{$smarty.section.counter.index}</a></li>
+						{/if}	 
+							 
+					{/section}	
+					
+                {/if}
+		
+            
+		{/if}	
+		
+        <!-- Next page link -->
+        {if isset($pages->next)}
+			{if $smarty.get|@count eq 1 && $smarty.get.page}
+				<li><a href="{$pageURL}?page={$pages->next}">&raquo;</a></li>
+			{elseif $smarty.get|@count gt 0}
+				<li><a href="{$pageURL}&page={$pages->next}">&raquo;</a></li>
+			{else}	
+				<li><a href="{$pageURL}?page={$pages->next}">&raquo;</a></li>
+			{/if}	
+		{else}
+		 <li class="disabled"><a href="#">&raquo;</a></li>
+		
+        {/if}
+	</ul>
+{/if}

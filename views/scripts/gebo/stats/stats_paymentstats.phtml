@@ -1,0 +1,772 @@
+{literal}
+<script type="text/javascript" >
+
+    $(document).ready(function() {
+		 $(".uni_style").uniform();
+         if ($('#contrib-payments-list').length) {
+            $('#contrib-payments-list').dataTable({
+                "sPaginationType" : "bootstrap",
+                "iDisplayLength" : 20,
+                "sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+                "aoColumns" : [
+                {"sType" : "string"},
+                {"sType" : "string"}, 
+                {"sType" : "string"}, 
+                {"sType" : "formatted-num"},
+                {"sType" : "date-euro"} 
+               ],
+               
+                "aaSorting" : [[1, "asc"]],
+                "oTableTools" : {
+                    "aButtons" : ["copy", "print", {
+                        "sExtends" : "collection",
+                        "sButtonText" : 'Save <span class="caret" />',
+                        "aButtons" : ["csv", "xls", "pdf"]
+                    }],
+                    "sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        }
+        if ($('#client-payments-list').length) {
+            $('#client-payments-list').dataTable({
+                "sPaginationType" : "bootstrap",
+                "iDisplayLength" : 20,
+                "sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+                "aoColumns" : [
+                {"sType" : "string"},
+                {"sType" : "string"}, 
+                {"sType" : "formatted-num"},
+                {"sType" : "formatted-num"},
+                {"sType" : "string"}, 
+                {"sType" : "date-euro"} 
+               ],
+                "aaSorting" : [[1, "asc"]],
+                "oTableTools" : {
+                    "aButtons" : ["copy", "print", {
+                        "sExtends" : "collection",
+                        "sButtonText" : 'Save <span class="caret" />',
+                        "aButtons" : ["csv", "xls", "pdf"]
+                    }],
+                    "sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        }
+        if ($('#contrib-validated-list').length) {
+            $('#contrib-validated-list').dataTable({
+                "sPaginationType" : "bootstrap",
+                "iDisplayLength" : 20,
+                "sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+                "aoColumns" : [
+                {"sType" : "string"},
+                {"sType" : "string"}, 
+                {"sType" : "string"},
+                {"sType" : "formatted-num"},
+                {"sType" : "formatted-num"},
+                {"sType" : "date-euro"} 
+               ],
+                "aaSorting" : [[1, "asc"]],
+                "oTableTools" : {
+                    "aButtons" : ["copy", "print", {
+                        "sExtends" : "collection",
+                        "sButtonText" : 'Save <span class="caret" />',
+                        "aButtons" : ["csv", "xls", "pdf"]
+                    }],
+                    "sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        }
+        if ($('#contrib-disapproved-list').length) {
+            $('#contrib-disapproved-list').dataTable({
+                "sPaginationType" : "bootstrap",
+                "iDisplayLength" : 20,
+                "sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+                "aoColumns" : [
+                {"sType" : "string"},
+                {"sType" : "string"}, 
+                {"sType" : "string"},
+                {"sType" : "formatted-num"},
+                
+                {"sType" : "date-euro"} 
+               ],
+                "aaSorting" : [[1, "asc"]],
+                "oTableTools" : {
+                    "aButtons" : ["copy", "print", {
+                        "sExtends" : "collection",
+                        "sButtonText" : 'Save <span class="caret" />',
+                        "aButtons" : ["csv", "xls", "pdf"]
+                    }],
+                    "sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        }
+        if ($('#contrib-closed-list').length) {
+            $('#contrib-closed-list').dataTable({
+                "sPaginationType" : "bootstrap",
+                "iDisplayLength" : 20,
+                "sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+                "aoColumns" : [
+                {"sType" : "string"},
+                {"sType" : "string"}, 
+                {"sType" : "string"},
+                {"sType" : "formatted-num"},
+                
+                {"sType" : "date-euro"} 
+               ],
+                "aaSorting" : [[1, "asc"]],
+                "oTableTools" : {
+                    "aButtons" : ["copy", "print", {
+                        "sExtends" : "collection",
+                        "sButtonText" : 'Save <span class="caret" />',
+                        "aButtons" : ["csv", "xls", "pdf"]
+                    }],
+                    "sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        }
+        if ($('#client-list').length) {
+            $('#client-list').dataTable({
+                "sPaginationType" : "bootstrap",
+                "iDisplayLength" : 20,
+                "sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+                "aoColumns" : [
+                {"sType" : "formatted-num"},
+                {"sType" : "string"},
+                {"sType" : "string"}, 
+                {"sType" : "string"},
+                {"sType" : "date-euro"} 
+               ],
+                "aaSorting" : [[1, "asc"]],
+                "oTableTools" : {
+                    "aButtons" : ["copy", "print", {
+                        "sExtends" : "collection",
+                        "sButtonText" : 'Save <span class="caret" />',
+                        "aButtons" : ["csv", "xls", "pdf"]
+                    }],
+                    "sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        }
+        if ($('#contrib-list').length) {
+            $('#contrib-list').dataTable({
+                "sPaginationType" : "bootstrap",
+                "iDisplayLength" : 20,
+                "sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+                "aoColumns" : [
+                {"sType" : "formatted-num"},
+                {"sType" : "string"},
+                {"sType" : "string"},
+                {"sType" : "string"}, 
+                {"sType" : "string"},
+                {"sType" : "date-euro"} 
+               ],
+                "aaSorting" : [[1, "asc"]],
+                "oTableTools" : {
+                    "aButtons" : ["copy", "print", {
+                        "sExtends" : "collection",
+                        "sButtonText" : 'Save <span class="caret" />',
+                        "aButtons" : ["csv", "xls", "pdf"]
+                    }],
+                    "sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        }
+
+        if ($('#inv-list').length) {
+            $('#inv-list').dataTable({
+                "sPaginationType" : "bootstrap",
+                "iDisplayLength" : 20,
+                "sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+                "aoColumns" : [
+                {"sType" : "string"},
+                {"sType" : "formatted-num"},
+                {"sType" : "string"},
+                {"sType" : "formatted-num"},
+                {"sType" : "formatted-num"},
+                {"sType" : "formatted-num"},
+                {"sType" : "date-euro"},
+                {"sType" : "date-euro"},
+                {"sType" : "string"}
+               ],
+                "aaSorting" : [[6, "asc"]],
+                "oTableTools" : {
+                    "aButtons" : ["copy", "print", {
+                        "sExtends" : "collection",
+                        "sButtonText" : 'Save <span class="caret" />',
+                        "aButtons" : ["csv", "xls", "pdf"]
+                    }],
+                    "sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        }
+
+         if ($('#inv-list2').length) {
+            $('#inv-list2').dataTable({
+                "sPaginationType" : "bootstrap",
+                "iDisplayLength" : 20,
+                "sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+                "aoColumns" : [
+                {"sType" : "string"},
+                {"sType" : "formatted-num"},
+                {"sType" : "string"},
+                {"sType" : "formatted-num"},
+                {"sType" : "string"}
+                ],
+                "aaSorting" : [[1, "desc"]],
+                "oTableTools" : {
+                    "aButtons" : ["copy", "print", {
+                        "sExtends" : "collection",
+                        "sButtonText" : 'Save <span class="caret" />',
+                        "aButtons" : ["csv", "xls", "pdf"]
+                    }],
+                    "sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                }
+               
+            });
+        }
+		 $("#ong_search").click(function() {
+            $("#search_block").toggle('slow');
+         });
+         $("input[name='search_type']").click(function(){
+           // alert($('input:radio[name=search_type]:checked').val());
+            if($('input:radio[name=search_type]:checked').val()==5){
+                $("#type_1").html('Backend');
+                $("#type_2").html('Frontend');
+                $("#type_4").html('both');
+                $("#type_3").hide('slow');
+            }else if($('input:radio[name=search_type]:checked').val()==6){
+                $("#type_1").html('Senior');
+                $("#type_2").html('Junior');
+                $("#type_3").show('slow');
+                $("#type_4").html('All');
+            }else if($('input:radio[name=search_type]:checked').val()==7){
+                $("#type_1").html('Paid');
+                $("#type_2").html('Not paid');
+                $("#type_3").hide('slow');
+                $("#type_4").html('Both');
+            }else{
+                $("#type_1").html('Premium');
+                $("#type_2").html('Liberte');
+                $("#type_3").hide('slow');
+                $("#type_4").html('both');
+            }
+            //$("#type_1").toggle('slow');
+            //$("#type_2").toggle('slow');
+         });
+         $('#dp_start').datepicker({
+            language : 'fr'
+        }).on('changeDate', function(ev) {
+            var dateText = $(this).val();
+            //data('date');
+
+            var endDateTextBox = $('#dp_end');
+            if (endDateTextBox.val() != '') {
+                var testStartDate = new Date(dateText);
+                var testEndDate = new Date(endDateTextBox.val());
+                if (testStartDate > testEndDate) {
+                    endDateTextBox.val(dateText);
+                }
+            } else {
+                endDateTextBox.val(dateText);
+            };
+            $('#dp_end').datepicker('setStartDate', dateText);
+            $('#dp_start').datepicker('hide');
+        });
+        $('#dp_end').datepicker({
+            language : 'fr'
+        }).on('changeDate', function(ev) {
+            var dateText = $(this).val();
+            //data('date');
+            var startDateTextBox = $('#dp_start');
+            if (startDateTextBox.val() != '') {
+                var testStartDate = new Date(startDateTextBox.val());
+                var testEndDate = new Date(dateText);
+                if (testStartDate > testEndDate) {
+                    startDateTextBox.val(dateText);
+                }
+            } else {
+                startDateTextBox.val(dateText);
+            };
+            $('#dp_start').datepicker('setEndDate', dateText);
+            $('#dp_end').datepicker('hide');
+        });
+	});
+</script>
+<style>
+    .label{font-size: 12px!important;}
+    .clear{clear:both;}
+    .fill{  height: 0;
+    width: 25px;}
+</style>
+{/literal}
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="heading">Payment Stats&#233;s<a class="btn btn-gebo1" id="ong_search" {if $data.result|@count gt 0}{else}style='display:none;'{/if}>Modify Search</a></h3>
+        <div class="well clearfix" {if $data.result|@count gt 0}style='display:none;'{/if} id="search_block">
+            <div class="row-fluid">
+                <form action="/stats/payment-stats?submenuId={$submenuId}" method="get" id="searchform" name="searchform" >
+                    <div>
+                    <input type="hidden" id="submenuId" name="submenuId"  value="ML5-SL4"/>
+                    <span class="sepV_c">Date </span>
+                    <span class="sepV_c">
+                        <input type="text" placeholder="start date" id="dp_start" name="start_date" readonly data-date-format="dd-mm-yyyy" value=""/>
+                    </span>
+                    <span class="sepV_c">
+                        <input type="text"  placeholder="end date" id="dp_end" name="end_date" readonly data-date-format="dd-mm-yyyy" value=""/>
+                    </span>
+                    </div>
+                    <div class='clear'></div>
+                    <div>
+                     <span id='type' class="sepV_c">Type </span>
+                     <span class='sepV_c'>
+                        
+                                        <label class="uni-radio">
+                                            <input id='' type="radio" class="uni_style" value="1" name="type"  /><span id='type_1'>Premium</span></label>
+                    </span>
+                     <span class='sepV_c'>
+                        
+                                        <label class="uni-radio">
+                                            <input id='' type="radio" class="uni_style" value="0" name="type"  /><span id='type_2'>Liberte</span></label>
+                    </span>
+                    <span id='type_3' class='sepV_c' style='display:none'>
+                        
+                                        <label class="uni-radio">
+                                            <input id='' type="radio" class="uni_style" value="2" name="type"  /><span >Sub-junior</span></label>
+                    </span>
+                    <span class='sepV_c'>
+
+                                        <label class="uni-radio">
+                                            <input id='' type="radio" class="uni_style" value="" name="type" checked='checked' /><span id='type_4'>Both</span></label>
+                    </span>
+                    </div>
+                    <div class='clear'></div>
+                    <div>
+                        <span class="sepV_c" style='margin-right:8px;'>Search</span>
+                        <span class='sepV_c'>
+                            <label class="uni-radio">
+                                <input id='' type="radio" class="uni_style" value="0" name="search_type"  checked='checked'/>Payment info of Writer</label>
+                        </span>
+                    </div>
+                    <div class='clear'></div>
+                    <div>
+                        <span class="sepV_c">&nbsp;<div class='fill'>&nbsp;</div></span>
+                        <span class='sepV_c'>
+                            <label class="uni-radio">
+                                <input id='' type="radio" class="uni_style" value="1" name="search_type"  />Payment info of client</label>
+                        </span>
+                    </div>
+                    <div class='clear'></div>
+
+                    <div>
+                        <span class="sepV_c">&nbsp;<div class='fill'>&nbsp;</div></span>
+                        <span class='sepV_c'>
+                            <label class="uni-radio">
+                                <input id='' type="radio" class="uni_style" value="2" name="search_type"  />Number of articles validated</label>
+                        </span>
+                    </div>
+                    <div class='clear'></div>
+                    <div>
+                        <span class="sepV_c">&nbsp;<div class='fill'>&nbsp;</div></span>
+                        <span class='sepV_c'>
+                            <label class="uni-radio">
+                                <input id='' type="radio" class="uni_style" value="3" name="search_type"  />Number of articles disapproved</label>
+                        </span>
+                    </div>
+                    <div class='clear'></div>
+                    <div>
+                       <span class="sepV_c">&nbsp;<div class='fill'>&nbsp;</div></span>
+                        <span class='sepV_c'>
+                            <label class="uni-radio">
+                                <input id='' type="radio" class="uni_style" value="4" name="search_type"  />Number of articles closed</label>
+                        </span>
+                    </div>
+                    <div class='clear'></div>
+                    <div>
+                        <span class="sepV_c">&nbsp;<div class='fill'>&nbsp;</div></span>
+                        <span class='sepV_c'>
+                            <label class="uni-radio">
+                                <input id='reg_status' type="radio" class="uni_style" value="5" name="search_type"  />No of clients Registered on the Platform </label>
+                        </span>
+                    </div>
+                    <div class='clear'></div>
+                    <div>
+                       <span class="sepV_c">&nbsp;<div class='fill'>&nbsp;</div></span>
+                        <span class='sepV_c'>
+                            <label class="uni-radio">
+                                <input id='search_1' type="radio" class="uni_style" value="6" name="search_type"  />No of writers Registered on the Platform</label>
+                        </span>
+                    </div>
+                    <div class='clear'></div>
+                    <div>
+                       <span class="sepV_c">&nbsp;<div class='fill'>&nbsp;</div></span>
+                        <span class='sepV_c'>
+                            <label class="uni-radio">
+                                <input id='search_1' type="radio" class="uni_style" value="7" name="search_type"  />Invoice Stats</label>
+                        </span>
+                    </div>
+                    <div class='clear'></div>
+                    <div>
+                       <span class="sepV_c">&nbsp;<div class='fill'>&nbsp;</div></span>
+                        <span class='sepV_c'>
+                            &nbsp;
+                        </span>
+                    </div>
+                    <div class='clear'></div>
+                    <div>
+                    <span class="sepV_c">
+                        <span class="sepV_c">&nbsp;<div class='fill'>&nbsp;</div></span>
+                        <button class="btn btn-warning pull-center" id="clear" name="clear" type="button" value="clear" onclick="clearAll();" >
+                            Clear
+                        </button>
+                        <button class="btn btn-primary pull-center" id="search" name="search" type="submit" value="search" >
+                            Search
+                        </button>
+                         </span>
+                    </div>    
+                    <!--</div>-->
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="span12" style='margin-left:0;'>
+        {if $data|@count gt 0}
+
+        <h3 class="heading">Result</h3>
+        <div class="well clearfix" id="result_block">
+        {switch $data.search_type}
+            {case '0'}
+                {assign var='total_royalties' value=0}
+                <table class="table table-striped table-bordered dTableR" id='contrib-payments-list'>
+                <thead>
+                    <th>Article Title</th>
+                    <th>Writer Email</th>
+                    <th>Writer Name</th>
+                    <th>Royalties</th>
+                    <th>Date</th>
+
+                </thead>
+                <tbody>
+                  
+                    {foreach from=$data.result[0] key=contrib_key item=payment_item name=payment_loop}
+                    <tr>
+                        <td>{$payment_item.title}</td>
+                        <td>{$payment_item.email}</td>
+                        <td>{$payment_item.first_name} &nbsp;{$payment_item.last_name}</td>
+                        <td>{$payment_item.Contrib_share}</td>
+                        <td>{$payment_item.created_at|date_format:'%d/%m/%Y %H:%M'}</td>
+                    </tr>
+                    {assign var='total_royalties' value=$total_royalties+$payment_item.Contrib_share}
+                    {/foreach}
+                </tbody>
+                </table>
+                {if $total_royalties neq 0}
+                     <div style="width: 100%;float: left;"><h3>Total Articles : {$data.result[0]|@count } </h3><h3> Total Contributers Royalties Paid : { $total_royalties }</h3></div>
+                {/if}
+            {/case}
+            {case '1'}
+                {assign var='total_amount_paid' value=0}
+                {assign var='total_amount' value=0}
+                {assign var='total_tax' value=0}
+                <table class="table table-striped table-bordered dTableR" id='client-payments-list'>
+                    <thead>
+                        <th>Article Title</th>
+                        <th>Client Email</th>
+                        <th>Article Price</th>
+                       
+                        <th>Total Price with Tax</th>
+                        <th>Payment Type</th>
+                        <th>Date</th>
+
+                    </thead>
+                    <tbody>
+                      
+                        {foreach from=$data.result[0] key=contrib_key item=payment_item name=payment_loop}
+                        <tr>
+                            <td>{$payment_item.title}</td>
+                            <td>{$payment_item.email}</td>
+                            <td>{$payment_item.amount}</td>
+                           
+                            <td>{$payment_item.amount_paid}</td>
+                            <td>{$payment_item.type}</td>
+                            <td>{$payment_item.created_at|date_format:'%d/%m/%Y %H:%M'}</td>
+                        </tr>
+                        {assign var='total_amount_paid' value=$total_amount_paid+$payment_item.amount_paid}
+                        {assign var='total_amount' value=$total_amount+$payment_item.amount}
+                        {assign var='total_tax' value=$total_tax+$payment_item.tax}
+                        {/foreach}
+                    </tbody>
+                </table>
+                {if $data.result[0]|@count neq 0}
+                     <div style="width: 100%;float: left;">
+                        <h3>Total Articles : {$data.result[0]|@count } </h3>
+                        <h3> Total Amount Paid with Tax : { $total_amount_paid }</h3>
+                        <h3> Total Amount Paid without Tax : { $total_amount }</h3>
+                        <h3> Total Amount Paid as a Tax : { $total_tax }</h3>
+                    </div>
+                {/if}
+                {/case}
+            {case '2'}
+                {assign var='total_amount_paid' value=0}
+                {assign var='total_amount_requested' value=0}
+                
+                <table class="table table-striped table-bordered dTableR" id='contrib-validated-list'>
+                <thead>
+                    <th>Article Title</th>
+                    <th>AO Title</th>
+                    <th>Writer Email</th>
+                    <th>Writer Price</th>
+                    <th>EP Price</th>
+                    <th>Date</th>
+
+                </thead>
+                <tbody>
+                    {foreach from=$data.result[0] key=contrib_key item=payment_item name=payment_loop}
+                        <tr>
+                            <td>{$payment_item.article_title}</td>
+                            <td>{$payment_item.ao_title}</td>
+                            <td>{$payment_item.email}</td>
+                            <td>{$payment_item.price_user}</td>
+                            <td>{$payment_item.amount}</td>
+                            <td>{$payment_item.created_at|date_format:'%d/%m/%Y %H:%M'}</td>
+                        </tr>
+                        {assign var='total_amount_paid' value=$total_amount_paid+$payment_item.amount}
+                        {assign var='total_amount_requested' value=$total_amount_requested+$payment_item.price_user}
+                        
+                        {/foreach}
+                </tbody>
+                </table>
+                {if $data.result[0]|@count neq 0}
+                     <div style="width: 100%;float: left;">
+                        <h3> Total Articles : {$data.result[0]|@count } </h3>
+                        <h3> Total Amount Requested by Writers : { $total_amount_requested }</h3>
+                        <h3> Total Amount Paid without Tax by EP : { $total_amount_paid }</h3>
+                      
+                    </div>
+                {/if}
+            {/case}
+            {case '3'}
+                
+                {assign var='total_amount_requested' value=0}
+                
+                <table class="table table-striped table-bordered dTableR" id='contrib-disapproved-list'>
+                <thead>
+                    <th>Article Title</th>
+                    <th>AO Title</th>
+                    <th>Writer Email</th>
+                    <th>Writer Price</th>
+                   
+                    <th>Date</th>
+
+                </thead>
+                <tbody>
+                    {foreach from=$data.result[0] key=contrib_key item=payment_item name=payment_loop}
+                        <tr>
+                            <td>{$payment_item.article_title}</td>
+                            <td>{$payment_item.ao_title}</td>
+                            <td>{$payment_item.email}</td>
+                            <td>{$payment_item.price_user}</td>
+                           
+                            <td>{$payment_item.created_at|date_format:'%d/%m/%Y %H:%M'}</td>
+                        </tr>
+                        
+                        {assign var='total_amount_requested' value=$total_amount_requested+$payment_item.price_user}
+                        
+                        {/foreach}
+                </tbody>
+                </table>
+                {if $data.result[0]|@count neq 0}
+                     <div style="width: 100%;float: left;">
+                        <h3> Total Articles : {$data.result[0]|@count } </h3>
+                        <h3> Total Amount Requested by Writers : { $total_amount_requested }</h3>
+                       
+                      
+                    </div>
+                {/if}
+            {/case}
+            {case '4'}
+                
+                {assign var='total_amount_requested' value=0}
+                
+                <table class="table table-striped table-bordered dTableR" id='contrib-closed-list'>
+                <thead>
+                    <th>Article Title</th>
+                    <th>AO Title</th>
+                    <th>Writer Email</th>
+                    <th>Writer Price</th>
+                   
+                    <th>Date</th>
+
+                </thead>
+                <tbody>
+                    {foreach from=$data.result[0] key=contrib_key item=payment_item name=payment_loop}
+                        <tr>
+                            <td>{$payment_item.article_title}</td>
+                            <td>{$payment_item.ao_title}</td>
+                            <td>{$payment_item.email}</td>
+                            <td>{$payment_item.price_user}</td>
+                           
+                            <td>{$payment_item.created_at|date_format:'%d/%m/%Y %H:%M'}</td>
+                        </tr>
+                        
+                        {assign var='total_amount_requested' value=$total_amount_requested+$payment_item.price_user}
+                        
+                        {/foreach}
+                </tbody>
+                </table>
+                {if $data.result[0]|@count neq 0}
+                     <div style="width: 100%;float: left;">
+                        <h3> Total Articles : {$data.result[0]|@count } </h3>
+                        <h3> Total Amount Requested by Writers : { $total_amount_requested }</h3>
+                      
+                      
+                    </div>
+                {/if}
+            {/case}
+            {case '5'}
+                <table class="table table-striped table-bordered dTableR" id='client-list'>
+                <thead>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Verification Status</th>
+                    <th>Date Created</th>
+
+                </thead>
+                <tbody>
+                    {foreach from=$data.result[0] key=contrib_key item=payment_item name=payment_loop}
+                    
+                        <tr>
+                            <td>{counter}</td>
+                            <td>{$payment_item.first_name}  {$payment_item.last_name}</td>
+                            <td>{$payment_item.email}</td>
+                            <td>{$payment_item.verified_status}</td>
+                            <td>{$payment_item.created_at|date_format:'%d/%m/%Y %H:%M'}</td>
+                        </tr>
+                       
+                       
+                        
+                        {/foreach}
+                </tbody>
+                </table>
+                {if $data.result[0]|@count neq 0}
+                     <div style="width: 100%;float: left;">
+                        <h3> Total Clients : {$data.result[0]|@count } </h3>
+                        
+                      
+                      
+                    </div>
+                {/if}
+            {/case}
+            {case '6'}
+                <table class="table table-striped table-bordered dTableR" id='contrib-list'>
+                <thead>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Profile Type</th>
+                    <th>Verification Status</th>
+                    <th>Date Created</th>
+
+                </thead>
+                <tbody>
+                    {foreach from=$data.result[0] key=contrib_key item=payment_item name=payment_loop}
+                    
+                        <tr>
+                            <td>{counter}</td>
+                            <td>{$payment_item.first_name}  {$payment_item.last_name}</td>
+                            <td>{$payment_item.email}</td>
+                            <td>{$payment_item.profile_type}</td>
+                            <td>{$payment_item.verified_status}</td>
+                            <td>{$payment_item.created_at|date_format:'%d/%m/%Y %H:%M'}</td>
+                        </tr>
+                       
+                       
+                        
+                        {/foreach}
+                </tbody>
+                </table>
+                {if $data.result[0]|@count neq 0}
+                     <div style="width: 100%;float: left;">
+                        <h3> Total Contributers : {$data.result[0]|@count } </h3>
+                        
+                      
+                      
+                    </div>
+                {/if}
+            {/case}
+            {case '7'}
+				 <table class="table table-striped table-bordered dTableR" id='inv-list'>
+					<thead>
+						<th>Invoice Id</th>
+						<th>User Id</th>
+						<th>Email</th>
+						<th>Total Invoice</th>
+						<th>Invoice Paid</th>
+						<th>Tax</th>
+						<th>Date Created</th>
+						<th>Paid Date</th>
+						<th>Status</th>
+
+					</thead>
+					<tbody>
+						{foreach from=$data.result[0] key=inv_key item=inv_item name=inv_loop}
+						
+							<tr>
+								<td>{$inv_item.invoiceId}</td>
+								<td>{$inv_item.identifier}</td>
+								<td>{$inv_item.email}</td>
+								<td>{$inv_item.total_invoice|zero_cut:2}</td>
+								<td>{$inv_item.total_invoice_paid|zero_cut:2}</td>
+								<td>{$inv_item.tax|zero_cut:2}</td>
+								<td>{$inv_item.created_at|date_format:'%d/%m/%Y %H:%M'}</td>
+								<td>{if $inv_item.status eq 'Paid'}{$inv_item.updated_at|date_format:'%d/%m/%Y %H:%M'}{else}{/if}</td>
+								<td>{$inv_item.status}</td>
+							</tr>
+						   
+						   
+							
+							{/foreach}
+					</tbody>
+				</table>
+				<div class='clearfix'></div>
+				<div style='margin-top:20px;'></div>
+				<h4 class="heading">Nationality Wise Stats</h4>
+				<table class="table table-striped table-bordered dTableR" id='inv-list2'>
+					<thead>
+						<th>Nationality</th>
+						<th>Sum Of Invoices</th>
+						<th>%</th>
+						<th>Sum Of Invoices After Tax Deduction</th>
+						<th>%</th>
+						
+					</thead>
+					<tfoot>
+						<tr>
+							<th>Total</th>
+							<th>{$data.total.total|zero_cut:2}</th>
+							<th>{if $data.total.total neq 0}100%{else}0%{/if}</th>
+							<th>{$data.total.paid|zero_cut:2}</th>
+							<th>{if $data.total.paid neq 0}100%{else}0%{/if}</th>
+						</tr>
+					</tfoot>
+					<tbody>
+						{foreach from=$data.result[1] key=inv_key2 item=inv_item2 name=inv_loop2}
+							<tr>
+								<td>{$data.nationality[$inv_item2.nationality]}</td>
+								<td>{$inv_item2.total|zero_cut:2}</td>
+								<td>{math assign="$percentage" equation="(x / y) * 100" x=$inv_item2.total y=$data.total.total format="%.2f"}</td>
+								<td>{$inv_item2.paid|zero_cut:2}</td>
+								<td>{math assign="$percentage" equation="(x / y) * 100" x=$inv_item2.paid y=$data.total.paid format="%.2f"}</td>
+							</tr>
+						 {/foreach}
+					</tbody>
+				</table>
+            {/case}
+            {default}
+            Wrong Choice
+        {/switch}
+        {/if}
+    </div>
+    </div>
+</div>

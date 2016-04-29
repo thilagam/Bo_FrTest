@@ -1,0 +1,154 @@
+<link rel="stylesheet" type="text/css" href="/FO/script/contrib/validation-engine/validationEngine.jquery.css"/>
+<script language="JavaScript" type="text/javascript" src="/FO/script/contrib/validation-engine/jquery.validationEngine-fr.js"></script>
+<script language="JavaScript" type="text/javascript" src="/FO/script/contrib/validation-engine/jquery.validationEngine.js"></script>
+<script language="JavaScript" type="text/javascript" src="/FO/script/common/bootstrap-datepicker.js"></script>
+{literal}
+<script type="text/javascript">
+$(document).ready(function(){ 	
+	
+	$("#poll_validate").click(function(e){	
+		//e.preventDefault();	
+		
+		var poll_id=$("#poll_id").val();
+		var poll_cookie='poll_brief_'+poll_id;
+		//alert(poll_cookie);
+		var poll_cookie_value=cookieManager.readCookie(poll_cookie);		
+		if(poll_cookie_value==1)
+		{
+			$("#poll_questions").validationEngine({
+				ajaxFormValidation: true,
+				ajaxFormValidationMethod: 'post',
+				ajaxFormValidationURL: '/contrib/save-poll-response',
+				onAjaxFormComplete: ajaxValidationCallback
+			
+			});			
+		}
+		else
+		{
+			bootbox.alert("You must download and read the client's brief before adding this article to your selection (top right hand in green).");			
+			return false;
+		}
+	});
+    
+});
+// Called once the server replies to the ajax form validation request
+function ajaxValidationCallback(status, form, json, options){
+		//alert(json);
+	if (status === true) {
+		var poll_id=$("#poll_id").val();
+		//alert(poll_id);
+		fnCartDevisModifiers('p_add',poll_id,'','yes');	
+	}
+}
+</script>
+{/literal}
+<br />
+{if $poll_questions | @count gt 0}
+<div class="mod" id="poll_questions_div">
+	<h3 class="offset1" id="question">Questionnaire/ pre-selection quote</h3>
+	<p class="offset1 lead"></p>
+	<form class="offset1 span9" id="poll_questions" method="POST">				
+		<fieldset>
+		{foreach from=$poll_questions item=question name=poll_question}
+			{assign var=question_index value=$smarty.foreach.poll_question.index+1}			
+			{assign var=poll_id value=$question.pollid}
+			{if $question.type eq 'price'}
+				<label><strong>{$question.title}</strong></label>
+				<input type="text" class="span2 validate[required,custom[price] {if $question.maximum},max[{$question.maximum}]{/if}" name="price_user_{$question.id}" id="price_user" value="{$question.answer}"><span class="text-middle"> {$question.currency}(s) </span>
+
+			{elseif $question.type eq 'bulk_price'}
+				<label><strong>{$question.title}</strong></label>
+				<input type="text" class="span2 validate[required,custom[bulk_price]{if $question.maximum},max[{$question.maximum}]{/if},priceRange[#price_user]]" name="bulk_price_user_{$question.id}" id="bulk_price_user" value="{$question.answer}"> <span class="text-middle"> {$question.currency}(s) </span>
+			{elseif $question.type eq 'timing'}
+				<label><strong>{$question.title}</strong></label>
+				<input type="text" class="span1 validate[required,custom[time]]" name="question_{$question.id}" id="question_{$question.id}" value="{$question.answer}"> 
+				<span class="text-middle">
+				{if $question.option eq 'min'}  Minute(s)
+				{elseif $question.option eq 'hour'}  Heure(s)
+				{elseif $question.option eq 'day'}  Jour(s)
+				{/if}
+				</span>	
+				<input type="hidden" name="timing_{$question.id}" id="timing_{$question.id}" value="{$question.option}">				
+			{elseif $question.type eq 'radio'}
+				<label><strong>{$question.title}</strong></label>
+				{foreach from=$question.option key=radio item=option name="radioGroup"}
+					{assign var=radio_index value=$smarty.foreach.radioGroup.index+1}
+					<label class="radio">
+				<input type="radio" class="validate[required]" name="question_{$question.id}" id="radio_{$radio_index}" value="{$radio}" {if $question.answer ==$radio} checked{/if}>
+						{$option}
+					</label>
+				{/foreach}			
+			{elseif $question.type eq 'checkbox'}
+				<label><strong>{$question.title}</strong></label>
+				{foreach from=$question.option key=checkbox item=option name="checkGroup"}
+				{assign var=check_index value=$smarty.foreach.checkGroup.index+1}				
+					<label class="checkbox"><input type="checkbox" class="validate[minCheckbox[1]]" id="check_{$check_index}" name="question_{$question.id}[]" value="{$checkbox}" {if in_array($checkbox, $question.answer)}checked{/if}>{$option}</label>					
+				{/foreach}	
+			{elseif $question.type eq 'range_price'}
+				<label><strong>{$question.title}</strong></label>
+				 <div class="input-prepend input-append">
+					<span class="add-on">{$question.minimum} 
+					{if $question.currency eq 'euro'	}
+						&euro;
+					{else}
+						&pound;
+					{/if}
+					</span>
+					<input class="span2 validate[required,custom[number],max[{$question.maximum}],min[{$question.minimum}]] " id="question_{$question.id}" name="question_{$question.id}" type="text" value="{$question.answer}">
+					<span class="add-on">{$question.maximum} 
+					{if $question.currency eq 'euro'	}
+						&euro;
+					{else}
+						&pound;
+					{/if}
+					</span>
+				</div>
+			{elseif $question.type eq 'calendar'}	
+				<label><strong>{$question.title}</strong></label>
+				{if $question.answer}
+					<div class="input-append date" id="date_limit_{$question.id}" data-date="{$question.answer|date_format:'%d/%m/%Y'}" data-date-format="dd/mm/yyyy" date-startdate="{$smarty.now|date_format:'%d/%m/%Y'}">
+						<input class="validate[required]" type="text" id="idate_limit_{$question.id}" name="date_{$question.id}" readonly value="{$question.answer|date_format:'%d/%m/%Y'}">
+						<span class="add-on"><i class="icon-calendar"></i></span>
+					</div>
+				{else}
+					<div class="input-append date" id="date_limit_{$question.id}" data-date="{$smarty.now|date_format:'%d/%m/%Y'}" data-date-format="dd/mm/yyyy" date-startdate="{$smarty.now|date_format:'%d/%m/%Y'}">
+						<input class="validate[required]" type="text" id="idate_limit_{$question.id}" name="date_{$question.id}" readonly>
+						<span class="add-on"><i class="icon-calendar"></i></span>
+					</div>			
+				{/if}	
+			{/if}				
+		{/foreach}	
+		
+   
+		<input type="hidden" id="poll_id" name="poll_id" value="{$poll_id}">		
+			<hr>
+
+			<button id="poll_validate" type="submit" class="btn btn-primary btn-large">Confirm</button>
+		</fieldset>
+	</form>
+</div>
+<div class="mod" id="poll_questions_div_ok" style="display:none">
+	<div id="free_form">
+		<p class="checked">End of questionnaire</p>
+		<h3 class="pull-center"><span>Thank you. Your answers have been registered</span></h3>
+		<br /><br />
+		<p class="pull-center">
+			<button aria-hidden="true" data-dismiss="modal" class="btn">Go back to offers</button>
+			<a class="btn btn-primary" href="/cart/cart-selection"><i class="icon-list-alt icon-white"></i> See my selection <span class="badge badge-warning" id="cart-selection">0</span></a>
+		</p>
+	</div>
+</div>
+{/if}
+
+{literal}
+<script type="text/javascript">
+		$("[id^=date_limit_]").each(function(i) {
+		var myDate=new Date();		
+		myDate.setDate(myDate.getDate()-1);		
+			$(this).datepicker({
+				format: 'dd/mm/yyyy',
+				startDate: myDate
+			});		
+		});
+</script>
+{/literal}

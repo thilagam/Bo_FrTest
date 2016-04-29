@@ -1,0 +1,589 @@
+{literal}
+
+<script type="text/javascript" >
+
+$(document).ready(function() { 
+
+	$(".favcontribcheck").multiselect();  
+
+    $(".favcontribcheck").multiselectfilter();
+
+	$(".contrib_lang").multiselect();
+
+	$(".contrib_lang").multiselectfilter();
+
+	$(".singleselect").chosen({ disable_search: true  });
+
+	$(".submission").chosen({disable_search: true });
+
+	$('#loadvals').focus(function() {
+
+		if($('#loadvals').val() =="Ins&eacute;rer les titres de chaque article ici en revenant &agrave; la ligne &agrave; chaque fois") 
+
+		  this.value = "";
+
+	});
+	$(".uni_style").uniform(); 
+	/*$( ".uni-style" ).click(function ( event ) {
+		var kids = $(this).attr('id');//closest('input .uni_style').attr('id');
+		//$( event.target ).children().attr('id');
+		alert('HI'+kids);
+	});*/
+	$("input[name*='correction_']").click(function(){
+		
+		var id=$(this).attr('id');
+		var lastChar = id.substr(id.length - 1); 
+		if($('#correction').val()!='on' && $(this).val() == "on"){
+				alert('Go select step 1');
+				$(this).attr("checked", "checked");
+				return false;
+		}
+		//alert(lastChar);
+		if($(this).val() == "on"){
+			$("#correction_price_"+lastChar).show('slow');
+			$("#cost_de_correction_"+lastChar).hide('slow');
+		}else{
+			$("#correction_price_"+lastChar).hide('slow');
+			$("#cost_de_correction_"+lastChar).show('slow');
+		}
+	});
+
+	//$("div[id^='uploadexcel_']").each(function()
+	$("#uploadexcel").click(function()
+	{
+		
+		var btnUpload=$('#uploadexcel');
+		
+		new AjaxUpload(btnUpload, {
+			action: 'uploadartxls',
+			name: 'excelfile',
+			onSubmit: function(file, ext){  
+				if (! (ext && /^(xls|xlsx)$/.test(ext))){
+					// extension is not allowed
+					alert('Only xls file type allowed');
+					return false;
+				}
+			},
+
+			onComplete: function(file, response){//alert(response);
+				var titles=response.split("@@");
+				var lotcount=$("#TotArt").val();
+		
+					var t=0;
+		
+					for(l=1;l<=lotcount;l++)
+					{
+						var artcount=$("#editcounter_"+l).val();
+						for(a=1;a<=artcount;a++)
+						{
+							$("#subtitle_"+(l-1)+"_"+a).val(titles[t]);
+							t++;
+						}
+					}
+				/*for(var i=0;i<titles.length;i=i+1){
+						$("#subtitle_"+index+"_"+i).val(titles[i]);
+					}*/
+				} 
+		});
+	});
+
+});
+
+	
+
+	function updatecontriblistarticle(index)
+
+	{
+
+		var cat=$("#contrib_cat_"+index).val();
+
+		var lang=$("select#contrib_lang_"+index).val();
+
+		
+
+		$.ajax({
+
+			  type: 'GET',
+
+			  url: '/ao/updatecontriblistarticle',
+
+			  data: '&category='+cat+'&language='+lang+'&index='+index,
+
+			  
+
+			  success: function(data)
+
+			  {
+
+				$('#contribs_'+index).html(data);
+
+				$(".favcontribcheck").multiselect();
+
+				$(".favcontribcheck").multiselectfilter();
+
+			  }
+
+		  });
+
+	}
+	
+	function addfield(num)
+	{
+		var counter = $("#editcounter_"+num).val();
+	
+		if(counter=="")
+			counter = 1;
+	
+		if (counter > 10) {
+			alert("Only 10 textboxes allowed");
+			return false;  
+		}
+		
+		counter++;
+		num1=num-1;
+		$('<div/>',{'id':'ArticleBoxDiv' + counter}) 
+		.append('Article '+counter+' : ') 
+		.append( $('<input type="text" name="subtitle['+num1+'][]" id="subtitle_'+num1+'_'+counter+'">') ) 
+		.appendTo( '#ArticleBoxesGroup_'+num)       
+		if(counter>1)
+			$("#removebutton_"+num).show();
+		
+		$("#editcounter_"+num).val(counter);
+	}
+	
+	function removefield(num)  
+	{
+		var counter = $("#editcounter_"+num).val();
+		
+		if (counter==1) {
+			alert("Minimum 1 article required");
+			return false;  
+		}
+		$("#ArticleBoxDiv"+counter).hide();
+		counter--
+		$("#editcounter_"+num).val(counter);
+	}
+
+
+	function validateloadlot()
+	{  
+		n=document.getElementById('loadvals').value.replace(/\n/gi,'<br />');
+		
+		var strArray = n.split("<br />");
+		strArray =removeEmptyElem(strArray);
+		var lotcount=$("#TotArt").val();
+		
+		var s=0;
+		//for(i=0;i<strArray.length;i++)
+		//{
+			//document.getElementById('art_title_'+(i+1)).value=strArray[i];
+			for(l=1;l<=lotcount;l++)
+			{
+				var artcount=$("#editcounter_"+l).val();
+				for(a=1;a<=artcount;a++)
+				{
+					$("#subtitle_"+(l-1)+"_"+a).val(strArray[s]);
+					s++;
+				}
+			}
+			
+		//}
+	}
+	
+	function updatecorrectorlistarticle(index)  
+	{
+		if($("#correctiontype").val() == "private")
+		{ 
+			var lang=$("select#language_"+index).val();
+			$.ajax({
+				type: 'GET',
+				url: '/ao/updatecorrectorlistarticle',
+				data: 'language='+lang+'&index='+index,  
+				  
+				success: function(data) 
+				{
+					$('#correctors_'+index).html(data);
+					$(".favcontribcheck").multiselect();
+					$(".favcontribcheck").multiselectfilter();
+				}
+			});
+		}
+	}
+
+</script>
+
+<style>
+
+	input, textarea {text-transform:none !important;}
+
+</style>
+
+{/literal}
+
+<form action="/ao/ao-create3?submenuId=ML2-SL3" name="creation_step2" id="creation_step2" method="POST" enctype="multipart/form-data" >
+
+	<div class="row-fluid">
+
+  		<div class="span12">
+
+    		<h3 class="heading">Cr&eacute;ation d'un appel d'offres
+
+				<span align="right"> 
+
+					<img src="/BO/theme/gebo/img/path-2.png" width="120" height="35" border="0" usemap="#Map" style="float:right;" />
+
+					<map name="Map" id="Map">
+
+					{if $nav_1==1}
+
+						<area shape="circle" coords="18,18,17" href="/ao/ao-create1?submenuId=ML2-SL3"/>
+
+					{/if}
+
+					{if $nav_3==1}
+
+						<area shape="circle" coords="102,17,18" href="/ao/ao-create3?submenuId=ML2-SL3"/>
+
+					{/if}
+
+					</map>
+
+				</span>
+
+			</h3>			
+
+			 
+			<div id="contribsalert" style="color:#FF0000;padding-top:25px;"></div>	  	
+
+			<table align="center" cellpadding="8" cellspacing="5" width="100%" >
+				<tr>
+					<td><strong>Modifier les titres de mes articles avec le formulaire</strong></td>
+				</tr>
+				<tr>
+					<td>
+						<span style="text-transform:none !important;">Insérez le titre de chacun de vos articles dans le champ ci-dessous en allant à la ligne à chaque fois puis cliquez<br> sur "Valider", ou bien télécharger le modèle excel en <a href="/BO/download_excelformat.php">cliquant ici</a>, et uploadez-le une fois complété.</span><br>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table>	
+							<tr>   
+								<td>
+									<textarea name="loadvals" id="loadvals" style="width: 500px; height: 100px; margin-bottom: 10px;"></textarea>
+								</td>
+								<td>
+									<div id="uploadexcel">
+										<span class="btn btn-file btn-warning">
+											<span class="fileupload-new">Upload...</span>
+											<input type="file" name="file" id="file"  class=""  /> 
+										</span>
+										
+									</div><br><br>
+									<button type="button" class="btn btn-warning" value="Load" onclick="validateloadlot();" style="vertical-align:bottom !important;margin-bottom: 12px;">Valider</button> 
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr><td>&nbsp;</td></tr>
+				{section name=article_loop loop=$totalart}  
+				<tr> 
+					<td style="font-weight:bold;">  
+						<span style="text-transform:none !important;vertical-align:top">{$clientname} -</span>&nbsp; 
+						<span style="text-transform:uppercase;vertical-align:top">{$language[$smarty.section.article_loop.index]} -</span>&nbsp;    
+						<select  class="singleselect" name="wtype[]" style="text-transform:none !important;width:120px;">
+							<option value="Rédaction" {if $wtype[$smarty.section.article_loop.index]=="R&eacute;daction"}selected{/if}>R&eacute;daction</option>
+							<option value="Traduction" {if $wtype[$smarty.section.article_loop.index]=="Traduction"}selected{/if}>Traduction</option>
+							<option value="Correction" {if $wtype[$smarty.section.article_loop.index]=="Correction"}selected{/if}>Correction</option>
+						</select>&nbsp;  	
+						<span style="text-transform:none !important;vertical-align:top"> - {$totalart} article(s) -</span> 
+						{assign var="typeval" value=$type[$smarty.section.article_loop.index]}
+						<span style="text-transform:none !important;vertical-align:top"> {$type_array.$typeval|stripslashes} -</span> 	 					
+						<span style="text-transform:none !important;vertical-align:top">LOT {$smarty.section.article_loop.iteration} -</span>
+						<span style="text-transform:none !important;vertical-align:top">{$frnow} </span>
+					</td>
+					<input type="hidden" value="{$wtype[$smarty.section.article_loop.index]}"  id="art_title_{$smarty.section.article_loop.iteration}" name="art_title[]" />
+				</tr>
+				
+				<tr>
+					<td>
+						<table id="art_div_{$smarty.section.article_loop.iteration}" width="90%"  cellspacing="2" cellpadding="0" style=" background-color: #F5D0A9;border: 1px solid rgb(225, 225, 232);">
+							<tr>
+								<td valign="top" rowspan="18" width="10%" style="padding:10px"> </td>
+								<td>&nbsp;</td>
+								<td><span id="art_{$smarty.section.article_loop.iteration}_notice"></span></td>
+								<td style="vertical-align:top;"><div class="holder-link-sup"></div></td>
+							</tr>
+							
+							{if $articletype=="lot"}
+							<tr align="center"> 
+								<td style="background: rgb(247, 247, 249);padding:15px;border-radius:10px;">
+									<div id="ArticleBoxesGroup_{$smarty.section.article_loop.iteration}">
+										{assign var=loop value=1} 
+										{while $loop <= $sub_article[$smarty.section.article_loop.index]} 
+										{assign var=loop1 value=$loop-1} 
+											<div id="ArticleBoxDiv{$loop}"> 
+												Article {$loop}: <input type="text" name="subtitle[{$smarty.section.article_loop.iteration-1}][]" id="subtitle_{$smarty.section.article_loop.iteration-1}_{$loop}" value="{$subtitle[$smarty.section.article_loop.index].$loop1}" />
+											</div>
+											{assign var=loop value=$loop+1} 	
+										{/while}  
+										<input type="hidden" name="editcounter_{$smarty.section.article_loop.iteration}" id="editcounter_{$smarty.section.article_loop.iteration}" value="{$sub_article[$smarty.section.article_loop.index]}"/>
+									</div>
+									<div style="float:right">
+										<a href="javascript:void(0);" class="hint--bottom hint--info" data-hint="Add Option" onClick="addfield({$smarty.section.article_loop.iteration});"><i class="splashy-add"></i></a>&nbsp;
+										<a href="javascript:void(0);" id="removebutton_{$smarty.section.article_loop.iteration}" {if $sub_article[$smarty.section.article_loop.index]==1}style="display:none;"{/if} class="hint--bottom hint--info" data-hint="Remove Option" onClick="removefield({$smarty.section.article_loop.iteration});"><i class="splashy-remove"></i></a>
+									</div>
+								</td>
+							</tr>
+						
+							{/if}
+							
+							<tr> 
+								<td>Langue</td>
+								<td>{*{html_options name=language[] options=$language_array selected=$language[$smarty.section.article_loop.index] class="singleselect"}*}
+									<select name="language[]" id="language_{$smarty.section.article_loop.iteration}"  onChange="updatecorrectorlistarticle('{$smarty.section.article_loop.iteration}');" class="singleselect">
+										{foreach from=$language_array item=lang_name key=lang_key}
+												<option value="{$lang_key}" {if $language[$smarty.section.article_loop.index]==$lang_key} selected{/if}>{$lang_name}</option>
+										{/foreach} 	
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td>Type</td>
+								<td>{html_options name=type[] options=$type_array|stripslashes selected=$type[$smarty.section.article_loop.index] class="singleselect"}</td> 
+							</tr>
+							<tr>
+								<td>Cat&eacute;gorie</td>
+								<td>{html_options name=category[] options=$category_array selected=$category[$smarty.section.article_loop.index] class="singleselect"}</td>
+							</tr>
+							<tr>
+								<td>Nombre de</td> 
+								<td nowrap>
+									{html_options name=signtype[] selected=$sign_type[$smarty.section.article_loop.index] options=$signtype_array class="singleselect"}
+									<span style="vertical-align:top"><input type="text" value="{$num_min[$smarty.section.article_loop.index]}" id="num_min_{$smarty.section.article_loop.iteration}" name="num_min[]" style="width:40px;"/></span>
+									<span style="vertical-align:top"><input type="text" value="{$num_max[$smarty.section.article_loop.index]}" id="num_max_{$smarty.section.article_loop.iteration}" name="num_max[]" style="width:40px;"/></span>
+								</td>
+							</tr>
+							<tr {if $aotype!="private"}style="display:none;"{/if}>
+								<td>Langue(s)</td>
+								<td> 
+									<select name="contrib_lang[{$smarty.section.article_loop.iteration-1}][]" class="contrib_lang" id="contrib_lang_{$smarty.section.article_loop.iteration}" onChange="updatecontriblistarticle('{$smarty.section.article_loop.iteration}');" multiple="multiple" style="width:250px;">
+										{foreach from=$Contrib_langs item=langitem key=langkey}
+											{if in_array($langkey,$contrib_lang[$smarty.section.article_loop.index])}
+												<option value="{$langkey}" selected>{$langitem}</option>
+											{else}
+												<option value="{$langkey}">{$langitem}</option>
+											{/if}
+										{/foreach}
+									</select>
+								</td>
+							</tr>
+							<tr {if $aotype!="private"}style="display:none;"{/if}>  
+								<td>Catégorie(s)</td>
+								<td>
+									<select name="contrib_cat[{$smarty.section.article_loop.iteration-1}]" id="contrib_cat_{$smarty.section.article_loop.iteration}" class="singleselect" onChange="updatecontriblistarticle('{$smarty.section.article_loop.iteration}');">
+										{html_options options=$Contrib_cats selected=$contrib_cat[$smarty.section.article_loop.index]} 
+									</select>
+								</td>
+							</tr>
+							<tr {if $aotype!="private"}style="display:none;"{/if} >
+								<td >Contributeurs</td>
+								<td id="contribs_{$smarty.section.article_loop.iteration}">
+									<select multiple="multiple" name="favcontribcheck[{$smarty.section.article_loop.iteration-1}][]" class="favcontribcheck" id="favcontribcheck_{$smarty.section.article_loop.iteration}">
+									{foreach from=$contriblistall1 item=contrib}
+										{if in_array($contrib.identifier,$contrib_array[$smarty.section.article_loop.index])}
+										<option value="{$contrib.identifier}" selected>{$contrib.name}</option>
+										{else}
+										<option value="{$contrib.identifier}">{$contrib.name}</option>
+										{/if}
+									{/foreach}
+									</select>
+									<div id="contriberr_{$smarty.section.article_loop.iteration}" style="color:red;"></div>
+								</td>
+							</tr>
+							<tr {if $aotype!="private" && $mission_type=="liberte"}style="display:none;"{/if}>
+								<td>Fourchette de prix du redacteur</td>
+								<td style="padding-top:10px">
+									<span><input type="text" value="{$price_min[$smarty.section.article_loop.index]}" id="price_min_{$smarty.section.article_loop.iteration}" name="price_min[]" style="width:40px;"/></span>
+									<span><input type="text" value="{$price_max[$smarty.section.article_loop.index]}" id="price_max_{$smarty.section.article_loop.iteration}" name="price_max[]" style="width:40px;"/></span>
+								</td>
+							</tr>
+										
+							<tr> 
+								<td>Reversement contributeur par article en %</td>
+								<td><span><input type="text" name="contrib_percentage[]" id="contrib_percentage_{$smarty.section.article_loop.iteration}" value="{$contrib_percentage[$smarty.section.article_loop.index]}" style="width:40px;"/></span>&nbsp;%</td>
+							</tr>
+							<tr>
+								<td>D&eacute;lai de rendu de l'article</td>
+								<td>
+									<span style="vertical-align:top;">JC0 <input type="text" name="subjunior_time[]" id="subjunior_time_{$smarty.section.article_loop.iteration}" style="width:40px;" value="{$subjunior_time[$smarty.section.article_loop.index]}" maxlength="3" /></span>
+									<span style="vertical-align:top;">JC <input type="text" name="junior_time[]" id="junior_time_{$smarty.section.article_loop.iteration}" style="width:40px;" value="{$junior_time[$smarty.section.article_loop.index]}" maxlength="3" /></span>&nbsp;
+									<span style="vertical-align:top;">SC <input type="text" name="senior_time[]" id="senior_time_{$smarty.section.article_loop.iteration}" style="width:40px;" value="{$senior_time[$smarty.section.article_loop.index]}"  maxlength="3"/></span>&nbsp; 
+									<select name="submit_option[]" id="submit_option_{$smarty.section.article_loop.iteration}" style="width:90px" class="submission">
+										<option value="min" {if $submit_option[$smarty.section.article_loop.index]=="min"}selected{/if}>Min(s)</option>
+										<option value="hour" {if $submit_option[$smarty.section.article_loop.index]=="hour" || $submit_option==""}selected{/if}>Heure(s)</option>
+										<option value="day" {if $submit_option[$smarty.section.article_loop.index]=="day"}selected{/if}>Jour(s)</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td>D&eacute;lai apr&egrave;s refus d'un article</td> 
+								<td>
+									<span style="vertical-align:top;">JC0 <input type="text" name="jc0_resubmission[]" id="jc0_resubmission_{$smarty.section.article_loop.iteration}" style="width:40px;" value="{$jc0_resubmission[$smarty.section.article_loop.index]}"  maxlength="3"/></span>
+									<span style="vertical-align:top;">JC <input type="text" name="jc_resubmission[]" id="jc_resubmission_{$smarty.section.article_loop.iteration}" style="width:40px;" value="{$jc_resubmission[$smarty.section.article_loop.index]}"  maxlength="3" /></span>&nbsp;
+									<span style="vertical-align:top;">SC <input type="text" name="sc_resubmission[]" id="sc_resubmission_{$smarty.section.article_loop.iteration}" style="width:40px;" value="{$sc_resubmission[$smarty.section.article_loop.index]}"  maxlength="3"/></span>&nbsp;
+									<select name="resubmit_option[]" id="resubmit_option_{$smarty.section.article_loop.iteration}" style="width:90px" class="submission">
+										<option value="min" {if $resubmit_option[$smarty.section.article_loop.index]=="min"}selected{/if}>Min(s)</option>
+										<option value="hour" {if $resubmit_option[$smarty.section.article_loop.index]=="hour" || $resubmit_option==""}selected{/if}>Heure(s)</option>
+										<option value="day" {if $resubmit_option[$smarty.section.article_loop.index]=="day"}selected{/if}>Jour(s)</option>
+									</select>
+								</td>
+							</tr>
+							<input type='hidden' name='correction_orig' value='{$correction_orig}' id='correction_orig'> 
+							<tr id="correction_tr_{$smarty.section.article_loop.iteration}">
+
+								<td>Correction</td>   
+								
+								<td>
+									<div class='corclass' id='corrections_2'>
+										<label class="uni-radio">
+											<input id='cor_2_{$smarty.section.article_loop.iteration}' type="radio" class="uni_style" value="intern" name="correction_{$smarty.section.article_loop.iteration}"  {if $correction[$smarty.section.article_loop.index]=="intern" || $correction[$smarty.section.article_loop.index]!='on' || $correction[$smarty.section.article_loop.index] !='freelance' }checked="checked;"{/if} />Correction Interne</label>
+								  	</div>
+								</td>
+							</tr>
+							<tr>
+									<td></td>
+									<td><div class='corclass' id='corrections_1_{$smarty.section.article_loop.iteration}'>
+										
+										<label class="uni-radio"><input id='cor_1_{$smarty.section.article_loop.iteration}' type="radio" class="uni_style" value="on" name="correction_{$smarty.section.article_loop.iteration}" {if $correction_orig!='on' } disabled="disabled"   Title="Chose Other Externe Option on Step 1 to Enable "{/if} {if $correction[$smarty.section.article_loop.index]=="on" }checked="checked;"{/if} />Correction Externe</label>
+										
+								  	</div></td>
+							</tr>
+							
+							<tr>
+									<td></td>
+									<td><span><div class='corclass' id='corrections_3_{$smarty.section.article_loop.iteration}'>
+										
+										
+										<label class="uni-radio"><input id='cor_3_{$smarty.section.article_loop.iteration}' type="radio" class="uni_style" value="freelance" name="correction_{$smarty.section.article_loop.iteration}"  {if $correction[$smarty.section.article_loop.index]=="freelance" }checked="checked;"{/if} />Correction Frelance</label>
+								  	</div></span></td>
+							</tr>
+							<tr id='correction_price_{$smarty.section.article_loop.iteration}' {if $correction[$smarty.section.article_loop.index]=="" || $correction[$smarty.section.article_loop.index]=="intern" || $correction[$smarty.section.article_loop.index]=="freelance" || $correction[$smarty.section.article_loop.index]=='non'}style="display:none;"{/if}>
+								<td>Fourchette de prix du correcteur</td>
+								<td style="padding-top:10px">
+									<span><input type="text" value="{$correction_pricemin[$smarty.section.article_loop.index]}" id="correction_pricemin_{$smarty.section.article_loop.iteration}" name="correction_pricemin[]" style="width:40px;"/></span>
+									<span><input type="text" value="{$correction_pricemax[$smarty.section.article_loop.index]}" id="correction_pricemax_{$smarty.section.article_loop.iteration}" name="correction_pricemax[]" style="width:40px;"/></span>
+								</td>
+							</tr>					
+							<tr id='cost_de_correction_{$smarty.section.article_loop.iteration}' {if $correction[$smarty.section.article_loop.index]=="on"}style="display:none;"{/if}>
+								<td>Prix ​​pour la correction</td>
+								<td style="padding-top:10px">
+									<span><input type="text" value="{$correction_cost[$smarty.section.article_loop.index]}" id="correction_cost_{$smarty.section.article_loop.iteration}" name="correction_cost[]" style="width:40px;"/></span>
+									<span>
+								</td>
+							</tr>	
+							
+							<!--- correctors list -->
+							<tr {if $correction_type!="private"}style="display:none;"{/if}>
+								<td valign="top" width="40%">Correcteurs</td>
+								<td valign="top" id="correctors_{$smarty.section.article_loop.iteration}">
+									<select multiple="multiple" name="correctorcheck[{$smarty.section.article_loop.iteration-1}][]" id="correctorcheck_{$smarty.section.article_loop.iteration}" class="favcontribcheck">
+									{foreach from=$correctorlist item=corr}
+										{if in_array($corr.identifier,$corrector_array[$smarty.section.article_loop.index])}
+											<option value="{$corr.identifier}" selected>{$corr.name}</option>
+										{else}
+											<option value="{$corr.identifier}">{$corr.name}</option>
+										{/if}
+									{/foreach} 
+									</select>
+									<div id="corrcontriberr_{$smarty.section.article_loop.iteration}" style="color:red;"></div>
+								</td>
+							</tr>	
+							
+							{if $whitelist=="on"}
+							<tr>
+								<td>White list kws</td>
+								<td>
+									<select name="white_list_kw_count[]" id="white_list_kw_count_{$smarty.section.article_loop.iteration}" onchange="wblkws({$smarty.section.article_loop.iteration}, 'white');">
+										<option value="">s&#233;lectionner</option>
+										{assign var="i" value=0}
+										{while $i < 100}
+										{assign var="i" value=$i+1}
+										<option value="{$i}" {if $wl_kw_count[$smarty.section.article_loop.index] eq $i}selected{/if}>{$i}</option>
+										{/while}
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td id="whiteKws{$smarty.section.article_loop.iteration}">
+									{if $wl_kw_count[$smarty.section.article_loop.index] > 0}
+										{assign var="i" value=0}
+										{while $i < $wl_kw_count[$smarty.section.article_loop.index]}
+											<input type="text" value="{$wl_kws[$smarty.section.article_loop.index].$i}" id="white_list_{$smarty.section.article_loop.iteration}[]" name="white_list_{$smarty.section.article_loop.iteration}[]" placeholder="Keyword">&nbsp;
+											<input type="text" style="width:40px;" value="{$wl_kw_density_min[$smarty.section.article_loop.index].$i}" id="white_list_density_min_{$smarty.section.article_loop.iteration}[]" name="white_list_density_min_{$smarty.section.article_loop.iteration}[]" placeholder="Min">&nbsp;
+											<input type="text" style="width:40px;" value="{$wl_kw_density_max[$smarty.section.article_loop.index].$i}" id="white_list_density_max_{$smarty.section.article_loop.iteration}[]" name="white_list_density_max_{$smarty.section.article_loop.iteration}[]" placeholder="Max"><br>
+											{assign var="i" value=$i+1}
+										{/while}
+								   {/if}
+								</td>
+							</tr>
+							{/if}
+							{if $blacklist=="on"}
+							<tr>
+								<td>Black list kws</td>
+								<td>
+									<select name="black_list_kw_count[]" id="black_list_kw_count_{$smarty.section.article_loop.iteration}" onchange="wblkws({$smarty.section.article_loop.iteration}, 'black');">
+										<option value="">s&#233;lectionner</option>
+										{assign var="i" value=0}
+										{while $i < 100}
+										{assign var="i" value=$i+1}
+										<option value="{$i}" {if $bl_kw_count[$smarty.section.article_loop.index] eq $i}selected{/if}>{$i}</option>
+										{/while}
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td id="blackKws{$smarty.section.article_loop.iteration}">
+								   {if $bl_kw_count[$smarty.section.article_loop.index] > 0}
+										{assign var="i" value=0}
+										{while $i < $bl_kw_count[$smarty.section.article_loop.index]}
+											<input type="text" size="20" value="{$bl_kws[$smarty.section.article_loop.index].$i}" id="black_list_{$smarty.section.article_loop.iteration}[]" name="black_list_{$smarty.section.article_loop.iteration}[]" placeholder="Keyword">&nbsp;
+											<br>
+											{assign var="i" value=$i+1}
+										{/while}
+								   {/if}
+								</td>
+							</tr>
+							{/if}
+							<!-- column for xls/xlsx article --->
+							<tr>  
+								<td style="vertical-align:top">Columns for XLS/XLSX Article (add comma(,) <br>seperated for multiple)</td>
+								<td>
+								  <textarea name="column_xls[{$smarty.section.article_loop.index}]" id="column_xls_{$smarty.section.article_loop.iteration}">{$column_xls[$smarty.section.article_loop.index]}</textarea>
+								</td>
+							</tr>	
+						</table>
+					<td> 
+				</tr>
+				<tr><td>&nbsp;</td></tr>
+				{/section}
+			</table>
+		</div>
+       <input type="hidden" name="editcounter" id="editcounter" value="{$sub_article}"/>
+		<div style="float:right;padding:30px;padding-right:130px">
+			<button type="submit" value="Aller en Etape 3" class="btn btn-info" id="aoSubmit" onClick="return validate_aocreation_step2();">Aller en Etape 3</button>
+		</div>
+	</div>
+
+	<input type="hidden" name="deli_id" id="deli_id" value="{$deliver_id}" />
+	<input type="hidden" id="aotype" name="aotype" value="{$aotype}" />
+	<input type="hidden" id="correction" name="correction" value="{$correction}" />
+	<input type="hidden" name="TotArt" id="TotArt" value="{$totalart}" />
+	<input type="hidden" name="missiontype" id="missiontype" value="{$mission_type}" />
+	<input type="hidden" name="correctiontype" id="correctiontype" value="{$correction_type}" />
+</form>		
+
+					
+

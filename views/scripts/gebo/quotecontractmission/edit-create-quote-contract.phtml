@@ -1,0 +1,312 @@
+{literal}
+	<style>
+		#missionTable tr:nth-child(even)
+		{
+			background-color:#F5F5F5;
+			border-bottom:1px solid #ddd;
+			text-align:center;
+			font-weight:bold;
+		}
+		.padd td
+		{
+			padding:15px 5px;
+		}
+		
+		#missionTable tr:nth-child(odd)
+		{
+			text-align:center;
+		}
+		
+		#missionTable td
+		{
+			font-size:14px;
+		}
+	</style>
+	<link href="/BO/theme/gebo/lib/iCheck/skins/line/blue.css" rel="stylesheet">
+	<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script> 
+	<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+	<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/BO/theme/gebo/js/jquery.MultiFileQuote.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		function removeDisabled(){	setTimeout(function(){$(".MultiFile-applied").removeAttr("disabled");}, 1000);	}
+		$(document).ready(function(){
+			/* $('input').iCheck({
+			radioClass: 'iradio_minimal-blue',
+			}); */ 
+		  $("#contractsource").chosen({  allow_single_deselect:false,disable_search: true });
+		  $(".paymenttype").chosen({  allow_single_deselect:false,disable_search: true });
+		  $(".uni_style").uniform();
+		})
+	</script>
+{/literal}
+<form class="form-horizontal" action="/contractmission/save-finance-edit" name="createContract" id="createcontract" method="POST" enctype='multipart/form-data'>
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">
+			Finance Validate
+		</h3>
+		 <h4>{$contractDetials.contractname}</h4> 
+	</div>	
+</div>
+<div class="row-fluid">
+	<div class="span12">
+		<div class="w-box">
+			<div class="w-box-header">
+				Client Profile
+			</div>
+			 <div class="w-box-content cnt_a">
+				<div class="row-fluid">
+				{if $client_info !="Client info unavailable"}
+					<div class="span8">
+						<div><a>{$client_info.company_name}</a></div>
+						<div>{$client_info.initial} {$client_info.first_name} {$client_info.last_name}</div>
+						<div>Client info: {$client_info.ca_number}</div>
+						<div>Category: {$quotedetails.category_name}</div> 
+					</div>	
+					<div class="pull-right">
+						<img title="{$client_info.company_name}" src="{$fo_path}/profiles/clients/logos/{$client_info.user_id}/{$client_info.user_id}_global.png?12345" alt="{$client_info.company_name}" >
+					</div>
+				{else}
+					{$client_info}
+				{/if}
+				</div>
+			 </div>
+		</div>
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span12">
+		
+				<div class="control-group">
+					<label class="control-label">Contract Name</label>
+					<div class="controls">
+						<input type="text" name="contract_name" value="{$contractDetials.contractname}" disabled class="span4 validate[required]" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Contract Status</label>
+					<div class="controls">
+						<label class="radio inline">
+							<input type="radio" {if $contractDetials.contractstatus eq "New"}checked="checked"{/if} disabled value="New" id="optionsRadios1" name="status" class="uni_style" />
+							New
+						</label>
+						<label class="radio inline">
+							<input type="radio" value="Renew" {if $contractDetials.contractstatus eq "Renew"}checked="checked"{/if} disabled id="optionsRadios2" name="status" class="uni_style" />
+							Renew
+						</label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Source of Contract</label>
+					<div class="controls">
+						<div class="span6">
+							{html_options options=$csarray name="contractsource" selected=$contractDetials.sourceofcontract class="validate[required]" id="contractsource" } 
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="controls">
+						<div class="span10">
+							<div id="showepfiles" {if $contractDetials.sourceofcontract eq "Edit Place"}style="display:block"{else}style="display:none"{/if}>
+								<a href="/BO/dowload-source-contract.php?filename=epcontractsource1.txt">EP Contract Doc1</a>
+								<br/>
+								<a href="/BO/dowload-source-contract.php?filename=epcontractsource2.txt">EP Contract Doc2</a>
+							</div>
+							<input type="file" name="mulitupload[]" class="multi" />
+							<div class="onsuccessrep">
+							{$related_files}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Signature Date</label>
+					<div class="controls">
+						<div class="input-append date" id="" data-date-format="dd/mm/yyyy">
+							<input class="span10 validate[required]" value='{$contractDetials.signaturedate|date_format:"%d/%m/%Y"}' disabled name="signature_date" type="text" readonly="readonly" /><span class="add-on"><i class="splashy-calendar_day"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Expected Launch Date</label>
+					<div class="controls">
+						<div class="input-append date" id="expdate" data-date-format="dd/mm/yyyy">
+							<input class="span10 validate[required]" value='{$contractDetials.expected_launch_date|date_format:"%d/%m/%Y"}' disabled name="expected_launch_date" type="text" readonly="readonly" /><span class="add-on"><i class="splashy-calendar_day"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Comment</label>
+					<div class="controls">
+						<textarea name="comment" id="txtarea_sp" disabled class="span6">{$contractDetials.comment}</textarea>
+					</div>
+				</div>
+				
+		
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span12">
+		<div class="w-box">
+			<div class="w-box-header">
+				Turnover & Payment
+			</div>
+			 <div class="w-box-content cnt_a">
+				<div class="row-fluid">
+					<div class="w-box">
+						<div class="w-box-header">
+							Split/Month
+						</div>
+						<div class="replace">
+						<div class="w-box-content cnt_a">
+							<table>
+								<tr>
+									{foreach from=$months item=value}
+										<th>{$value}</th>
+									{/foreach}
+								</tr>
+								<tr>
+									{foreach from=$turnovers item=value}
+										<td><input type="text" class="span12" title="{$value|zero_cut:2} &{$quotedetails.sales_suggested_currency};" value='{$value|zero_cut:2} &{$quotedetails.sales_suggested_currency};' disabled /></td>
+									{/foreach}
+								</tr>
+							</table>
+						</div>
+						</div>
+					</div>
+					<br/>
+					<div class="span8">	
+						<div class="control-group">
+							<label class="control-label">Total turnover</label>
+							<div class="controls">
+								<input type="text" name="turnover" readonly class="span4" value="{$quotedetails.turnover|zero_cut:2} &{$quotedetails.sales_suggested_currency};" />
+							</div>
+						</div>
+						<div class="control-group">
+						<label class="control-label">Type of Payment</label>
+						<div class="controls">
+							<div class="span6">
+								{html_options options=$typeofpayment selected=$contractDetials.type_of_payment name="paymenttype" class="paymenttype validate[required]" } 
+							</div>
+						</div>
+						</div>
+					</div>
+					<div class="pull-right">
+						<div class="well span12 pull-center" style="padding-top:10px">
+							<i class="icon-time"></i>
+							<div>Expected End Date</div>
+							<div style="font-weight:bold;text-align:center" id="repldate">{$expected_end_date|date_format:"%d/%m/%Y"}</div>
+						</div>
+					</div>
+				</div>
+			 </div>
+		</div>
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span12">
+		<div class="w-box">
+			<div class="w-box-header">
+				Missions
+			</div>
+			<div class="w-box-content cnt_a">
+				<div class="row-fluid">
+					<div class="span8">
+						<table width="" class="table" id="missionTable" style="float:left">
+						{foreach from=$missiondetails item="mission" name="missionDetails"}		
+							<tr>
+								<td>TYPE</td>
+								<td>LANGUE</td>
+								<td>PRODUIT</td>
+								<td>VOLUME</td>
+								<td>NB MOTS</td>
+							</tr>
+							<tr class="padd">
+								<td>{$mission.product_type_converted}</td>
+								<td>
+									{if $mission.language_dest}{$mission.language_source_converted}&nbsp;>&nbsp;{$mission.language_dest_converted}{else}{$mission.language_source_converted}
+									{/if}
+								</td>
+								<td>{$mission.product_type_name}</td>
+								<td>{$mission.volume}</td>
+								<td>{$mission.nb_words}</td>
+				
+				</tr>
+						{/foreach}
+						</table>
+					</div>
+					
+					<div class="pull-right span4">
+						<div class="w-box">
+							<div class="w-box-header">
+								Quotes Linked
+							</div>
+							<div class="w-box-content cnt_a">
+								<div class="row-fluid">
+									<div class="span12">
+										<b><a href="/quote/quote-followup?quote_id={$quotedetails.identifier}&submenuId=ML13-SL2" target="_blank">{$quotedetails.title}</b></a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" name="contract_id" value="{$smarty.get.contract_id}" />
+{if $smarty.get.action!='view'}
+<div class="row-fluid topset2">
+	<div class="span12 row-centered" style="text-align:center">
+		<button class="btn btn-primary" onclick="return removeDisabled()" value="validate" name="validate" type="submit"><i style="margin-right:5px" class="icon-ok icon-white"></i>Validate Contract</button>
+		<button class="btn btn-success" onclick="return removeDisabled()" value="modify" name="modify" type="submit">Modify</button>
+	</div>
+</div>
+{/if}
+</div>
+</form>
+{literal}
+	<script>
+		var salesdtime = {/literal}{$quotedetails.sales_delivery_time}{literal};
+		var salesdtimeo = {/literal}"{$quotedetails.sales_delivery_time_option}"{literal};
+		var scurrency = {/literal}"{$quotedetails.sales_suggested_currency}"{literal};
+		var turnover = {/literal}{$quotedetails.turnover}{literal};
+		$("#contractsource").change(function(){
+			if($(this).val()=="Edit Place")
+				$("#showepfiles").css("display","block");
+			else
+				$("#showepfiles").css("display","none");
+		});
+		
+				
+		$(document).ready(function(){
+			$("#createcontract").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+		})
+			
+		$(document).on("click",".delete",function(){
+		var id_identifier = $(this).attr("rel");
+			/*if(smoke.confirm("Are you sure? Want to delete this File"))
+			{
+				$(this).closest(".topset2").remove();
+				$(".onsuccessrep").html("Please Wait Deleting File.");
+				$.post("/contractmission/delete-document",{"identifier":id_identifier},function(result){
+						$(".onsuccessrep").html(result);
+				}); 
+			} */
+			smoke.confirm("Are you sure? Want to delete this File",function(e)
+			{
+				if(e)
+				{
+					$(this).closest(".topset2").remove();
+					$(".onsuccessrep").html("Please Wait Deleting File.");
+					$.post("/contractmission/delete-document",{"identifier":id_identifier},function(result){
+							$(".onsuccessrep").html(result);
+					}); 
+				}
+			})
+		});	
+	</script>
+{/literal}

@@ -1,0 +1,1305 @@
+{literal}
+<style>
+.clientFocusHeader h3
+{
+	line-height: 60px;
+}
+
+.image {
+    height: 30px;
+    text-align: center;
+    width: 30px;
+}
+</style>
+<style>
+	#contract-invoice tr th{
+		background-color:#1E90FF !important;
+		color:#FFF;
+		}
+	#contract-invoice tr th.total-row{
+		background-color:#20B2AA !important;
+	}
+	#contract-invoice tr:hover {
+    background-color: #CDE6F7 !important;
+	}
+	#contract-invoice tr td {
+    font-size:12px !important;
+	}
+	#client_details_view tr td {
+    font-size:12px !important;
+	}
+	
+	#client_details_view tr th.clirnt_contract {
+	max-width:300px !important;
+	text-align:center !important;
+	}
+	#client_details_view tr th.months {
+    width:75px !important;
+    text-align:center !important;
+	}
+	#client_details_view tr th.total {
+    width:80px !important;
+    text-align:center !important;
+	}
+	#client_details_view tr td.sales_name {
+    text-align:center;
+    padding:5px;
+	}
+	
+	#client_details_view tr:hover {
+    background-color: #CDE6F7 !important;
+	}
+	#client_details_view tr td.contract_name {
+		vertical-align:middle !important;
+		}
+	#client_details_view tr td.contract_val {
+		vertical-align:middle !important;
+		}
+	#client_details_view tr td.mission-val {
+		vertical-align:middle !important;
+		}
+	.image {
+     height: 30px;
+    text-align: center;
+    width: 30px;
+}
+  #search-filter,input#start_date,input#end_date,#back-button{
+	  margin-bottom: 23px;
+  }
+  
+  input.turnover{
+	  margin-bottom: 23px;
+  }
+  
+ #canvas{
+	padding: 0px 0px 8px 7px;
+	max-width:1284px !important;
+		 }
+.btn-gebo1 {
+    background-color: #006d8d;
+    background-image: none;
+    border-color: rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.35) rgba(0, 0, 0, 0.35) rgba(0, 0, 0, 0.25);
+    border-width: 0;
+    color: #ffffff;
+    text-shadow: 0 -1px 0 #004f6f;
+}
+.btn-gebo1:hover {
+    color: #FFFFFF;
+    text-shadow: 0 -1px 0 #003151;
+	background-color: #004F6F;
+}
+.fullscreen {
+    left: 0 !important;
+    margin-left: 0 !important;
+    top: 0 !important;
+    width: 99%;
+}
+img.image{
+	margin:5px;
+	}
+.modal-backdrop.fade.in{
+	opacity: 0.8 !important;
+	}
+ p.entered_val{
+	color:#FF0000 !important;
+	}
+
+</style>
+{/literal}
+<section id="">
+<ul class="breadcrumb">
+  <li><a href="/turnover/real-month">Real turnover</a> <span class="divider">/</span></li>
+  <li>{$client_details.company_name}</li>
+</ul>
+		<h1>{$client_details.company_name} > real turnover {$year}</h1>
+		
+		<div style="margin-top:20px">
+			<form name="search_form" id="search_form" method="get" action="">
+			<select data-placeholder="Years" id="yearlist" class='yearselect' name="year" >
+				<option></option>
+				{foreach from=$year_list item=years name=year_loop}
+					{if $years eq $year}
+					   <option value="{$years}" selected="selected" >{$years}</option>
+					{else}
+					   <option value="{$years}" >{$years}</option>
+					{/if}
+				{/foreach}
+			</select>
+			<input type="hidden" value="{$smarty.get.client}" name="client">	
+			<select data-placeholder="All Sales" id="all_sales" class='saleselect' name="sales_id" >
+				<option></option>
+				{foreach from=$salesusers item=user name=users key=user_key}
+					{if $user_key eq $smarty.get.sales_id}
+						<option value="{$user_key}" selected="selected">{$user}</option>
+					{else}
+						<option value="{$user_key}" >{$user}</option>
+					{/if}
+				{/foreach}
+			</select>	
+			<select data-placeholder="All Mission Type" id="product_type" class='producttypeselect' name="p_type" >
+				<option></option>
+				{foreach from=$product_type item=type_item name=product_loop key=product_type_key}
+						{if $product_type_key eq $smarty.get.p_type}
+						<option value="{$product_type_key}" selected="selected">{$type_item}</option>
+						{else}
+						<option value="{$product_type_key}" >{$type_item}</option>
+						{/if}
+				{/foreach}
+			</select>
+			<select data-placeholder="All Mission Product" id="product_name" class='productselect' name="product">
+					<option></option>
+					{foreach from=$product_array item=type_item name=product_loop key=product_key}
+						{if $product_key eq $smarty.get.product}
+						<option value="{$product_key}" selected="selected">{$type_item}</option>
+						{else}
+						<option value="{$product_key}" >{$type_item}</option>
+						{/if}
+				{/foreach}
+			</select>
+			
+			<button class="btn btn-default pull-center" id="search-filter">Refine</button>
+			</form>
+		</div>
+
+<div id="clientFocus" class="row-fluid">
+	<div class="clientFocusHeader">					
+		<h3 id="myModalLabel">{$client_details.company_name} - {$year}</h3>
+		<div class="yearSelection">
+		{* <select name="" id="">
+				{foreach from=$year_list item=years name=year_loop}
+					{if $years eq $year}
+					   <option value="{$years}" selected="selected" >{$years}</option>
+					{else}
+					   <option value="{$years}" >{$years}</option>
+					{/if}
+				{/foreach}
+			</select>	 *}		
+		</div>				
+	</div>
+	
+	<canvas id="focuschart" height="240px" width="940px"></canvas> 
+	<select data-placeholder="All Mission status" id="product_status" class='productstatus' name="status">
+				<option value="ongoing" {if $smarty.get.status eq 'ongoing' || ($smarty.get.status neq 'closed' && $smarty.get.status neq 'all')}selected="selected"{/if}>ongoing</option>
+					<option value="all" {if $smarty.get.status eq 'all'}selected="selected"{/if}>All</option>
+				<option value="closed" {if $smarty.get.status eq 'closed'}selected="selected"{/if}>closed</option>
+					
+			</select>
+	<table class="focusTable" id="client-turnover">
+		<thead>
+			<tr>
+				<th>Sales</th>
+				<th><span class="pull-left">Client/contracts</span></th>
+				<th> 	{$month_array_val.01}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-01{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>	
+						</div>
+					</span>		
+				</th>
+				<th> 	{$month_array_val.02}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-02{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>	
+						</div>
+					</span>		
+				</th>
+				<th> 	{$month_array_val.03}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-03{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>			
+						</div>
+					</span>		
+				</th>	
+				<th> 	{$month_array_val.04}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-04{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>	
+						</div>
+					</span>		
+				</th>
+				<th> 	{$month_array_val.05}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-05{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>							
+						</div>
+					</span>		
+				</th>
+				<th> 	{$month_array_val.06}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-06{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>						
+						</div>
+					</span>		
+				</th>	
+				<th> 	{$month_array_val.07}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-07{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>							
+						</div>
+					</span>		
+				</th>
+				<th> 	{$month_array_val.08}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-08{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>							
+						</div>
+					</span>		
+				</th>
+				<th> 	{$month_array_val.09}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-09{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>				
+						</div>
+					</span>		
+				</th>	
+				<th> 	{$month_array_val.10}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-10{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>								
+						</div>
+					</span>		
+				</th>
+				<th> 	{$month_array_val.11}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-11{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>				
+						</div>
+					</span>		
+				</th>
+				<th> 	{$month_array_val.12}
+					<span class="monthViewCta">
+						<i class="fa fa-plus" id="monthActions"></i>
+						<div class="monthActionList">
+							<a role="button" href="/turnover/contract-monthly-details?client_id={$client_id}&month={$year}-12{if $smarty.get.status}&status={$smarty.get.status}{/if}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly" ><i class="fa fa-eye"></i></a>				
+						</div>
+					</span>		
+				</th>	
+				<th> 	
+					TOTAL
+				</th>
+			</thead>
+			<tbody>
+				<tr class="contractRow">
+					
+					<td></td>
+					<td><span class="contractName pull-left">{$client_details.company_name}</span></td>
+					{assign var=client_total value=0}
+					{foreach from=$canvas_real item=real}
+					{assign var=client_total value=$real+$client_total}				
+					<td>{$real}</td>
+					{/foreach}
+					<td>{$client_total} &euro;</td>
+					</tr>	
+			{foreach from=$contractturnover item=contract key=contractkey name=contract}
+			{foreach from=$contract item=mission key=missionkey name=mission}
+				{if $missionkey=="contract_details"}
+				<tr class="contractRow active">
+					<td>
+						<a class="hint--right sales_details" data-hint="{$mission.first_name}&nbsp;{$mission.last_name}" data-target="#salesProfileView" tabindex="-1" data-toggle="modal" role="button" href="/turnover/sales-details?sales_id={$mission.sales_creator_id}">
+							<img src="{$fo_path}/profiles/bo/{$mission.sales_creator_id}/logo.jpg?123" class="image rd_30" alt="{$mission.first_name}&nbsp;{$mission.last_name}"></a>
+						</a>
+					</td>
+					<td>
+						<span class="contractName pull-left">{$mission.contractname}</span>
+							{* <i class="fa fa-caret-up pull-right"></i> *}
+					</td>
+					<td >
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'01'}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+								{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'01'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">							
+									<span>{$month_array_val.01} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'02'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'02'}
+									<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">
+									<span>{$month_array_val.02} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'03'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'03'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">
+									<span>{$month_array_val.03} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'04'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'04'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">
+									<span>{$month_array_val.04} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'05'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'05'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">
+									<span>{$month_array_val.05} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>			
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'06'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'06'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">
+									<span>{$month_array_val.06} {$two_year}</span>
+								</li>
+								<li class="realData">
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData">
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>	
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'07'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+								{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'07'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.07} {$two_year}</span>
+								</li>
+								<li class="realData">
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData">
+								
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'08'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'08'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">
+									<span>{$month_array_val.08} {$two_year}</span>
+								</li>
+								<li class="realData">
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData">
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>												
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'09'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'09'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">
+									<span>{$month_array_val.09} {$two_year}</span>
+								</li>
+								<li class="realData">
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData">
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'10'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'10'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">
+									<span>{$month_array_val.10} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>	
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'11'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'11'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">
+									<span>{$month_array_val.11} {$two_year}</span>
+								</li>
+								<li class="realData">
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var=month_year value=$year|cat:'-'|cat:'12'}
+									{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'12'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f" }up{else}down{/if}">
+									<span>{$month_array_val.12} {$two_year}</span>
+								</li>
+								<li class="realData">
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					<td>
+						<div class="dataFocus">
+							<span class="singleData">
+							{$mission.realturnover|zero_cut_t:2} &{$mission.sales_suggested_currency};
+							</span>								
+							<ul>
+								<li class="dataDate {if $mission.realturnover|string_format:"%.2f" >= $mission.expected_turnover|string_format:"%.2f" }up{else}down{/if}">
+									<span>total {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{$mission.realturnover|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									{$mission.expected_turnover|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$mission.realturnover-$mission.expected_turnover}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>												
+				</tr>
+				{else}
+					{if $mission.title neq ''}
+				<tr class="missionRow active" >
+					<td>
+						
+					</td>
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if}" style="text-align: left">
+					{if $mission.assigned_to}
+							<a class="hint--right" data-hint="{$mission.assigned_name}">
+								<img src="{$fo_path}profiles/bo/{$mission.assigned_to}/logo.jpg?123" class="image rd_30" alt="{$mission.assigned_name}"  >
+							</a>
+						{else}
+							-
+						{/if}
+						<span class="contractName">
+						{$mission.title}
+						</span>
+					</td>
+					{assign var=month_year value=$year|cat:'-'|cat:'01'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+							
+							{assign var='total' value=$mission.$month_year}
+							{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'01'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.01} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{assign var=month_year value=$year|cat:'-'|cat:'01'}
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+								
+								{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					{assign var=month_year value=$year|cat:'-'|cat:'02'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'02'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.02} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{assign var=month_year value=$year|cat:'-'|cat:'02'}
+									
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					{assign var=month_year value=$year|cat:'-'|cat:'03'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'03'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.03} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{assign var=month_year value=$year|cat:'-'|cat:'03'}
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					{assign var=month_year value=$year|cat:'-'|cat:'04'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'04'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.04} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{assign var=month_year value=$year|cat:'-'|cat:'04'}
+									
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+										
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					{assign var=month_year value=$year|cat:'-'|cat:'05'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'05'}
+							
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.05} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{assign var=month_year value=$year|cat:'-'|cat:'05'}
+								
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+										
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>			
+					{assign var=month_year value=$year|cat:'-'|cat:'06'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'06'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.06} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{assign var=month_year value=$year|cat:'-'|cat:'06'}
+								
+								{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+										
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>	
+					{assign var=month_year value=$year|cat:'-'|cat:'07'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'07'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.07} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{assign var=month_year value=$year|cat:'-'|cat:'07'}
+								
+								{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+										
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					{assign var=month_year value=$year|cat:'-'|cat:'08'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'08'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.08} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{assign var=month_year value=$year|cat:'-'|cat:'08'}
+								
+								{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+										
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>								
+					{assign var=month_year value=$year|cat:'-'|cat:'09'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'09'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.09} {$two_year}</span>
+								</li>									
+								<li class="realData" >
+									{assign var=month_year value=$year|cat:'-'|cat:'09'}
+								
+								{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+										
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					{assign var=month_year value=$year|cat:'-'|cat:'10'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'10'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.10} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >	
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos">
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>	
+					{assign var=month_year value=$year|cat:'-'|cat:'11'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'11'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.11} {$two_year}</span>
+								</li>
+								<li class="realData" >
+									{assign var=month_year value=$year|cat:'-'|cat:'11'}
+								
+								{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+										
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					{assign var=month_year value=$year|cat:'-'|cat:'12'}
+					{assign var=edited_at value='edited_at'|cat:$month_year}
+					{assign var=deleted_at value='deleted_at'|cat:$month_year}
+					{assign var=freezed_at value='freezed_at'|cat:$month_year}
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if} {$mission.$edited_at} {$mission.$deleted_at} {$mission.$freezed_at}">
+						<div class="dataFocus">
+							<span class="singleData">
+								
+								{assign var='total' value=$total+$mission.$month_year}
+								{$mission.$month_year|zero_cut_t:2}
+							</span>								
+							<ul>
+							{assign var=month_year_exp value='expected_'|cat:$year|cat:'-'|cat:'12'}
+								<li class="dataDate {if $mission.$month_year|string_format:"%.2f" >= $mission.$month_year_exp|string_format:"%.2f"}up{else}down{/if}">
+									<span>{$month_array_val.12} {$two_year}</span>
+								</li>
+								<li class="realData" >
+								{assign var=month_year value=$year|cat:'-'|cat:'12'}
+								{$mission.$month_year|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+										
+									{$mission.$month_year_exp|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$mission.$month_year-$mission.$month_year_exp}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>
+					<td class="{if $mission.from_contract eq '1'}missionAdded{/if}">
+						<div class="dataFocus">
+							<span class="singleData">
+								{$total|zero_cut_t:2}
+							</span>								
+							<ul>
+								<li class="dataDate {if $total|string_format:"%.2f">=$mission.expected_turnover|string_format:"%.2f"}up{else}down{/if}">
+									<span>Total </span>
+								</li>
+								<li class="realData" >
+									{$total|zero_cut_t:2}
+									<span>Real</span>
+								</li>
+								<li class="splitData" >
+									{$mission.expected_turnover|zero_cut_t:2}
+									<span>Expected</span>
+								</li>
+								<li class="differenceData pos" >
+									{assign var='difference' value=$total-$mission.expected_turnover}
+									{$difference|zero_cut_t:2}
+									<span>Difference</span>
+								</li>
+							</ul>	
+						</div>
+					</td>												
+				</tr>	
+				{/if}	
+				{/if}
+			{/foreach}
+			{/foreach}
+			</tbody>
+		</table>
+		 <a class="btn btn-primary" style="margin-top: 10px;" href="/turnover/real-turnover-report?download=pdf{if $smarty.get.client}&client={$smarty.get.client}{/if}{if $year}&year={$year}{/if}{if $smarty.get.sales_id}&sales_id={$smarty.get.sales_id}{/if}{if $smarty.get.clientid}&client_id={$smarty.get.clientid}{/if}{if $smarty.get.product}&product={$smarty.get.product}{/if}{if $smarty.get.p_type}&p_type={$smarty.get.p_type}{/if}{if $smarty.get.status}&status={$smarty.get.status}{/if}">Export PDF</a>
+			<a class="btn btn-primary" style="margin-top: 10px;" href="/turnover/real-turnover-report{if $year}?year={$year}{/if}{if $smarty.get.client}&client={$smarty.get.client}{/if}{if $smarty.get.sales_id}&sales_id={$smarty.get.sales_id}{/if}{if $smarty.get.clientid}&client_id={$smarty.get.clientid}{/if}{if $smarty.get.product}&product={$smarty.get.product}{/if}{if $smarty.get.p_type}&p_type={$smarty.get.p_type}{/if}{if $smarty.get.status}&status={$smarty.get.status}{/if}" >Export XLS</a>	 
+</div>
+
+ <!-- MOdel Popup for sales details -->
+	<div class="row-fluid">
+		<div class="modal hide fade" id="salesProfileView"  aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1">
+			<div class="modal-body">
+				
+			</div>
+		</div>		
+	</div>
+	
+	<div class="row-fluid">
+		<div class="modal hide fade fullscreen" id="contractmonthly"  aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1">
+			<div class="modal-body">
+				<div style="text-align:center"><b>Please Wait Loading ...</b></div>
+			</div>
+		</div>
+	</div>
+</section>
+{literal}
+	<script>
+		var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+		var lineChartData = {
+			labels : [{/literal}
+	{foreach from=$month_array_val item=month}				
+		"{$month}",
+	{/foreach}
+{literal}],
+			datasets : [
+			{
+				label: "Turnover",
+				fillColor : "rgba(240,240,240,0)",
+				strokeColor : "rgba(240,240,240,1)",
+				pointColor : "rgba(240,240,240,1)",
+				pointStrokeColor : "#fff",
+				pointHighlightFill : "#fff",
+				pointHighlightStroke : "rgba(240,240,240,1)",
+				data : [
+{/literal}
+	{foreach from=$canvas_real item=real}				
+		{$real},
+	{/foreach}
+{literal}
+			]
+			},
+			{
+				label: "Expected",
+				fillColor : "rgba(29,155,138,0)",
+				strokeColor : "rgba(29,155,138,1)",
+				pointColor : "rgba(29,155,138,1)",
+				pointStrokeColor : "#fff",
+				pointHighlightFill : "#fff",
+				pointHighlightStroke : "rgba(29,155,138,1)",
+				data : [
+		{/literal}
+			{foreach from=$canvas_expected item=expected}				
+				{$expected},
+			{/foreach}
+		{literal}		
+				]
+			}
+			]
+
+		}
+
+		window.onload = function(){
+			var ctx = document.getElementById("focuschart").getContext("2d");
+			window.myLine = new Chart(ctx).Line(lineChartData, {
+				responsive: true
+			});
+		}
+		
+		$("#cost_display").on('change',function(){
+			if($("#cost_display").is(':checked')){
+			$('.cost_detail').css("display","block");
+			}
+			else
+			{
+				$('.cost_detail').css("display","none");
+			}
+		});
+		
+	$(document).on('change',"#cost_display",function(){
+		
+		
+		 if($("#cost_display").is(":checked") &&  $("#margin_display").prop("checked")==false){
+			 $('th.missionhead').attr("colspan","2");
+			 $('.cost_detail').show();
+			
+			}
+			else if(($("#margin_display").is(":checked")) && ($("#cost_display").is(":checked")))
+			{
+				$('th.missionhead').attr("colspan","3");
+				$('.margin_detail').show();
+				$('.cost_detail').show();
+				
+					}
+			else{
+				if($("#margin_display").is(":checked")){
+						$('.cost_detail').hide();
+						$('th.missionhead').attr("colspan","2");
+					}else{
+					$('.cost_detail').hide();
+					$('.margin_detail').hide();
+					$('th.missionhead').attr("colspan","1");
+						}
+			
+			}
+		
+		});
+		
+	$(document).on('change',"#margin_display",function(){
+		
+	 if($("#margin_display").is(":checked") && $("#cost_display").prop("checked")==false)
+	 {
+			$('th.missionhead').attr("colspan","2");
+			 $('.margin_detail').show();
+			
+			
+	 }
+	else if($("#margin_display").is(":checked") && $("#cost_display").is(":checked"))
+	{
+			
+			$('.cost_detail').show();
+			$('.margin_detail').show();
+			$('th.missionhead').attr("colspan","3");
+			
+			
+			
+	}
+	else
+	{
+		if($("#cost_display").is(":checked"))
+		{
+			$('.margin_detail').hide();
+			$('th.missionhead').attr("colspan","2");
+		}
+		else
+		{
+			$('.cost_detail').hide();
+			$('.margin_detail').hide();
+			$('th.missionhead').attr("colspan","1");
+		}
+	}
+		
+	});
+	
+	$("#yearlist").chosen({allow_single_deselect:false,search_contains: true,disable_search: true});	  
+	$("#all_sales").chosen({allow_single_deselect:true,search_contains: true});
+	$("#product_type").chosen({allow_single_deselect:true,search_contains: true,disable_search: true});
+	$("#product_name").chosen({allow_single_deselect:true,search_contains: true,disable_search: true});
+	$("#product_status").chosen({allow_single_deselect:true,search_contains: true,disable_search: true});
+	product_status
+	$(document).ready(function(){
+		
+		$('body').on('hidden', '#contractmonthly', function (){        
+			$(this).removeData('modal');				
+			$('.modal-body',this).html('<div style="text-align:center"><b>Please Wait Loading ...</b></div>');		
+			$("body").css("overflow", "auto");    
+		});
+		
+	});
+	
+	</script>
+{/literal}

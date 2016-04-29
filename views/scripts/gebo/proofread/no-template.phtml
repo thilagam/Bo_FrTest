@@ -1,0 +1,58 @@
+{literal}
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript">
+    //loadEditors('alix_mail');
+    $('#alix_mail').tinymce({
+        // Location of TinyMCE script
+        script_url 							: '/BO/theme/gebo/lib/tiny_mce/tiny_mce.js?' + new Date().getTime(),
+        // General options
+        theme 								: "advanced",
+        plugins 							: "autoresize,style,table,advhr,advimage,advlink,emotions,inlinepopups,preview,media,contextmenu,paste,fullscreen,noneditable,xhtmlxtras,template,advlist",
+        // Theme options
+        theme_advanced_buttons1 			: "undo,redo,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,fontsizeselect",
+        theme_advanced_buttons2 			: "forecolor,backcolor,|,cut,copy,paste,pastetext,|,bullist,numlist,link,image,media,|,code,preview,fullscreen",
+        theme_advanced_buttons3 			: "",
+        theme_advanced_toolbar_location 	: "top",
+        theme_advanced_toolbar_align 		: "left",
+        theme_advanced_statusbar_location 	: "bottom",
+        theme_advanced_resizing 			: false,
+        height                              : 200,
+        content_css                         : "/BO/theme/gebo/css/tinymce_styles.css?" + new Date().getTime(),
+        theme_advanced_font_sizes           : "8px,10px,12px,13px,14px,16px,18px,20px",
+        font_size_style_values              : "8px,10px,12px,13px,14px,16px,18px,20px",
+        init_instance_callback				: function(){
+
+            function resizeWidth() {
+                document.getElementById(tinyMCE.activeEditor.id+'_tbl').style.width='98%';
+            }
+            resizeWidth();
+            $(window).resize(function() {
+                resizeWidth();
+            })
+        }
+    });
+    function sendMailAlix()
+    {
+        var object = escape($('#mail_object').val());
+        var comment = escape(tinyMCE.get('alix_mail').getContent());
+        var target_page = "/proofread/no-template?mail_sub=yes&object="+object+"&comment="+comment;
+        $.post(target_page, function(data){ //alert(data);
+        $('#notemplate').hide();$("#notemplate").modal('hide');
+          smoke.alert("Message delivered to Alix Succesfully");
+    });
+
+    }
+</script>
+{/literal}
+
+<form id="alixmail" name="alixmail" action="/proofread/no-template" method="get" >
+   <!-- <button  class="btn btn-success" type="button" name="showmail" id="showmail" value="" onclick="return showMailBox();" >Send</button>-->
+
+    <label class="span1"> Object : </label> <input class=" span9" type="text" name="mail_object" id="mail_object" value="" />
+    <textarea  id="alix_mail" name="alix_mail" class="textarea"></textarea>
+
+  <div class="span9 pull-right" style="padding-top: 20px;"> <button class="btn btn-success bottom" type="button" id="sub_mail" name="sub_mail" value="Submit" onclick="sendMailAlix();">Submit</button>
+    <button class="btn btn-danger bottom" type="button" id="sub_mail" name="sub_mail" value="Submit" onclick='javascript:$("#notemplate").modal("hide");'>Annuler</button></div>
+</form>
+<div></div>
+

@@ -1,0 +1,36 @@
+<section id="contributorBadge">
+	<div class="metroline">
+		{if $profile_type eq 'sub-junior'}
+			<div class="leveltext  active">
+				<div class="contrib-profile">
+					<img src="{$profile_pic}" />
+					You ! 
+				</div>
+		{else}<div class="leveltext">{/if}			
+			<span class="label label-level"><i class="icon-bookmark"></i>Beginner</span>
+			<p class="muted">No articles accepted <br> on Edit-place yet</p>
+		</div>
+
+		{if $profile_type eq 'junior'}
+			<div class="leveltext  active">
+				<div class="contrib-profile">
+					<img src="{$profile_pic}" />
+					You ! 
+				</div>
+		{else}<div class="leveltext">{/if}
+			<span class="label label-level"><i class="icon-bookmark"></i>Junior</span>
+			<p class="muted">At least 1 article accepted <br> on Edit-place</p>
+		</div>
+		{if $profile_type eq 'senior'}
+		<div class="leveltext  active">
+				<div class="contrib-profile">
+					<img src="{$profile_pic}" />
+					You ! 
+				</div>
+		{else}<div class="leveltext">{/if}
+			<span class="label label-level"><i class="icon-bookmark"></i>Senior</span>
+			<p class="muted">*You are a confirmed <br> writer</p>
+		</div>
+		<p class="muted"><small>*Status given at the discretion of Edit-place.</small></p>
+	</div>
+</section>

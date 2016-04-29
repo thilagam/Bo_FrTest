@@ -1,0 +1,43 @@
+<div class="w-box-content cnt_a">
+<table class="table table-bordered">
+	{if $edit_status}
+	<thead>
+		<tr>
+			<td style="text-align:left"><span class="btn btn-primary" onclick="updatesplitval()">Update</span></td>
+		</tr>
+	</thead>
+	{/if}
+	<tr>
+		<th style="width:200px !important"></th>
+		{foreach from=$months item=value}
+			<th>{$value|date_format:"%b %y"} (&{$currency};)</th>
+		{/foreach}
+	</tr>
+	
+	{foreach from=$turnovers item=turnover1 key=producttype }
+		{foreach from=$turnover1 item=turnover key=missiontype}
+			<tr>
+				<td>{$missiontype|utf8_encode}</td>
+				{foreach from=$turnover item=value key=monthname}
+					<td>
+						{if $value!="-"}
+							<span class="splitvaltxt">{$value|zero_cut_t:2}</span>
+							<input type="text" value="{$value}" name="splitval[{$producttype}][{$missiontype|utf8_encode}][{$monthname}]" style="width:60px" class="validate[required,custom[number]] hide splitfield"/> 
+							<input type="hidden" name="splittype[{$producttype}][{$missiontype|utf8_encode}][{$monthname}]" value="{$producttype}"/>
+						{else}
+							-
+						{/if}
+					</td>
+				{/foreach}
+			</tr>
+		{/foreach}
+	{/foreach}
+	<tr>
+		<th>Total (Month Wise)</th>
+		{foreach from=$total_per_month item="total" name="total"}
+			<th>{$total|zero_cut_t:2}</th>
+		{/foreach}
+	</tr>
+</table>
+<input type="hidden" value="{$explaunchdate}" id="explaunchdate" name="expenddate" />
+</div>

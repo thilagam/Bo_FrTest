@@ -1,0 +1,24 @@
+{assign var='i' value=0}
+{foreach from=$sectionHeadings item=sH}
+{if $accessCode eq 99 or in_array($i, $accessCode)}
+
+{assign var='subsection'	value=$pageObj->getsubsectionpages($i)}
+{foreach from=$subsection item=inm}
+{assign var='j' value=0}
+{assign var='t' value=$inm.$j->getName()|takesubstring}
+{if $t.0 eq ''}
+<img src="balbul.gif">
+<a href="process/{$inm.$j->getName()|lower}">%{$inm.$j}%</a>
+{else}
+<img src="balbul.gif">
+<a href="{$t.0}/{$t.1|lower}">%{$inm.$j}%</a>
+{/if}
+<div class="divLn"></div>
+{assign var='j' value=$j+1}
+{/foreach}
+{assign var='i' value=$i+1}
+{/if}
+{/foreach}
+
+<div class="divLn"></div>
+

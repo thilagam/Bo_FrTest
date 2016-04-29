@@ -1,0 +1,66 @@
+
+
+<form id="bulkeditholiday" name="bulkeditholiday" action="/hrm/bulkedit-public-holiday" >
+
+    {foreach from=$editpublicleaves key=publicleaves_key item=publicleaves_item name=publicleaves_loop}
+        <div class="mod" id="public_holiday_0">
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Title <span class="f_req">*</span></label>
+                    <input type="text" name="leave_title[]" id="leave_title_{$smarty.foreach.publicleaves_loop.index}"  value="{$editpublicleaves[0].leave}"  />
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Country <span class="f_req">*</span></label>
+                    <select name="country[]" id="country_{$smarty.foreach.publicleaves_loop.index}"  data-placeholder="S&eacute;lectionnez Country">
+                        <option value="0" ></option>
+                        <option value="ind" {if $editpublicleaves[0].country eq 'ind'} selected {/if} >India</option>
+                        <option value="fr" {if $editpublicleaves[0].country eq 'fr'} selected {/if} >France</option>
+                        <option value="uk" {if $editpublicleaves[0].country eq 'uk'} selected {/if} >Uk</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Type <span class="f_req">*</span></label>
+                    <select name="mandatory[]" id="mandatory_{$smarty.foreach.publicleaves_loop.index}"  data-placeholder="S&eacute;lectionnez Option">
+                        <option value="0" >S&eacute;lectionnez Option</option>
+                        <option value="yes" {if $editpublicleaves[0].mandatory eq 'ind'} selected {/if} >Mandatory</option>
+                        <option value="no" {if $editpublicleaves[0].mandatory eq 'fr'} selected {/if} >Optional</option>
+                    </select>
+
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Date <span class="f_req">*</span></label>
+                    <input type="text" name="create_at[]"  id="create_at_{$smarty.foreach.publicleaves_loop.index}" data-date-format="dd/mm/yyyy" value="{$editpublicleaves[0].start|date_format:'%d/%m/%Y'}" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span7 pull-right form-inline">
+            <button type="submit" class="btn btn-success" id="edit" name="edit" value="edit"  >Edit</button>
+        </div>
+    </div>
+    {/foreach}
+
+</form>
+
+
+
+
+
+
+
+
+

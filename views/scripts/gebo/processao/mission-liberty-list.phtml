@@ -1,0 +1,127 @@
+{literal}
+
+<script type="text/javascript" >
+$(document).ready(function() {
+    $('#newaolistgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" }
+        ]
+
+    });
+
+
+});
+/*$("#editaopop").live('click',function(e) { //alert("hello");
+    e.preventDefault();
+    var href = $(this).attr('href');
+    $("#editao").removeData('modal');
+    $('#editao .modal-body').load(href);
+    $("#editao").modal();
+    $(".modal-backdrop:gt(0)").remove();
+    //$('.modal-backdrop').css('opacity','0.0');
+
+});
+$("#publishaopop").live('click',function(e) { //alert("hello");
+    e.preventDefault();
+    var href = $(this).attr('href');
+    $("#publishao").removeData('modal');
+    $('#publishao .modal-body').load(href);
+    $("#publishao").modal();
+    $(".modal-backdrop:gt(0)").remove();
+
+});*/
+</script>
+{/literal}
+<div class="row-fluid">
+  <div class="span12" style="">
+    <h3 class="heading">Mod&eacute;ration mission libert&eacute;<a href="#searchblock" onclick="showSearch();"  class="label label-inverse alignright">Search</a></h3>
+     <div class="hide" id="searchblock">
+      <form action={$smarty.server.REQUEST_URI} method="get" id="searchform" name="searchform" >
+          <input type="hidden" id="submenuId" name="submenuId"  value="{$submenuId}"/>
+        <table id="searchtable" class="table tdleftalign">
+            <tr><td class="span1"><input type="text"  placeholder="From" id="dp1" name="startdate" data-date-format="dd-mm-yyyy" value="{$smarty.get.startdate}"/></td>
+                <td class="span5">
+                    <select id="clientId" name="clientId" onChange=fnloadao(this.value); data-placeholder="clients" class="span8">
+                        {html_options options=$client_array  selected=$smarty.get.clientId }
+                    </select>
+                </td>
+                <td class="span1"><button class="btn btn-info pull-left" id="clear" name="clear" type="button" value="clear" onclick="clearAll();" >Clear</button></td>
+            </tr>
+            <tr>
+                <td class="span1"><input type="text"  placeholder="To" id="dp2" name="enddate" data-date-format="dd-mm-yyyy" value="{$smarty.get.enddate}"/></td>
+                <td  class="span5" id="aolist" style="display:none;"> <span id="ao_load"></span></td>
+                <td  class="span"id="aolistall" >
+                    <select  name=aoId id=aoId data-placeholder="deliveries" class="span8">
+                        {html_options  options=$delivery_array  selected=$smarty.get.aoId}
+                    </select>
+                </td>
+                <td class="span1"><button class="btn btn-info pull-left" id="search" name="search" type="submit" value="search" onclick="return validateSearch();" >Search</button>&nbsp;&nbsp;</td>
+            </tr>
+        </table>
+      </form>
+     </div>
+
+    <table id="newaolistgrid" class="table table-bordered table-striped table_vam">
+        <thead>
+        <tr>
+            <th>SL.NO</th>
+            <th>Titre de la mission</th>
+            <th>CLIENT</th>
+            <th>Nombre d'articles</th>
+            <th>CR&eacute;e le</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach from=$paginator key=newaos_key item=newaos_item name=newaos_loop}
+        <tr>
+            <td>{$smarty.foreach.newaos_loop.index+1}</td>
+            <td><a data-target="#artprofile" role="button" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$newaos_item.id}">{$newaos_item.title|stripslashes|wordwrap:20:"\n":true|upper}</a></td>
+            <td><a class="hint--bottom hint--info" data-hint="since : {$newaos_item.doj|date_format:'%d/%m/%Y'}">{if $newaos_item.company_name neq ''}{$newaos_item.company_name|upper}{else}{$newaos_item.email}{/if}</a></td>
+            <td><span class="label label-warning">{$newaos_item.total_article}</span></td>
+            <td>{$newaos_item.created_at|date_format:"%d/%m/%Y"}</td>
+            <td><a data-toggle="modal" data-target="#publishao" id="publishaopop" href="/processao/showpraoinfo?aoid={$newaos_item.id}&function=publish"><i class="splashy-check"></i></a>
+                <a data-toggle="modal" data-target="#editao" id="editaopop" href="/processao/showpraoinfo?aoid={$newaos_item.id}&function=edit"><i class="splashy-pencil"></i></a>
+                <a href="/processao/mission-split?submenuId=ML2-SL1&aoid={$newaos_item.id}" data-hint="split mission" class="hint--left hint--danger"><i class="splashy-diamonds_4"></i></a>
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+  </div>
+</div>
+
+<!--///for the edit ao detials popup///-->
+<div class="modal container hide fade" id="editao">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('editao');">&times;</button>
+        <h3>Edit AO Details</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--///for the publish ao  popup///-->
+<div class="modal2 hide fade" style="overflow: hidden" id="publishao">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('publishao');">&times;</button>
+        <h3>Publish AO</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+
+
+

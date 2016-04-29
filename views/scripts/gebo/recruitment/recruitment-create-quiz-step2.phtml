@@ -1,0 +1,128 @@
+{literal}
+<style>.quizzAns{ float: left; padding: 5px 0; text-align: left; width: 100%;}</style>
+    <script>
+    $(document).ready(function() {  
+		//icheck radio/checkbox
+		$(".icheck").iCheck({
+			checkboxClass: 'icheckbox_square-blue',
+			radioClass: 'iradio_square-blue'
+		});
+
+		$("#recruitment_quiz_step2").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+
+		$("#quiz-create-step2").live('click',function(){
+
+			if($("#recruitment_quiz_step2").validationEngine('validate'))
+			{
+				$.post("/recruitment/save-quiz-step2",$("#recruitment_quiz_step2").serialize(),function(data){		
+					//alert(data);						
+					$('#recruitment_create_quiz .modal-body').html('');
+					$("#recruitment_create_quiz").modal('hide');
+					$(".modal-backdrop").remove();	
+
+					var cmid='{/literal}{$qz_step1.cmid}{literal}';
+					var href = '/recruitment/get-quiz?cmid='+cmid;
+					//alert(href);
+					$("#create_quiz").removeData('modal');
+					$('#create_quiz .modal-body').load(href);
+					$("#create_quiz").modal();	
+					$(".createquiz").text('Update Quiz');		
+		        });
+			}
+
+		});
+
+
+	});
+
+    function quizz_step1()
+    {        
+		var href = '/recruitment/create-quiz-step1';
+		$("#recruitment_create_quiz").removeData('modal');
+		$('#recruitment_create_quiz .modal-body').load(href);
+		$("#recruitment_create_quiz").modal();
+		$(".modal-backdrop:gt(0)").remove();
+    }
+
+    </script>
+	
+	<style>
+		input {text-transform:none !important;} 
+	</style>
+{/literal}
+
+<form id="recruitment_quiz_step2">
+  <div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">Titre du Quizz : {$qz_step1.quizztitle}</h3>
+		<table align="center" cellpadding="4" cellspacing="4" width="70%">
+			<tr>
+				<td colspan="2">Merci de cliquer sur la "bonne r&#233;ponse" pour chaque question ci-dessous</td></tr>
+	            {if $qz_step1.quest_count > 0}
+	                {assign var="i" value=0}
+					{while $i < $qz_step1.quest_count}
+						{assign var="qns" value="qn$i"}
+						{assign var="qnid" value="qnid$i"}
+						{assign var="ans1" value="an0$i"}
+						{assign var="ans2" value="an1$i"}
+						{assign var="ans3" value="an2$i"}
+						{assign var="ans4" value="an3$i"}
+						{assign var="rans" value="r_an$i"}
+						<tr id="tr1{$quizz.$qnid}">
+							<td valign="top">Q{$i+1}:</td>
+							<td><input type="text" name="qn{$i}" id="qn{$i}" class="span9 validate[required]" value="{$quizz.$qns}"/>
+							</td>
+						</tr>
+						<tr id="tr2{$quizz.$qnid}">
+							<td></td>
+							<td valign="top">&nbsp;
+								<span class="quizzAns">
+									<span style="float:left">A1:&nbsp;&nbsp;
+										<input type="text" name="an{$i}0" id="an{$i}0" class="{$quizz.$ans1} validate[required]"/>
+									</span>
+									<label class="radio inline">
+										<input type="radio" name="r_an{$i}" value="1" class="icheck validate[required]"/>
+									</label>
+									<span id="an{$i}_span" style="padding:5px;"></span>
+								</span><br />
+								<span class="quizzAns">
+									<span style="float:left">A2:&nbsp;&nbsp;
+										<input type="text" name="an{$i}1" id="an{$i}1" class="validate[required]"/>
+									</span>
+									<label class="radio inline">
+										<input type="radio" name="r_an{$i}" value="2"  class="icheck validate[required]"/>
+									</label>	
+								</span><br />
+								<span class="quizzAns">
+									<span style="float:left">A3:&nbsp;&nbsp;
+										<input type="text" name="an{$i}2" id="an{$i}2" class="validate[required]"/>
+									</span>
+									<label class="radio inline">
+										<input type="radio" name="r_an{$i}" value="3" class="icheck validate[required]"/>
+									</label>
+								</span><br />
+								<span class="quizzAns">
+									<span style="float:left">A4:&nbsp;&nbsp;
+										<input type="text" name="an{$i}3" id="an{$i}3" class="validate[required]" />
+									</span>
+									<label class="radio inline">
+										<input type="radio" name="r_an{$i}" value="4" class="icheck validate[required]"/>
+									</label>
+								</span>
+							</td>
+						</tr>
+						<tr id="tr3{$quizz.$qnid}"><td colspan="2"><hr></td></tr>
+		                {assign var="i" value=$i+1}
+					{/while}
+          	 	{/if}
+          	 	<tr>
+          	 		<td colspan="2">
+          	 			<button type="button" class="btn btn-primary" onclick="return quizz_step1();">RETOUR</button>
+						<button class="btn" data-dismiss="modal">ANNULER</button>			
+						<button type="button" id="quiz-create-step2" class="btn btn-primary">CR&Eacute;ER QUIZZ</button>
+          	 		</td>
+          	 	</tr>
+		</table>		
+	</div>
+</div>
+</form>

@@ -1,0 +1,219 @@
+{literal}
+<!-- custom scrollbar plugin -->
+<script>
+	$(document).ready(function(){
+		
+		/*$('#client_details_view').dataTable({
+					"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+					"iDisplayLength" : 50,
+					 "aaSorting": [],
+					"bSortCellsTop": true,
+					"aoColumns": [
+						{  "sType": "string" ,"bSortable": false},
+						{ "sType": "string" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false },
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false},
+						{ "sType": "natural" ,"bSortable": false}
+					]
+					});	*/
+					
+					$('#client_details_view td.mission-val').on('click',function(e)
+						{
+							$(".formError").css("display","none");
+												
+							if(editor==false)
+							{
+								var tdwidth= $(this).width();
+								
+										$("#client_details_view td.mission-val").find('input').css("display","none");
+										$("#client_details_view td.mission-val").find('p').show();	
+														
+										if($(this).find('input').val()!="")
+										{
+										$(this).find('p').hide();
+										$(this).find('input').css("display","block");
+										}
+										else
+										{
+										$(this).find('p').hide();
+										$(this).find('input').css("display","block");
+										}
+										$(this).find(".formError").css("display","block");
+										if(tdwidth)
+										{
+										$(this).css("width",tdwidth);
+										$(this).find('input').css("width",tdwidth-22);
+										
+										}
+										
+							}
+			
+					});
+							
+							$("#splitturnoverform").validationEngine();
+		
+				});
+		
+		$(document).on("click",".sales_details",function(){
+
+			$("#salesProfileView").modal('show');
+			$("#salesProfileView").removeClass( "hide" ).addClass("in");
+	});
+		$(document).on("click",".monthActionList a",function(){
+
+			$("#contractmonthly").modal('show');
+			$("#contractmonthly").removeClass( "hide" ).addClass("in");
+			
+	});
+</script>
+
+{/literal}
+				
+			
+				
+		<form method="POST" name="splitturnoverform" id="splitturnoverform" enctype="multipart/form-data" class="form-horizontal">
+				<table class="focusTable" id="client_details_view">
+					<thead>
+						<tr>
+						    <th >SALES</th>
+							<th ><span class="pull-left">CLIENT/CONTRACTS</span></th>
+							{foreach from=$month_array_val item=monthhead name=monthloop key=mkey}
+							<th class="months">{$monthhead|escape:'htmlall'}<span class="monthViewCta">
+								<i class="fa fa-plus" id="monthActions"></i>
+								<div class="monthActionList">
+									<a role="button" href="/turnover/contract-monthly-details?client_id={$client_details.client_id}&month={$default_year}-{$mkey}" tabindex="-1" data-toggle="modal"  data-target="#contractmonthly"  data-hint="{$salesownerdetail.$quotecontract_id.sales_owner}"><i class="fa fa-eye"></i></a>						
+								</div>
+							</span>	</th>
+							{/foreach}
+						    <th class="months">TOTAL </th>
+						</tr>
+					</thead>
+					<tbody>
+					<tr class="contractRow">
+					{assign var=client_identifier value=$client_details.client_id}	
+					<td></td>
+					<td><span class="contractName pull-left">{$client_details.client_name}</span></td>
+						{foreach from=$monthlist item=month_item name=month_loop}
+						{assign var=month_year value=$default_year|cat:'-'|cat:$month_item}
+						<td class="months"><div class="dataFocus">
+								<span class="singleData">{if $contract_details.totalclient.$client_identifier.$month_year eq 0}
+								{$contract_details.totalclient.$client_identifier.$month_year|zero_cut_t:2}
+								<input type="hidden" id="month_{$month_item}"  value="0">
+								{else}
+								{$contract_details.totalclient.$client_identifier.$month_year|zero_cut_t:2}
+								<input type="hidden" id="month_{$month_item}"  value="{$contract_details.totalclient.$client_identifier.$month_year}">
+							{/if}</span>	
+							</div>
+						</td>
+						
+					{/foreach}
+					 <td class="months"><div class="dataFocus">
+								<span class="singleData">{if $contract_details.totalclient.$client_identifier.turnover eq 0}
+								{$contract_details.totalclient.$client_identifier.turnover|zero_cut_t:2}
+								{else}
+							    {$contract_details.totalclient.$client_identifier.turnover|zero_cut_t:2} &{$contract_details.totalclient.$client_identifier.sales_suggested_currency};
+						{/if}</span>	
+							</div>
+					</td>	
+					</tr>	
+					
+					
+					{foreach from=$contract_details item=contract_item name=contract_loop}
+						{assign var=quotecontract_id value=$contract_item.quotecontractid}
+					{if $quotecontract_id neq ""}
+					<tr class="contractRow active">					
+							<td>
+							<a class="hint--right sales_details" href="/turnover/sales-details?sales_id={$salesownerdetail.$quotecontract_id.sales_creator_id}" role="button" data-toggle="modal"  data-target="#salesProfileView"  data-hint="{$salesownerdetail.$quotecontract_id.sales_owner}">
+								<img src="{$fo_path}profiles/bo/{$salesownerdetail.$quotecontract_id.sales_creator_id}/logo.jpg?123" class="image rd_30" alt="{$salesownerdetail.$quotecontract_id.sales_owner}"></a>
+							</td>
+							<td>
+								<span class="contractName pull-left ">							
+									<a href="/contractmission/contract-edit?contract_id={$quotecontract_id}&submenuId=ML13-SL3">{$contract_item.contractname}</a>
+								</span>
+							</td>
+							
+								{foreach from=$monthlist item=month_item name=month_loop}
+								{assign var=month_year value=$default_year|cat:'-'|cat:$month_item}
+								<td><div class="dataFocus">
+								<span class="singleData">{if $contract_details.contract_Contrat_details.$quotecontract_id.$month_year eq 0}
+								{$contract_details.contract_Contrat_details.$quotecontract_id.$month_year|zero_cut_t:2}{else}
+								{$contract_details.contract_Contrat_details.$quotecontract_id.$month_year|zero_cut_t:2}
+								{/if}</span>	
+							</div>
+								</td>
+								
+							{/foreach}
+							 <td ><div class="dataFocus">
+								<span class="singleData">
+								 {if $contract_details.contract_Contrat_details.$quotecontract_id.turnover eq 0}
+									   {$contract_details.contract_Contrat_details.$quotecontract_id.turnover|zero_cut_t:2}
+									   {else}
+										{$contract_details.contract_Contrat_details.$quotecontract_id.turnover|zero_cut_t:2} &{$contract_details.contract_Contrat_details.$quotecontract_id.sales_suggested_currency};
+								{/if}</span>	
+							</div>
+							</td>		
+							</tr>
+								{assign var=missioncount value=0}
+								{assign var=mission_array value=""}
+								{assign var=mission_array value=$contract_details.contract_Contrat_details.$quotecontract_id}
+								{foreach from=$mission_array item=mission_item name=mission_loop}
+								{assign var=mission_id value=$mission_item}
+									{if $mission_id neq "" && $mission_array.$mission_id.mission_type && $mission_array.$mission_id|is_array }
+							<tr class="missionRow active ">
+									<td>
+										-
+									</td>
+								<td ><span class="contractName pull-left">{$mission_array.$mission_id.mission_type}</span></td>
+													{foreach from=$monthlist item=mission_month_item name=mission_month_item_loop}
+															{assign var=mission_month_year value=$default_year|cat:'-'|cat:$mission_month_item}
+															{if $mission_array.$mission_id.$mission_month_year eq 0}
+																<td class="mission-val"><div class="dataFocus">
+														<span class="singleData"><p >{$mission_array.$mission_id.$mission_month_year|zero_cut_t:2}</p>
+														<input type="text" class="validate[required, custom[onlyCommaSp]]" id="splitturnover_{$mission_id}_{$mission_month_year}_{$quotecontract_id}" style="display:none;" /></td>
+															</span></div>{else}
+																<td class="mission-val" ><div class="dataFocus">
+															<span class="singleData">
+																	{assign var=followup value=$mission_month_year|cat:'-from_followup'}
+																{if $mission_array.$mission_id.$followup eq 1}
+																<p class="entered_val">{$mission_array.$mission_id.$mission_month_year|zero_cut_t:2}</p>
+																<input type="text"  class="validate[required, custom[onlyCommaSp]]" id="splitturnover_{$mission_id}_{$mission_month_year}_{$quotecontract_id}" value="{$mission_array.$mission_id.$mission_month_year+0}" style="display:none;"/>
+																{else}
+																{$mission_array.$mission_id.$mission_month_year|zero_cut_t:2}
+																{/if}
+																</span></div></td>
+																{/if}
+															
+													{/foreach}
+												<td><div class="dataFocus">
+															<span class="singleData">
+													 {if $mission_array.$mission_id.turnover eq 0}
+														   {$mission_array.$mission_id.turnover|zero_cut_t:2}
+														   {else}
+															{$mission_array.$mission_id.turnover|zero_cut_t:2} &{$contract_details.contract_Contrat_details.$quotecontract_id.sales_suggested_currency};
+													{/if}</span></div>
+												</td>	
+													
+											
+										</tr>
+										{/if}
+										{assign var=missioncount value=$missioncount+1}
+							{/foreach}
+							
+			{/if}
+		{/foreach}
+				    </tbody>
+				</table>
+				
+				<!-- MOdel Popup for sales details -->
+				
+				</form>

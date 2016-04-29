@@ -1,0 +1,552 @@
+{literal}
+<script type="text/javascript" >
+	var all_invoice_ids=new Array();
+	
+	$(document).ready(function() {
+        //gebo_select_row.init();
+        $(".uni_style").uniform();
+		
+		if ($('#contrib-payments-list').length) {
+			$('#contrib-payments-list').dataTable({
+				"sPaginationType" : "bootstrap",
+				"iDisplayLength" : 200,
+				"sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+				"aoColumns" : [
+				{"bSortable": false},
+				{"sType" : "formatted-num"},
+				{"sType" : "french-string"},
+				{"sType" : "french-string"},
+				{"sType" : "eu_date"},
+                {"sType" : "eu_date"},
+                {"sType" : "string"},                
+                {"sType" : "payable"},
+				{"sType" : "string"}, 
+				{"sType" : "html"}
+				],
+				"aaSorting" : [[1, "asc"]],
+				"oTableTools" : {
+					"aButtons" : ["copy", "print", {
+						"sExtends" : "collection",
+						"sButtonText" : 'Save <span class="caret" />',
+						"aButtons" : ["csv", "xls", "pdf"]
+					}],
+					"sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+				},
+                "fnFooterCallback": function ( nRow, aaData, iStart, iEnd, aiDisplay ) {
+                    //alert('nRow = '+nRow+' iStart = '+iStart+' iEnd = '+iEnd+' aiDisplay = '+aiDisplay);
+                    var tmp ;
+                    var iTotalMarket = 0;
+                    for ( var i=0 ; i<aaData.length ; i++ )
+                    {
+                        tmp = aaData[i][5];//alert(tmp);
+                        tmp = tmp.replace('<span class="label label-inverse pull-right">', '');
+                        tmp = tmp.replace('</span>', '');
+                        tmp = replaceAll(tmp, ' ', '');
+                        tmp = tmp.replace(',', '.');
+                        //tmp = tmp.replace(' &euro;', '');
+                        iTotalMarket += tmp*1;
+						
+						//adding invoice id to array
+											
+						var invoice_id=aaData[i][2];
+						var regex = /[^<]*(<a href="([^"]+)">([^<]+)<\/a>)/g;
+						var matches = invoice_id.match(regex);
+						
+						invoice_id = invoice_id.replace( regex, function ( $0,$1,$2,$3) {
+							return $3;
+						});
+
+						all_invoice_ids.push(invoice_id);
+                    }
+					//alert(all_invoice_ids);
+                    var iPageMarket = 0;
+                    for ( var i=iStart ; i<iEnd ; i++ )
+                    {
+                        tmp = aaData[ aiDisplay[i] ][5];//tmp = aaData[i][5];
+                        tmp = tmp.replace('<span class="label label-inverse pull-right">', '');
+                        tmp = tmp.replace('</span>', '');
+                        tmp = replaceAll(tmp, ' ', '');
+                        tmp = tmp.replace(',', '.');
+                        //tmp = tmp.replace(' &euro;', '');
+                        iPageMarket += tmp*1;
+                    }
+                    $("#sumup").html("<span class='label label-success'>"+(formatNumber(iPageMarket))+"</span> / <span class='label label-inverse'>"+(formatNumber(iTotalMarket))+"</span>");
+                }
+			});
+		}
+
+		$("#ong_search").click(function() {
+			$("#search_block").toggle();
+		});
+
+		$("#sel_type").chosen({
+			allow_single_deselect : true,
+			search_contains : true
+		});
+		$("#contribname").chosen({
+			allow_single_deselect : true,
+			search_contains : true
+		});
+		$("#paid_type").chosen({
+			allow_single_deselect : true,
+			search_contains : true
+		});
+
+		$('#dp_start').datepicker({
+			language : 'fr'
+		}).on('changeDate', function(ev) {
+			var dateText = $(this).val();
+			//data('date');
+
+			var endDateTextBox = $('#dp_end');
+			if (endDateTextBox.val() != '') {
+				var testStartDate = new Date(dateText);
+				var testEndDate = new Date(endDateTextBox.val());
+				if (testStartDate > testEndDate) {
+					endDateTextBox.val(dateText);
+				}
+			} else {
+				endDateTextBox.val(dateText);
+			};
+			$('#dp_end').datepicker('setStartDate', dateText);
+			$('#dp_start').datepicker('hide');
+		});
+		$('#dp_end').datepicker({
+			language : 'fr'
+		}).on('changeDate', function(ev) {
+			var dateText = $(this).val();
+			//data('date');
+			var startDateTextBox = $('#dp_start');
+			if (startDateTextBox.val() != '') {
+				var testStartDate = new Date(startDateTextBox.val());
+				var testEndDate = new Date(dateText);
+				if (testStartDate > testEndDate) {
+					startDateTextBox.val(dateText);
+				}
+			} else {
+				startDateTextBox.val(dateText);
+			};
+			$('#dp_start').datepicker('setEndDate', dateText);
+			$('#dp_end').datepicker('hide');
+		});
+
+        $('#select_rows').click(function() {
+            /*var chekd = 0;
+            for (var i = 1; i <= {/literal}{$paginator|@count}{literal}; i++) {
+                if($('#row_sel'+i).length)
+                {
+                    if($('#select_rows').is(':checked')){alert('io='+i);
+                        chekd = 1;
+                        if(! $('#row_sel'+i).is(':checked')){$('#row_sel'+i).click();}
+                    }
+                    else
+                    {
+                        if($('#row_sel'+i).is(':checked')){$('#row_sel'+i).click();}
+                    }
+                }
+            }
+            if(chekd)
+                calculateTotal();*/
+               
+           if($("#select_rows").attr('checked'))
+            {
+                var $b = $('input[type=checkbox]');
+                $b.attr('checked', true);
+            }
+            else
+            {
+                var $b = $('input[type=checkbox]');
+                $b.attr('checked', false);
+            }
+            
+            for (var i = 1; i <= {/literal}{$paginator|@count}{literal}; i++) {
+                if($('#row_sel'+i).length)
+                {
+                    if($("#select_rows").attr('checked'))
+                        $('#row_sel'+i).closest( "span" ).prop("class","uni-checked");
+                    else
+                        $('#row_sel'+i).closest( "span" ).prop("class","");
+                }
+            }
+            calculateTotal();
+        });
+	});
+
+	//////to select all check boxes/////////////
+	function selectALL() {
+        var nchekd = 1;
+        for (var i = 1; i <= {/literal}{$paginator|@count}{literal}; i++) {
+            if($('#row_sel'+i).length){if(! $('#row_sel'+i).is(':checked')){nchekd=0;}}
+        }
+        if(nchekd==1){if(! $('#select_rows').is(':checked')){
+            $('#select_rows').attr("checked",true);
+            $('#select_rows').closest( "span" ).prop("class","uni-checked");
+        }}
+        else{if($('#select_rows').is(':checked')){
+            $('#select_rows').attr("checked",false);
+            $('#select_rows').closest( "span" ).prop("class","");
+        }}
+	}
+    jQuery.fn.dataTableExt.oSort['payable-asc'] = function(a, b) {//alert('a='+a);alert('b='+b);
+            a = a.replace('<span class="label label-inverse pull-right">', '');
+            a = a.replace('</span>', '');
+            a = replaceAll(a, ' ', '');
+            a = a.replace(',', '.');
+            a = a*1;
+            b = b.replace('<span class="label label-inverse pull-right">', '');
+            b = b.replace('</span>', '');
+            b = replaceAll(b, ' ', '');
+            b = b.replace(',', '.');
+            b = b*1;
+            var c = ((a < b) ? -1 : ((a > b) ? 1 : 0));
+            return c;
+    };
+    jQuery.fn.dataTableExt.oSort['payable-desc'] = function(a, b) {//alert('a='+a);alert('b='+b);
+            a = a.replace('<span class="label label-inverse pull-right">', '');
+            a = a.replace('</span>', '');
+            a = replaceAll(a, ' ', '');
+            a = a.replace(',', '.');
+            a = a*1;
+            b = b.replace('<span class="label label-inverse pull-right">', '');
+            b = b.replace('</span>', '');
+            b = replaceAll(b, ' ', '');
+            b = b.replace(',', '.');
+            b = b*1;
+            var c = ((a < b) ? 1 : ((a > b) ? -1 : 0));
+            return c;
+    };
+	function clearAll()
+    {
+        $("#dp_start").val('');
+        $("#dp_end").val('');
+        $("#contribname").val('');
+        $("#invoicename").val('');
+        $("#sel_type").val('').trigger("liszt:updated");
+        $("#paid_type").val('').trigger("liszt:updated"); 
+        $("#contribname").val('').trigger("liszt:updated"); 
+    }
+
+	function calculateTotal() {
+
+		var $b = $('input[type=checkbox]');
+		var countselected = $b.filter(':checked').length;
+		if (countselected >= 1) {
+			var selected = new Array();
+
+			$b.filter(':checked').each(function() {
+				if ($(this).attr('value') != 'all')
+					selected.push($(this).attr('value'));
+			});
+			var total = 0;
+			for (var i = 0; i < selected.length; i++) {
+                selected[i] = replaceAll(selected[i], ' ', '');
+                selected[i] = selected[i].replace(',', '.');
+			    //alert(selected[i]);
+				total += parseFloat(selected[i]);
+			}
+            //$("#sumupselected").html("selected :" + total.toFixed(1));
+			$("#sumupselected").html("selected : " + formatNumber(total));
+		} else
+			$("#sumupselected").html("");
+
+	}
+
+	function validateAll(num) {
+		// $("#hide_totaldelete").val(countselected);
+		var $b = $('input[type=checkbox]');
+		var countselected = $b.filter(':checked').length;
+		if (countselected >= 1) {
+			var selected = new Array();
+
+			$b.filter(':checked').each(function() {
+				selected.push($(this).attr('name'));
+			});
+			$("#hide_total").val(selected);
+			if (num == 2) {
+				var answer = smoke.confirm('Do you really want to refuse invoice');
+				if (answer) {
+					return true;
+				} else {
+					return false;
+				}
+			} else if (num == 1) {
+				counter = 1;
+				///its a global varible
+				//smoke.alert(selected);
+				var url = "/BO/download_invoice.php?invoice_id=" + selected;
+				$(location).attr('href', url);
+
+				return true;
+			}
+		} else {
+			smoke.alert("Merci de s\u00e9lectionner au moins 1.");
+			return false;
+		}
+	}
+	
+	//function to download all payable invoices at a time
+	function fndownloadAll()
+	{
+		var msg="&Ecirc;tes-vous s&ucirc;r(e) de vouloir  tout t&eacute;l&eacute;charger ?";		
+		smoke.confirm(msg,function(e){
+			if (e){					
+					var url = "/BO/download_invoice.php?invoice_id=" + all_invoice_ids;
+					$(location).attr('href', url);
+				}
+			else{
+				return false;
+			}
+		},{cancel :'Non',ok:'Oui'});
+	
+	}
+
+	function printInvoice(para) {
+		var $b = $('input[type=checkbox]');
+		var countselected = $b.filter(':checked').length;
+		if (countselected == 1 && para == 1) {
+			var selected = new Array();
+			$b.filter(':checked').each(function() {
+				selected.push($(this).attr('name'));
+			});
+			/* var string = selected;
+			 var arr = string.split('_');alert(arr[0]);alert(arr[1]);*/
+			$("#hide_total").val(selected);
+			var target_page = "/stats/generatepdf?invoiceid=" + selected;
+			$.post(target_page, function(data) {//alert(data);
+				window.open("/stats/generatepdf?submenuId=ML5-SL2&invoiceid=" + selected + "&print=yes", '_blank');
+				$(function() {
+					$("#logo").show();
+					$("#tag1").show();
+					$("#tag2").show();
+					$("#invoicePrint").print();
+
+				});
+			});
+		} else if (para != 1) {
+			selected = para;
+			$("#hide_total").val(selected);
+			var target_page = "/stats/generatepdf?invoiceid=" + selected;
+			$.post(target_page, function(data) {//alert(data);
+
+				var windowName = "popUp";
+				//$(this).attr("name");
+	window.open("/stats/generatepdf?submenuId=ML5-SL2&invoiceid=" + selected + "&print=yes", windowName, "width = 800,hieght=1000,scrollbars = yes");
+
+				$(function() {
+					$("#logo").show();
+					$("#tag1").show();
+					$("#tag2").show();
+					$("#invoicePrint").print();
+
+				});
+			});
+		} else {
+			smoke.alert("select only 1 invoice.");
+			return false;
+		}
+	}
+    function replaceAll(string, token, newtoken) {
+        if(token!=newtoken)
+        while(string.indexOf(token) > -1) {
+            string = string.replace(token, newtoken);
+        }
+        return string;
+    }
+    function formatNumber(yourNumber) {//alert(yourNumber);
+        yourNumber = parseFloat(yourNumber).toFixed(2);
+        var n= yourNumber.toString().split(".");
+        n[0] = n[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        var n1 = n.join(",");
+        if(typeof n[1] === 'undefined')
+        {
+            n1 += (n1 + ",00");
+        }
+        return n1;
+    }
+    function conf1(act, invid, cntrlr)
+    {
+        alert(act+invid+cntrlr);
+    }
+    function conf(act, invid, cntrlr)
+    {
+        smoke.confirm(((act == 'pay') ? 'Pay' : 'Refuse') + ' now?',function(e){
+            if (e){
+                window.location="/stats/"+cntrlr+"?invoice_id="+invid;
+            }else{
+                e.preventDefault();
+            }
+        }, {ok:"Yeah", cancel:"No"}) ;
+    }
+    function fnpayAll()
+    {
+        var $b = $('input[type=checkbox]');
+        var countselected = $b.filter(':checked').length;
+        if (countselected >= 1) {
+            var selected = new Array();
+
+            $b.filter(':checked').each(function() {
+                if(($(this).attr('name')) != 'select_rows')
+                    selected.push($(this).attr('name'));
+            });
+            //alert(selected);
+            smoke.confirm('Voulez-vous payer ces factures maintenant ?',function(e){
+                if (e){
+                    window.location="/stats/paycontributors?invoice_ids="+selected;
+                }else{
+                    e.preventDefault();
+                }
+            }, {ok:"OUI", cancel:"NON"}) ;
+        } else {
+            smoke.alert("Merci de s\u00e9lectionner au moins 1.");
+            return false;
+        }
+        return false;
+    }
+	function mergeAll() {
+		// $("#hide_totaldelete").val(countselected);
+		var $b = $('input[type=checkbox]');
+		var countselected = $b.filter(':checked').length;
+		if (countselected >= 1) {
+			var selected = new Array();
+
+			$b.filter(':checked').each(function() {
+				selected.push($(this).attr('name'));
+			});
+			$("#hide_total").val(selected);
+			
+			counter = 1;
+			///its a global varible
+			//smoke.alert(selected);
+			var url = "/BO/download_invoice.php?merge_pdf=yes&invoice_id=" + selected;
+			$(location).attr('href', url);
+
+			return true;
+			
+		} else {
+			smoke.alert("Merci de s\u00e9lectionner au moins 1.");
+			return false;
+		}
+	}
+</script>
+<style>
+    .label{font-size: 12px!important;}
+</style>
+{/literal}
+
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="heading">En attente de paiement<a class="btn btn-gebo1" id="ong_search">Search</a></h3>
+        <div class="{if !$smarty.get.search}hide{/if} well clearfix" id="search_block">
+            <div class="row-fluid">
+                <form action={$smarty.server.REQUEST_URI} method="get" id="searchform" name="searchform" >
+                    <input type="hidden" id="submenuId" name="submenuId"  value="ML5-SL2"/>
+                    <span class="sepV_c">
+                        <select name="sel_type" id="sel_type" data-placeholder="Payment type">
+                            <option value=""></option>
+                            <option value="All" {if $sel_type eq 'All'} selected{/if}>All</option>
+                            <option value="paypal" {if $sel_type eq 'paypal'} selected{/if}>Paypal</option>
+                            <option value="cheque" {if $sel_type eq 'cheque'} selected{/if}>Cheque</option>
+                            <option value="virement" {if $sel_type eq 'virement'} selected{/if}>Virement</option>
+                        </select> </span>
+                    <span class="sepV_c">
+                        <input type="text" placeholder="start date" id="dp_start" name="start_date" readonly data-date-format="dd-mm-yyyy" value="{$start_date}"/>
+                    </span>
+                    <span class="sepV_c">
+                        <input type="text"  placeholder="end date" id="dp_end" name="end_date" readonly data-date-format="dd-mm-yyyy" value="{$end_date}"/>
+                    </span>
+                    <span class="sepV_c">
+                        <input type="text" id="invoicename" name="invoicename" value="{$invoicename}"  placeholder="Invoice no" />
+                    </span>
+                    <span class="sepV_c">
+                        <select id="contribname" name="contribname" data-placeholder="Contributeur">
+                            <option value=""></option>
+                            {html_options  options=$contributor_array selected=$contribname}
+						</select> 
+					</span>
+                    
+                    <span class="sepV_c">
+                        <button class="btn btn-danger pull-center" id="search" name="search" type="submit" value="search" >
+                            Search
+                        </button>
+                        <button class="btn btn-info pull-center" id="clear" name="clear" type="button" value="clear" onclick="clearAll();" >
+                            Clear
+                        </button> </span>
+                    <!--</div>-->
+                </form>
+
+            </div>
+        </div>
+
+        <table class="table table-striped table-bordered dTableR" id="contrib-payments-list">
+            <thead>
+                <th class="table_checkbox"><input type="checkbox" name="select_rows" id="select_rows" class="uni_style" value="all"/></th>
+                <th>S.No.</th>
+                <th>FACTURE No.</th>
+                <th>CONTRIBUTEUR</th>
+                <th>DATE FACTURE</th>
+                <th>REQUEST DATE</th>
+                <th>DATE LIMITE</th>
+                <th>MONTANT(en &#8364;)</th>
+                <th>TYPE DE PAIEMENT</th>
+                <th>ACTION</th>
+            </thead>
+            <tbody>
+                {assign var='total_amount_to_be_paid' value=0}
+                {if $nores neq 'true'}
+                {foreach from=$paginator key=payablecontrib_key item=payablecontrib_item name=payablecontrib_loop}
+                <tr>
+                    <td><input type="checkbox" name="{$payablecontrib_item.invoiceId|replace:'ep_invoice_':''}" id="row_sel{$smarty.foreach.payablecontrib_loop.index+1}" class="uni_style" value="{$payablecontrib_item.total_invoice_paid}" onclick="calculateTotal();selectALL();" /></td>
+                    <td>{$smarty.foreach.payablecontrib_loop.index+1}</td>
+                    <td><a href="/stats/generatepdf?submenuId={$submenuId}&invoiceid={$payablecontrib_item.invoiceId|replace:'ep_invoice_':''}">{$payablecontrib_item.first_name|replace:' ':'_'}_{$payablecontrib_item.invoiceId_new|replace:'ep_invoice_':''}</a></td>
+                    <td><a style="cursor: pointer" href="/user/contributor-edit?submenuId={$submenuId}&tab=viewcontrib&userId={$payablecontrib_item.user_id}" onclick="return getParticipateUserInfo({$payablecontrib_item.user_id}, {$payablecontrib_item.user_id});" target="_userparticipateinfo">{if $payablecontrib_item.first_name neq ''}{$payablecontrib_item.first_name}{else}{$payablecontrib_item.email}{/if}</a></td>
+                    <td>{$payablecontrib_item.updated_at|date_format:"%d/%m/%Y"}</td>
+                    <td>{$payablecontrib_item.created_at|date_format:"%d/%m/%Y"}</td>
+                    <td> {if $payablecontrib_item.pay_later_month_name} 15th of {$payablecontrib_item.pay_later_month_name}  {else} - {/if} </td>
+                    <td><span class="label label-inverse pull-right">{$payablecontrib_item.total_invoice_paid}</span></td>
+                    {assign var='total_amount_to_be_paid' value=$total_amount_to_be_paid+$payablecontrib_item.total_invoice_paid}
+                    <td>{$payablecontrib_item.payment_type}<!----></td>
+                    <td> {if $payablecontrib_item.status eq 'refuse'} <span class="label label-important">Refus&eacute;</span>{else}
+					<a href="javascript:void(0);" style="cursor: pointer;" onclick="return conf('pay', '{$payablecontrib_item.invoiceId|replace:'ep_invoice_':''}', 'paycontributor');"><button class="btn hint--bottom hint--info" data-hint="Payer"><i class="splashy-thumb_up"></i></button></a>
+					<a href="javascript:void(0);" style="cursor:pointer;" onclick="return conf('refuse', '{$payablecontrib_item.invoiceId|replace:'ep_invoice_':''}', 'refuseinvoice');"><button class="btn hint--bottom hint--info" data-hint="Refuser"><i class="splashy-thumb_down"></i></button></a>{/if}
+                    <a onclick="return printInvoice('{$payablecontrib_item.invoiceId|replace:'ep_invoice_':''}');" id="print" class="btn hint--bottom hint--info" data-hint="Imprimer" name="{$payablecontrib_item.invoiceId|replace:'ep_invoice_':''} " style="cursor: pointer;" ><i class="splashy-printer"></i> </a></td>
+                </tr>
+                {/foreach}
+                {/if}
+            </tbody>
+        </table>
+        <div style="width: 100%;float: left;"><span class="label" id="sumup" style="float: left; margin-left: 410px;margin-bottom: 5px;"></span></div>
+        <!--<div style="text-align:center;padding-left:600px;">            
+            <div style="border-radius:7px;background-color:#eed3d7;width:120px;border-color: #7d7d7d;border: solid 2px;height: 20px;">mmm{$paginator|@count}</div>
+        </div>-->
+    {if $total_amount_to_be_paid neq 0}
+         <div style="width: 100%;float: left;"><span class="label" id="sumupselected" style="float: left; margin-left: 410px;"></span></div>
+    {/if}
+
+        <input type="hidden" id="hide_total" name="hide_total"  />
+
+        <div style="float:left;">           
+			
+			<button onclick="fnpayAll();" name="pay_all" class="btn btn-gebo" type="button"> PAYER LES FACTURES S&#201;LECTIONN&#201;ES</button>
+			
+			<button onclick="fndownloadAll();" name="download_all" class="btn btn-gebo" type="button"><i class="splashy-arrow_large_down"></i> TOUT T&Eacute;L&Eacute;CHARGER</button>
+			<button onclick="return validateAll(1);" name="selectall" class="btn btn-gebo" value="T&eacute;l&eacute;charger les factures s&eacute;lectionn&eacute;es" type="button"><i class="splashy-arrow_large_down"></i> T&eacute;l&eacute;charger les factures s&eacute;lectionn&eacute;es</button>
+			<br><br>
+			<button onclick="return mergeAll();" name="mergeall" class="btn btn-gebo"  type="button"><i class="splashy-arrow_large_down"></i> Compiler et t&eacute;l&eacute;charger les factures s&eacute;lectionn&eacute;es
+</button>
+            <a onclick="return printInvoice(1);" id="print" class="btn btn-gebo" name="Print"><i class="splashy-printer"></i> Imprimer</a>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal4 hide fade" id="artprofile">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">
+            &times;
+        </button>
+        <h3>Article Profiles</h3>
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+

@@ -1,0 +1,144 @@
+{literal}
+<script type="text/javascript" charset="ISO-8859-1" src="/BO/theme/gebo/js/custom/validations_poll.js"></script>
+<script>
+	$(document).ready(function() { 
+		$(".uni_style").uniform(); 
+		loadlinks();
+	}); 
+</script>
+<style>
+	.con-title { font-weight:bold; 	background:none repeat scroll 0 0 #999999; 	text-align:center; 	color:#FFFFFF; 	font-size: 15px; 	border-radius: 10px; 	cursor:pointer; }
+	input {text-transform:none !important;}
+</style>
+
+{/literal}
+
+<form action="/ao/createpoll2?submenuId=ML2-SL15" method="post" id="poll_step2_form" name="poll_step2_form">
+<div class="row-fluid">
+  	<div class="span12">
+		<h3 class="heading">Questions du Devis
+			<span align="right">
+				<img src="/BO/theme/gebo/img/path-2.png" width="120" height="35" border="0" usemap="#Map" style="float:right;" />
+				<map name="Map" id="Map">
+				{if $nav_1==1}	
+					<area shape="circle" coords="18,18,17" href="/ao/createpoll?submenuId=ML2-SL15" />
+				{/if}
+				{if $nav_3==1}	
+					<area shape="circle" coords="102,17,18" href="/ao/createpoll2?submenuId=ML2-SL15"/>
+				{/if}
+				</map>
+			</span> 
+		</h3>
+		{foreach from=$pquestionlist item=ques name=quesloop}
+			{math assign="loopindex" equation='x+1' x=$smarty.foreach.quesloop.index} 
+			<div class="w-box">
+				<div class="w-box-header">Question {$loopindex}</div>
+				<div class='w-box-content'>
+					<table align="center" cellpadding="4" cellspacing="4" width="98%">
+					<tr>
+						<td width="5%">
+							<span align="left">
+								<label class="uni-checkbox">  
+									<input type="checkbox" name="selques[]" id="check_{$loopindex}"  class="uni_style" value="{$ques.id}" onClick="showorder({$loopindex});" {if in_array($ques.id,$selectedq)}checked{/if}/>
+								</label>
+							</span>
+						</td>
+						<td width="20%">Titre</td>
+						<td><input type="text" name="title_{$loopindex}" id="title_{$loopindex}" value="{$ques.title|stripslashes}" style="width:550px"/></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td>Type</td>
+						<td>
+							<select name="type" id="type" disabled class="span3">
+								<option value="price" {if $ques.type=="price"}selected{/if}>Prix</option>
+								<option value="bulk_price" {if $ques.type=="bulk_price"}selected{/if}>Prix de gros</option>
+								<option value="range_price" {if $ques.type=="range_price"}selected{/if}>Fourchette de prix</option>
+								<option value="timing" {if $ques.type=="timing"}selected{/if}>Dur&eacute;e</option>
+								<option value="radio" {if $ques.type=="radio"}selected{/if}>Boutons radio</option>
+								<option value="checkbox" {if $ques.type=="checkbox"}selected{/if}>Cases &agrave; cocher</option>
+							</select>
+						</td>
+						<input type="hidden" name="type_{$loopindex}" id="type_{$loopindex}" value="{$ques.type}" />
+					</tr>
+					<tr {if $ques.type!="timing"}style="display:none;"{/if}>
+						<td>&nbsp;</td>
+						<td>Options</td>
+						<td>
+							<select name="timingoption_{$loopindex}" id="timingoption_{$loopindex}" class="span2">
+								<option value="min" {if $ques.option=="min"}selected{/if}>Minute(s)</option>
+								<option value="hour" {if $ques.option=="hour"}selected{/if}>Heure(s)</option>
+								<option value="day" {if $ques.option=="day"}selected{/if}>Jour(s)</option>
+							</select>
+						</td> 
+					</tr>
+					<tr {if $ques.type!="range_price" && $ques.type!="timing"}style="display:none"{/if}>
+						<td>&nbsp;</td>
+						<td>Minimum</td>
+						<td>
+							<input type="text" name="minimum_{$loopindex}" id="minimum_{$loopindex}" value="{$ques.minimum}" class="span2"/>
+						</td>
+					</tr>
+					<tr {if $ques.type!="price" && $ques.type!="range_price" && $ques.type!="timing"}style="display:none"{/if}>
+						<td>&nbsp;</td>
+						<td valign="top">Maximum</td>
+						<td>
+							<input type="text" name="maximum_{$loopindex}" id="maximum_{$loopindex}" value="{$ques.maximum}" class="span2" {if $ques.type=="price"}onfocus="$('#pricemsg').show();"; onBlur="$('#pricemsg').hide();";{/if} />
+							<div id="pricemsg" style="display:none;color:red;">Merci d'entrer un chiffre ou de laisser le champ vide pour le prix maximum</div>
+						</td>
+					</tr>
+					<tr {if $ques.type!="radio" && $ques.type!="checkbox"}style="display:none"{/if}>
+						<td>&nbsp;</td>
+						<td valign="top">Options</td>
+						<td><b>{$ques.optionlist}</b></td>
+						<input type="hidden" name="option_{$loopindex}" id="option_{$loopindex}" value="{$ques.option}" />  
+					</tr>
+					<tr id="linkprice_{$loopindex}">
+						<td>&nbsp;</td>
+						<td valign="top">Lien avec</td>
+						<td id="pricelist_{$loopindex}" >
+							<select name="link_{$loopindex}" id="link_{$loopindex}" class="pricelist"> 
+								<option value="">Choisir</option>
+							</select>
+							<input type="hidden" id="linkedit_{$loopindex}" name="linkedit_{$loopindex}" value="{$ques.linkedit}" /> 
+						</td>
+					</tr>   
+					<tr id="orderblock_{$loopindex}" {if !in_array($ques.id,$selectedq)}style="display:none;"{/if}>
+						<td>&nbsp;</td>
+						<td valign="top">Ordre d'apparition</td>
+						<td><input type="text" name="order_{$loopindex}" id="order_{$loopindex}" value="{$ques.order}" class="span2"/></td>
+					</tr>
+					<tr> 
+						<td>&nbsp;</td>
+						<td colspan="2" style="text-align:left;font-family:Arial;font-size:13px;font-weight:normal;font-style:normal;text-decoration:none;color:#66CCFF;">
+							{if $ques.type=='price'}
+								La r&eacute;ponse attendue sera un montant (en euros)
+							{elseif $ques.type=='bulk_price'}
+								La r&eacute;ponse attendue sera un montant (en euros) apr&egrave;s r&eacute;duction pour donner un prix de gros s'il y a plusieurs articles. Ce type de question devra &ecirc;tre li&eacute; &agrave; une question de type "Prix" lors de la cr&eacute;ation du devis.
+							{elseif $ques.type=='range_price'}	
+								La r&eacute;ponse attendue sera un montant (en euros) situ&eacute; entre deux montants d&eacute;finis lors de la cr&eacute;ation du devis.
+							{elseif $ques.type=='timing'}	
+								La r&eacute;ponse attendue sera une dur&eacute;e en jours, heures ou minutes, param&egrave;tre d&eacute;fini lors la cr&eacute;ation du devis. Ce type de question devra &ecirc;tre li&eacute; &agrave; une question de type "Prix" ou "Prix de gros" lors de la cr&eacute;ation du devis.
+							{elseif $ques.type=='radio'}	
+								La r&eacute;ponse attendue sera &agrave; s&eacute;lectionner parmi la liste de r&eacute;ponses que vous devez d&eacute;finir ci-dessous (un seul choix sera possible pour le contributeur).
+							{elseif $ques.type=='checkbox'}
+								La/les r&eacute;ponses attendue(s) seront &agrave; cocher parmi une liste de r&eacute;ponses que vous devez d&eacute;finir ci-dessous (plusieurs choix seront possibles pour le contributeur).
+							{/if}	
+						</td>
+					</tr>
+					<input type="hidden" name="quesid_{$loopindex}" id="quesid_{$loopindex}" value="{$ques.id}" />
+					<input type="hidden" name="questype_{$loopindex}" id="questype_{$loopindex}" value="{$ques.type}" />
+					<tr><td>&nbsp;</td></tr>
+				</table>
+			</div>
+		</div>
+		{/foreach}	
+			
+		<div style="float:right;padding:30px">
+			<input type="submit" value="ALLER EN ETAPE 3" class="btn btn-info" onClick="return validate_poll_step2();"/>
+		</div>	
+	<input type="hidden" name="smic" id="smic" value="{$smicrate}" />
+	<input type="hidden" name="quescount" id="quescount" value="{$pquestionlist|@count}" />
+	</div>
+</div>
+</form>

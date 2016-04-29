@@ -1,0 +1,95 @@
+<!-- *** added on 12.01.2016 *** -->
+{if $ajax eq 'viewProfileAjaxAction'}
+    <div class="row-fluid search_page">
+        <div class="search_panel clearfix">
+            <div class="search_item clearfix">
+                <span class="searchNb"></span>
+                <div class="thumbnail pull-left">
+                    <img alt="user pic" id="userpicv" class="thumbnail1" src="http://ep-test.edit-place.com{$profilepic}">
+                </div>
+                <div class="search_conten pull-left span5">
+                    <h4>
+                        <a href="javascript:void(0)" class="sepV_a">{$Userdetails[0].first_name} {$Userdetails[0].last_name} ({$Userdetails[0].job_title})</a>
+                    </h4>
+                    <p class="sepH_b item_description">{$Userdetails[0].email}  / <small>Depuis</small>:{$Userdetails[0].join_date|date_format:"%d/%m/%Y"|upper}</p>
+                    <p class="sepH_a"><strong>Statut:</strong> {if $Userdetails[0].usrStatus=='Active'} Active {else}Inactive {/if}</p>
+                    <p class="sepH_a"><strong>Type de profil:</strong> {$Userdetails[0].type}</p>
+                </div>
+                <!-- <div class="thumbnail pull-right">
+                     {$clogopic}
+                 </div>-->
+            </div>
+        </div>
+        <div class="chat_box">
+            <div class="chat_msg clearfix">
+                <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>Adresse</h3></span></div>
+                <div class="chat_msg_body">
+                    <div class="vcard-item">
+                        <ul class="list_a">
+                            {$Userdetails[0].address}
+                            <li><p class="sepH_a"><strong>Ville:</strong> {$Userdetails[0].city}</p></li>
+                            <li> <p class="sepH_a"><strong>Pays:</strong> {$country}</p></li>
+                            <li><p class="sepH_a"><strong>Code postal:</strong> {$Userdetails[0].zipcode}</p></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="chat_box">
+            <div class="chat_msg clearfix">
+                <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>Informations personnelles</h3></span></div>
+                <div class="chat_msg_body">
+
+                    <div class="vcard-item">
+                        <ul class="list_a">
+
+                            <li><p class="sepH_a"><strong>Adresse email perso:</strong> {$Userdetails[0].email_personal}</p></li>
+                            <li><p class="sepH_a"><strong>Date de naissance:</strong> {$Userdetails[0].birth_date|date_format:"%d/%m/%Y"|upper}</p></li>
+                            <li><p class="sepH_a"><strong>Lieu de naissance:</strong> {$Userdetails[0].birth_city}</p></li>
+                            <li><p class="sepH_a"><strong>T&eacute;l&eacute;phone:</strong> {$Userdetails[0].phone_number}</p></li>
+                            <li><p class="sepH_a"><strong>T&eacute;l&eacute;phone 2:</strong> {$Userdetails[0].telephone}</p></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="chat_box">
+            <div class="chat_msg clearfix">
+                <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>Informations professionnelles</h3></span></div>
+                <div class="chat_msg_body">
+                    {array vars="array('Banglore','Londres','Paris','Luxembourg','T&eacute;l&eacute;travail','Freelance')" assign=places}
+                    {assign var="palcecode" value=$Userdetails[0].workplace}
+                    <div class="vcard-item">
+                        <ul class="list_a">
+                            <li><p class="sepH_a"><strong>Lieu de travail:</strong>{$places[$palcecode]} </p></li>
+                            <li><p class="sepH_a"><strong>Num&eacute;ro de poste:</strong> {$Userdetails[0].work_telephone}</p></li>
+                            <li><p class="sepH_a"><strong>Langue des communications internes:</strong>
+                                    {assign var=langarray value=$Userdetails[0].contact_language|explode:","}
+                                    {foreach from=$language_array item=langitem key=langkey}
+                                    {if in_array($langkey,$langarray)}
+                                    {$langitem}
+                                    {/if}
+                                    {/foreach}
+                                </p></li>
+                            <li><p class="sepH_a"><strong>Yahoo Id</strong> {$Userdetails[0].yahoo_id}</p></li>
+                            <li><p class="sepH_a"><strong>Skype Id</strong> {$Userdetails[0].skype_id}</p></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="chat_box">
+            <div class="chat_msg clearfix">
+                <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>Singature</h3></span></div>
+                <div class="chat_msg_body">
+                    <div class="vcard-item">
+                        {$Userdetails[0].signature}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{else}
+    <h1>please check the ajax call, looks like $ajax i snot assigned in controler</h1>
+{/if}

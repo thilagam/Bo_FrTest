@@ -1,0 +1,138 @@
+{literal}
+<style type="text/css">
+.doc_view .doc_view_content,.dl-horizontal dt,.doc_view .doc_view_header dd, .doc_view .doc_view_header dt
+{
+	text-transform:none;
+}
+</style>
+<script type="text/javascript">
+
+$(document).ready(function() {
+//prevent link redirection and ask for confirmation
+		$( "a" ).click(function( event ) {
+				event.preventDefault();
+				var href=$(this).attr("href");
+				var msg = "Pensez &agrave;  clore votre discussion avant de quitter cette page";
+				var ticket_id='{/literal}{$smarty.get.ticket}{literal}';				
+				smoke.confirm(msg,function(e){
+					if (e){
+							window.location.href = "/mastermails/classifymail?&ticket="+ticket_id;           
+						}
+					else{
+						window.location.href =href;
+					}
+				},{"ok":"Clore la discussion","cancel":"Pas maintenant"});
+		});		
+				
+	});			
+
+//archieve ticket
+	function archieveMsg(ticket_id){
+	
+		var msg = "Souhaitez-vous archiver ce message ?";
+		smoke.confirm(msg,function(e){
+			if (e){
+					window.location.href = "/mastermails/classifymail?&ticket="+ticket_id;           
+				}
+			else{
+				return false;
+			}
+		});
+	
+	}
+
+//reply ticket
+function fnrespondmessage()
+{
+	var reply_message='{/literal}{$smarty.get.message}{literal}';
+	var ticket='{/literal}{$smarty.get.ticket}{literal}';
+	var recipientid='{/literal}{$smarty.get.recipientid}{literal}';
+	var submenuId='{/literal}{$submenuId}{literal}';
+	var href='/mastermails/reply-mail?submenuId='+submenuId+'&mailaction=reply&reply_message='+reply_message+'&ticket='+ticket+'&recipientid='+recipientid;
+	window.location.href=href;
+}
+	
+</script>	
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">
+			Syst&egrave;me de Messages :: Consultation du message
+			{if $smarty.get.mailaction eq 'sentboxview'}
+				<div style="display:inline;float:right"><a  class="btn btn-success" href="/mastermails/sent-mails?submenuId=ML6-SL3">Retour</a></div>  
+			{else}
+				<div style="display:inline;float:right"><a  class="btn btn-success" href="/mastermails/inbox-ep?submenuId=ML6-SL2">Retour</a></div>  
+			{/if}	
+		</h3>
+		{if $replyMessages|@count gt 0}
+		{foreach item=message from=$replyMessages}
+			<div  class="tab-pane">
+				<div class="doc_view">
+					<div class="doc_view_header">
+						<dl class="dl-horizontal">
+							<dt>Objet</dt>
+								<dd>{$message.Subject}</dd>
+							<dt>Emetteur</dt>
+								<dd><span>
+									{if $message.sender_type eq 'contributor'}
+										<a href="/user/contributor-edit?submenuId=ML2-SL7&tab=viewcontrib&userId={$message.userid}">{$message.sendername}</a>
+									{elseif $message.sender_type eq 'client'}
+										<a href="/user/client-edit?submenuId=ML2-SL7&tab=viewclient&userId={$message.userid}">{$message.sendername}</a>
+									{else}
+										{$message.sendername}
+									{/if}										
+								</span></dd>							
+							<dt>Destinaire</dt>
+								<dd><span>
+									{if $message.recipient_type eq 'contributor'}
+										<a href="/user/contributor-edit?submenuId=ML2-SL7&tab=viewcontrib&userId={$message.receiverId}">{$message.recipient}</a>
+									{elseif $message.recipient_type eq 'client'}
+										<a href="/user/client-edit?submenuId=ML2-SL7&tab=viewclient&userId={$message.receiverId}">{$message.recipient}</a>
+									{else}
+										{$message.recipient}
+									{/if}									
+								</span></dd>	
+							<dt>Re&ccedil;u le</dt>
+								<dd>
+									{if $smarty.now|date_format:"%d/%m/%Y" eq $message.receivedDate|date_format:"%d/%m/%Y"}
+										{$message.receivedDate|date_format:"%R"}
+									{else}		
+										{$message.receivedDate|date_format:"%d/%m/%Y %R"}
+									{/if}
+								
+								</dd>							
+							{if $message.attachment_name!=''}								
+								<dt><i class="icon-adt_atach"></i></dt>
+								<dd>
+								{foreach item=attachment_file from=$message.attachment_files name=files}										
+										<a target="_blank" href="/mastermails/view-mail?mailaction=viewattachment&display=attachment&index={$smarty.foreach.files.index}&attachment={$message.messageId}">{$attachment_file}</a>, 									
+								{/foreach}
+								</dd>
+							{/if}
+						</dl>
+					</div>
+					<div class="doc_view_content">
+						{$message.content}
+					</div>
+					<!--<div class="doc_view_footer clearfix">
+						<div class="btn-group pull-left">
+							<a class="btn" href="javascript:void(0)"><i class="icon-pencil"></i> Answer</a>
+							<a class="btn" href="javascript:void(0)"><i class="icon-share-alt"></i> Forward</a>
+							<a class="btn" href="#"><i class="icon-trash"></i> Delete</a>
+						</div>
+						<div class="pull-right">
+							
+						</div>
+					</div>-->
+				</div>				
+			</div>
+			{/foreach}							
+		{/if}	
+	{if $smarty.get.mailaction eq 'inboxview'}	
+		<!--<a class="btn btn-info" href="/mastermails/reply-mail?submenuId={$submenuId}&mailaction=reply&reply_message={$smarty.get.message}&ticket={$smarty.get.ticket}&recipientid={$smarty.get.recipientid}"><i class="icon-pencil"></i> R&eacute;pondre</a>-->
+		<button class="btn btn-info" onclick="fnrespondmessage();"><i class="icon-pencil"></i> R&eacute;pondre</button>
+		<button class="btn" onclick="archieveMsg('{$smarty.get.ticket}');"><i class="splashy-folder_classic_down" ></i> Clore la discussion</button>
+	{/if}	
+	</div>
+</div>	

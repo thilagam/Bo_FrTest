@@ -1,0 +1,1 @@
+Mandatory Words:  tok1  Optional Words:  tok3###$$$###Mandatory Worsds:  tok1 asd  Optional Wordsads:  tok3 sda

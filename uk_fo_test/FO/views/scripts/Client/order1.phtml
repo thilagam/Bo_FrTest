@@ -1,0 +1,321 @@
+{literal}
+<script type="text/javascript" charset="utf-8" src="/FO/script/client/countdown.js"></script>
+<script>
+	$(document).ready(function(){
+	/* The following code is executed once the DOM is loaded */
+	
+	/* This flag will prevent multiple comment submits: */
+	var working = false;
+	
+	/* Listening for the submit event of the form: */
+	$('#addCommentForm').submit(function(e){
+
+ 		e.preventDefault();
+		if(working) return false;
+		
+		//working = true;
+		//$('#submit').val('Working..');
+		//$('span.error').remove();
+		if($('#commentuser').val()=="")
+		{
+			$('#commentuser').css("border-color","#FF0000");
+		}
+		else
+		{
+			/* Sending the form fileds to submit.php: */
+			$.post('/client/submitaocomment',$(this).serialize(),function(msg){
+	 
+				//working = false;
+				$('#submit').val('Submit');
+				
+				if(msg.status){
+					$(msg.html).hide().insertBefore('#addCommentContainer').slideDown();
+					$('#commentuser').val('');
+					$('#commentcountdisp').html(msg.count);
+					$('#commentcount').val('');
+					$('#commentcount').val(msg.count);
+					$('#commentuser').css("border-color","#CCCCCC");
+				}
+			
+			},'json'); 
+		}
+	});
+	
+		//////////show timer article_submit_expires//////////
+
+			$("#submit_time").countdown({
+				timestamp	: $("#submittime").val(), 
+				callback	: function(days, hours, minutes, seconds){
+//alert(hours+"-"+minutes+"-"+seconds);
+					var message = "";
+
+					//add days to hours
+					if(days!="0")
+						message += days + "j" +"&nbsp;";
+						//hours=hours+(days*24);
+						
+					if(hours!="0")
+						message += hours + "h" +"&nbsp;";
+					
+					//add seconds to mins
+					//if(seconds>0)
+						//minutes+=1;
+						
+					if(minutes!="0")
+						message += minutes + "mn"; 
+					
+					$("#submit_time").html(message);
+					if(days==0 && hours==0 && minutes==0 && seconds==0)
+					{
+						$("#submit_time").html("Deadline expired");
+					}
+				}
+			});
+		
+	});
+		var cur_date=$("#now").val();
+		var js_date=(new Date().getTime())/ 1000;
+		var diff_date=Math.floor(js_date-cur_date);
+	
+</script>
+{/literal}
+
+<div class="container">
+	<!-- start, status -->
+	<div class="row-fluid">
+		<div class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button>
+			<i class="icon-ok icon-white"></i> Project awarded {$contact[0].name} !
+		</div>
+		<div id="state2" class="span12">
+			<ul class="unstyled">
+				<li class="span3" rel="tooltip" data-original-title="Select the writer who will work on your project"><span class="writer_select">Choice of writer</span></li>
+				<li class="hightlight span3" rel="tooltip" data-original-title="The writer selected is working on your project"><span class="ongoing">Ongoing work</span></li>
+				<li class="span3" rel="tooltip" data-original-title="You pay the amount of the order as a deposit"><span class="cb">Deposit</span></li>
+				<li class="span3" rel="tooltip" data-original-title="Download your delivered projects"><span class="dld">Download</span></li>
+			</ul>
+		</div>
+	</div>
+	<!-- end, status -->
+ 
+	<!-- start, Summary -->
+	<section id="summary">
+		<div class="row-fluid">
+			<div class="span6">
+				<h1><p>Mission</p> {$aoparticipation[0].title}</h1>
+			</div>
+			<div class="span3 stat">
+				<p>Delivery date</p>
+				{if $aoparticipation[0].articlestatus=="closed_client"}
+					Closed
+				{else}
+					{if $aoparticipation[0].hourdiff<24}
+						<p class="num-large less24" id="submit_time"></p>
+					{else}
+						<p class="num-large" id="submit_time"></p>  
+					{/if}
+				{/if}	
+			</div>
+			<input type="hidden" name="submittime" id="submittime" value="{$aoparticipation[0].article_submit_expires}" />
+			<input type="hidden" name="now" id="now" value="{$now}" />
+			<div class="span2 stat">
+				<p>Rate</p>
+				<p class="num-large">{$aoparticipation[0].price_user_total|ceil} {if $aoparticipation[0].currency=='pound'}&pound;{else}&euro;{/if}</p>
+			</div>
+			<div class="span1 stat">
+				{if $commentcount>0}
+					<div class="icon-comment-large new" id="commentcountdisp" rel="tooltip" data-original-title="Comments on this mission"><a href="#comment">{$commentcount}</a></div>
+				{else}	
+					<div class="icon-comment-large" id="commentcountdisp"><a href="#comment">0</a></div>
+				{/if}
+			</div>
+		</div>
+	</section>
+	<!-- end, summary --> 
+ 
+    <div class="row-fluid"> 
+		{if $aoparticipation[0].premium_option=="0"}
+		<div class="statusbar clearfix">
+			<div class="btn-toolbar">
+				<div class="btn-group">
+					{if $aoparticipation[0].created_by=="FO"}
+						<a class="btn btn-small" href="/client/quotes-1?article={$smarty.get.id}"><i class="icon-pencil"></i> Re-launch quote</a>
+					{/if}
+					{if $aoparticipation[0].articlestatus!="closed_client"}
+						<a class="btn btn-small" href="/client/compose-mail?serviceid=111201092609847&object={$aoparticipation[0].title}" target="_blank"><i class="icon-envelope"></i> Contact Edit-place</a>
+						<a class="btn btn-small" href="javascript:void(0);" onClick="CloseArticle('{$smarty.get.id}');"><i class="icon-remove"></i> Close quote</a>
+					{/if}
+				</div>
+			</div>
+		</div> 
+		{/if}
+		<div class="row-fluid"> 
+			<div class="span9">
+				<section id="file-management">
+					<div class="row-fluid file-management-cont">
+						<i class="inbox"></i><h4 class="clearfix">Delivery area</h4>
+ 						<p>File not available</p>
+						<p>—</p>
+						<div class="pull-center btn-group">
+						 <!-- buttons to display while client is waiting for files -->
+							{if $aoparticipation[0].articlestatus!="closed_client" && $aoparticipation[0].premium_option=="0"}
+								<a class="btn btn-small" rel="tooltip" data-original-title="Accorder un délai supplémentaire" data-placement="bottom" data-target="#extendsubmittime" data-toggle="modal" role="button" href="give-moretime.html"><i class="icon-time"></i> Give more time</a>
+							{/if}
+							<a class="btn btn-small" rel="tooltip" data-original-title="Help" data-placement="bottom" onClick="leadaide();"><i class="icon-question-sign"></i> Help</a>
+						</div>
+					</div>
+				</section>
+			 
+			<section id="a_o">
+				<div class="mod">
+					<div class="summary clearfix">
+						<h4>DETAILS OF THE PROJECT</h4>
+						<ul class="unstyled">
+							<li><strong>Call to write</strong> <span class="bullet">&bull;</span></li>
+							<li> Language : <img src="/FO/images/shim.gif" class="flag flag-{$aoparticipation[0].language}"> <span class="bullet">&bull;</span></li>
+							{assign var="cat" value=$aoparticipation[0].category}
+							<li>Category : {$category_array.$cat|wordwrap:30:"<br />\n"} </li>
+							<li><span class="bullet">&bull;</span></li>  
+							<li>Nb. of words : {$aoparticipation[0].num_min}&nbsp;-&nbsp;{$aoparticipation[0].num_max} </li>
+							<li><a href="#comment" class="scroll"><i class="icon-comment"></i> {$commentcount}</a></li>
+							{if $aoparticipation[0].filepath!=""}
+								<li class="pull-right">
+									<a class="btn btn-small btn-success" href="/client/downloadbrief?id={$smarty.get.id}">
+									<i class="icon-white icon-circle-arrow-down"></i> Download the client brief
+									</a>
+								</li>
+							{/if}
+						</ul>
+					</div>
+				</div>
+			</section>
+ 
+				<section id="comment">
+					<h4><i class="icon-comment"></i> Comment</h4>
+					<div class="row-fluid" id="addCommentContainer">
+						<ul class="media-list">
+							{foreach from=$commentlist item=comment}
+							<li class="media" id="comment_{$comment.identifier}">
+								<a data-target="#viewProfile-ajax" data-toggle="modal" role="button" href="" class="pull-left">
+									<img src="{$comment.profilepic}" class="media-object" alt="Topito">
+								</a>
+								<div class="media-body">
+									<h4 class="media-heading">
+										<a data-target="#viewProfile-ajax" data-toggle="modal" role="button" href="http://ued.sebcdesign.com/edit-place/client/profile_topito.html">
+											{if $comment.first_name!=""}
+												{$comment.first_name|ucfirst} 
+											{else} 
+												{$comment.email}
+											{/if}
+										</a>	
+										{if $clientidentifier==$comment.user_id}
+											<div class="pull-right"><button type="button" class="close" onClick="deletecomment('{$comment.identifier}');">&times;</button></div>
+										{/if}
+									</h4>
+									{$comment.comments}
+									<p class="muted">{$comment.time}</p>
+									
+								</div>
+								
+							</li>
+							{/foreach}
+						</ul>
+						
+						<div class=" well">
+							<form method="post" action="" id="addCommentForm" >
+								<fieldset>
+									<textarea name="commentuser" id="commentuser" placeholder="Add comment" class="span12"></textarea>
+									<button class="btn" name="submit" id="submit" type="submit" >Send</button>
+								</fieldset>
+								
+								<input type="hidden" name="article" id="article" value="{$smarty.get.id}" />
+								<input type="hidden" name="commentcount" id="commentcount" value="{$commentcount}" />
+							</form>
+						</div>
+					</div>
+				</section>
+			</div>
+		
+			<div class="span3">
+				<!--  right column  -->
+				<aside>
+					<div class="aside-bg">
+						{if $aoparticipation[0].premium_option=="0"}
+							<div class="editor-price">
+								<p class="quote-price">Total Price :<strong> {$aoparticipation[0].price_user_total|ceil} {if $aoparticipation[0].currency=='pound'}&pound;{else}&euro;{/if}</strong></p>
+								<ul class="unstyled stripe">
+									<li>Writer tariff : {$aoparticipation[0].price_user|zero_cut:2} {if $aoparticipation[0].currency=='pound'}&pound;{else}&euro;{/if}</li>
+									<li>Edit-place fees included : {$aoparticipation[0].ep_percent|zero_cut:2}%</li>
+								</ul>
+								
+							</div>
+						{/if}
+						<div id="selected-editor" class="aside-block">
+							<div class="editor-container">
+								<h4>Your writer</h4> 
+								<a class="imgframe-large" onclick="loadcontribprofile('{$contact[0].identifier}');" role="button" data-toggle="modal" data-target="#viewContribProfile" style="cursor:pointer;">
+									<img src="{$contact[0].profilepic}" alt="{$contact[0].name}"></a>
+								<p class="editor-name"><a onclick="loadcontribprofile('{$contact[0].identifier}');" role="button" data-toggle="modal" data-target="#viewContribProfile" style="cursor:pointer;">{$contact[0].name}</a></p>
+								{if $aoparticipation[0].premium_option=="0"}
+									<a href="/client/compose-mail?clientid={$contact[0].identifier}" class="btn btn-small">contact {$contact[0].first_name|ucfirst}</a>
+									<address>
+										<i class="icon-phone"></i> +{$contact[0].phone_number}<br>
+										<a href="mailto:{$contact[0].email}"><i class="icon-email"></i> {$contact[0].email}</a>
+									</address>
+								{/if}
+							</div>
+						</div>
+						
+						{if $customerstrust|@count>0}
+						<div id="we-trust" class="aside-block">
+							<h4>THE WRITER HAS ALREADY WORKED WITH</h4>
+							<ul class="unstyled">
+								{foreach from=$customerstrust item=clogo key=ckey}
+									<li><img src="{$clogo}" rel="tooltip" data-original-title="{$ckey|utf8_decode}" data-placement="left"></li>
+								{/foreach}
+							</ul>
+						</div>
+						{/if}
+						
+						<div class="aside-block" id="garantee">
+							<h4>YOUR GUARANTEES</h4>
+							<dl>
+								<dt><span class="umbrella"></span>Edit-place is your mediator</dt>
+								<dd>In the event of a dispute/issue (delay in delivery, article rewrites, refund...)</dd>
+								<dt><span class="locked"></span>Secure payment</dt>
+								<dd>Our online payment solution guarantees you a hassle-free transaction</dd>
+							</dl>
+						</div>
+					</div>
+				</aside>  
+			</div>
+		</div>
+    </div>
+</div>
+
+<!-- Extend time -->
+<div id="extendsubmittime" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3 id="myModalLabel">Give more time</h3>
+	</div>
+	<div class="modal-body">
+		<form method="POST" name="extendform" id="extendform" action="/client/order1?id={$smarty.get.id}">
+		{include file="Client/extendtime.phtml"}
+		</form>
+	</div>
+</div>
+
+<!-- contrib profile -->
+<div id="viewContribProfile" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3 id="myModalLabel">Writer's Profile</h3>
+	</div>
+	<div class="modal-body">
+		<div id="userprofile">
+	
+		</div>
+	</div>
+</div>
+
+

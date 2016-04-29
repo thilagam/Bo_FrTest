@@ -1,0 +1,250 @@
+{literal}
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jquery.validate.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jquery.MultiFile.js"></script>
+<style type="text/css">
+.control-label {    
+    padding-top: 5px;    
+	font-weight:bold;	
+}
+label {    
+    padding-top: 5px;
+}
+.MultiFile-label
+{
+	padding-top:3px;
+}
+#msg_object
+{
+	text-transform:none;
+}
+.error {  display: none !important;}
+.doc_view .doc_view_content,.dl-horizontal dt,.doc_view .doc_view_header dd, .doc_view .doc_view_header dt
+{
+	text-transform:none;
+}
+</style>
+ <script type="text/javascript" >
+$(document).ready(function() {			
+	
+	//Multiple files selector
+	$('#attachments').MultiFile();
+	
+	$(".uni_style").uniform();	
+
+	//prevent link redirection and ask for confirmation
+		$( "a" ).click(function( event ) {
+				event.preventDefault();
+				var href=$(this).attr("href");
+				var msg = "Pensez &agrave;  clore votre discussion avant de quitter cette page";
+				var ticket_id=$('input[name="ticket_id"]').val();				
+				smoke.confirm(msg,function(e){
+					if (e){
+							window.location.href = "/mastermails/classifymail?&ticket="+ticket_id;           
+						}
+					else{
+						window.location.href =href;
+					}
+				},{"ok":"Clore la discussion","cancel":"Pas maintenant"});
+		});		
+	
+	jQuery.validator.addMethod("checkMessage", function(value,element) {
+		var content = tinyMCE.activeEditor.getContent();
+		alert(content);
+		$("#mail_message").val(content);
+				if(content)
+					return false;
+				else
+					return true;
+	}, "Merci d'ins&eacute;rer un num&eacute;ro de t&eacute;l&eacute;phone correct");
+
+	
+	 $("#reply_message_form").validate({		
+		  message:false,
+		  errorClass: 'error',
+		  validClass: 'valid',
+		  highlight: function(element) {
+					$(element).closest('span').addClass("f_error");
+			},
+		 unhighlight: function(element) {
+				$(element).closest('span').removeClass("f_error");
+			},
+	     errorPlacement: function(error, element) {
+				if($.inArray(element.attr("id"), ['mail_message'])> -1) {						
+							$("#message_error").html(error);
+				}	
+				else
+					$(element).closest('div').append(error);
+            },
+		  rules: {			
+			mail_message:{required:true,checkMessage:true}
+		  }
+		});
+		
+	$('textarea').tinymce({
+                // Location of TinyMCE script
+                script_url 							: '/BO/theme/gebo/lib/tiny_mce/tiny_mce.js',
+                // General options
+                theme 								: "advanced",
+                plugins 							: "autoresize,style,table,advhr,advimage,advlink,emotions,inlinepopups,preview,media,contextmenu,paste,fullscreen,noneditable,xhtmlxtras,template,advlist",
+                // Theme options
+                theme_advanced_buttons1 			: "undo,redo,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,fontsizeselect",
+                theme_advanced_buttons2 			: "forecolor,backcolor,|,cut,copy,paste,pastetext,|,bullist,numlist,link,image,media,|,code,preview,fullscreen",
+                theme_advanced_buttons3 			: "",
+                theme_advanced_toolbar_location 	: "top",
+                theme_advanced_toolbar_align 		: "left",
+                theme_advanced_statusbar_location 	: "bottom",
+                theme_advanced_resizing 			: false,
+                font_size_style_values 				: "8pt,10pt,12pt,14pt,18pt,24pt,36pt",
+                init_instance_callback				: function(){
+                    function resizeWidth() {
+                        document.getElementById(tinyMCE.activeEditor.id+'_tbl').style.width='100%';
+                    }
+                    resizeWidth();
+                    $(window).resize(function() {
+                        resizeWidth();
+                    })
+                }
+            });	
+		
+	});
+	
+ </script>
+{/literal}
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">
+			Syst&egrave;me de Messages ::  R&eacute;pondre message
+			
+			<div style="display:inline;float:right"><a name="back" class="btn btn-success" href="/mastermails/inbox-ep?submenuId=ML6-SL2">Retour</a></div>  
+			
+		</h3>
+		
+		<div class="tab-pane" id="mbox_new">
+			<form id="reply_message_form" method="POST" class="form-horizontal" name="reply_message" action="/mastermails/sendreplymail" enctype="multipart/form-data">
+				
+				<input type="hidden" name="ticket_id" value="{$ticketid}"/>
+				<input type="hidden" name="recipientid" value="{$smarty.get.recipientid}"/>
+				<input type="hidden" name="reply_message" value="{$smarty.get.reply_message}"/>
+			
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label">Emetteur :</label>
+						<div class="controls">
+							<label>{$from_contact_name}</label>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">Destinataire :</label>
+						<div class="controls">
+							<label>
+								{if $to_user_type eq 'contributor'}
+									<a href="/user/contributor-edit?submenuId=ML2-SL7&tab=viewcontrib&userId={$to_contact_id}">{$to_contact_name}</a>
+								{elseif $to_user_type eq 'client'}
+									<a href="/user/client-edit?submenuId=ML2-SL7&tab=viewclient&userId={$to_contact_id}">{$to_contact_name}</a>
+								{else}
+									{$to_contact_name}
+								{/if}		
+									
+								</label>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">Objet :</label>
+						<div class="controls">
+							<label>Re :{$object}</label>
+						</div>
+					</div>					
+					<div class="control-group">
+						<label class="control-label">Pi&egrave;ce(s) Jointe(s) :</label>					
+						<div class="controls">
+							<input type="file" name="attachment[]" id="attachments" class="multi">
+						</div>
+						
+						
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="mail_message">Message :</label>
+						<div class="controls">
+							<span><textarea class="span8 auto_expand" rows="5" cols="10" id="mail_message" name="mail_message"></textarea></span>
+							<span id="message_error"></span>
+						</div>	
+					</div>
+					
+					<div class="control-group">
+						<div class="controls">
+							<button class="btn btn-gebo" type="submit" id="reply_message">Envoyer</button>
+						</div>	
+					</div>
+				<fieldset>	
+			</form>
+		</div>
+		
+		
+		
+		{if $replyMessages|@count gt 0}
+		{foreach item=message from=$replyMessages}
+			<div class="tab-pane">
+				<div class="doc_view">
+					<div class="doc_view_header">
+						<dl class="dl-horizontal">
+							<dt>Subject</dt>
+								<dd>{$message.Subject}</dd>
+							<dt>Sender</dt>
+								<dd><span>
+									{if $message.sender_type eq 'contributor'}
+										<a href="/user/contributor-edit?submenuId=ML2-SL7&tab=viewcontrib&userId={$message.userid}">{$message.sendername}</a>
+									{elseif $message.sender_type eq 'client'}
+										<a href="/user/client-edit?submenuId=ML2-SL7&tab=viewclient&userId={$message.userid}">{$message.sendername}</a>
+									{else}
+										{$message.sendername}
+									{/if}										
+								</span></dd>							
+							<dt>Recipient</dt>
+								<dd><span>
+									{if $message.recipient_type eq 'contributor'}
+										<a href="/user/contributor-edit?submenuId=ML2-SL7&tab=viewcontrib&userId={$message.receiverId}">{$message.recipient}</a>
+									{elseif $message.recipient_type eq 'client'}
+										<a href="/user/client-edit?submenuId=ML2-SL7&tab=viewclient&userId={$message.receiverId}">{$message.recipient}</a>
+									{else}
+										{$message.recipient}
+									{/if}									
+								</span></dd>
+							<dt>Re&ccedil;u le</dt>
+								<dd>
+									{if $smarty.now|date_format:"%d/%m/%Y" eq $message.receivedDate|date_format:"%d/%m/%Y"}
+										{$message.receivedDate|date_format:"%R"}
+									{else}		
+										{$message.receivedDate|date_format:"%d/%m/%Y %R"}
+									{/if}
+								
+								</dd>							
+							{if $message.attachment_name!=''}								
+								<dt><i class="icon-adt_atach"></i></dt>
+								<dd>
+								{foreach item=attachment_file from=$message.attachment_files name=files}										
+										<a target="_blank" href="/mastermails/view-mail?mailaction=viewattachment&display=attachment&index={$smarty.foreach.files.index}&attachment={$message.messageId}">{$attachment_file}</a>, 									
+								{/foreach}
+								</dd>
+							{/if}
+						</dl>
+					</div>
+					<div class="doc_view_content">
+						{$message.content}
+					</div>
+					<!--<div class="doc_view_footer clearfix">
+						<div class="btn-group pull-left">
+							<a class="btn" href="javascript:void(0)"><i class="icon-pencil"></i> Answer</a>
+							<a class="btn" href="javascript:void(0)"><i class="icon-share-alt"></i> Forward</a>
+							<a class="btn" href="#"><i class="icon-trash"></i> Delete</a>
+						</div>
+						<div class="pull-right">
+							
+						</div>
+					</div>-->
+				</div>				
+			</div>
+			{/foreach}							
+		{/if}		
+	</div>
+</div>	

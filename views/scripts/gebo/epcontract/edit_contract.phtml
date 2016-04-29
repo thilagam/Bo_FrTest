@@ -1,0 +1,415 @@
+{literal}
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/jQuery.fileinput.js"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    function tocontractlist()
+    {
+        window.location='/mission/list-contract?submenuId=ML2-SL26';
+        return false;
+    }
+    function chk1(val)
+    {
+        if(val == 'new_cl')
+            $('#new_cl').show();
+        else
+            $('#new_cl').hide();
+            
+        if(val != '')
+        {
+            $('#ongoing').show();
+            $('#ongoing').html('<a href="/ongoing/list?submenuId=ML2-SL4&client_id=' + val + '" target="_blank">View ongoing AOs</a>');
+        }
+        else
+        {
+            $('#ongoing').hide();
+        }
+    }
+    function isNumeric(string)
+    {
+        var numericExpression = /^[0-9]+$/;
+        if(string.match(numericExpression)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function isFloat(string)
+    {
+        var numericExpression = /^[+-]?\d+(\.\d+)?$/;
+        if(string.match(numericExpression)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function addclient(newemail,newpwd,company_name,idx)
+    {
+        $.post(
+            "/mission/adduser?newemail="+newemail+"&newpwd="+newpwd+"&company_name="+company_name,
+            function(data,status){
+                data = data.trim();
+                cls(data);
+            }
+        );
+    }
+    function cls(sel)
+    {
+        $.post(
+            "/mission/get-clients-select?sel="+sel,
+            function(data,status){
+                data = data.trim();
+                $('#clientRow').html('');
+                $('#clientRow').html(data);
+                $(".chzn_a").chosen({
+                    allow_single_deselect: true
+                });
+            }
+        );
+    }
+    function validateClient()
+    {
+        var newemail = $('#newemail').val();
+        var newpwd = $('#newpwd').val();
+        var newcpwd = $('#newcpwd').val();
+        var company_name = $('#company_name').val();
+        
+        $('#newemail').css("border-color","");
+        $('#newpwd').css("border-color","");
+        $('#newcpwd').css("border-color","");
+        $('#company_name').css("border-color","");
+        
+        if(newemail.trim() == '')
+        {
+            $('#newemail').css("border-color","red");
+        }
+        else if(newpwd == '')
+        {
+            $('#newpwd').css("border-color","red");
+        }
+        else if(newcpwd != newpwd)
+        {
+            $('#newpwd').css("border-color","red");
+            $('#newcpwd').css("border-color","red");
+        }
+        else if(company_name.trim() == '')
+        {
+            $('#company_name').css("border-color","red");
+        }
+        else
+        {
+            $.post(
+                "/mission/adduser?newemail="+newemail+"&newpwd="+newpwd+"&company_name="+company_name+"&clpid="+($('#clpid').val()),
+                function(data,status){
+                    data = parseInt(data.trim());
+                    if(isNaN(data))
+                        smoke.alert('User already exist..');
+                    else
+                    {
+                        cls(data);
+                        $('#new_cl').hide();
+                    }
+                }
+            );
+        }
+        return false;
+    }
+    $(document).ready(function() {
+        $(".uni_style").uniform();
+        gebo_chosen.init();
+        gebo_validation.reg();
+        $('#date_of_signature1').datepicker({
+            language: 'pt-BR',
+            format: 'dd/mm/yyyy',
+            pick12HourFormat: false
+        });
+        $('#end_date1').datepicker({
+            language: 'pt-BR',
+            format: 'dd/mm/yyyy',
+            pick12HourFormat: false
+        });
+        var upld=$('#filePJ');
+        var status=$('#file_name');
+        new AjaxUpload(upld, {
+            action: 'uploadprofilepic',
+            name: 'uploadpic',
+            onSubmit: function(file, ext){
+                if (! (ext && /^(jpg|jpeg|gif|png)$/.test(ext))){ 
+                    // extension is not allowed 
+                    status.text("Merci d'uploaded uniquement des fichiers JPG.").css('color','#FF0000');
+                    return false;
+                }
+                //status.html('<img src="/FO/images/icon-image.gif" /> Chargement..');
+            },
+            onComplete: function(file, response){
+                //On completion clear the status
+                status.text('');
+                $('#file_name').html('');
+                //Add uploaded file to list
+                var obj = $.parseJSON(response);
+                
+                if(obj.status=="success"){
+                    var flname = obj.filename;
+                    $('#clpid').val(obj.clpid);
+                    if(flname.length>25)
+                        $('#file_name').html(flname.substr(0,25)+".. Uploaded").css('color','#006600');
+                    else
+                        $('#file_name').html(flname+" Uploaded").css('color','#006600');
+                }
+                else{
+                    $('#file_name').html('Error in upload').css('color','#FF0000');
+                }
+            }
+        });
+    });
+    gebo_chosen = {
+        init: function(){
+            $(".chzn_a").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_b").chosen({
+                allow_single_deselect: true
+            });
+        }
+    };
+    $.validator.addMethod("intcheck", function(value, element, param) {
+        return ((isNumeric(value) || isFloat(value)) && (value > 0));
+    }, $.format("Invalid amount entered."));
+    gebo_validation = {
+        reg: function() {
+            reg_validator = $('.form_validation_reg').validate({
+                onkeyup: false,
+                errorClass: 'error',
+                ignore: ":hidden:not(select)",
+                validClass: 'valid',
+                highlight: function(element) {
+                    $(element).closest('div').addClass("f_error");
+                    $(element).closest('div').css("color", "black");
+                },
+                unhighlight: function(element) {
+                    $(element).closest('div').removeClass("f_error");
+                },
+                submitHandler: function(form) {
+                    // do other things for a valid form
+                    form.submit();
+                },
+                errorPlacement: function(error, element) {
+                    $(element).closest('div').append(error);
+                    $('.error').css("font-size", "10px");
+                    $('.error').css("padding-top", "5px");
+                },
+                rules: {
+                    client: { required: true },
+                    client_name: { required: true },
+                    contract_name: { required: true },
+                    code: { required: true },
+                    turnover: {required:true, intcheck: ($('#turnover').val())},
+                    date_of_signature: { required: true },
+                    end_date: { required: true }
+                },
+                messages: {
+                   client: "Please select one client..",
+                   client_name: "Contract title missing..",
+                   contract_name: "Contract name missing..",
+                   code: "Contract code missing..",
+                   turnover: "Please enter turnover..",
+                   date_of_signature: "Please enter date of signature..",
+                   end_date: "Please enter end date.."
+                },
+                invalidHandler: function(form, validator) {
+                    $.sticky("There are some errors. Please corect them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
+                }
+            })
+        }
+    };
+</script>
+<style>
+.mod {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+    border-image: none;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+    margin-bottom: 15px;
+    overflow: hidden;
+    padding: 12px;
+}
+.add-on i {
+    background-image: url("/BO/bootstrap/img/glyphicons-halflings.png");
+    background-position: -190px -118px;
+    background-repeat: no-repeat;
+    line-height: 14px;
+    vertical-align: text-top;
+}
+#lb_ad_cl{width: 100%;}#turnover_currency{width: 100px;}
+#turnover_currency_chzn{vertical-align: middle;}
+</style>
+{/literal}
+
+ <div class="row-fluid">
+    <div class="span12">
+        <h3 class="heading">EDIT CONTRACT<div style="display:inline;float:right"><button onclick="return tocontractlist()" class="btn btn-success" name="back">BACK</button></div></h3>
+<form action="/mission/edit-contract?submenuId=ML2-SL26" name="add_contract" id="add_contract" method="post" enctype="multipart/form-data" class="form_validation_reg">
+        <div class="w-box">
+            <div class="w-box-header">Contract - {$contract_list.contract_name}</div>
+            <div class="row-fluid">
+                <div class="mod">
+                    <div class="span12 form-inline formSep"></div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Client</label>
+                        <div class="span5 no-margin-first" id="clientRow">
+                             <select name="client" id="client" class="chzn_a" data-placeholder="S&eacute;lectionner" onchange="chk1(this.value)">
+                                <option value="">S&eacute;lectionner</option>
+                                <!--<option value="new_cl">New client</option>-->
+                                {foreach from=$client_list item=client}
+                                    <option value="{$client.identifier}" {if $contract_list.client_id eq $client.identifier} selected{/if}>{$client.name}</option>
+                                {/foreach}
+                             </select><br>
+                             <div class="help-inline"><a href="javascript:void(0);" id="newcl" onclick="chk1('new_cl')">Ajouter un nouveau client</a></div><br>
+                             <div class="help-inline" id="ongoing"><a href="/ongoing/list?submenuId=ML2-SL4&client_id={$contract_list.client_id}" target="_blank">View ongoing AOs</a></div>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep" id="new_cl" style="display:none;">
+                        <div class="well" style="width:750px;">
+                            <table cellpadding="2" cellspacing="2" align="center" width="100%">
+    
+                                <tr>
+                
+                                    <td valign="top">Email</td>
+                
+                                    <td><span><input type="text" id="newemail" name="newemail"/></span></td>
+                
+                                </tr>
+                
+                                <tr>
+                
+                                    <td valign="top">Mot de passe</td>
+                
+                                    <td><span><input type="password" id="newpwd" name="newpwd"/></span></td>
+                
+                                </tr>
+                
+                                <tr>
+                
+                                    <td valign="top">Confirmer mot de passe</td>
+                
+                                    <td><span><input type="password" id="newcpwd" name="newcpwd" value=""/></span></td>
+                
+                                </tr>
+                
+                                <tr>
+                
+                                    <td valign="top">Nom du client</td>
+                
+                                    <td><span><input type="text" id="company_name" name="company_name" value=""/></span></td>
+                
+                                </tr>
+                
+                                <tr>
+                
+                                    <td>Upload picture</td>
+                
+                                    <td width="70%">
+                
+                                      <div data-provides="fileupload" class="span3 fileupload fileupload-new">
+                                          <input type="hidden" value="" name="clpid" id="clpid">
+                                          <span class="btn btn-file">
+                                              <span class="fileupload-new">Select logo</span>
+                                              <span class="fileupload-exists">Change</span>
+                                              <input type="file" class="span9 customfile-input" name="file" id="filePJ" />
+                                          </span>
+                                          <span class="fileupload-preview"></span>
+                                          <a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>
+                                          <div id="file_name"></div>                          
+                                       </div>
+                                    </td>
+                
+                                </tr>
+                
+                                <tr>
+                
+                                    <td>&nbsp;</td>
+                
+                                    <td>
+                
+                                        <button type="submit" id="submit_pop_edit" name="submit_pop_edit" value="Add" class="btn btn-info" onClick="return validateClient();">Ajouter client</button>&nbsp;&nbsp;
+                
+                                    </td>
+                
+                                </tr>
+                
+                            </table>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Nom du client</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="client_name" id="client_name" value="{$contract_list.client_name}" class="span5"/>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Nom du contrat</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="contract_name" id="contract_name" value="{$contract_list.contract_name}" class="span5"/>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Code client</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="code" id="code" value="{$contract_list.code}" class="span5"/>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Type de paiement</label>
+                        <div class="span5 no-margin-first">
+                            <label class="uni-radio"><input type="radio" name="payment_type" class="uni_style"  value="1" {if $contract_list.payment_type eq 'daily'} checked {/if}>Daily</label>
+                            <label class="uni-radio"><input type="radio" name="payment_type" class="uni_style"  value="2" {if $contract_list.payment_type eq 'factor'} checked {/if}>Factor</label>
+                            <label class="uni-radio"><input type="radio" name="payment_type" class="uni_style"  value="3" {if $contract_list.payment_type eq 'direct'} checked {/if}>Direct</label>
+                            <label class="uni-radio"><input type="radio" name="payment_type" class="uni_style"  value="4" {if $contract_list.payment_type eq 'other'} checked {/if}>Other</label>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">CA du contrat</label>
+                        <div class="span6 no-margin-first">
+                             <input type="text" name="turnover" id="turnover" value="{$contract_list.turnover}" class="span3"/>
+                             <select name="turnover_currency" id="turnover_currency" class="chzn_a span3" data-placeholder="S&eacute;lectionner">
+                                <option value="euro">Euro</option>
+                                <option value="pound"{if $contract_list.turnover_currency eq 'pound'} selected{/if}>Pound</option>
+                                <option value="us_dollar"{if $contract_list.turnover_currency eq 'us_dollar'} selected{/if}>Dollar</option>
+                             </select>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Date de signature</label>
+                        <div  id="date_of_signature1" class="input-append date span5" >
+                            <input data-format="dd/MM/YY" id="date_of_signature" name="date_of_signature" type="text" value="{$contract_list.date_of_signature}" class="input-append date span4" readonly="readonly" />
+                             <span class="add-on">
+                                <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                             </span>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Date de fin du contrat</label>
+                        <div  id="end_date1" class="input-append date span5" >
+                            <input data-format="dd/MM/YY" id="end_date" name="end_date" type="text" value="{$contract_list.end_date}" class="input-append date span4" readonly="readonly" />
+                             <span class="add-on">
+                                <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                             </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{$contract_list.id}" />
+        <!-- contract details -->
+
+        <div align="right" style="margin-top:10px">  
+            <!--<input type="button" value="ANNULER" class="btn btn-info" onClick="return clearText()" />-->
+            <input name="submit" type="submit" value="SAUVER" class="btn btn-info" />
+        </div>
+</form>
+    </div>
+</div>

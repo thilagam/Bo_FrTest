@@ -1,0 +1,334 @@
+{literal}
+<link href="/BO/theme/gebo/css/mission-followup.css" rel="stylesheet" />
+<script src="/BO/theme/gebo/js/jquery.MultiFileQuote.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<style>
+	.rightcontent
+	{
+		background-color:#114dbd;
+		padding:0 6px;
+		border-radius: 5px;
+		color:#fff;
+	}
+	.deletetask
+	{
+		cursor:pointer;
+	}
+	.otherdetails .image
+	{
+		margin: 0 5px ;
+	}
+</style>
+<!-- custom scrollbar plugin -->
+<link rel="stylesheet" href="/BO/theme/gebo/lib/scrollbar/jquery.mCustomScrollbar.css">
+<script src="/BO/theme/gebo/lib/scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+<script style="text/javascript">
+$(document).ready(function(){
+var cmid={/literal}"{$viewarray.cmid}"{literal};
+var to_date={/literal}"{$viewarray.to_date}"{literal};
+var title={/literal}"{$viewarray.title}"{literal};
+var contract_id={/literal}"{$viewarray.contract_id}"{literal};
+var mission_id={/literal}"{$viewarray.mission_id}"{literal};
+var assigned_to={/literal}"{$viewarray.assigned}"{literal};
+var quote_id={/literal}"{$quote_details.identifier}"{literal};
+
+	$("#validate").click(function(){
+		$(this).text('Validated');
+		$.post('/followup/validate-mission/',{"cmid":cmid,'to_date':to_date,'title':title,'type':'sales','mission_id':mission_id,'contract_id':contract_id,'quote_id':quote_id,'assigned_to':assigned_to},function(data){location.reload();}); 
+	})
+	
+	$(document).on("click",".deletetask",function(){
+	var id_identifier = $(this).attr("rel");
+	
+		smoke.confirm("Are you sure? Want to delete this File",function(e)
+			{
+				if(e)
+				{
+					$(this).closest("tr").remove();
+					$(".onsuccessrep").html("<tr><td>Please Wait Deleting File.</td></tr>");
+					$.post("/followup/delete-document",{"identifier":id_identifier,'edit':$(this).hasClass('edit')},function(result){
+							$(".onsuccessrep").html(result);
+					}); 
+				}
+			})
+	}) 
+	
+	$(document).on('click','#trig_edit',function(){
+		$("#view_task").modal('hide');
+	});
+	
+	$("#activity").mCustomScrollbar({
+									scrollButtons:{enable:true,scrollType:"stepped"},
+									keyboard:{scrollType:"stepped"},
+									mouseWheel:{scrollAmount:188},
+									theme:"rounded-dark",
+									snapAmount:188,
+									snapOffset:65,
+									autoHideScrollbar:true
+									})
+								
+	$("#asideheight").css("max-height",$(".leftcontent").height()+'px');
+	$("#asideheight").mCustomScrollbar({
+									scrollButtons:{enable:true,scrollType:"stepped"},
+									keyboard:{scrollType:"stepped"},
+									theme:"rounded-dark",
+									autoHideScrollbar:true
+									})
+})
+</script>
+{/literal}
+
+<div class="row-fluid">    
+	<div class="span9  leftcontent shownavright">
+		<div class="followup-header">
+			<h2 class="heading">{$viewarray.title} <span class="headerdim"> &middot; {$viewarray.from_date} - {$viewarray.to_date}</span></h2>
+			<div class="row-fluid">    
+				<div class="header-info">
+					<div class="span4">
+						<span class="upper">Priority</span>
+						<span class="bottom">{$viewarray.priority}</span>
+					</div>
+					<div class="span4">
+						<span class="upper">Production Cost</span>
+						<span class="bottom">{$viewarray.production_cost|zero_cut_t:2} &{$viewarray.currency};</span>
+					</div>
+					<div class="span4">
+						<span class="upper">Turnover</span>
+						<span class="bottom">{$viewarray.turnover|zero_cut_t:2} &{$viewarray.currency};</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="otherdetails">
+			<div class="span4">
+				<h4>Client</h4>
+				
+					<div class="image">
+						<img alt="{$viewarray.cname}" src="{$fo_path}profiles/clients/logos/{$viewarray.client_id}/{$viewarray.client_id}_global.png?12345" title="{$viewarray.cname}">
+					</div>
+					<p>
+					<a href="/quote/create-client?uaction=view&client_id={$viewarray.client_id}&submenuId=ML13-SL1" target="_blank">{$viewarray.cname}</a>
+					</p>
+					{if $viewarray.client_code}
+						<p>Client code: {$viewarray.client_code}</p>
+					{/if}
+					{if $viewarray.cano}
+					<p>CA info: {$viewarray.cano|zero_cut_t:2}</p>
+					{/if}
+					<!--p>Category: {$viewarray.category_name}</p--> 
+				</div>	
+		
+		
+			<div class="span5">
+				<h4>Related Contract / Quote</h4>
+
+				{if $viewarray.contract_files}
+					<a href='/followup/download-po?cid={$viewarray.contract_id}'>{$viewarray.contract_name}</a>
+				{else}
+					{$viewarray.contract_name}
+				{/if}
+					<p>
+						{$viewarray.contract_date}
+					</p>
+					<p style="margin-top:10px"><a href="/quote/quote-followup?quote_id={$quote_details.identifier}&submenuId=ML13-SL2" target="_followup">{$quote_details.title}</a></p>
+					<p>{$viewarray.quote_signed_at}</p>
+			</div>	
+			<div class="span3">
+				<h4>Team</h4><br>
+					<a href="mailto:{$viewarray.mailto}" class="hint--left" data-hint="{$viewarray.sales_owner}"><img src="{$fo_path}/profiles/bo/{$viewarray.sales_id}/logo.jpg" title="{$viewarray.sales_owner}"  alt="{$viewarray.sales_owner}" class="image rd_30"></a>
+					{if $viewarray.assigned}
+					<a class="hint--right" data-hint="{$viewarray.staff_name}">
+						<img src="{$fo_path}/profiles/bo/{$viewarray.assigned}/logo.jpg" class="image rd_30" alt="{$viewarray.staff_name}">
+					</a>
+					{/if}
+			</div>	
+		</div>
+		<div style="clear:both"></div>
+		<div class="row-fluid">
+			<div class="act-task">
+			<ul class="nav nav-tabs" style="background-color:#fff">
+				<li class="active"><a href="#activity" data-toggle="tab">Activities</a></li>
+			</ul>	
+		
+			<div class="tab-content">
+				<div class="tab-pane active media mission-comment scroll1" id="activity">
+					<div class="row-fluid">
+					{if $logs|@count > 0}
+					{foreach from=$logs item=log}
+						<div class="media act-comment">
+							<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$log.user_id}/logo.jpg">
+							</a>
+							<div class="media-body">
+								{if $log.first_name}
+									<a>{$log.first_name} {$log.last_name}</a>, {$log.action_at|time_ago}{$log.time}<br>
+								{/if}
+								{$log.action_sentence}
+								<div>{$log.comments|stripslashes|strip_tags|nl2br}</div>
+							</div>
+						</div>
+					{/foreach}
+					{/if}
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+		
+		<h3> Brief and Comments from Quote</h3>
+			
+				<div class="row-fluid">
+				{*
+				{if $quote_details.sales_comment}
+					<div class="media mission-comment">
+						<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$quote_details.created_by}/logo.jpg">
+						</a>
+						<div class="media-body">
+							{if $quote_details.created_name}
+								<a>{$quote_details.created_name}</a> {$quote_details.created_time}<br>
+							{/if}
+							{$quote_details.sales_comment}
+						</div>
+					</div>
+				{/if}
+				{if $techcomments.comments}
+					<div class="media mission-comment">
+						<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$techcomments.created_by}/logo.jpg">
+						</a>
+						<div class="media-body">
+							{if $techcomments.created_name}
+								<a>{$techcomments.created_name}</a> {$techcomments.created_time}<br>
+							{/if}
+							{$techcomments.comments|stripslashes|strip_tags|nl2br}
+						</div>
+					</div>
+				{/if}
+				{if $contractcomments.comment}
+					<div class="media mission-comment">
+						<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$contractcomments.created_by}/logo.jpg">
+						</a>
+						<div class="media-body">
+							{if $contractcomments.created_name}
+								<a>{$contractcomments.created_name}</a> {$contractcomments.created_time}<br>
+							{/if}
+							{$contractcomments.comment|stripslashes|strip_tags|nl2br}
+						</div>
+					</div>
+				{/if}
+				{if $contractmissioncomments.comment}
+					<div class="media mission-comment">
+						<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$contractmissioncomments.created_by}/logo.jpg">
+						</a>
+						<div class="media-body">
+							{if $contractmissioncomments.created_name}
+								<a>{$contractmissioncomments.created_name}</a> {$contractmissioncomments.created_time}<br>
+							{/if}
+							{$contractmissioncomments.comment|stripslashes|strip_tags|nl2br}
+						</div>
+					</div>
+				{/if}
+				*}
+				{foreach from =$comments item=commentst name=comments}
+					<div class="media mission-comment">
+						<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$commentst.created_by}/logo.jpg">
+						</a>
+						<div class="media-body">
+							{if $commentst.created_name}
+								<a>{$commentst.created_name}</a> {$commentst.created_time}<br>
+							{/if}
+							{$commentst.comment|stripslashes|strip_tags|nl2br}
+						</div>
+					</div>
+				{/foreach}
+				</div>
+				{if $quotefiles || $files}
+			<div class="row-fluid">
+				<h4>Related Files</h4>
+				<div class="pull-right" style="margin-bottom:5px">
+					<a href="/quote/download-document?type=quote&index=-1&quote_id={$quote_details.identifier}&mission_id={$viewarray.mission_id}" class="btn btn-small">Download Zip</a>
+				</div>
+				<table class="onsuccessrepquote table">
+				{$quotefiles}
+				</table>
+				<table class="onsuccessrep table">
+				{$files}
+				</table>
+			</div>
+				{/if}
+			</div>
+
+	
+	<div class="span3">
+		<aside>
+			<div class="followup-aside" id="asideheight">
+
+					{if $viewarray.cm_status == 'validated'}
+					<button class="btn btn-primary btn-block disabled" id="">Validated</button>
+					<hr>
+					{else}
+					<button class="btn btn-primary btn-block" id="validate">Validate Mission</button>
+					<hr>
+					{/if}
+					
+					<h3 class="heading">{if $tasks|@count>0} {$tasks|@count} {/if}TASK{if $tasks|@count>1}S{/if}</h3>
+					
+					{if $tasks|@count>0}
+					{foreach from=$tasks item=task}
+					<div class="deliveryhover tasks">
+						<h4><a href="/followup/salestask?tid={$task.task_id}&staff_action=view" data-toggle="modal" role="button" data-target="#view_task">{$task.task_title}</a></h4>
+						<p class="headerdim">{$task.created_at|date_format:'%d %b %Y'}</p>
+						<a href="/followup/salestask?tid={$task.task_id}&staff_action=view" data-toggle="modal" role="button" data-target="#view_task" class="btn btn-block btn-default">View Taskboard</a>
+					</div>
+					{/foreach}
+					{/if}
+					<hr>
+					<a class="btn btn-warning  btn-block" href="/followup/salestask?cmid={$viewarray.cmid}" data-toggle="modal" role="button" data-target="#new_task" id="newtask">
+							Create new task</a>
+			</div>
+			
+		</aside>
+	</div>	
+	</div>
+	
+<!-- New task follow up-->
+<div class="modal fullscreen hide fade" style="top:0%" id="new_task">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>New task</h3>		
+    </div>
+    <div class="modal-body" style="min-height:480px">
+	
+	</div>
+	 <div class="modal-footer"></div>
+</div>
+
+<!-- View task follow up-->
+<div class="modal fullscreen hide fade" style="top:0%" id="view_task">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>View task</h3>		
+    </div>
+    <div class="modal-body" style="min-height:480px">
+	
+	</div>
+	 <div class="modal-footer"></div>
+</div>
+
+<!-- View task follow up-->
+<div class="modal fullscreen hide fade" style="top:0%" id="edit_task">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>Edit task</h3>		
+    </div>
+    <div class="modal-body" style="min-height:480px">
+	
+	</div>
+	 <div class="modal-footer"></div>
+</div>

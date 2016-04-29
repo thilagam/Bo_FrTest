@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<link rel="STYLESHEET" href="http://ep-test.edit-place.co.uk/FO/css/client/invoice_pdf.css" type="text/css" />
+	</head>
+	<body>
+		<div id="body">
+			<div id="section_header"></div>
+			<div id="content">
+				<div class="page">
+					<table style="width: 100%;">
+						<tr>
+							<td colspan="2"><img src="http://ep-test.edit-place.co.uk/FO/images/logo-edit-place.png" style="background-repeat: no-repeat;" width="279px" height="49px"/></td>
+						</tr>
+						<tr>
+							<td colspan="2" style="font-size: 10pt;">16 rue Jesse Owens - 93200</td>
+						</tr>
+						<tr>
+							<td style="font-size: 10pt;">SAINT  DENIS <br>RCS Bobigny B 521 287 193<br>TVA INTRA COMMUNAUTAIRE : FR43-521287193.</td>
+						</tr>
+					</table>
+					
+					<table style="width: 100%;padding-top:0px;">
+						<tr>
+							<td>&nbsp;</td>
+							<td style="text-align: left;width: 60%;background-color:#FFF;padding:10px;border: 1px solid black;font-size: 12pt;">
+							$$$$address$$$$
+							$$$$payinfo_number$$$$
+							</td>
+						</tr>
+					</table>
+
+					<table style="width: 100%;">
+						<tr>
+							<td><h1 style="text-align: center;font-size: 12pt;background-color:#FFF;padding:4px;border: 1px solid black;">Invoice</td>
+						</tr>
+					</table>
+					
+					<table style="width:100%;border-collapse: collapse;float:right;padding-top:20px;" cellpadding="3">
+						<tr>
+							<td style="width:30%;"></td>
+							<td style="width:33%;border: 1pt solid black;padding:5px;font-size: 12pt">N°facture: $$$$invoice_identifier$$$$ </td>
+							<td style="width:33%;border: 1pt solid black;padding: 5px;font-size: 12pt"> Date facture: $$$$date_invoice$$$$ </td>
+							<td style="width:4%;"></td>
+						</tr>
+					</table>
+
+					<table style="width: 100%;">
+						<tr>
+							<td style="font-size:12pt">date : $$$$date_invoice_full$$$$</td>
+						</tr>
+					</table>
+
+					$$$$invoice_details_pdf$$$$
+
+					$$$$final_invoice_amount$$$$
+
+					<table style="width: 100%;">
+						<tr>
+							<td style="font-size:12pt">En cas de questions, contactez notre service Comptabilit&eacute; par t&eacute;l&eacute;phone : 01 77 68 64 62</td>
+						</tr>
+						<tr>
+							<td style="font-size:12pt">EDIT-PLACE - 16 rue Jesse Owens - 93 200 SAINT DENIS / SARL au capital de 20140 euros.</td>
+						</tr>	
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

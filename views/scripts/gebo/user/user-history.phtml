@@ -1,0 +1,96 @@
+
+{if $refusereasonsblock eq "yes"}
+    <table id="stageartsgrid" class="table table-bordered table-striped table_vam">
+        <thead>
+        <tr>
+            <th>Sl.no</th>
+            <th>Refusal Reason</th>
+            <th>repeated times</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {assign var="total" value=$reasons|@count}
+            {foreach from=$reasons key=reasons_key item=reasons_item name=reasons_loop}
+            {if $reasons != 'NO'}
+            <tr>
+                <td>{$smarty.foreach.reasons_loop.index+1} </td>
+                <td>{$reasons_key|utf8_encode} </td>
+                <td>{$reasons_item}/{$reasons|@count} ({if $reasons_item || $total neq 0}{$reasons_item/$total|string_format:"%.2f"}{else}0{/if} %)</td>
+            </tr>
+            {else}
+            <tr>
+                <td colspan="3">No data available</td>
+            </tr>
+
+            {/if}
+            {/foreach}
+
+        </tbody>
+
+    </table>
+{elseif $writerlistblock eq "yes"}
+<table id="stageartsgrid" class="table table-bordered table-striped table_vam">
+    <thead>
+    <tr>
+        <th>Sl.no</th>
+        <th>Writer</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {foreach from=$writers key=writers_key item=writers_item name=writers_loop}
+    {if $writers != 'NO'}
+    <tr>
+        <td>{$smarty.foreach.writers_loop.index+1} </td>
+        <td>{$writers_item[0].first_name|utf8_encode} {$writers_item[0].last_name|utf8_encode} </td>
+    </tr>
+    {else}
+    <tr>
+        <td colspan="2">No data available</td>
+    </tr>
+
+    {/if}
+    {/foreach}
+
+    </tbody>
+
+</table>
+{else}
+   <table class="table table-striped table-bordered table-condensed">
+       <tr>
+           <td> <span class="pull-right"> Nom complet </span> </span> </td>
+           <td> <span class="pull-left"> {$user_detail[0].last_name|utf8_encode}&nbsp;{$user_detail[0].first_name|utf8_encode} </span> </td>
+       </tr>
+      <!-- <tr>
+           <td>  <span class="pull-right">Profession  </span> </td>
+           <td> <span class="pull-left">{$profession|utf8_encode}  </span> </td>
+       </tr>
+       <tr>
+           <td>  <span class="pull-right"> Etudes </span> </td>
+           <td> <span class="pull-left"> {$education} </span> </td>
+       </tr>
+       <tr>
+           <td> <span class="pull-right"> Langage </span> </td>
+           <td> <span class="pull-left"> {$language|utf8_encode} </span> </td>
+       </tr>
+       <tr>
+           <td>  <span class="pull-right">Cat&eacute;gories pr&eacute;f&eacute;r&eacute;es  </span> </td>
+           <td> <span class="pull-left">{$favourite_category}  </span> </td>
+       </tr>-->
+       <tr>
+           <td>  <span class="pull-right"> Total Participations  </span> </td>
+           <td> <span class="pull-left">{$parti_detail[0].no_participations}  </span> </td>
+       </tr>
+       <tr>
+           <td> <span class="pull-right">  Total Articles publi&eacute;s </span> </td>
+           <td> <span class="pull-left"> {$parti_detail[1].no_approved} </span> </td>
+       </tr>
+       <tr>
+           <td>  <span class="pull-right">  Total Articles refus&eacute;s  </span> </td>
+           <td> <span class="pull-left"> {$parti_detail[2].no_disapproved} </span> </td>
+       </tr>
+
+   </table>
+{/if}
+			

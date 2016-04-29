@@ -1,0 +1,1062 @@
+{literal}
+<script src="/BO/theme/gebo/js/jquery.raty.min.js"></script>
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript" ><!--xmlns="http://www.w3.org/1999/html"-->
+
+$(document).ready(function() {
+    $('#comment_s2, #marks_comments, #dismarks_comments').tinymce({
+        // Location of TinyMCE script
+        script_url 							: '/BO/theme/gebo/lib/tiny_mce/tiny_mce.js?' + new Date().getTime(),
+        // General options
+        theme 								: "advanced",
+        readonly                            : {/literal}{$versionfromCorrector} {literal},
+    plugins 							: "autoresize,style,table,advhr,advimage,advlink,emotions,inlinepopups,preview,media,contextmenu,paste,fullscreen,noneditable,xhtmlxtras,template,advlist",
+        // Theme options
+        theme_advanced_buttons1 			: "undo,redo,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,fontsizeselect",
+        theme_advanced_buttons2 			: "forecolor,backcolor,|,cut,copy,paste,pastetext,|,bullist,numlist,link,image,media,|,code,preview,fullscreen",
+        theme_advanced_buttons3 			: "",
+        theme_advanced_toolbar_location 	: "top",
+        theme_advanced_toolbar_align 		: "left",
+        theme_advanced_statusbar_location 	: "bottom",
+        theme_advanced_resizing 			: false,
+        height                              : 200,
+        content_css                         : "/BO/theme/gebo/css/tinymce_styles.css?" + new Date().getTime(),
+        theme_advanced_font_sizes           : "8px,10px,12px,13px,14px,16px,18px,20px",
+        font_size_style_values              : "8px,10px,12px,13px,14px,16px,18px,20px",
+        init_instance_callback				: function(){
+
+        function resizeWidth() {
+            document.getElementById(tinyMCE.activeEditor.id+'_tbl').style.width='98%';
+        }
+        resizeWidth();
+        $(window).resize(function() {
+            resizeWidth();
+        })
+    }
+});
+//tinyMCE.get('comment_s2').setContent('{/literal}{$refualreasonContent}{literal}');
+// tinyMCE.activeEditor.setContent('{/literal}{$refualreasonContent}{literal}', {format : 'bbcode'});
+$(".uni_style").uniform();
+$(".toggle-button").each(function(obj){
+    $('#text-toggle-button'+obj).toggleButtons({
+        width:75,
+        label: {
+            enabled: "Yes",
+            disabled: "NO"
+        },
+        onChange: function (data) {
+            var user = $('#blackstatus'+obj).val();
+            if($("#blackstatus"+obj).is(":checked")){
+                var target_page = "/processao/blackcontributor?status=yes&user_id="+user;
+                $.post(target_page, function(data){ //alert(data);
+                    smoke.alert("Contributor Blacklisted");
+                });
+            }
+            else{
+                var target_page = "/processao/blackcontributor?status=no&user_id="+user;
+                $.post(target_page, function(data){
+                    smoke.alert("Contributor Unblacklisted");
+                });
+            }
+
+        }
+    });
+});
+
+var reasonslist=$("#reasonslist").val().split(",");
+
+for (i = 1; i <=reasonslist.length; i++) {
+    $('#star'+i).raty({
+        scoreName : 'entity_score',
+        readOnly  :  {/literal}{$versionfromCorrector}{literal},
+    number    : 5,
+        path: '/BO/theme/gebo/img',
+        score     : reasonslist[i-1],
+        target     : '#precision-target'+i,
+        targetKeep : true,
+        targetType : 'number'
+});
+
+$('#disstar'+i).raty({
+    scoreName : 'entity_score',
+    readOnly  :  {/literal}{$versionfromCorrector}{literal},
+number    : 5,
+    path: '/BO/theme/gebo/img',
+    score     : reasonslist[i-1],
+    target     : '#disprecision-target'+i,
+    targetKeep : true,
+    targetType : 'number'
+});
+}
+/*$('#star1').raty({
+ scoreName : 'entity_score',
+ readOnly  :  {/literal}{$versionfromCorrector}{literal},
+ number    : 5,
+ path      : '/BO/theme/gebo/img',
+ score     : {/literal}{$s1marks[0]}{literal},
+ target     : '#precision-target1',
+ targetKeep : true,
+ targetType : 'number'
+ });
+
+ $('#disstar1').raty({
+ scoreName : 'entity_score',
+ readOnly  :  {/literal}{$versionfromCorrector}{literal},
+ number    : 5,
+ path: '/BO/theme/gebo/img',
+ score     : {/literal}{$s1marks[0]}{literal},
+ target     : '#disprecision-target1',
+ targetKeep : true,
+ targetType : 'number'
+ });*/
+
+});
+
+function stripslashes(str)
+{
+    str=str.replace(/\\'/g,'\'');
+    str=str.replace(/\\"/g,'"');
+    str=str.replace(/\\0/g,'\0');
+    str=str.replace(/\\\\/g,'\\');
+    return str;
+}
+function decode_utf8( s )
+{
+    return decodeURIComponent( escape( s ) );
+}
+function writeS2Comments(popPartId, crtPartId)
+{
+    $("#commentsdiv2").show();
+    /////////////alert the left over time of contributor to corrector///
+    // $('input:checkbox').prop("checked", false);  $.uniform.update();
+
+    var partId = popPartId;
+    var crtpartId = crtPartId;
+    var newDate = $("#aodeldate").val()+" 23:59:10";
+    var d = new Date();
+    var  nowtime = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+    //alert(newDate);alert(partId);alert(nowtime);
+    var target_page = "/proofread/refusealert?aodeldate="+newDate+"&partId="+partId+"&currenttime="+nowtime;
+    $.post(target_page, function(data){ //alert(data);
+        var obj = $.parseJSON(data);
+        if(obj.message != 0)
+        {
+            //alert(obj.message);
+        }
+        var  resubtime = obj.resub;
+        //var footer  = "Vous avez " + resubtime + " pour nous faire parvenir votre article modifié. Nous vous rappelons que si les consignes ne sont pas respectées, nous pouvons vous demander de modifier votre article de nouveau."
+        var footer = "Tu as "+resubtime+" pour renvoyer ton article modifié. Si les consignes ne sont toujours pas respectées, nous pouvons te demander de modifier ton article à nouveau jusqu'à ce que mort s'en suive ou en tout ca jusqu'à 3 fois. Allez, cette fois-ci c'est la bonne!";
+        /* "\nNous faisons jusqu'à deux A/R. Au troisième refus, l'article sera automatiquement remis en appel d'offres et l'article ne pourra être rétribué."+
+         "\nL'équipe d'Edit Place.com vous remercie d'avoir fait confiance à ses services. "*/;
+        $("#content_footer").text(decode_utf8(footer));
+    });
+    //////////////////////////////////////////////////////////////////////////////////
+    $("#pop_partId").val(popPartId);
+    $("#pop_crtpartId").val(crtpartId);
+    var popBox=$("#pop-s2comments");
+    popBox.show();
+    $(".boxcol2 :checkbox").attr("checked", false);
+    // $("#comment_s2").text('')
+    $("#pop_disapproves2_permanent").hide();
+    $("#pop_disapproves2").show();
+    $("#buttonids").html('<input type="hidden"  value="yes" name="pop_disapproves2"/> <input type="hidden" value="" name="pop_disapproves2_permanent"/>');
+    $("#content_footerPermanent").hide();
+    $("#content_footer").show();
+    $("#comment_validate_"+popPartId).hide();
+    $("#s2art_approve").hide();
+    $("#s2art_approve").val('no');
+    $("#commentsdiv2").show();
+    $("#commentsdiv").hide();
+    $("#alert").hide();
+    $("#refusemarksdiv").hide();
+    $("#refusetitle").show();
+    $("#closetitle").hide();
+}
+function writeS2CommentsPermanent(popPartId, crtPartId)
+{
+    /////////////alert the left over time of contributor to corrector///
+    // $('input:checkbox').prop("checked", false);  $.uniform.update();
+
+    var partId = popPartId;
+    var crtpartId = crtPartId;
+    var newDate = $("#aodeldate").val()+" 23:59:10";
+    var d = new Date();
+    var  nowtime = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+    //alert(newDate);alert(partId);alert(nowtime);
+    var target_page = "/proofread/refusealert?aodeldate="+newDate+"&partId="+partId+"&currenttime="+nowtime;
+    $.post(target_page, function(data){
+        var obj = $.parseJSON(data);
+        if(obj.message != 0)
+        {
+            // alert(obj.message);
+        }
+    });
+    //////////////////////////////////////////////////////////////////////////////////
+    $("#pop_partId").val(popPartId);
+    $("#pop_crtpartId").val(crtpartId);
+    var popBox=$("#pop-s2comments");
+    popBox.show();
+    var $b =  $(".boxcol2 :checkbox").attr("checked", false);
+    //$("#comment_s2").text('')
+    // var $b = $('input[type=checkbox]');
+    var countselected = $b.filter(':checked').length;
+    ////////////////////////////////////
+    var selected = new Array();
+    $b.filter(':checked').each(function() {
+        selected.push($(this).attr('value'));
+        $("#hide_total2").val(selected);////for posting the value which are checked
+    });
+    ////////////////////////////////////
+    for(var i=1; i<=countselected; i++)
+    {
+        var target_page = "/template/getrefusevalidtemp?valtempId="+selected[i-1];
+        $.post(target_page, function(data){
+            var obj = $.parseJSON(data);
+            $("#comment_s2").append(stripslashes(obj[0].content)+'\n\n');
+        });
+    }
+    $("#pop_disapproves2_permanent").show();
+    $("#pop_disapproves2").hide();
+    $("#buttonids").html('<input type="hidden"  value="" name="pop_disapproves2"/> <input type="hidden" value="yes" name="pop_disapproves2_permanent"/>');
+    $("#content_footerPermanent").show();
+    $("#content_footer").hide();
+    $("#comment_validate_"+popPartId).hide();
+    $("#s2art_approve").hide();
+    $("#s2art_approve").val('no');
+    $("#commentsdiv2").show();
+    $("#commentsdiv2").show();
+    $("#commentsdiv").hide();
+    $("#alert").hide();
+    $("#refusemarksdiv").show();
+    $("#closetitle").show();
+    $("#refusetitle").hide();
+}
+function sendToFo(artid)
+{
+    var target_page = "/correction/checklastcorrector?artid="+artid;
+    $.get(target_page, function(data){   //alert(data);
+        var data1 = $.trim(data);
+        if(data1 == 'yes')
+        {
+            var r=confirm("Plus aucun correcteur ne peut participer, vous etes sur le point de fermer cet AO/article. Confirmez-vous votre choix ?");
+            if (r==true)
+            {
+                //alert(r);
+                $("#nocrtclose").val('yes');
+                $("#s2art_corrector_permdisapprove").val('yes');
+                $("#s2correction").submit();
+                return true;
+            }
+            else
+            {
+                //window.location.reload();
+                return false;
+            }
+        }
+        else
+        {
+            var r=confirm("L'article sera remis en ligne");
+            if (r==true)
+            {
+                var r1=confirm("Announcement by email");
+                if (r1==true)
+                {
+                    $("#sendtofo").val('yes');
+                    $("#crtsendtofo").val('yes');
+                    $("#anouncebyemail").val('yes');
+                    $("#anouncebyemail2").val('yes');
+                    $("#s2art_corrector_permdisapprove").val('yes');
+                    $("#s2correction").submit();
+                    return true;
+                }
+
+                $("#sendtofo").val('yes');
+                $("#crtsendtofo").val('yes');
+                $("#s2art_corrector_permdisapprove").val('yes');
+                $("#s2correction").submit();
+                return true;
+            }
+            else
+            {
+                $("#sendtofo").val('no');
+                $("#crtsendtofo").val('no');
+                $("#s2art_corrector_permdisapprove").val('yes');
+                $("#s2correction").submit();
+                return true;
+            }
+        }
+    });
+
+
+}
+///when validate button is clicked///////////
+function showUploadFile(mode)
+{
+    if(mode == 'close')
+        $("#alert").hide();
+    else
+    {
+        $("#alert").show();
+        $("#pop-s2comments").css('display', 'none');
+        $(".box_c").hide();
+    }
+}
+function checkServices(id)
+{
+    $("#participateId").val(id);
+    var marks = [];
+    $(".precision").each(function(i){
+        if($(this).text() != '')
+            marks.push($(this).text());
+        else{
+            smoke.alert("N'oubliez pas de renseigner toutes les notes que vous souhaitez donner au r\351dacteur");
+            return false;
+        }
+    });
+    var $c = $('#checksdiv input[type=checkbox]');
+    var clen = $c.length;
+    var countcheckselected = $c.filter(':checked').length;
+    if(countcheckselected != 2)
+    {
+        smoke.alert('Merci de cocher les options SEO et la check list');
+        return false;
+    }
+    else if($("#marks_comments").val()== '')
+    {
+        smoke.alert('Veuillez entrer un commentaire');
+        return false;
+    }
+    else if(countcheckselected == 2 && $("#marks_comments").val()!= '')
+    {
+        //return true;
+        $("#s2correction").submit();
+    }
+
+}
+
+function getRefuseTemp(valtempId)
+{
+    //alert(valtempId);
+    $("#comment_s2").text('');
+    var $b = $('input[type=checkbox]');
+    var countselected = $b.filter(':checked').length;
+    ////////////////////////////////////
+    var selected = new Array();
+    $b.filter(':checked').each(function() {
+        selected.push($(this).attr('value'));
+        $("#hide_total2").val(selected);////for posting the value which are checked
+    });
+    ////////////////////////////////////
+    for(var i=1; i<=countselected; i++)
+    {
+        var target_page = "/template/getrefusevalidtemp?valtempId="+selected[i-1];
+        $.post(target_page, function(data){
+            // var obj = $.parseJSON(data);
+            $("#comment_s2").append(stripslashes(data)+'\n\n');
+        });
+
+    }
+}
+function getDensity(artproid, density)
+{
+    if(density == .5)
+    {
+        var  densval = density;
+    }
+    else
+    {
+        densval = $("#denval").val();
+    }
+    var target_page = "/proofread/showkeyworddensity?artprocessId="+artproid+"&density="+densval;
+
+    $.post(target_page, function(data){ //alert(data);
+        // var obj = $.parseJSON(data);
+        $('#density').modal('show');
+        $('#density_body').html(data);
+    });
+}
+
+function refuseAlert()
+{
+    alert('do you really want to refuse it permanently');
+    return true;
+}
+
+////to send the email when validate the user with edited option ////////
+function getComment(parttype, crtpartid, partid)
+{
+    if(parttype == 'regural')
+    {
+        if (tinymce.getInstanceById('commentsValidate_'+partid))
+        {
+            tinymce.execCommand('mceRemoveControl', true, 'commentsValidate_'+partid);
+            loadEditors('commentsValidate_'+partid);
+        }
+        else if (!tinymce.getInstanceById('commentsValidate_'+partid))
+        {
+            loadEditors('commentsValidate_'+partid);
+        }
+
+        var target_page = "/processao/getcommentpopup?mailId=53&particip_id="+partid;  //
+        $.post(target_page, function(data){  // alert(data);
+            $('#commentsValidate_'+partid).html(data);
+        });
+    }
+    else
+    {
+        if (tinymce.getInstanceById('commentsCrtValidate_'+crtpartid))
+        {
+            tinymce.execCommand('mceRemoveControl', true, 'commentsCrtValidate_'+crtpartid);
+            loadEditors('commentsCrtValidate_'+crtpartid);
+        }
+        else if (!tinymce.getInstanceById('commentsCrtValidate_'+crtpartid))
+        {
+            loadEditors('commentsCrtValidate_'+crtpartid);
+        }
+
+        var target_page = "/processao/getcommentpopup?mailId=53&crt_particip_id="+crtpartid+"&particip_id="+partid;//
+        $.post(target_page, function(data){   //alert(data);
+            $('#commentsCrtValidate_'+crtpartid).html(data);
+        });
+    }
+    $("#alert").show();
+    $("#correctorvalidmailcontent").show();
+    $("#pop-s2comments").hide();
+    $("#correctorrefusemailcontent").hide();
+    $("#optionsdiv").show();
+    $("#checksdiv").show();
+    $("#s2art_approve").val('yes');
+    $("#refuseCorrector").hide();
+    $("#validCorrector").show();
+
+}
+////to send the email when editor correct the corrector version and want to disapporve ////////
+function getCorrectorRefuseComment(crtpartid, partid, mode)
+{
+    if (tinymce.getInstanceById('commentsCrtRefuse'))
+    {
+        tinymce.execCommand('mceRemoveControl', true, 'commentsCrtRefuse');
+        loadEditors('commentsCrtRefuse');
+    }
+    else if (!tinymce.getInstanceById('commentsCrtRefuse'))
+    {
+        loadEditors('commentsCrtRefuse');
+    }
+
+    //////////////////////////////////////
+    var buttonmode = mode;
+    if(buttonmode == 'permanent')
+        var mailid = 91;
+    else if(buttonmode == 'temporary')
+        var mailid = 56;
+    var target_page = "/processao/getcommentpopup?mailId="+mailid+"&crt_particip_id="+crtpartid+"&particip_id="+partid; //
+    $.post(target_page, function(data){   //alert(data);
+        //$("#commentsRefuse_"+userid).val(data);
+        $('#commentsCrtRefuse').html(data);
+        var buttonmode = mode;
+        if(buttonmode == 'permanent')
+        {
+            // $("#s2art_corrector_permdisapprove_"+partid).hide();
+            $("#s2art_corrector_permdisapprove").show();
+            $("#s2art_corrector_disapprove").hide();
+            $("#refusemarksdiv").show();
+            $("#closetitle").show();
+        }
+        else if(buttonmode == 'temporary')
+        {
+            // $("#s2art_corrector_disapprove_"+partid).hide();
+            $("#s2art_corrector_disapprove").show();
+            $("#s2art_corrector_permdisapprove").hide();
+            $("#refusemarksdiv").hide();
+            $("#refuseCorrector").show();
+            $("#validCorrector").hide();
+        }
+    });
+    $("#alert").show();
+    $("#correctorrefusemailcontent").show();
+    $("#pop-s2comments").hide();
+    $("#correctorvalidmailcontent").hide();
+    $("#optionsdiv").hide();
+    $("#checksdiv").hide();
+    $("#s2art_approve").val('no');
+
+}
+count = '';
+function validateRefuse(artId)
+{
+    if($("#dismarks_comments").val()== '' &&  $("#dismarks").val()=='0')
+    {
+        smoke.confirm("Tu n\'as pas donn\351 de notes \u00e0 ce contributeur pourtant il le m\351rite, non ? Allez \347a prend 2 secondes et ensuite tu auras un suivi au top et tu pourras dire \u00e0 ta m\u00e8re : regarde maman ce suivi comment il est top !",function(e){
+            if (e)
+            {
+                $("[id^=chktemp_]").each(function(i) {
+                    var selectedtemp=$(this).attr('id');
+                    if($("#"+selectedtemp).is(":checked"))
+                        count = selectedtemp;
+                });
+                if(count == '')
+                {
+                    smoke.alert("Vous devez s\u00e8lectionner la/les raison(s) de votre refus parmis celles se trouvant  \u00e0 gauche. Si aucune des raisons ne correspond, merci d'alerter <a  href='#' onclick='mailToAlix();'>Alix</a>. C'est important pour le suivi Merci!");
+                    return false;
+                }
+                else{
+                    var href="/republish/republishpopup?stage=2&artId="+artId;
+                    //var href="/processao/group-profiles?artId="+artid;
+                    $("#republish").removeData('modal');
+                    $('#republish .modal-body').load(href);
+                    $("#republish").modal();
+                    $(".modal-backdrop:gt(0)").remove();
+                    $("#disapprove2form").submit();
+                }
+            }
+            else
+                return false;
+        },{"ok":"M'en fiche de ton truc mais c'est bien pens\351 quand m\352me","cancel":"Ah bah dans ce cas, je veux bien le noter !Merci de m'avoir ouvert les yeux"});
+    }
+    else
+    {
+        $("[id^=chktemp_]").each(function(i) {
+            var selectedtemp=$(this).attr('id');
+            if($("#"+selectedtemp).is(":checked"))
+                count = selectedtemp;
+        });
+        if(count == '')
+        {
+            smoke.alert("Vous devez s\u00e8lectionner la/les raison(s) de votre refus parmis celles se trouvant  \u00e0 gauche. Si aucune des raisons ne correspond, merci d'alerter <a  href='#' onclick='mailToAlix();'>Alix</a>. C'est important pour le suivi Merci!");
+            return false;
+        }
+        else{
+            var href="/republish/republishpopup?stage=2&artId="+artId;
+            //var href="/processao/group-profiles?artId="+artid;
+            $("#republish").removeData('modal');
+            $('#republish .modal-body').load(href);
+            $("#republish").modal();
+            $(".modal-backdrop:gt(0)").remove();
+            $("#disapprove2form").submit();
+        }
+    }
+    $('[id^=confirm-ok]').removeClass("btn-primary");
+    $('[id^=confirm-cancel]').addClass("btn-primary");
+}
+function mailToAlix()
+{
+    $(".smoke-alert").css( "z-index" , 10 );
+    $(".smokebg").css( "z-index" , 10 );
+    $(".smoke").hide();
+    $(".smoke-alert").hide();
+    var href="/proofread/no-template";
+    //var href="/processao/group-profiles?artId="+artid;
+    $("#notemplate").removeData('modal');
+    $('#notemplate .modal-body').load(href);
+    $("#notemplate").modal();
+    $(".modal-backdrop:gt(0)").remove();
+}
+</script>
+{/literal}
+<h3 class="heading">Stage 2 Correction<a class="label label-inverse pull-right"  id="return">retour</a></h3>
+
+<table id="grptabledetails" class="table btn-gebo tdleftalign" >
+    <tr>
+        <td><b>Article : </b>{$articledetails[0].title|escape:'htmlall'}</td>
+        <td><b>NOM AO : </b>{$articledetails[0].deliveryTitle|escape:'htmlall'}</td>
+        <td><b>Type d'article : </b>{$articledetails[0].type|stripslashes}</td>
+    </tr>
+    <tr>
+        <td><b>Mode de comptage : </b>{$articledetails[0].sign_type}</td>
+        <td><b>Min {if $articledetails[0].signtype == 'words'}Mots / article
+                {elseif $articledetails[0].signtype == 'chars'}Caractères / article
+                {elseif $articledetails[0].signtype == 'sheets'}Feuillets / article {/if}: </b>{$articledetails[0].num_min}</td>
+        <td><b>Max {if $articledetails[0].signtype == 'words'}Mots / article
+                {elseif $articledetails[0].signtype == 'chars'}Caractères / article
+                {elseif $articledetails[0].signtype == 'sheets'}Feuillets / article {/if}: </b>{$articledetails[0].num_max}</td>
+    </tr>
+    <tr>
+        <td><b>Brief &eacute;ditorial : </b>{if $articledetails[0].filepath neq NULL}
+            <a href="/proofread/downloadfile?submenuId={$submenuId}&spec={$articledetails[0].id}" class="label label-warning">Download</a>{else}No file{/if}</td>
+        <td></td>
+        <td></td>
+    </tr>
+</table>
+<div class="row-fluid">
+<div class="span12">
+<form action="/proofread/stage2-ebookers-correction?submenuId={$submenuId}&articleId={$articledetails[0].id}" method="post" id="s2correction" name="s2correction" enctype="multipart/form-data">
+{*<table id="s2crtgrid" class="table table-bordered table-striped table_vam">
+    <thead>
+    <tr>
+        <th>Version</th>
+        <th>Nom du fichier</th>
+        <th>Contributeur</th>
+        <th>Etape</th>
+        <th>Statut</th>
+        <th>Date</th>
+        <th>Article</th>
+        <th>Densit&eacute;</th>
+        <th>plagiat interne</th>
+        <th>plagiat externe</th>
+        {if $articledetails[0].clientId == '120218054512919'}
+        <th>Rapport d'erreurs du r&eacute;dacteur</th>
+        {/if}
+        <th>{if $articledetails[0].signtype == 'words'}Mots
+            {elseif $articledetails[0].signtype == 'chars'}Caractères
+            {elseif $articledetails[0].signtype == 'sheets'}sheets {/if}
+        </th>
+        <th>Black List</th>
+    </tr>
+    </thead>
+    <tbody>
+    {foreach from=$versions_details key=versions_key item=versions_item name=versions_loop}
+    <tr>
+        <td>{$versions_item.version}</td>
+        <td>{$versions_item.article_name|wordwrap:10:"\n":true}</td>
+        <td>{if $versions_item.first_name eq ''}{$versions_item.email}{else}{$versions_item.first_name}{/if}</td>
+        <td>{if $versions_item.stage eq 's0'}stage 0{elseif $versions_item.stage eq 's1'}stage 1{elseif $versions_item.stage eq 's2'}stage 2{else}Contributor{/if}</td>
+        <td>{if $versions_item.status eq ''}new {elseif $versions_item.status eq 'process'}revised {else}{$versions_item.status} {/if} </td>
+        <td>{$versions_item.article_sent_at|date_format:"%d/%m/%Y %H:%M"}</td>
+        <td><a href="/BO/download_article.php?artprocId={$versions_item.id}">Download</a></td>
+        <td><a href=""  data-target="#density" data-toggle="modal" onclick="return getDensity('{$versions_item.id}');">Density</a></td>
+        <td><a data-target="#plagiarism" data-toggle="modal" href="/proofread/contentplagiarism?artprocessId={$versions_item.id}" class="label label-success">Internal</a>
+
+        </td>
+
+        <td><!--<a href="javascript:void(0);" >External</a>-->
+            {if $versions_item.plag_percent neq ''}
+            {if $versions_item.plag_percent gt 20}
+            <a data-target="#plagexternalresults" data-toggle="modal" href="/correction/plagdetails?part_id={$versions_item.participate_id}&art_id={$articledetails[0].id}&version={$versions_item.version}" class="label label-important" > {$versions_item.plag_percent|string_format:"%d"} %</a>
+            {else}
+            <a data-target="#plagexternalresults" data-toggle="modal" href="/correction/plagdetails?part_id={$versions_item.participate_id}&art_id={$articledetails[0].id}&version={$versions_item.version}" class="label label-success" > {$versions_item.plag_percent|string_format:"%d"} %</a>
+            {/if}
+            {else}
+            <span class="label label-inverse">N/A</span>
+            {/if}
+        </td>
+        {if $articledetails[0].clientId == '120218054512919'}
+        <td>{if $versions_item.whitelist_newkeywords neq ''}
+            <a data-hint="download hotels BLWL check results" href="/proofread/downloadfile?submenuId={$submenuId}&hotelsblwlpath={$versions_item.id}"><i class="splashy-download"></i></a>
+            {else}
+             N/A
+            {/if}</td>
+        {/if}
+        <td>{if $versions_item.article_words_count > $articledetails[0].num_max ||  $versions_item.article_words_count < $articledetails[0].num_min}
+            <span class="label label-important">{$versions_item.article_words_count} </span>
+            {else}
+            <span class="label label-success">{$versions_item.article_words_count}</span>
+            {/if}
+        </td>
+        <td><div id="text-toggle-button{$smarty.foreach.versions_loop.index}" class="toggle-button">
+                <input name="blackstatus{$smarty.foreach.versions_loop.index}" id="blackstatus{$smarty.foreach.versions_loop.index}" type="checkbox" value="{$versions_item.user_id}" {if $versions_item.blackstatus=='yes'} checked="checked" {/if} >
+            </div></td>
+    </tr>
+    {/foreach}
+    </tbody>
+</table> *}
+    <input type="hidden" name="reasonslist" id="reasonslist"  value="{$reasonslist}"/>
+
+    {foreach from=$versions_details key=versions_key item=versions_item name=versions_loop}
+        {assign var='article_doc_content' value=$versions_item.article_doc_content}
+    {/foreach}
+    <table class="table" id="stencil_table">
+        {foreach from=$article_doc_content key=content_key item=content_item name=content_loop}
+        <tr>
+            <td class="span2 stencil-num">{$content_key+1}</td>
+            <td class="span10">
+                <div class="span11">
+                    <textarea  class="span12" name="stencil_text[]" id="stencil_text" rows="3" >{$content_item}</textarea>
+                    </div>
+                <div class="span1 topset1"></div>
+            </td>
+        </tr>
+        {/foreach}
+    </table>
+
+    {*<!--{literal}
+        <script>
+            var art = '{/literal}{$article_doc_content}{literal}';
+            var article_doc_content = art.split('###$$$###');
+            var data = '';
+            for(i=0;i<article_doc_content.length;i++){
+                data += '<tr">' +
+                '<td class="span2 stencil-num">'+(i+1)+'</td>' +
+                '<td class="span10">' +
+                '<div class="span11">' +
+                '<textarea  class="span12" name="stencil_text[]" id="stencil_text" rows="3" >'+article_doc_content[i]+'</textarea>' +
+                '</div>' +
+                '<div class="span1 topset1"></div>' +
+                '</td>' +
+                '</tr>';
+            }
+            $("#stencil_table").append(data);
+        </script>
+    {/literal}-->*}
+
+
+    {if $articledetails[0].correction eq 'no'}
+<div class="alignright" class="span6">
+<!--    <button type="button" name="s2art_approve_{$partId}" id="s2art_approve_{$partId}" class="btn btn-success"  onclick="return getComment('regural', null, '{$partId}'); showUploadFile('open');">Valider</button>-->
+    {if $refused_count.refused_count < 3}
+    <button type="button" id="s2art_disapprove" name="s2art_disapprove" class="btn btn-danger"  onclick="return writeS2Comments('{$partId}');">Refuser</button>
+    {/if}
+    <button type="button" id="s2art_disapprove_permanent" name="s2art_disapprove_permanent" class="btn btn-danger"  onclick="return writeS2CommentsPermanent('{$partId}');">Refuser Definitivement</button>
+    <input type="hidden" name="participateId" id="participateId" value="{$partId}"  />
+    <input id="participateType" name="participateType" type="hidden" value="normalParticipation" />
+</div>
+{else}
+<div class="alignright" class="span6">
+    <button type="button" name="s2art_approve_{$crtpartId}" id="s2art_approve_{$crtpartId}" class="btn btn-success"  onclick="return getComment('correction', '{$crtpartId}', '{$partId}'); showUploadFile('open');">Valider</button>
+    <button type="button" id="s2crtart_disapprove" name="s2crtart_disapprove" class="btn btn-danger"  onclick="return getCorrectorRefuseComment('{$crtpartId}', '{$partId}', 'temporary');">Refus resoumission au correcteur</button>
+    <!--<button type="button" id="s2crtart_disapprove_permanent" name="s2crtart_disapprove_permanent" class="btn btn-danger"  onclick="return getCorrectorRefuseComment('{$crtpartId}', '{$partId}', 'permanent');">Refus d&eacute;finitif au correcteur</button>-->
+    <button type="button" id="s2crtart_disapprove_permanent" name="s2crtart_disapprove_permanent" class="btn btn-danger"  data-toggle="modal" data-target="#republish" href="/correction/republishcorrectorpopup?close=yes&stage=2&artId={$smarty.get.articleId}">Refus d&eacute;finitif au correcteur</button>
+    <input type="hidden" name="participateId" id="participateId" value="{$partId}"  />
+    <input type="hidden" name="crtparticipateId" id="crtparticipateId" value="{$crtpartId}"  />
+    <input id="participateType" name="participateType" type="hidden" value="correctorParticipation" />
+</div>
+{/if}
+<!--///vlidate button is clicked this box arrives//////////-->
+<div id="alert"  style="height: auto;position:relative;top:20px;display: none;">
+    <div class="span12">
+        <h3 id="validCorrector">Validation de l'article et de sa correction</h3>
+        <div class="ui-sortable"  id="optionsdiv">
+            <div class="w-box-header">Notes du r&eacute;dacteur {$versions_contributor_details[0].first_name} {$versions_contributor_details[0].last_name}{if $articledetails[0].correction neq 'no'} (Notes donn&eacute;es par le correcteur {$versions_user_details[0].first_name} {$versions_user_details[0].last_name}){/if}</div>
+            <div class="w-box-content cnt_a" >
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <div><b>Note donn&eacute;e pour chaque crit&eacute;re :</b></div>
+                        {foreach from=$s1reasons key=reasons_key item=reasons_item name=reasons_loop}
+                        <div class="span11 form-inline"><span class="span6 pull-left"><h6>{if $reasons_item neq 'N'}{$reasons_item}{else}Note globale{/if}</h6></span>
+                            <div class="span7 starmarks" id="star{$smarty.foreach.reasons_loop.index+1}" ></div>
+                            <input type="hidden" id="reasonId{$smarty.foreach.reasons_loop.index+1}" value="{$reasons_key}" />
+                            <span class="badge"><span class="precision" id="precision-target{$smarty.foreach.reasons_loop.index+1}" ></span>/5</span>
+                        </div>
+                        {/foreach}
+                    </div>
+                    <div class="span2"> <div><b>Note globale :</b></div><label style="font-size:25px;" class="alert alert-info span8"><span id='givenmarks'>{$s1markscount}</span><span id='totalmarks'>/10<!--{$rreasonscount}--></span></label></div>
+                    <div class="span5 form-inline">
+                        <div><b>Commentaire global :</b></div>
+                        <textarea cols="30" rows="6" id="marks_comments" name="marks_comments" class="span12" {if $versionfromCorrector eq 'true'}readonly{/if}>{$versions_user_details[0].comments}</textarea>
+                    </div>
+                    <input type="hidden" id="markstotal" name="markstotal" value="{$avgs1marks}" />
+                    <input type="hidden" id="markswithreason" name="markswithreason" value="{$previousdetails}" />
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--<div class="span11 pull-right">
+        <div class="span9 ui-sortable"  id="optionsdiv">
+            <div class="w-box-header">Marks and Comments</div>
+            <div class="w-box-content cnt_a" >
+                <div class="row-fluid">
+                    <div class="span11 form-inline">
+                        <label class="span2">Marks </label>
+                        <select name="marks" id="marks" class="span12">
+                            <option value="0">select marks</option>
+                            {section name=val start=1 loop=11 step=1}
+                            <option value="{$smarty.section.val.index}">{$smarty.section.val.index}</option>
+                            {/section}
+                        </select>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span11 form-inline">
+                        <label class="span2">Comments </label>
+                        <textarea cols="20" rows="4" id="marks_comments" name="marks_comments" class="span8"></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>-->
+    <div class="span12" style="margin-left:0px">
+        <!--<div class="span6 ui-sortable"  id="optionsdiv">
+            <div class="w-box-header">Options choisies par le client</div>
+            <div class="w-box-content cnt_a" >
+                <ul class="unstyled">
+
+                    {foreach from=$options key=options_key item=options_item name=options_loop}
+                    {if $options_item.id|in_array:$res_seltdopts}
+                    <li>
+                        <label class="uni-checkbox">
+                            <span><input type="checkbox" name="option_{$options_item.id}" id="option_{$options_item.id}" {$options_item.id} class="uni_style" /> </span>
+                            <span class="pop_over" data-placement="right" data-original-title="Option Details" data-html="true" data-content="{$options_item.description|escape:'htmlall'}">{$options_item.option_name|escape:'htmlall'}</span>
+                        </label>
+                    </li>
+                    {/if}
+                    {/foreach}
+                    <input type="hidden" name="hid_options" id="hid_options" value={if $res_seltdopts|@count neq 0}{$res_seltdopts|@count}{else}{0}{/if} />
+                </ul>
+            </div>
+        </div>-->
+
+        <div class="span5 ui-sortable" id="checksdiv" style="padding-top:5px;">
+            <div class="w-box-header">Check List</div>
+            <div class="w-box-content cnt_a" >
+                <label class="uni-checkbox">
+                    <span> <input type="checkbox" name="scheck" id="scheck" class="uni_style" /></span>
+                    <span class="hint--top hint--error " data-hint="checking for specllings of content">Check Antidote</span>
+                </label>
+                <!--<label class="uni-checkbox">
+                    <span><input type="checkbox" name="gcheck" id="gcheck" class="uni_style" /></span>
+                    <span class="hint--top hint--error" data-hint="checking for grammer of content">Check plagiat</span>
+                </label>-->
+                <label class="uni-checkbox">
+                    <span><input type="checkbox" name="ccheck" id="ccheck" class="uni_style" /></span>
+                    <span class="hint--top hint--error" data-hint="checking for unfavourable data of content">Relecture du contenu</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    {if $articledetails[0].correction eq 'no'}
+    <div id="mailcontent" class="span11 pull-left" style="position: relative; top: 20px;margin-left:0px">
+        <div class="pull-left num-large" style="position: relative; top: 5px;">uploader votre article : &nbsp; </div>&nbsp;
+        <div id="uniform-uni_file" class="uni-uploader">
+            <input id="art_doc_{$partId}" class="uni_style" type="file" name="art_doc_{$partId}" size="19">
+            <span class="uni-filename" >No file selected</span>
+            <span class="uni-action" >Choose File</span>
+        </div>&nbsp;&nbsp;
+        <input type="hidden" value="yes" name="s2art_approve" id="s2art_approve"/>
+        <button type="button" class="btn btn-success" name="s2art_approve"  onclick="return checkServices('{$partId}');" >Valider</button>
+        &nbsp;&nbsp;<a onclick="return showUploadFile('close');" class="btn"><i class="splashy-error_small"></i> ANNULER</a>
+        <div class="span11" style="margin-left:0px"><textarea  name="commentsValidate_{$partId}" id="commentsValidate_{$partId}" class="textarea" rows="10"></textarea></div>
+    </div>
+    {else}
+    <div id="correctorvalidmailcontent" class="span11 pull-left" style="position: relative; top: 20px;margin-left:0px">
+        <div class="pull-left num-large" style="position: relative; top: 5px;">uploader votre article : &nbsp; </div>&nbsp;
+        <div id="uniform-uni_file" class="uni-uploader">
+            <input id="art_doc_{$crtpartId}" class="uni_style" type="file" name="art_doc_{$crtpartId}" size="19">
+            <span class="uni-filename" >No file selected</span>
+            <span class="uni-action" >Choose File</span>
+        </div>&nbsp;&nbsp;
+        <input type="hidden" value="yes" name="s2art_approve" id="s2art_approve" />
+        <button type="button" class="btn btn-success" name="s2art_approve"  onclick="return checkServices('{$partId}');" >Valider</button>
+        &nbsp;&nbsp;<a onclick="return showUploadFile('close');" class="btn"><i class="splashy-error_small"></i> ANNULER</a>
+        <div class="span11" style="margin-left:0px"><textarea  name="commentsCrtValidate_{$crtpartId}" id="commentsCrtValidate_{$crtpartId}" class="textarea" rows="10"></textarea></div>
+    </div>
+    <!-- //////////////////////for corrector refussal ///////////////////-->
+    <h3 id="refuseCorrector" class="hide">Refus / Resoumission de l'article au correcteur</h3>
+    <div class="span11" >
+        <div class="ui-sortable span"  id="correctorrefusemailcontent">
+            <div class="w-box-header span12"><p style="padding-left:10px">Email qui sera envoy&eacute; au correcteur</p></div>
+            <div class="w-box-content cnt_a span12" >
+                <div  class="span11" style="margin-left:10px">
+                    <!--<textarea rows="40" cols="60" name="commentsCrtRefuse_{$crtpartId}" id="commentsCrtRefuse_{$crtpartId}"></textarea>-->
+                    <input name="commentsCrtRefuseObject" id="commentsCrtRefuseObject" type="hidden"/>
+                    <textarea rows="40" cols="60" name="commentsCrtRefuse" id="commentsCrtRefuse"></textarea>
+                    <button  type="submit" class="btn btn-warning hide pull-right" value="Correcteur Refuser" name="s2art_corrector_disapprove"  id="s2art_corrector_disapprove" >Refuser la d&eacute;cision du correcteur  </button>
+                    <!--                <button  type="button" class="btn btn-warning hide" value="Correcteur Refuser Definit" name="s2art_corrector_permdisapprove"  id="s2art_corrector_permdisapprove" onclick="return sendToFo('{$smarty.get.articleId}'); refuseAlert();"> Correcteur Refuser Definit</button>
+                    -->             <button  type="button" class="btn btn-warning hide" value="Correcteur Refuser Definit" name="s2art_corrector_permdisapprove"  id="s2art_corrector_permdisapprove" data-toggle="modal" data-target="#republish" href="/correction/republishcorrectorpopup?close=yes&stage=2&artId={$smarty.get.articleId}"> Correcteur Refuser Definit</button>
+                    <input type="hidden" id="crtsendtofo" name="sendtofo" value="">
+                    <input type="hidden" id="nocrtclose" name="nocrtclose" value="">
+                    <input type="hidden" id="s2art_corrector_permdisapprove" name="s2art_corrector_permdisapprove" value="">
+                    <input type="hidden" id="anouncebyemail2" name="anouncebyemail" value="">
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+
+</div>
+
+</form>
+</div>
+</div>
+
+<!--  //////////extended page///////////-->
+{assign var="head1" value="Cher r&eacute;dacteur,\n\n"}
+<!--{assign var="footpermanent" value="L'équipe d'Edit Place.com vous remercie d'avoir fait confiance à ses services. Malheureusement, la nouvelle version de cet article ne s'est toujours pas révélée satisfaisante.
+\n L'article est remis en appel d'offres. La présente production ne vous sera donc pas rémunérée \n
+L'équipe d'Edit Place.com vous remercie d'avoir fait confiance à ses services.\n"}-->
+{assign var="footpermanent" value="Malheureusement cette verdion n'est toujours pas satisfaisante et nous n'avons plus le temps de te demander des modifications !
+Tu comprendras que nous ne pouvons pas te rémunérer pour cette production. Ne fais pas la tête, ça arrive à tout le monde de faire des erreurs. A bientôt sur Edit-place. \n"}
+
+{assign var="sign" value="Toute l'&eacute;quipe d'Edit-place"}
+
+<!--<div id="pop-s2comments" class="box_c" style="position:relative;top: 10px;">-->
+
+
+
+
+<div id="pop-s2comments" class="ui-sortable" style="display:none;padding:5px;">
+    {if $articledetails[0].correction eq 'no'}
+    <h3 class="span5 pull-left hide" id="refusetitle">Refus / Resoumission de l'article au r&eacute;dacteur</h3>
+    <h3 class="span5 pull-left hide" id="closetitle">Refus d&eacute;finitif de l'article du r&eacute;dacteur</h3>
+    {else}
+    <h3 class="span5 pull-left hide" id="refusetitle">Refus / Resoumission de l'article au correcteur</h3>
+    <h3 class="span5 pull-left hide" id="closetitle">Refus d&eacute;finitif de l'article du correcteur</h3>
+    {/if}
+    <form name="disapprove2form" action="/proofread/disapprove?submenuId={$submenuId}" method="post" id="disapprove2form"  >
+        <div class="span12" id="refusemarksdiv">
+            <div class="ui-sortable"  id="optionsdiv1">
+                <div class="w-box-header">Notes du r&eacute;dacteur</div>
+                <div class="w-box-content cnt_a" >
+                    <div class="row-fluid">
+                        <div class="span5 form-inline">
+                            <div><b>Note donn&eacute;e pour chaque crit&eacute;re :</b></div>
+                            {foreach from=$s1reasons key=reasons_key item=reasons_item name=reasons_loop}
+                            <div class="span9 form-inline"><span class="span6 pull-left"><h6>{if $reasons_item neq 'N'}{$reasons_item}{else}Note globale{/if}</h6></span>
+                                <div class="span7 disstarmarks" id="disstar{$smarty.foreach.reasons_loop.index+1}" ></div>
+                                <input type="hidden" id="reasonId{$smarty.foreach.reasons_loop.index+1}" value="{$reasons_key}" />
+                                <span class="badge"><span class="precision" id="disprecision-target{$smarty.foreach.reasons_loop.index+1}" ></span>/5</span>
+                            </div>
+                            {/foreach}
+                        </div>
+                        <div class="span2"> <div><b>Note globale :</b></div><label style="font-size:25px;" class="alert alert-info span8"><span id='disgivenmarks'>{$s1markscount}</span><span id='distotalmarks'>/10<!--{$rreasonscount}--></span></label></div>
+                        <div class="span5 form-inline">
+                            <div><b>Commentaire global :</b></div>
+                            <textarea cols="20" rows="6" id="dismarks_comments" name="dismarks_comments" class="span8">{$versions_user_details[0].comments}</textarea>
+                        </div>
+                        <input type="hidden" id="dismarkstotal" name="dismarkstotal" value="{$avgs1marks}" />
+                        <input type="hidden" id="dismarkswithreason" name="dismarkswithreason" value="{$previousdetails}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-box-header span12"><p style="padding-left:10px">Email &egrave; envoyer au r&eacute;dacteur</p> </div>
+        <div class="w-box-content cnt_a span12 " >
+            <div class="span5" style="margin-left:10px">Cocher les raisons du refus pour compl&eacute;ter automatiquement l'email qui se trouve sur la droite :</br>
+                {foreach from=$refusevalidtemps key=refusevalidtemps_key item=refusevalidtemps_item name=refusevalidtemps_loop}
+                <label class="uni-checkbox span11"  style="margin-left:0px;padding-top:5px;">
+                    <span><input name="chktemp_{$refusevalidtemps_item.identifier}" id="chktemp_{$refusevalidtemps_item.identifier}" type="checkbox" value="{$refusevalidtemps_item.identifier}" onclick="return getRefuseTemp('{$refusevalidtemps_item.identifier}');" class="uni_style" {if in_array($refusevalidtemps_item.identifier,$selectedrefusalreasons)} checked='checked' {/if} /></span>
+                    <label for="chktemp_{$refusevalidtemps_item.identifier}" style="cursor: pointer;">{$refusevalidtemps_item.title|stripslashes}</label>
+                </label>
+                {/foreach}
+
+            </div>
+            <div class="span5" >
+                <div class="span6" ><textarea rows="3" cols="80" id="content_head" name="content_head" style="text-transform:none;width:96%">{$head1}{$head}</textarea> </div>
+                <div class="span6" ><textarea rows="8" cols="62" id="comment_s2" name="comment_s2" style="text-transform:none;">{$refualreasonContent}</textarea></div>
+                <div class="span6" ><textarea rows="5" cols="80" id="content_footer" name="content_footer" style="text-transform:none;width:96%;margin-top:10px">
+                        Cordialement,
+
+                        {$sign|utf8_decode}</textarea> </div>
+
+                <div class="span6" ><textarea rows="8" cols="90" id="content_footerPermanent" name="content_footerPermanent" style="text-transform:none;width:96%;margin-top:10px">{$footpermanent|utf8_decode}
+                    </textarea> </div>
+
+                <div class="boxcol1 closepop" style="float:right">
+                    <!--<input type="hidden" value="yes" name="pop_disapproves2"/>
+                    <input type="hidden" value="yes" name="pop_disapproves2_permanent"/>-->
+                    <button type="submit" id="pop_disapproves2" name="pop_disapproves2" class="btn btn-danger" >Refuser</button>
+                    <!--&nbsp;<button type="button" id="pop_disapproves2_permanent" name="pop_disapproves2_permanent"  data-toggle="modal" data-target="#republish" href="/processao/republishpopup?close=no&stage=2&artId={$smarty.get.articleId}" class="btn btn-danger">Refuser Definite</button>-->
+                    &nbsp;<button type="button" id="pop_disapproves2_permanent" name="pop_disapproves2_permanent"  onclick="return validateRefuse('{$smarty.get.articleId}');" class="btn btn-danger">Refuser Definite</button>
+                    &nbsp;<button type="button" id="close_pop" name="close_pop" onclick="closeDisapproveBlock();" class="btn btn-info">Fermer</button> </div>
+                <input type="hidden" id="sendtofo" name="sendtofo" value="">
+                <input type="hidden" id="anouncebyemail" name="anouncebyemail" value="">
+                <!--<input type="hidden" id="pop_disapproves2_permanent_jq" name="pop_disapproves2_permanent" value="yes">-->
+                <div id="buttonids"></div>
+            </div>
+            <input type="hidden" name="pop_partId" id="pop_partId"  />
+            <input type="hidden" id="art_id" name="art_id" value="{php} echo $_GET['articleId'];{/php}">
+            <input type="hidden" id="hide_total2" name="hide_total2" value="" />
+        </div>
+    </form>
+</div> <input type="hidden" id="article_id" name="article_id" value="">
+<!--///show the density details ///-->
+<div class="modal4 hide fade" id="density">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('density');">&times;</button>
+        <h3>Density Details</h3>
+    </div>
+    <div class="modal-body" id="density_body">
+    </div>
+    <div class="modal-footer">
+
+    </div>
+</div>
+<!--///show the plagiarism details ///-->
+<div class="modal4 hide fade" id="plagiarism">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('plagiarism');">&times;</button>
+        <h3>Plagiarism Details</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+
+    </div>
+</div>
+
+<!--///show the plagiarism external results details ///-->
+<div class="modal4 hide fade" id="plagexternalresults">
+    <div class="modal-header">
+        <button  class="close" onclick="closePopup('plagexternalresults');">&times;</button>
+        <h3>D&eacute;tail des Plagarism</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+
+    </div>
+</div>
+<!--///when republish the popup comes for edit details and mail for republish article///-->
+<div class="modal4 hide fade" id="republish">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('republish');">&times;</button>
+        <h3>Edit details for republish</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--///when no template is select for the  refusal the ///-->
+<div class="modal4 hide fade" id="notemplate">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('notemplate');">&times;</button>
+        <h3>No options are selected and send mail to alix</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+{literal}
+<script type="text/javascript">
+
+    $(".starmarks").click(function(){
+        // var marks = [];
+        var marks = 0;
+        var marksparreason = [];
+        var total = 0;
+        $(".starmarks").each(function(i) {
+            i = i+1;
+            // marks.push($("#precision-target"+i).text());
+            var selmarks = Number($("#precision-target"+i).text());
+            marks += selmarks;
+            marksparreason.push($("#reasonId"+i).val() + "|" +selmarks);
+
+            //marksparreason = $("#reasonId"+i).val() + "|" +selmarks + "," + marksparreason;
+            total = i ;
+        });
+        var avgmarks = ((marks/total)*2);
+        $("#givenmarks").html(avgmarks);
+        $("#totalmarks").html("/"+(total*2));
+        $("#markstotal").val(avgmarks);
+        $("#markswithreason").val(marksparreason.join(','));
+    });
+    $(".disstarmarks").click(function(){
+        // var marks = [];
+        var marks = 0;
+        var marksparreason = [];
+        var total = 0;
+        $(".disstarmarks").each(function(i) {
+            i = i+1;
+            // marks.push($("#precision-target"+i).text());
+            var selmarks = Number($("#disprecision-target"+i).text());
+            marks += selmarks;
+            marksparreason.push($("#reasonId"+i).val() + "|" +selmarks);
+
+            //marksparreason = $("#reasonId"+i).val() + "|" +selmarks + "," + marksparreason;
+            total = i ;
+        });
+        var avgmarks = ((marks/total)*2);
+        $("#disgivenmarks").html(avgmarks);
+        $("#distotalmarks").html("/"+(total*2));
+        $("#dismarkstotal").val(avgmarks);
+        $("#dismarkswithreason").val(marksparreason.join(','));
+    });
+
+
+</script>
+{/literal}
+
+
+

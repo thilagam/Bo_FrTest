@@ -1,0 +1,210 @@
+{if $quoteDetails|@count gt 0}
+	{foreach from=$quoteDetails item=quote name="quote"}
+		<table>
+			<tr>
+				<td align="center" bgcolor="#272727" colspan="4"></td>
+			</tr>
+		</table>	
+		<table>
+			<tr><td></td></tr>
+		</table>	
+		<table>
+			<tr>
+				<td align="center" bgcolor="#333333" style="font-size:12px;color:#ffffff;" colspan="4"><b>Proposition {$quote.company_name}</b></td>
+			</tr>
+			<tr>
+				<td colspan="4"></td>						
+			</tr>
+		</table>
+		{if $quote.mission_details|@count gt 0}
+			{foreach from=$quote.mission_details item=mission name="misson"}							
+				{assign var=ms_index value=$smarty.foreach.misson.index+1}	
+				{if $mission.before_prod eq 'yes'}{assign var="before_prod" value="yes}{/if}					
+				<table border="1" width="100%">
+					<tr>
+						{if $mission.product eq 'smo_audit' || $mission.product eq 'seo_audit' }
+							<th bgcolor="#333333" style="font-size:12px;color:#ffffff;" colspan="4"><b>{$mission.product_name} en {$mission.language_source_name}</b> {if $mission.before_prod eq 'yes'}*{/if}</th>
+						{else}
+							<th bgcolor="#333333" style="font-size:12px;color:#ffffff;" colspan="4"><b>{$mission.product_name} de {$mission.product_type_name} de {$mission.nb_words} mots en {$mission.language_source_name} {if $mission.product eq 'translation'}- {$mission.language_dest_name}{/if}</b> {if $mission.before_prod eq 'yes'}*{/if}</th>
+						{/if}							
+					</tr>
+					
+					<tr>
+						{if $mission.product eq 'smo_audit' || $mission.product eq 'seo_audit' }
+							{assign var="missionType" value=$mission.product_name}
+							<th bgcolor="#A5A5A5"  style="width:33%;font-size:11px;color:#ffffff;">{$mission.product_name}</th>
+						{else}
+							{assign var="missionType" value=$mission.product_type_name}
+							<th bgcolor="#A5A5A5" style="width:33%;font-size:11px;color:#ffffff;">{$mission.product_type_name} - {$mission.nb_words} mots</th>
+						{/if}	
+						
+						<th bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Quantit&eacute;</th>
+						<th bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Tarif par {$missionType}</th>
+						<th bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">TOTAL HT</th>
+					</tr>
+					<tr>
+						<td>{$mission.product_name} et relecture - respect du brief</td>
+						<td>{$mission.volume}</td>
+						<td>{$mission.unit_price} &{$quote.sales_suggested_currency};</td>
+						<td>{$mission.turnover} &{$quote.sales_suggested_currency};</td>
+					</tr>
+					{if $mission.package eq 'team'}
+						<tr>
+							{if $mission.product eq 'smo_audit' || $mission.product eq 'seo_audit' }
+								{assign var="missionType" value=$mission.product_name}
+								<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px;">Staffing -{$mission.product_name}</td>
+							{else}
+								<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px;">Staffing -{$mission.product_type_name} - {$mission.nb_words} mots</td>
+								{assign var="missionType" value=$mission.product_name}
+							{/if}	
+							<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px;">Quantit&eacute;</td>
+							<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px;">Tarif par pack</td>
+							<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px;">TOTAL HT</td>
+						</tr>
+						<tr>								
+							<td>Pack de {$mission.team_packs} CVs</td>
+							<td>1</td>
+							<td>{$mission.team_fee} &{$quote.sales_suggested_currency};</td>
+							<td>{$mission.team_fee} &{$quote.sales_suggested_currency};</td>
+						</tr>
+					{/if}
+					{if $mission.package eq 'user'}
+						<tr>
+							{if $mission.product eq 'smo_audit' || $mission.product eq 'seo_audit' }
+								<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px;">{$mission.product_name}</td>
+							{else}
+								<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px;">{$mission.product_type_name} - {$mission.nb_words} mots</td>
+							{/if}
+							<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px;">Quantit&eacute;</td>	
+							<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px;">Fees offre user</td>
+							<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px;">TOTAL HT</td>
+						</tr>
+						<tr>
+							<td>Nombre de profils {$mission.required_writes}</td>
+							<td>{$mission.required_writes}</td>
+							<td>{$mission.user_fee} &{$quote.sales_suggested_currency};</td>
+							<td>{$mission.user_package_turnover} &{$quote.sales_suggested_currency};</td>
+						</tr>
+					{/if}
+					
+				</table>
+				<table>
+					<tr><td colspan="4"></td></tr>
+				</table>
+			{/foreach}			
+		{/if}	
+		{if $quote.tech_mission_details|@count gt 0}
+			{foreach from=$quote.tech_mission_details item=tmission name="tmission"}							
+				{assign var=ms_index value=$smarty.foreach.tmission.index+1}
+				<table border="1" width="100%">
+					<tr>
+						<th bgcolor="#333333" style="width:33%;color:#ffffff;font-size:12px;" colspan="4"><b>Mission technique{if $tmission.before_prod eq 'yes'} * {assign var="before_prod" value="yes}{/if}</b></th>
+					</tr>
+					
+					<tr>
+						<th bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Mission technique</th>
+						<th bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Quantit&eacute;</th>
+						<th bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Tarif mission</th>
+						<th bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">TOTAL HT</th>
+					</tr>
+					<tr>
+						<td>{$tmission.title}</td>
+						<td>{$tmission.volume}</td>								
+						<td>{$tmission.unit_price} &{$quote.sales_suggested_currency};</td>
+						<td>{$tmission.turnover} &{$quote.sales_suggested_currency};</td>
+					</tr>
+					{if $tmission.package eq 'team'}
+						<tr>
+							<td bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Mission technique</td>	
+							<td bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Quantit&eacute;</td>
+							<td bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Tarif par pack</td>
+							<td bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">TOTAL HT</td></td>
+						</tr>
+						<tr>
+							<td>Pack de {$tmission.team_packs} CVs</td>
+							<td>1</td>
+							<td>{$tmission.team_fee} &{$quote.sales_suggested_currency};</td>
+							<td>{$tmission.team_fee} &{$quote.sales_suggested_currency};</td>									
+						</tr>
+					{/if}
+					{if $tmission.package eq 'user'}
+						<tr>
+							<td bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Mission technique</b></td>
+							<td bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Quantit&eacute;</td>
+							<td bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">Fees offre user</b></td>
+							<td bgcolor="#A5A5A5" style="font-size:11px;color:#ffffff;">TOTAL HT</b></td>
+						</tr>
+						<tr>
+							<td>Nombre de profils {$tmission.required_writes}</td>
+							<td>{$tmission.required_writes}</td>
+							<td>{$tmission.user_fee} &{$quote.sales_suggested_currency};</td>
+							<td>{$tmission.user_package_turnover} &{$quote.sales_suggested_currency};</td>
+						</tr>
+					{/if}
+					
+				</table>
+				<table>
+					<tr><td colspan="4"></td></tr>
+				</table>						
+			{/foreach}					
+		{/if}	
+		{if $before_prod eq 'yes'}
+			<table>
+				<tr>
+					<td colspan="4">*Cette mission doit &ecirc;tre termin&eacute;e  pour pouvoir  lancer la production</td>
+				</tr>
+			</table>
+		{/if}					
+		<table>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td bgcolor="#A5A5A5" style="color:#ffffff;font-size:11px">TOTAL HT</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>{$quote.final_turnover} &{$quote.sales_suggested_currency};</td>
+			</tr>
+			<tr><td colspan="4"></td></tr>
+			<tr><td colspan="4"></td></tr>
+		</table>
+		<table>
+			<tr>
+				<td align="center" bgcolor="#A5A5A5" style="color:#ffffff;font-size:14px" colspan="4">Commentaires</td>
+			</tr>
+			<tr><td colspan="4"></td></tr>
+			<tr><td colspan="4"></td></tr>
+		</table>				
+		<table>
+			<tr><td colspan="4"></td></tr>
+			<tr>
+				<td colspan="2">&nbsp;</td>
+				<td><b>D&eacute;lai de mise en place</b></td>
+				<td>{$quote.total_staff_setup_time} {if $quote.final_mission_length_option eq 'days'} Jours {elseif $quote.final_mission_length_option eq 'hours'} Hours{/if}</td>
+			</tr>
+			<tr>
+				<td colspan="2">&nbsp;</td>
+				<td><b>D&eacute;lai de livraison</b></td>
+				<td>{$quote.total_delivery_time}{if $quote.final_mission_length_option eq 'days'} Jours {elseif $quote.final_mission_length_option eq 'hours'} Hours{/if}</td>
+			</tr>					
+		</table>
+		{if $quote.email eq 'mgaude@edit-place.com' || $quote.email eq 'cleguille@edit-place.com'}
+		<table>
+				<tr><td colspan="4"></td></tr>
+				{if $quote.email eq 'mgaude@edit-place.com'}
+					<tr><td colspan="4" align="center" style="font-size:10px;">Pour toutes questions sur ce devis, merci de contacter Maxime Gaud&eacute; - Business Developper - mgaude@edit-place.com - 01.85.08.40.17</td></tr>
+				{else if $quote.email eq 'cleguille@edit-place.com'}
+					<tr><td colspan="4" align="center" style="font-size:10px;">Pour toutes questions sur ce devis, merci de contacter Coralie Leguille - Directrice commerciale France - cleguille@edit-place.com - 01.85.08.40.11</td></tr>
+				{/if}	
+				<tr><td colspan="4"></td></tr>
+		</table>
+		{/if}
+		<table>
+				<tr><td colspan="4"></td></tr>
+				<tr><td colspan="4" align="center" style="font-size:10px;">EDIT-PLACE.COM &ndash; 16 rue Jesse Owens &ndash; 93200 LA PLAINE ST DENIS &ndash;    T&eacute;l. +33 1 85 08 40 13 &ndash; S.A.R.L AU CAPITAL DE 31 891,20&euro; &ndash; RCS BOBIGNY 521    287 193 &ndash; N&deg;INTRACOMMUNAUTAIRE : FR 43521287193</td></tr>						
+		</table>
+	{/foreach}
+{/if}

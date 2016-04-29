@@ -1,0 +1,66 @@
+<link href="/BO/theme/lbd/css/style.css" rel="stylesheet" />
+
+<script src="/BO/theme/lbd/js/Chart.js"></script>
+<script src="/BO/theme/lbd/js/portfolio-scripts.js"></script>
+
+<!-- **********************
+         STAR NEW CODE
+     ********************** -->
+
+
+<div id="searchPortfolio">
+    <h1>Portfolio wizard</h1>
+    <form action="/portfolio/search-portfolio" method="POST" >
+        <span>I want</span>
+        <select multiple data-title="all" class="selectpicker portfolioHPSelect" name="langauge[]" >
+            {html_options  id=language options=$language_array selected=$language }
+        </select>
+        <select multiple data-title="contributors" class="selectpicker portfolioHPSelect" name="type[]" id="type" onchange="admSelectCheck();">
+            <option value="writer">writer</option>
+            <option value="translator" class="admOption">translator</option>
+            <option value="corrector">corrector</option>
+            <option value="corrector-translator"  class="admOption">corrector-translator</option>
+        </select>
+        <span>with</span>
+        <select multiple data-title="any" class="selectpicker portfolioHPSelect" name="status[]" >
+            <option value="junior">junior</option>
+            <option value="senior">senior</option>
+        </select>
+        <span>status</span>
+        <span class="dest_lang hide">speaking</span>
+
+        <select multiple data-title="all" class="selectpicker portfolioHPSelect dest_lang hide" name="language_more[]" >
+            {html_options  id=language options=$language_array selected=$language }
+        </select>
+
+        <div>
+            <button class="btn btn-fill btn-group btn-lg btn-primary portfolioHPSubmit" type="submit">Find portfolio</button>
+        </div>
+    </form>
+
+</div> <!-- searchPortfolio -->
+
+{literal}
+<script type="text/javascript">
+    if($(".selectpicker").length != 0){
+        $(".selectpicker").selectpicker();
+    }
+    function admSelectCheck(){
+        var selected_text = $("#type option:selected").text();
+        console.log(selected_text.search(/translator/i));
+        if(selected_text.search(/translator/i) >= 0 || selected_text.search(/Translator/i) >= 0){
+            $(".dest_lang").removeClass('hide');
+        }
+        else{
+            $(".dest_lang").addClass('hide');
+          }
+    }
+</script>
+{/literal}
+
+
+<!-- **********************
+         END NEW CODE
+     ********************** -->
+
+

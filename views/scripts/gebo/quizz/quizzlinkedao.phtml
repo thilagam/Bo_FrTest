@@ -1,0 +1,66 @@
+{if $AOarray|@count gt 0}
+
+<h3>Linked AOs</h3>
+<table class="table table-bordered table-striped table_vam">
+	<thead>
+		<tr>
+			<th>SI</th>
+			<th>Title</th>
+			<th>Type</th>
+			<th>Create at</th>
+			<th>Participants</th>
+		</tr>
+	</thead>
+	<tbody>
+		{foreach from=$AOarray item=ao_item name=ao_loop}
+			<tr class="success">
+				<td>{$smarty.foreach.ao_loop.index+1}</td>
+				<td>{$ao_item.title|utf8_encode}</td>
+				<td>{$ao_item.type|ucfirst}</td>
+				<td>{$ao_item.created_at|date_format:"%d/%m/%Y %H:%M:%S"}</td>
+				<td>
+					{if $ao_item.participants>0}
+						<a href="/quizz/listparticipants?submenuId=ML2-SL22&id={$ao_item.quizz}&ao={$ao_item.id}" target="_blank">{$ao_item.participants}</a>
+					{else}
+						{$ao_item.participants}
+					{/if}
+				</td>
+			</tr>
+		{/foreach}
+	</tbody>
+</table>	
+{/if}
+
+
+{if $RecruitArray|@count gt 0}
+
+<h3>Linked Recruitments</h3>
+<table class="table table-bordered table-striped table_vam">
+	<thead>
+		<tr>
+			<th>SI</th>
+			<th>Title</th>
+			<th>Type</th>
+			<th>Create at</th>
+			<th>Participants</th>
+		</tr>
+	</thead>
+	<tbody>
+		{foreach from=$RecruitArray item=recruit_item name=recruit_loop}
+			<tr class="warning">
+				<td>{$smarty.foreach.recruit_loop.index+1}</td>
+				<td>{$recruit_item.title|utf8_encode}</td>
+				<td>{$recruit_item.type|ucfirst}</td>
+				<td>{$recruit_item.created_at|date_format:"%d/%m/%Y %H:%M:%S"}</td>
+				<td>
+					{if $recruit_item.participants>0}
+						<a href="/quizz/listparticipants?submenuId=ML2-SL22&id={$recruit_item.quizz}&ao={$recruit_item.id}" target="_blank">{$recruit_item.participants}</a>
+					{else}
+						{$recruit_item.participants}
+					{/if}
+				</td>
+			</tr>
+		{/foreach}
+	</tbody>
+</table>	
+{/if}

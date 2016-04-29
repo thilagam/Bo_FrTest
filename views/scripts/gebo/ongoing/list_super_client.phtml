@@ -1,0 +1,134 @@
+{literal}
+<script type="text/javascript" >
+
+    $(document).ready(function() {
+	//onload getting deliveries linked to client
+			var client_id=$("#clients").val();
+			fnloaddeliveries(client_id,'');
+	
+       if($('#ongoing_list').length) {
+                $('#ongoing_list').dataTable({
+                    "sPaginationType": "bootstrap",
+					"iDisplayLength" : 25,
+                     "sDom": "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+					"aoColumns": [
+						{ "sType": "formatted-num" },
+						{ "sType": "string" },
+						{ "sType": "string" },						
+						{ "sType": "string" },						
+						{ "sType": "string" },						
+						{ "sType": "string" }
+					],
+					"aaSorting": [[ 0, "asc" ]],
+                    "oTableTools": {
+                        "aButtons": [
+                            "copy",
+                            "print",
+                            {
+                                "sExtends":    "collection",
+                                "sButtonText": 'Sauvegarder <span class="caret" />',
+                                "aButtons":    [ "csv", "xls", "pdf" ]
+                            }
+                        ],
+                        "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                    }
+                });
+            }
+    });
+	
+	function connect_sc_FO(user)
+    {
+        document.forms["user_login_form_"+user].action="http://mmm-new.edit-place.com/index/usersclogin";
+        document.forms["user_login_form_"+user].submit();
+    }
+	
+	function deleteReference(reffid)
+	{
+		if(confirm("Do you really want to delete this DeliveryReference ?"))
+		{
+			$.ajax({
+			type : 'post', 
+			url : '/ongoing/deleterefernce', 
+			data :  'ref='+reffid, 
+			   
+			success : function(response)
+		   {
+				smoke.alert("Deleted successfully !!"); 	
+				window.location.reload();
+		   }
+		});
+		}
+		else
+			return false;
+	}
+	
+	function connect_chiefOdigeo_FO(user,email,pass)
+	{
+		window.open('http://mmm-new.edit-place.com/index/userchieflogin?login_name='+email+'&login_password='+pass); 
+	}
+	
+</script>
+{/literal}
+
+<!--Bread Crumbs-->
+<!--<nav>
+	<div id="jCrumbs" class="breadCrumb module">
+		<ul>
+			<li>
+				<a href="/index"><i class="icon-home"></i></a>
+			</li>
+			<li>
+				<a>Ongoing AO</a>
+			</li>			
+		</ul>
+	</div>
+</nav>--> 
+  
+<div class="row-fluid">
+  <div class="span12">
+    <h3 class="heading">Suivi des livraisons
+		<div style="display:inline;float:right"><a class="btn btn-gebo1" href="/user/superclientcreate-step1?submenuId=ML9-SL1">Cr&eacute;er un suivi de livraison</a></div>
+	</h3>
+
+       
+	<table class="table table-striped table-bordered dTableR" id="ongoing_list">
+		<thead>
+			<tr>
+				<th>S.No.</th>
+				<th>Nom de la livraison</th>
+				<th>Clients li&eacute;s &agrave; cette livraison</th>				
+				<th>Date de création</th>				
+				<th>BO Contacts</th>				
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+	{if $ongoingAO |@count gt 0}
+		{foreach item=delivery from=$ongoingAO name="aoDetails"} 
+			<tr>
+			  <td>{$smarty.foreach.aoDetails.index+1}</td> 
+			  <td><a href="/ongoing/super-client-ao-details?ref_id={$delivery.id}&submenuId={$smarty.get.submenuId}">{$delivery.title}</td>
+			  <td>{$delivery.clients}</td>		   	
+			  <td>{$delivery.created_at|date_format:"%d/%m/%Y %H:%M"}</td>		   	
+			  <td>
+					{foreach from=$delivery.contacts item=contact}
+						{$contact.first_name} {$contact.last_name} <a href="javascript:void(0);" onclick="connect_chiefOdigeo_FO('{$contact.bo_user}','{$contact.email}','{$contact.password}');"><i class="splashy-contact_grey"></i></a><br>
+					{/foreach}
+			  </td>		  
+			  <td>
+					<a href="/user/superclientcreate-step1?submenuId=ML9-SL1&uaction=edit&refId={$delivery.id}" class="hint--left hint--info" data-hint="edit profile"><i class="icon-pencil"></i> </a>
+					{if $usertype=='superadmin'}
+						<a href="javascript:void(0);" onClick="deleteReference('{$delivery.id}');"><i class="splashy-remove"></i></a> 
+					{/if}
+			  </td>
+			 
+			</tr>
+		{/foreach}
+	{/if}	
+					
+		</tbody>
+	</table>
+                        
+  </div>
+</div>
+    

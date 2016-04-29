@@ -1,0 +1,203 @@
+{literal}
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jquery.validate.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jquery.MultiFile.js"></script>
+<style type="text/css">
+.control-label {    
+    padding-top: 5px;    
+	font-weight:bold;	
+}
+.MultiFile-label
+{
+padding-top:3px;
+}
+#msg_object
+{
+text-transform:none;
+}
+.error {  display: none !important;}
+</style>
+ <script type="text/javascript" >
+$(document).ready(function() {			
+	
+	$('#attachments').MultiFile();
+	$(".uni_style").uniform();
+	
+	
+	$("#from_client_list").chosen({ allow_single_deselect: true,search_contains: true });
+	$("#from_contributor_list").chosen({ allow_single_deselect: true,search_contains: true });
+	$("#from_ep_list").chosen({ allow_single_deselect: true,search_contains: true });
+	$("#client_list").chosen({ allow_single_deselect: true,search_contains: true });
+	$("#contributor_list").chosen({ allow_single_deselect: true,search_contains: true });
+		
+	
+	jQuery.validator.addMethod("checkMessage", function(value,element) {
+		var content = tinyMCE.activeEditor.getContent();
+		alert(content);
+		$("#mail_message").val(content);
+				if(content)
+					return false;
+				else
+					return true;
+	}, "Merci d'ins&eacute;rer un num&eacute;ro de t&eacute;l&eacute;phone correct");
+
+	
+	 $("#new_message_form").validate({		
+		  message:false,
+		  errorClass: 'error',
+		  validClass: 'valid',
+		  highlight: function(element) {
+					$(element).closest('span').addClass("f_error");
+			},
+		 unhighlight: function(element) {
+				$(element).closest('span').removeClass("f_error");
+			},
+	     errorPlacement: function(error, element) {
+				if($.inArray(element.attr("id"), ['mail_message'])> -1) {						
+							$("#message_error").html(error);
+				}	
+				else
+					$(element).closest('div').append(error);
+            },
+		  rules: {
+			msg_object:{required:true},
+			mail_message:{required:true,checkMessage:true}
+		  }
+		});
+		
+	$('textarea').tinymce({
+                // Location of TinyMCE script
+                script_url 							: '/BO/theme/gebo/lib/tiny_mce/tiny_mce.js',
+                // General options
+                theme 								: "advanced",
+                plugins 							: "autoresize,style,table,advhr,advimage,advlink,emotions,inlinepopups,preview,media,contextmenu,paste,fullscreen,noneditable,xhtmlxtras,template,advlist",
+                // Theme options
+                theme_advanced_buttons1 			: "undo,redo,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,fontsizeselect",
+                theme_advanced_buttons2 			: "forecolor,backcolor,|,cut,copy,paste,pastetext,|,bullist,numlist,link,image,media,|,code,preview,fullscreen",
+                theme_advanced_buttons3 			: "",
+                theme_advanced_toolbar_location 	: "top",
+                theme_advanced_toolbar_align 		: "left",
+                theme_advanced_statusbar_location 	: "bottom",
+                theme_advanced_resizing 			: false,
+                font_size_style_values 				: "8pt,10pt,12pt,14pt,18pt,24pt,36pt",
+                init_instance_callback				: function(){
+                    function resizeWidth() {
+                        document.getElementById(tinyMCE.activeEditor.id+'_tbl').style.width='100%';
+                    }
+                    resizeWidth();
+                    $(window).resize(function() {
+                        resizeWidth();
+                    })
+                }
+            });	
+		
+	});
+	
+function fnChangeFromContact(type,value)
+ {
+    if(value!='' && type=='client')
+    {
+        $("#from_contributor_list").val('0').trigger("liszt:updated");
+		$("#from_ep_list").val('0').trigger("liszt:updated");		
+        
+		$('#client_list').val('0').trigger("liszt:updated");
+		$('#client_list').prop('disabled', true).trigger("liszt:updated");
+		$('#contributor_list').prop('disabled', false).trigger("liszt:updated");
+        
+
+    }
+    else if(value!='' && type=='contributor')
+    {
+        
+        $("#from_client_list").val('0').trigger("liszt:updated");	
+		$("#from_ep_list").val('0').trigger("liszt:updated");
+		
+        $('#contributor_list').val('0').trigger("liszt:updated");
+		$('#contributor_list').prop('disabled', true).trigger("liszt:updated");
+		$('#client_list').prop('disabled', false).trigger("liszt:updated");
+    }
+    else if(value!='' && type=='bouser')
+    {        
+        $("#from_client_list").val('0').trigger("liszt:updated");
+		$("#from_contributor_list").val('0').trigger("liszt:updated");        
+		$('#contributor_list').prop('disabled', false).trigger("liszt:updated");
+		$('#client_list').prop('disabled', false).trigger("liszt:updated");
+    }
+}
+function fnChangeContact(type,value)
+ {
+    if(value!='' && type=='client')
+    {
+        $('#contributor_list').val('0').trigger("liszt:updated");
+    }
+    else if(value!='' && type=='contributor')
+    {
+       $('#client_list').val('0').trigger("liszt:updated");
+    }
+}
+	
+ </script>
+{/literal}
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">
+			Syst&egrave;me De Messages :: R&eacute;diger un Message
+		</h3>
+		
+		<div class="tab-pane" id="mbox_new">
+			<form id="new_message_form" method="POST" name="new_message" action="/mastermails/sendcomposemail" enctype="multipart/form-data">
+				{if $user_type eq 'superadmin'}
+				<div class="sepH_b">
+					<label class="control-label" for="mail_sender">Emetteur</label>
+						<select style="width:185px" name="from_client_contact" id="from_client_list" data-placeholder="S&eacute;lectionner Client" onchange="fnChangeFromContact('client',this.value);">	
+							<option value=""></option>
+							{html_options  options=$Cients_contacts selected=$toClientId}
+						</select>
+						<select style="width:185px" name="from_contributor_contact" id="from_contributor_list" data-placeholder="S&eacute;lectionner Contributor" onchange="fnChangeFromContact('contributor',this.value);">
+							<option value=""></option>						
+							{html_options  options=$Contributor_contacts selected=$toContributorId}
+						</select>
+						<select style="width:185px" name="from_ep_contact" id="from_ep_list" data-placeholder="S&eacute;lectionner BO User" onchange="fnChangeFromContact('bouser',this.value);">							
+							<option value=""></option>
+							{html_options  options=$EP_contacts}
+						</select>
+				</div>
+				{else}
+					<input type="hidden" name="from_ep_contact" value="{$admin_user_id}">
+				{/if}
+				<div class="sepH_b">
+					<label class="control-label">Destinataire</label>
+					<select style="width:185px" name="client_contact" id="client_list" data-placeholder="S&eacute;lectionner Client" onchange="fnChangeContact('client',this.value);">
+						<option value=""></option>
+						{html_options  options=$Cients_contacts selected=$toClientId}
+					</select>
+					<select style="width:185px" name="contributor_contact" id="contributor_list" data-placeholder="S&eacute;lectionner Contributor" onchange="fnChangeContact('contributor',this.value);">
+						<option value=""></option>
+						{html_options  options=$Contributor_contacts selected=$toContributorId}
+					</select>
+				</div>
+				<div class="sepH_b">
+					<label class="control-label" for="msg_object">Objet</label>
+					<span><input type="text" class="span12" id="msg_object" name="msg_object"></span>
+				</div>
+				<div class="sepH_c">
+					<label class="control-label">Pi&egrave;ce(s) Jointe(s)</label>					
+					<div class="mail_uploader">
+						<input type="file" name="attachment[]" id="attachments" class="multi">
+					</div>
+					
+					
+				</div>
+				<div class="formSep">
+					<label class="control-label" for="mail_message">Message</label>
+					<span><textarea class="span12 auto_expand" rows="5" cols="10" id="mail_message" name="mail_message"></textarea></span>
+					<span id="message_error"></span>
+				</div>
+				
+				<div>
+					<button class="btn btn-gebo" type="submit" id="send_message">Envoyer</button>
+				</div>
+			</form>
+		</div>		
+	</div>
+</div>

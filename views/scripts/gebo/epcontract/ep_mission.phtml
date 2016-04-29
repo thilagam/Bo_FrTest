@@ -1,0 +1,635 @@
+{literal}
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/jQuery.fileinput.js"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    function tomissionlist()
+    {
+        window.location='/mission/list-mission?submenuId=ML2-SL27';
+        return false;
+    }
+    function chk1(val)
+    {
+        if(val == 'new_cl')
+            $('#new_cl').show();
+        else
+            $('#new_cl').hide();
+    }
+    function isNumeric(string)
+    {
+        var numericExpression = /^[0-9]+$/;
+        if(string.match(numericExpression)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function isFloat(string)
+    {
+        var numericExpression = /^[+-]?\d+(\.\d+)?$/;
+        if(string.match(numericExpression)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function addclient(newemail,newpwd,company_name,idx)
+    {
+        $.post(
+            "/mission/adduser?newemail="+newemail+"&newpwd="+newpwd+"&company_name="+company_name,
+            function(data,status){
+                data = data.trim();
+                cls(data);
+            }
+        );
+    }
+    function getclient(val)
+    {//alert(val);
+        if(val != '')
+        {
+            $.post(
+                "/mission/add-mission?ctid="+val+"&gtcl=1",
+                function(data,status){
+                    data1 = data.split('#');
+                    data1[0] = data1[0].trim();
+                    data1[1] = data1[1].trim();
+                    
+                    if(data!='')
+                    {
+                    
+                        if(data1[1] == 'euro')
+                        {
+                            var crncy = 'Euro';//'€';
+                        }
+                        else if(data1[1] == 'pound')
+                        {
+                            var crncy = 'Pound';//'£';
+                        }
+                        else if(data1[1] == 'us_dollar')
+                        {
+                            var crncy = 'Dollar';//$
+                        }
+                        $('#ongoing').show();
+                        $('#ongoing').html('<a href="/ongoing/list?submenuId=ML2-SL4&client_id=' + data1[0] + '" target="_blank">View ongoing AOs</a>');
+                        
+                        $('#wcs_currency').text(crncy); $('#was_currency').text(crncy);
+                        $('#cbs_currency').text(crncy); $('#cas_currency').text(crncy);
+                        $('#obs_currency').text(crncy); $('#oas_currency').text(crncy);
+                        
+                        $('#mnm_currency').text(crncy); $('#mxm_currency').text(crncy);
+                        
+                        $('#writing_cost_before_signature_currency').val(data1[1]);
+                        $('#correction_cost_before_signature_currency').val(data1[1]);
+                        $('#other_cost_before_signature_currency').val(data1[1]);
+                        
+                        $('#min_cost_mission_currency').val(data1[1]);
+                        $('#max_cost_mission_currency').val(data1[1]);
+                        
+                        $('#writing_cost_after_signature_currency').val(data1[1]);
+                        $('#correction_cost_after_signature_currency').val(data1[1]);
+                        $('#other_cost_after_signature_currency').val(data1[1]);
+                        
+                        $('#sp_currency').val(data1[1]);
+                    }
+                    else
+                    {
+                        $('#ongoing').hide();
+                    }
+                }
+            );
+        }
+        else
+        {
+            $('#ongoing').hide();
+        }
+        
+    }
+    function marginCal(aftr)
+    {
+        var selling_price = (($('#selling_price').val()).trim());
+        
+        if(aftr)
+        {
+            var writing_cost_after_signature = (($('#writing_cost_after_signature').val()).trim());
+            var correction_cost_after_signature = (($('#correction_cost_after_signature').val()).trim());
+            var other_cost_after_signature = (($('#other_cost_after_signature').val()).trim());
+            
+            if((isNumeric(writing_cost_after_signature) || isFloat(writing_cost_after_signature)) && (isNumeric(correction_cost_after_signature) || isFloat(correction_cost_after_signature)) && (isNumeric(other_cost_after_signature) || isFloat(other_cost_after_signature)) && (isNumeric(selling_price) || isFloat(selling_price)))
+            {
+                writing_cost_after_signature = parseFloat(writing_cost_after_signature);
+                correction_cost_after_signature = parseFloat(correction_cost_after_signature);
+                other_cost_after_signature = parseFloat(other_cost_after_signature);
+                selling_price = parseFloat(selling_price);
+                
+                var totalcost = writing_cost_after_signature+correction_cost_after_signature+other_cost_after_signature ;
+                var mgn = (1-(totalcost/selling_price))*100;
+                //mgn = mgn.toFixed(2);
+                //mgn = mgn.replace('.00','');
+                $('#margin_after_signature').val(mgn);
+            }
+        }
+        else
+        {
+            var writing_cost_before_signature = (($('#writing_cost_before_signature').val()).trim());
+            var correction_cost_before_signature = (($('#correction_cost_before_signature').val()).trim());
+            var other_cost_before_signature = (($('#other_cost_before_signature').val()).trim());
+            
+            if((isNumeric(writing_cost_before_signature) || isFloat(writing_cost_before_signature)) && (isNumeric(correction_cost_before_signature) || isFloat(correction_cost_before_signature)) && (isNumeric(other_cost_before_signature) || isFloat(other_cost_before_signature)) && (isNumeric(selling_price) || isFloat(selling_price)))
+            {
+                writing_cost_before_signature = parseFloat(writing_cost_before_signature);
+                correction_cost_before_signature = parseFloat(correction_cost_before_signature);
+                other_cost_before_signature = parseFloat(other_cost_before_signature);
+                selling_price = parseFloat(selling_price);
+                
+                var totalcost = writing_cost_before_signature+correction_cost_before_signature+other_cost_before_signature ;
+                var mgn = (1-(totalcost/selling_price))*100;
+                //mgn = mgn.toFixed(2);
+                //mgn = mgn.replace('.00','');
+                $('#margin_before_signature').val(mgn);
+            }
+        }
+    }
+    function cls(sel)
+    {
+        $.post(
+            "/mission/get-clients-select?sel="+sel,
+            function(data,status){
+                data = data.trim();
+                $('#clientRow').html('');
+                $('#clientRow').html(data);
+                $(".chzn_a").chosen({
+                    allow_single_deselect: true
+                });
+            }
+        );
+    }
+    $(document).ready(function() {
+        $(".uni_style").uniform();
+        gebo_chosen.init();
+        gebo_validation.reg();
+        $('#starting_date1').datepicker({
+            language: 'pt-BR',
+            format: 'dd/mm/yyyy',
+            pick12HourFormat: false
+        });
+        $("input[name='type']").change(function(){
+            var type = $('input[name=type]:checked').val();
+            if (type == 'translation') {
+                $("#lang2Row").show();
+            } else {
+                $("#lang2Row").hide();
+            }
+            if (type == 'autre') {
+                $("#type_other").show();
+            }
+            else
+            {
+                $("#type_other").hide();
+            }
+        });
+        //$("#margin").blur(function(event) {
+            //marginCal();
+        //});
+        $("#margin_before_signature").focus(function(event) {
+            marginCal(0);
+        });
+        $("#margin_after_signature").focus(function(event) {
+            marginCal(1);
+        });
+        $("input[name='recurring']").change(function(){
+            var recurring = $('input[name=recurring]:checked').val();//alert(recurring);
+            if (recurring == 1) {
+                $("#recurr").show();
+            } else {
+                $("#recurr").hide();
+            }
+        });
+        $( "#category" ).change(function() {
+            var category = $("#category").val();
+            if(category == 'other')
+            {
+                $("#category_other").show();
+            }
+            else
+            {
+                $("#category_other").hide();
+            }
+        });
+        {/literal}{if $contract_ids neq ''}{literal}getclient({/literal}{$contract_ids}{literal});{/literal}{/if}{literal}
+    });
+    gebo_chosen = {
+        init: function(){
+            $(".chzn_a").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_b").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_c").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_d").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_e").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_t").chosen({
+                allow_single_deselect: true
+            });
+        }
+    };
+	
+    $.validator.addMethod("intcheck", function(value, element, param) {
+        return ((isNumeric(value) || isFloat(value)) && (value > 0));
+    }, $.format("Empty or invalid amount entered."));
+    
+    $.validator.addMethod("intcheck1", function(value, element, param) {
+        return (isNumeric(value) && (value > 0));
+    }, $.format("Empty or invalid number entered."));
+    
+    $.validator.addMethod("margincheck", function(value, element, param) {
+        value = value.replace('-','');
+        return (value.match(/^[0-9]*[.][0-9]+$/) || value.match(/^[0-9]*$/));
+    }, $.format("Invalid margin."));
+	
+    $.validator.addMethod("languagecheck", function(value, element, param) {
+        if($('input:radio[name=type]:checked').val()=='translation')
+            return ($('#language1').val() != $('#language2').val());
+        else
+            return true;
+    }, $.format("Please select a different language."));
+	
+    gebo_validation = {
+        reg: function() {
+            reg_validator = $('.form_validation_reg').validate({
+                onkeyup: false,
+                errorClass: 'error',
+                ignore: ":hidden:not(select)",
+                validClass: 'valid',
+                highlight: function(element) {
+                    $(element).closest('div').addClass("f_error");
+                    $(element).closest('div').css("color", "black");
+                },
+                unhighlight: function(element) {
+                    $(element).closest('div').removeClass("f_error");
+                },
+                submitHandler: function(form) {
+                    // do other things for a valid form
+                    form.submit();
+                },
+                errorPlacement: function(error, element) {
+                    $(element).closest('div').append(error);
+                    $('.error').css("font-size", "10px");
+                    $('.error').css("padding-top", "5px");
+                },
+                rules: {
+                    title: { required: true },
+                    contract: { required: true },
+                    mission_length: {required:true, intcheck1: ($('#mission_length').val())},
+                    starting_date: { required: true },
+                    type_of_article: { required: true },
+                    num_of_articles: {required:true, intcheck1: ($('#num_of_articles').val())},
+                    language1: { required: true },
+                    language2 : {
+                        required : function(element) {
+                            return $('input:radio[name=language]:checked').val() == 2;
+                        }, 
+						languagecheck : true,
+					},
+                    category: { required: true },
+                    category_other : {
+                        required : function(element) {
+                            return $('#category').val() == 'other';
+                        }
+                    },
+                    writing_cost_before_signature: {required:true, intcheck: ($('#writing_cost_before_signature').val())},
+                    correction_cost_before_signature: {required:true, intcheck: ($('#correction_cost_before_signature').val())},
+                    other_cost_before_signature: {required:true},
+                    min_cost_mission: {required:true, intcheck: ($('#min_cost_mission').val())},
+                    max_cost_mission: {required:true, intcheck: ($('#max_cost_mission').val())},
+                    writing_cost_after_signature: {required:true, intcheck: ($('#writing_cost_after_signature').val())},
+                    correction_cost_after_signature: {required:true, intcheck: ($('#correction_cost_after_signature').val())},
+                    other_cost_after_signature: {required:true},
+                    selling_price: {required:true, intcheck: ($('#selling_price').val())},
+                    margin_before_signature: {required:true, margincheck: ($('#margin_before_signature').val())},
+                    margin_after_signature: {required:true, margincheck: ($('#margin_after_signature').val())},
+                    article_length: {required:true, intcheck1: ($('#article_length').val())},
+                    comments: { required: true },
+                    bo_incharge: { required: true },
+                    mission_users_count: {required:true, intcheck1: ($('#mission_users_count').val())},
+                    recurr: {
+                        required : function(element) {
+                            return $('input:radio[name=recurring]:checked').val() == 1;
+                        }, intcheck1 : ($('#recurr').val())
+                    },
+                },
+                messages: {
+                    title: "Empty or invalid mission title.",
+                    contract: "Please select Contract.",
+                    mission_length: "Empty or invalid mission length.",
+                    starting_date: "Please select starting date.",
+                    type_of_article: "Please select article type.",
+                    num_of_articles: "Empty or invalid number of articles.",
+                    language1: "Please select language.",
+                    language2 : {required: "Please select language."},
+                    category: "Please select category.",
+                    category_other: "Empty or invalid category name.",
+                    writing_cost_before_signature: "Empty or invalid cost entered.",
+                    correction_cost_before_signature: "Empty or invalid cost entered.",
+                    other_cost_before_signature: "Empty or invalid cost entered.",
+                    min_cost_mission: "Empty or invalid cost entered.",
+                    max_cost_mission: "Empty or invalid cost entered.",
+                    writing_cost_after_signature: "Empty or invalid cost entered.",
+                    correction_cost_after_signature: "Empty or invalid cost entered.",
+                    other_cost_after_signature: "Empty or invalid cost entered.",
+                    selling_price: "Empty or invalid cost entered.",
+                    margin_before_signature: "Empty or invalid margin.",
+                    margin_after_signature: "Empty or invalid margin.",
+                    article_length: "Empty or invalid article length.",
+                    comments: "Comments please.",
+                    bo_incharge: "Please select BO incharge.",
+                    mission_users_count: "Empty or invalid number of users.",
+                    recurr: {required: "Empty or invalid recurrence count.", accept: ""}
+                },
+                invalidHandler: function(form, validator) {
+                    $.sticky("Some errors. Please corect them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
+                }
+            })
+        }
+    };
+</script>
+<style>
+.mod {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+    border-image: none;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+    margin-bottom: 15px;
+    overflow: hidden;
+    padding: 12px;
+}
+.add-on i {
+    background-image: url("/BO/bootstrap/img/glyphicons-halflings.png");
+    background-position: -190px -118px;
+    background-repeat: no-repeat;
+    line-height: 14px;
+    vertical-align: text-top;
+}
+label.error{color: #C62626;font-weight: 700;}
+#lang2Row{{/literal}{if $mission_list.type neq 'translation'}{literal}display:none;{/literal}{/if}{literal}}
+#lb_lng{padding-bottom:15px;vertical-align:middle;}
+#category_other, #recurr{display: none;vertical-align: top;}#ongoing{width:100%;}
+#language1,#language2,#category{width: 190px;}
+#type_other{padding-left:10px;display:none;}
+</style>
+{/literal}
+
+ <div class="row-fluid">
+    <div class="span12">
+        <h3 class="heading">{if $mission_list.title neq ''}EDIT{else}ADD{/if} Mission<div style="display:inline;float:right"><button onclick="return tomissionlist()" class="btn btn-success" name="back">List Mission</button></div></h3>
+<form action="/mission/add-mission?submenuId=ML2-SL27" name="add_mission" id="add_mission" method="post" enctype="multipart/form-data" class="form_validation_reg">
+        <div class="w-box">
+            <div class="w-box-header">Mission</div>
+            <div class="row-fluid">
+                <div class="mod">
+                    <div class="span12 form-inline formSep"></div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Titre de la mission</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="title" id="title" value="{$mission_list.title}" class="span6"/>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Contrat</label>
+                        <div class="span5 no-margin-first">
+                             <select name="contract" id="contract" class="chzn_a" data-placeholder="S&eacute;lectionner" onchange="getclient(this.value);">                          
+                                <option value=""></option>
+                                {foreach from=$contract_list item=contract}
+                                    <option value="{$contract.id}" {if $mission_list.contract_id eq $contract.id}selected{/if} {if $contract_ids eq $contract.id} selected{/if}>{$contract.contract_name}</option>
+                                {/foreach}
+                             </select>
+                             <span class="help-inline" id="ongoing">{if $mission_list.client_id neq ''}<a href="/ongoing/list?submenuId=ML2-SL4&client_id={$mission_list.client_id}" target="_blank">View ongoing AOs</a>{/if}</span>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Dur&#233;e de la mission</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="mission_length" id="mission_length" value="{$mission_list.mission_length}" class="span3"/>
+                             <span class="help-inline">jours</span>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Date de d&#233;marrage mission</label>
+                        <div  id="starting_date1" class="input-append date span5" >
+                            <input data-format="dd/MM/YY" id="starting_date" name="starting_date" type="text" value="{$mission_list.starting_date}" class="input-append date span4" readonly="readonly" />
+                             <span class="add-on">
+                                <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                             </span>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Type of article</label>
+                        <div class="span5 no-margin-first">
+                             <select name="type_of_article" id="type_of_article" data-placeholder="S&eacute;lectionner" class=chzn_t>                          
+                                <option value=""></option>
+                                <option value="article_seo"{if $mission_list.type_of_article eq 'article_seo'} selected{/if}>Article seo</option>
+                                <option value="descriptif_produit"{if $mission_list.type_of_article eq 'descriptif_produit'} selected{/if}>Descriptif produit</option>
+                                <option value="article_de_blog"{if $mission_list.type_of_article eq 'article_de_blog'} selected{/if}>Article de blog</option>
+                                <option value="news"{if $mission_list.type_of_article eq 'news'} selected{/if}>News</option>
+                                <option value="guide"{if $mission_list.type_of_article eq 'guide'} selected{/if}>Guide</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Nb articles</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="num_of_articles" id="num_of_articles" value="{$mission_list.num_of_articles}" class="span3"/>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Type</label>
+                        <div class="span5 no-margin-first">
+                            <label class="uni-radio"><input type="radio" name="type" class="uni_style"  value="redaction" checked>Redaction</label>
+                            <label class="uni-radio"><input type="radio" name="type" class="uni_style"  value="translation" {if $mission_list.type eq 'translation'}checked{/if}>Traduction</label>
+                            <label class="uni-radio"><input type="radio" name="type" class="uni_style"  value="autre" {if $mission_list.type eq 'autre'}checked{/if}>Autre</label>
+                            <input type="text" name="type_other" id="type_other" value="{$mission_list.type_other}" class="span4"/>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Langue native</label>
+                        <div class="span3 no-margin-first">
+                            {html_options name=language1 id=language1 options=$langArr class=chzn_b selected=$mission_list.language1}
+                            <span class="help-inline" id="lb_lng">Langue 1</span>
+                        </div>
+                        <div class="span3 no-margin-first" id="lang2Row">
+                            {html_options name=language2 id=language2 options=$langArr class=chzn_c selected=$mission_list.language2}
+                            <span class="help-inline" id="lb_lng">Langue 2</span>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Categorie</label>
+                        <div class="span5 no-margin-first">
+                             <select name="category" id="category" class="chzn_d" data-placeholder="S&eacute;lectionner" >                               <option value="">S&eacute;lectionner</option>
+                                <option value="other" {if $mission_list.category eq 'other'}selected{/if}>Autres</option>
+                                {foreach from=$catArr item=catitm key=catkey}
+                                    <option value="{$catkey}" {if $catkey eq $mission_list.category}selected{/if}>{$catitm}</option>
+                                {/foreach}
+                             </select>
+                             <input type="text" name="category_other" id="category_other" value="{$mission_list.category_other}" class="span5" style="{if $mission_list.category eq 'other'}display:inline;{/if}"/>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Logo</label>
+                        <div class="span5 no-margin-first">
+                            <label class="uni-radio"><input type="radio" name="logo" class="uni_style" value="1" checked>OUI</label>
+                            <label class="uni-radio"><input type="radio" name="logo" class="uni_style" value="0" {if $mission_list.logo eq '0'}checked{/if}>NON</label>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Cout de prod' avant signature r&#233;daction</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="writing_cost_before_signature" id="writing_cost_before_signature" value="{$mission_list.writing_cost_before_signature}" class="span3"/>
+                             <span class="help-inline" id="wcs_currency">{$mission_list.writing_cost_before_signature_currency_l}</span>
+                             <input type="hidden" name="writing_cost_before_signature_currency" id="writing_cost_before_signature_currency" value="{$mission_list.writing_cost_before_signature_currency}" />
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Cout de prod' avant signature correction</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="correction_cost_before_signature" id="correction_cost_before_signature" value="{$mission_list.correction_cost_before_signature}" class="span3"/>
+                             <span class="help-inline" id="cbs_currency">{$mission_list.correction_cost_before_signature_currency_l}</span>
+                             <input type="hidden" name="correction_cost_before_signature_currency" id="correction_cost_before_signature_currency" value="{$mission_list.correction_cost_before_signature_currency}" />
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Autres co&#251;ts avant signature</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="other_cost_before_signature" id="other_cost_before_signature" value="{$mission_list.other_cost_before_signature}" class="span3"/>
+                             <span class="help-inline" id="obs_currency">{$mission_list.other_cost_before_signature_currency_l}</span>
+                             <input type="hidden" name="other_cost_before_signature_currency" id="other_cost_before_signature_currency" value="{$mission_list.other_cost_before_signature_currency}" />
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Cout de prod' mini r&#233;daction</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="min_cost_mission" id="min_cost_mission" value="{$mission_list.min_cost_mission}" class="span3"/>
+                             <span class="help-inline" id="mnm_currency">{$mission_list.min_cost_mission_currency_l}</span>
+                             <input type="hidden" name="min_cost_mission_currency" id="min_cost_mission_currency" value="{$mission_list.min_cost_mission_currency}" />
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Cout de prod' max r&#233;daction</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="max_cost_mission" id="max_cost_mission" value="{$mission_list.max_cost_mission}" class="span3"/>
+                             <span class="help-inline" id="mxm_currency">{$mission_list.max_cost_mission_currency_l}</span>
+                             <input type="hidden" name="max_cost_mission_currency" id="max_cost_mission_currency" value="{$mission_list.max_cost_mission_currency}" />
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Cout de prod' apr&#233;s signature r&#233;daction</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="writing_cost_after_signature" id="writing_cost_after_signature" value="{$mission_list.writing_cost_after_signature}" class="span3"/>
+                             <span class="help-inline" id="was_currency">{$mission_list.writing_cost_after_signature_currency_l}</span>
+                             <input type="hidden" name="writing_cost_after_signature_currency" id="writing_cost_after_signature_currency" value="{$mission_list.writing_cost_after_signature_currency}" />
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Cout de prod' apr&#233;s signature correction</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="correction_cost_after_signature" id="correction_cost_after_signature" value="{$mission_list.correction_cost_after_signature}" class="span3"/>
+                             <span class="help-inline" id="cas_currency">{$mission_list.correction_cost_after_signature_currency_l}</span>
+                             <input type="hidden" name="correction_cost_after_signature_currency" id="correction_cost_after_signature_currency" value="{$mission_list.correction_cost_after_signature_currency}" />
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Autres co&#251;ts apr&#232;s signature</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="other_cost_after_signature" id="other_cost_after_signature" value="{$mission_list.other_cost_after_signature}" class="span3"/>
+                             <span class="help-inline" id="oas_currency">{$mission_list.other_cost_after_signature_currency_l}</span>
+                             <input type="hidden" name="other_cost_after_signature_currency" id="other_cost_after_signature_currency" value="{$mission_list.other_cost_after_signature_currency}" />
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Selling Price</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="selling_price" id="selling_price" value="{$mission_list.selling_price}" class="span3"/>
+                             <span class="help-inline" id="sp_currency">{$mission_list.selling_price_currency_l}</span>
+                             <input type="hidden" name="selling_price_currency" id="selling_price_currency" value="{$mission_list.selling_price_currency}" />
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Marge avant signature</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="margin_before_signature" id="margin_before_signature" value="{$mission_list.margin_before_signature}" class="span3"/>
+                             <span class="help-inline">%</span>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Marge apr&#233;s signature</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="margin_after_signature" id="margin_after_signature" value="{$mission_list.margin_after_signature}" class="span3"/>
+                             <span class="help-inline">%</span>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Taille de chaque article</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="article_length" id="article_length" value="{$mission_list.article_length}" class="span3"/>
+                             <span class="help-inline">mots</span>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Commentaire</label>
+                        <div class="span8 controls no-margin-first">
+                            <textarea class="span8" rows="4" cols="1" id="txtarea_sp" name="comments">{$mission_list.comments}</textarea>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Chef de projet en charge</label>
+                        <div class="span5 no-margin-first">
+                             <select name="bo_incharge" id="bo_incharge" data-placeholder="S&eacute;lectionner BO incharge" class=chzn_e>                          
+                                <option value=""></option>
+                                {html_options  options=$EP_contacts selected=$mission_list.bo_incharge}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Nombre de r&#233;dacteurs ayant travaill&#233; sur la mission</label>
+                        <div class="span5 no-margin-first">
+                             <input type="text" name="mission_users_count" id="mission_users_count" value="{$mission_list.mission_users_count}" class="span3"/>
+                        </div>
+                    </div>
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">Mission &#224; diffuser en front office</label>
+                        <div class="span5 no-margin-first">
+                            <label class="uni-radio"><input type="radio" name="fo_display" class="uni_style"  value="1" checked>OUI</label>
+                            <label class="uni-radio"><input type="radio" name="fo_display" class="uni_style"  value="0" {if $mission_list.fo_display eq '0'}checked{/if}>NON</label>
+                        </div>
+                    </div>
+                    {if $mission_list.id eq ''}
+                    <div class="span12 form-inline formSep">
+                        <label class="span3">r&#233;current</label>
+                        <div class="span5 no-margin-first">
+                            <label class="uni-radio"><input type="radio" name="recurring" class="uni_style"  value="1">OUI</label>
+                            <label class="uni-radio"><input type="radio" name="recurring" class="uni_style"  value="0" checked>NON</label>&nbsp;&nbsp;&nbsp;
+                            <input type="text" name="recurr" id="recurr" value="" class="span3"/>
+                        </div>
+                    </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+        {if $mission_list.id neq ''}<input type="hidden" name="id" value="{$mission_list.id}" />{/if}
+
+        <div align="right" style="margin-top:10px">  
+            <!--<input type="button" value="ANNULER" class="btn btn-info" onClick="return clearText()" />-->
+            <input name="submit" type="submit" value="SAUVER" class="btn btn-info" />
+        </div>
+</form>
+    </div>
+</div>

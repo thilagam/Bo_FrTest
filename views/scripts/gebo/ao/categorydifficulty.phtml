@@ -1,0 +1,61 @@
+{literal}
+	<script>
+		$(document).ready(function() { 
+			$(".uni_style").uniform(); 
+		});
+		function updatediffall()
+		{
+			if($("#catcheck").attr('checked'))
+			{
+				var value = $("#catapply").val();
+				var count = $("#catcount").val();
+				for(var i = 0; i < count; i++)
+				{
+					$("#percentage_"+i).val(value);
+				}
+			}			
+		}
+	</script>
+{/literal}
+
+<div class="row-fluid">
+  	<div class="span12">
+		<h3 class="heading">POURCENTAGE % DE DIFFICULT&eacute; PAR CAT&eacute;GORIE</h3>
+	
+	<div align="right" style="padding-right:120px;">
+		<input type="button" class="btn btn-info" onClick="window.location='/ao/pollconfiguration?submenuId=ML2-SL23';" value="RETOUR" />
+	</div>	
+	
+	<form action="/ao/categorydifficulty?submenuId=ML2-SL23" method="POST">
+		<table align="center" width="55%" cellpadding="2" cellspacing="2" style="margin-top:15px; padding:10px;clear:both;" >
+			<tr>
+				<td>
+					<label class="uni-checkbox">
+						<input type="checkbox" name="catcheck" id="catcheck" onClick="updatediffall();" class="uni_style"/> Appliquer ce % &agrave; toutes les cat&eacute;gories
+					</label>
+				</td>	
+				<td colspan="2">
+					<input type="text" name="catapply" id="catapply" value=""/>
+				</td>
+			</tr>
+			<tr><td>&nbsp;</td></tr>
+			{foreach from=$catdifflist item=catdiff name=catloop}
+				<tr> 
+					<td>{$catdiff.title}</td> 
+					<td>
+						<input type="text" name="percentage[]" id="percentage_{$smarty.foreach.catloop.index}" value="{$catdiff.percentage}"/>
+						<input type="hidden" name="id[]" value="{$catdiff.id}"/> 
+					</td>
+				</tr>
+			{/foreach}
+			<tr>
+				<td colspan="2">
+					<input type="button" class="btn btn-info" onClick="window.location='/ao/pollconfiguration?submenuId=ML2-SL23';" value="RETOUR" />
+					<input type="submit" name="catdiff_submit" id="catdiff_submit" value="TOUT SAUVEGARDER" class="btn btn-info" /> 
+				</td>
+			</tr>
+		</table>
+		<input type="hidden" name="catcount" id="catcount" value="{$catdifflist|@count}" />
+	</form>	
+</div>
+</div>	

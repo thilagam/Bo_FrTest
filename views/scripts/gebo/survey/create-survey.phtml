@@ -1,0 +1,407 @@
+{literal}
+<style>
+	.mission-details:nth-of-type(1)
+	{
+		margin:0 0 10px;
+	}
+	
+	.mission-details
+	{
+		margin:10px 0;
+	}
+	
+	.modal1
+	{
+		margin-left:-365px;
+		width:800px;
+	}
+	
+	.modal-body1
+	{
+		min-height:400px;
+	}
+	
+	.question
+	{
+		background-color:#eeeeee;
+	}
+
+	.qcontent
+	{
+		padding:10px;
+	}
+</style>
+<link href="/BO/theme/gebo/css/jquery.datetimepicker.css" rel="stylesheet">
+<script src="/BO/theme/gebo/js/jquery.datetimepicker.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/jquery.MultiFile.js" type="text/javascript" charset="utf-8"></script>
+<script>
+jQuery(function(){
+ jQuery('#date_timepicker_start').datetimepicker({
+  format:'d-m-Y H:i',
+  onShow:function( ct ){
+   this.setOptions({
+    maxDate:get_date($('#date_timepicker_end').val())?get_date($('#date_timepicker_end').val()):false,formatDate:'d-m-Y',minDate:0
+   })
+  }
+ });
+ jQuery('#date_timepicker_end').datetimepicker({
+   format:'d-m-Y H:i',
+  onShow:function( ct ){
+   this.setOptions({
+    minDate:get_date($('#date_timepicker_start').val())?get_date($('#date_timepicker_start').val()):false,formatDate:'d-m-Y'
+   })
+  }
+ });
+});
+
+function get_date(input) {
+if(input == '') {
+return false;
+}	else {
+// Split the date, divider is '/'
+var parts = input.match(/(\d+)/g);
+return parts[0]+'-'+parts[1]+'-'+parts[2];
+} 
+}
+
+
+$(document).ready(function(){
+		
+		$(".timingoption").chosen({ disable_search: true });
+		$(".select").chosen({ disable_search: true });
+		
+	  $("#submit_option").chosen({  allow_single_deselect:false,disable_search: true });
+	 
+		
+		// HTML Editor
+		
+		/* if (CKEDITOR.instances['mailcontrib'])
+                CKEDITOR.instances['mailcontrib'].destroy();
+            
+              
+		 var editor = CKEDITOR.replace( 'mailcontrib',
+			 {
+				 language: 'de',
+				 uiColor: '#D9DDDC',
+				 enterMode : CKEDITOR.ENTER_BR,
+				 toolbar :
+				 [
+					 ['Undo','Redo'],
+					 ['Find','Replace','-','SelectAll','RemoveFormat'],
+					 ['Link', 'Unlink', 'Image'],
+					 '/',
+					 ['FontSize', 'Bold', 'Italic','Underline'],
+					 ['NumberedList','BulletedList','-','Blockquote'],
+					 ['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize']
+				 ]
+			 }
+		 );
+		*/
+		 if (CKEDITOR.instances['cmailcontrib'])
+                CKEDITOR.instances['cmailcontrib'].destroy();
+            
+              
+		 var editor1 = CKEDITOR.replace( 'cmailcontrib',
+			 {
+				 language: 'de',
+				 uiColor: '#D9DDDC',
+				 enterMode : CKEDITOR.ENTER_BR,
+				 toolbar :
+				 [
+					 ['Undo','Redo'],
+					 ['Find','Replace','-','SelectAll','RemoveFormat'],
+					 ['Link', 'Unlink', 'Image'],
+					 '/',
+					 ['FontSize', 'Bold', 'Italic','Underline'],
+					 ['NumberedList','BulletedList','-','Blockquote'],
+					 ['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize']
+				 ]
+			 }
+		 );
+		
+		
+		$("#insertrecruitment").validationEngine({onValidationComplete: function(form, status){
+		if($(".addbrief").length<2)
+		$('.addbrief').prop("disabled", false);
+			if(status==true)
+			{
+				return true;
+			}
+		}});
+		
+		var editor = CKEDITOR.instances.mailcontrib; 
+		var eorgdata = editor.getData();
+		
+		$("#title").blur(function(){
+			var etitle = eorgdata.replace("$poll_title",'<strong>'+$(this).val()+'</strong>');
+			
+			if($.trim($("#date_timepicker_end").val()))
+			etitle = etitle.replace("$poll_enddate",'<strong>'+$("#date_timepicker_end").val()+'</strong>'); 
+			
+			editor.setData(etitle);
+		});
+		
+		$("#date_timepicker_end").blur(function(){
+			var etitle = eorgdata.replace("$poll_enddate",'<strong>'+$(this).val()+'</strong>'); 
+			 if($.trim($("#title").val()))
+			 etitle = etitle.replace("$poll_title",'<strong>'+$("#title").val()+'</strong>'); 
+			editor.setData(etitle);
+		});
+		
+	});
+
+</script>
+<style>
+	.xdsoft_today_button
+	{
+		visibility: hidden !important;
+	}
+</style>
+{/literal}
+
+{if $misssionQuoteDetails|@count gt 0}
+	{foreach from=$misssionQuoteDetails item=quoteMission name="quote"}	
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">
+			Create Survey
+		</h3>
+	</div>	
+</div>
+<div class="row-fluid">
+<div class="span9">
+<form class="form-horizontal"  action="/survey/insert-survey" method="POST" id="insertrecruitment" enctype="multipart/form-data">
+	{include file="gebo/survey/mission_overview.phtml"}
+	<div class="mission-details">			
+	<div class="prod-mission-product">Survey Set Up</div>
+	</div>
+	<div class="w-box">
+		<div class="w-box-header">General Rules</div>
+			<div class="w-box-content cnt_a">
+				<div class="row-fluid">
+				<div class="control-group">
+					<label class="control-label">Nom de ce Devis</label>
+					<div class="controls">
+						<div class="span6">
+							<div class="" id="">
+								<input class="span10 validate[required]" value="" type="text" name="title" id="title" />
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">Count Down</label>
+						<div class="controls">
+							<div class="span6">
+								<div class="" id="">
+									<input class="span10 validate[required]" autocomplete="off" value="{$smarty.now|date_format:'%d-%m-%Y %H:%M'}" type="text" name="count_down_start" id="date_timepicker_start" /><!--<span class="add-on"><i class="splashy-calendar_day_up"></i></span> -->
+								</div>
+								<span class="help-block">Daterange - date start</span>
+							</div>
+							<div class="span6">
+								<div class="" id="">
+									<input class="span10 validate[required]" name="count_down_end" autocomplete="off" type="text" id="date_timepicker_end" value="" /><!-- <span class="add-on"><i class="splashy-calendar_day_down"></i></span> -->
+								</div>
+								<span class="help-block">Daterange - date end</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				{if $question_list|@count gt 0}
+				{foreach from=$question_list item=questions name=question}
+				<div class="row-fluid question">
+					<div class="qcontent">
+					{if $questions.type eq 'price'}
+						<strong>About the pricing per article</strong>
+						<div class="control-group topset2">
+							<label class="control-label">Question {$smarty.foreach.question.iteration}</label>
+							<div class="controls">
+								<input type="text" name="question_title[]" id="" class="span12 validate[required]" value="{$questions.title|stripslashes}" style=""/>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Maximum</label>
+							<div class="controls">
+								<input type="text" name="maximum_{$smarty.foreach.question.index}" id="maximum_{$smarty.foreach.question.index}" value="" class="span2 validate[custom[number]]" onfocus="$(this).next().show();" onBlur="$(this).next().hide();"; /> 
+								<div id="pricemsg" style="display:none;color:red;">Merci d'entrer un chiffre ou de laisser le champ vide pour le prix maximum</div>
+							</div>
+						</div>
+					{elseif $questions.type eq 'bulk_price'}
+						<strong>About the pricing for a pack of article</strong>
+						<div class="control-group topset2">
+							<label class="control-label">Question {$smarty.foreach.question.iteration}</label>
+							<div class="controls">
+								<input type="text" name="question_title[]" id="" class="span12 validate[required]" value="{$questions.title|stripslashes}" style=""/>
+							</div>
+						</div>
+						<!--<div class="control-group">
+							<label class="control-label">Type</label>
+							<div class="controls">
+								Prix de gros
+							</div>
+						</div> -->
+					{elseif $questions.type eq 'timing'}
+						<strong>About the time needed to write 1 item</strong>
+						<div class="control-group topset2">
+							<label class="control-label">Question {$smarty.foreach.question.iteration}</label>
+							<div class="controls">
+								<input type="text" name="question_title[]" id="title_{$loopindex}" class="span12 validate[required]" value="{$questions.title|stripslashes}" style=""/>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Options</label>
+							<div class="controls">
+								<select name="timingoption_{$smarty.foreach.question.index}" id="timingoption_{$smarty.foreach.question.index}" class="span3 timingoption validate[required]">
+									<option value="min">Minute(s)</option>
+									<option value="hour">Heure(s)</option>
+									<option value="day">Jour(s)</option>
+								</select>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Minimum</label>
+							<div class="controls">
+								<input type="text" name="minimum_{$smarty.foreach.question.index}" id="minimum_{$smarty.foreach.question.index}" value="" class="span2 validate[custom[number]]" /> 
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Maximum</label>
+							<div class="controls">
+								<input type="text" name="maximum_{$smarty.foreach.question.index}" id="maximum_{$smarty.foreach.question.index}" value="" class="span2 validate[custom[number]]" /> 
+							</div>
+						</div>
+					{/if}
+					</div>
+					<input type="hidden" name="quesid_{$smarty.foreach.question.index}" id="" value="{$questions.id}" />
+					<input type="hidden" name="questype_{$smarty.foreach.question.index}" id="" value="{$questions.type}" />
+				</div>
+				
+				{/foreach}
+				{/if}
+	<div class="w-box row-fluid">
+		<div class="w-box-header">The Brief</div>
+			<div class="w-box-content cnt_a">
+				<div class="row-fluid">
+					<div class="span12">
+						  <div id="uploadspec">
+							<input type="file" accept="doc|docx|zip|xls|xlsx|pdf|et|rtf" name="uploadfile" class="validate[required] multi" maxlength="1">
+						</div>
+						<span class="help-block">Uniquement doc, docx, zip, xls, xlsx, pdf et rtf</span>
+					</div>
+				</div>
+			</div>
+			{* <input type="hidden" id="poll_spec_name" name="poll_spec_name" value="{$poll_file}" /> *}
+	</div>
+	
+	<div class="w-box">
+		<div class="w-box-header">Review of Editorial Chief</div>
+		<div class="w-box-content cnt_a">
+			<div class="row-fluid">
+				<div class="control-group">
+					<div class="media mission-comment">
+					<a class="pull-left imgframe">
+						<img width="60px" src="{$fo_path}/profiles/bo/{$userId}/logo.jpg" class="media-object">
+					</a>
+					<div class="media-body">														
+						<textarea name="editorial_chief_review" placeholder="Write a cool review to promote this challenge" class="span12" id=""></textarea>
+					</div>												
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="w-box">
+		<div class="w-box-header">Promotion</div>
+			<div class="w-box-content cnt_a">
+				{* <div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label" style="text-align:left;">From</label>
+						<div class="controls">
+							<div class="pull-left">
+							<select name='email_from' class='validate[required] select' style='width:140px'>
+								<option value='service'>Editorial team</option>
+								<option value='me'>Me</option>
+							</select>
+							</div>
+							<div style="padding-top:6px"> <strong style="margin-left:10px">To: Client</strong></div>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" style="text-align:left;">Subject</label>
+						<div class="controls">
+							<input type="text" name="email_subject" id="email_subject" value="{$email_subject}" class="span8 validate[required]" /> 
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" style="text-align:left;">Message</label>
+						<div class="controls">
+							<textarea rows="4" class="validate[required]" cols="80" name="email_content" id="mailcontrib" >{$email_content}</textarea>  
+						</div>
+					</div>
+				</div> *}
+				
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label" style="text-align:left;">From</label>
+						<div class="controls">
+							<div class="pull-left">
+							<select name='cemail_from' class='validate[required] select' style='width:140px'>
+								<option value='service'>Editorial team</option>
+								<option value='me'>Me</option>
+							</select>
+							</div>
+							<div style="padding-top:6px"> <strong style="margin-left:10px">To: Writers</strong></div>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" style="text-align:left;">Subject</label>
+						<div class="controls">
+							<input type="text" name="cemail_subject" id="cemail_subject" value="{$cemail_subject}" class="span8 validate[required]" /> 
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" style="text-align:left;">Message</label>
+						<div class="controls">
+							<textarea rows="4" class="validate[required]" cols="80" name="cemail_content" id="cmailcontrib" >{$cemail_content}</textarea>  
+						</div>
+					</div>
+				</div>
+				
+			</div>
+	</div>
+	</div>
+	</div>
+	<div class="control-group topset2">
+		<div class="pull-center">
+			<button class="btn btn-primary" type="submit" onclick="return removeDisabled()">Valider</button>
+		</div>
+	</div>
+	<input type="hidden" name="contract_mission_id" value="{$smarty.get.contract_missionid}" />	
+	<input type="hidden" name="client_id" value="{$quoteMission.client_id}" />	
+	{if $quoteMission.language_dest}
+	<input type="hidden" name="language" value="{$quoteMission.language_dest}" />	
+	{else}
+	<input type="hidden" name="language" value="{$quoteMission.language_source}" />	
+	{/if}
+	<input type="hidden" name="type" value="{$quoteMission.product_type}" />	
+	<input type="hidden" name="category" value="{$quoteMission.category}" />	
+	<input type="hidden" name="cid" value="{$smarty.get.cid}" />	
+	<input type="hidden" name="mid" value="{$smarty.get.mid}" />	
+	<input type="hidden" name="qid" value="{$smarty.get.qid}" />	
+	<input type="hidden" name="nb_words" value="{$quoteMission.nb_words}" />	
+	</form>
+</div>
+
+<div class="span3">
+	{include file='gebo/survey/info.phtml'}
+</div>
+</div>
+{/foreach}
+{/if}

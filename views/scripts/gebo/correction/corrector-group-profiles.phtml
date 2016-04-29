@@ -1,0 +1,600 @@
+{literal}
+<script type="text/javascript" >
+$(document).ready(function() {
+     $("#refusemail").removeData('modal');
+     $(".pop_over").popover({trigger: 'hover'});
+    loadEditors('commentsRefuse');
+    loadEditors('commentsAccept');
+});
+///black list the user/////////
+function blackListUser(userid, mode, username, artid)
+{
+    if(mode == 'yes')
+    {
+        var target_page = "/processao/blackcontributor?status=no&user_id="+userid;
+        $.post(target_page, function(data){ //alert(data);
+            var href="/correction/corrector-group-profiles?artId="+artid;
+            $("#groupprofile").removeData('modal');
+            $('#groupprofile .modal-body').load(href);
+            $("#groupprofile").modal();
+            $(".modal-backdrop:gt(0)").remove();
+            smoke.alert(username+" Unblacklisted");
+        });
+    }
+    else
+    {
+        var target_page = "/processao/blackcontributor?status=yes&user_id="+userid;
+        $.post(target_page, function(data){ //alert(data);
+           var href="/correction/corrector-group-profiles?artId="+artid;
+            $("#groupprofile").removeData('modal');
+            $('#groupprofile .modal-body').load(href);
+            $("#groupprofile").modal();
+            $(".modal-backdrop:gt(0)").remove();
+            smoke.alert(username+" Blacklisted");
+        });
+    }
+
+}
+
+///////////for all contributors details list in popup//////////////////
+function acceptRefuseWriter(button)
+{
+    var userid = $('#userid').val();
+    var partid = $('#partid').val();
+    var artid = $('#artid').val();
+   // alert(userid); alert(partid);alert(escape(comment));alert(artid);
+    if(button == 'refuse_pop')
+    {
+        var comment = tinyMCE.get('commentsRefuse').getContent();
+        //var comment = CKEDITOR.instances['commentsRefuse'].getData();
+        var sendtofo;
+        /////////There are no correctors to participate if the article is republished/////////////
+        var target_page1 = "/correction/checklastcorrector?artid="+artid;
+        $.post(target_page1, function(data1){  // alert(data1);
+            var data2 = $.trim(data1);
+            if(data2 == 'yes')
+            {
+                smoke.confirm("Plus aucun correcteur ne peut participer, vous etes sur le point de fermer cet AO/article. Confirmez-vous votre choix ?",function(i){
+                    if (i)
+                    {
+                        var target_page = "/correction/selectcorrector?contrib_id="+userid+"&particip_id="+partid+"&button="+button+"&comment="+escape(comment)+"&nocrtclose=yes&art_id="+artid;
+                        $.post(target_page, function(data){  //alert(data);
+                            window.location.reload();
+
+                        });
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                });
+            }
+            else
+            {
+                //////////// is it the last participation and refusing it ////////////////////////////////////
+                var target_page = "/processao/getlastarts?artid="+artid;
+                $.post(target_page, function(data){   //alert(data);
+                    var data1 = $.trim(data);
+                    if(data1 == "yes")
+                    {
+                        smoke.confirm("L\'article sera remis en ligne",function(e){
+                            if (e)
+                            {
+                                sendtofo = 'yes';
+                                var mailannoucement;
+                                if($(mailannouncement).is(':checked'))
+                                    mailannoucement = "sendmail";
+                                else
+                                    mailannoucement = "dontsendmail"; //alert(mailannoucement);
+                                var target_page = "/correction/selectcorrector?contrib_id="+userid+"&particip_id="+partid+"&button=refuse_pop&comment="+escape(comment)+"&sendtofo="+sendtofo+"&mailannoucement="+mailannoucement+"&art_id="+artid;
+                                $.post(target_page, function(data){ // alert(data);
+                                    //////////to reload the contirbutor list////////////
+                                    //window.location.reload();
+                                    refreshModel(artid);
+                                });
+                            }
+                            else
+                            {
+                                 sendtofo = 'no';
+                                var target_page = "/correction/selectcorrector?contrib_id="+userid+"&particip_id="+partid+"&button=refuse_pop&comment="+escape(comment)+"&sendtofo="+sendtofo+"&art_id="+artid;
+                                $.post(target_page, function(data){  //alert(data);
+                                    refreshModel(artid);
+                                });
+                            }
+                        });
+                    }
+                    else
+                    {
+                        ///////////////////////////////////////////////////////////////
+                        var target_page = "/correction/selectcorrector?contrib_id="+userid+"&particip_id="+partid+"&button=refuse_pop&comment="+escape(comment)+"&art_id="+artid;
+                        $.post(target_page, function(data){  //alert(data);
+                            refreshModel(artid);
+                        });
+                    }
+                });
+            }
+        });
+    }
+    else
+    {    //alert(userid); alert(partid);alert(escape(comment));alert(artid);
+        var comment = tinyMCE.get('commentsAccept').getContent();
+        var target_page = "/correction/selectcorrector?contrib_id="+userid+"&particip_id="+partid+"&button=submit_pop&comment="+escape(comment)+"&art_id="+artid;
+        $.post(target_page, function(data){  
+            if($.trim(data)=='selectedwriter')
+				smoke.alert('Ce contributeur a déjà été sélectionné pour la rédaction de cet article');
+			
+			if($.trim(data)=='selectedcorr')
+				smoke.alert('Ce correcteur a déjà été sélectionné pour la correction de cet article');
+				
+			refreshModel(artid);
+        });
+    }
+}
+
+function refreshModel(artid)
+{
+    var href="/correction/corrector-group-profiles?artId="+artid;
+    $("#groupprofile").removeData('modal');
+    $('#groupprofile .modal-body').load(href);
+    $("#groupprofile").modal();
+    $(".modal-backdrop:gt(0)").remove();
+}
+function getComment(button, partid, userid, artid, status)
+{
+    $('#refusemail').removeData('modal');
+    ///passing these 3 values for the popup for next post///
+    $('#userid').val(userid);
+    $('#partid').val(partid);
+    $('#artid').val(artid);
+    var showcom=0;
+    if(button=='refuse_pop')
+    {
+        if(status=='published')
+        {
+            $.ajax({
+                url: "/ao/checkpaidinvoice",
+                global: false,
+                type: "POST",
+                data: ({art_id:artid,part_id:partid}),
+                dataType: "html",
+                async:false,
+                success: function(msg){
+                    if(msg=="alert")
+                    {
+                        alert("Article is payed, You cannot refuse.");
+                        showcom=1;
+                    }
+                }
+            });
+        }
+        if (tinymce.getInstanceById('commentsRefuse'))
+        {
+            tinymce.execCommand('mceRemoveControl', true, 'commentsRefuse');
+            loadEditors('commentsRefuse');
+        }
+        else  if (!tinymce.getInstanceById('commentsRefuse'))
+        {
+            loadEditors('commentsRefuse');
+        }
+        var mailid='29';
+        var target_page = "/correction/getcommentpopup?mailId="+mailid+"&contrib_id="+userid+"&particip_id="+partid+"&button="+button+"&artid="+artid;
+        $.post(target_page, function(data){   //alert('data');
+            $('#commentsRefuse').html(data);
+        });
+        $('#refusemail').modal('show');
+    }
+    else
+    {
+        //check same participation in writing & correction
+		var target_page = "/correction/checkparticipation?contrib_id="+userid+"&artid="+artid;
+         $.post(target_page, function(datacorr){    // alert(datacorr);
+             if($.trim(datacorr)=="yes")
+			 {
+			  smoke.confirm("Ce contributeur a également participé pour la rédaction de cet article. Souhaitez-vous tout de même le sélectionner pour la correction ?",function(e){
+                   if (e)
+                    {
+			 			//Refuse correction participation
+						/*var target_page = "/correction/refuseparticipation?contrib_id="+userid+"&artid="+artid;
+						 $.post(target_page, function(datacorr){  
+						 });*/
+						 
+						if (tinymce.getInstanceById('commentsAccept'))
+						{
+							tinymce.execCommand('mceRemoveControl', true, 'commentsAccept');
+							loadEditors('commentsAccept');
+						}
+						else  if (!tinymce.getInstanceById('commentsAccept'))
+						{
+							loadEditors('commentsAccept');
+						}
+						//28
+						var target_page = "/correction/getcommentpopup?mailId=182&contrib_id="+userid+"&particip_id="+partid+"&button="+button+"&artid="+artid;
+						$.post(target_page, function(data){   //alert(data);
+							$('#commentsAccept').html(data);
+						});
+						$('#Acceptmail').modal('show');
+									}
+				});
+			 }
+			 else
+			 {
+				if (tinymce.getInstanceById('commentsAccept'))
+				{
+					tinymce.execCommand('mceRemoveControl', true, 'commentsAccept');
+					loadEditors('commentsAccept');
+				}
+				else  if (!tinymce.getInstanceById('commentsAccept'))
+				{
+					loadEditors('commentsAccept');
+				}
+				
+				var writerstatus=$("#writerstatus").val();
+				if(writerstatus=='plag_exec' || writerstatus=='under_study')
+					var mail=28;
+				else
+					var mail=182;
+				
+				var target_page = "/correction/getcommentpopup?mailId="+mail+"&contrib_id="+userid+"&particip_id="+partid+"&button="+button+"&artid="+artid;
+				$.post(target_page, function(data){   //alert(data);
+					$('#commentsAccept').html(data);
+				});
+				$('#Acceptmail').modal('show');
+			 }
+         });
+	}
+}
+
+////get all attributes of the close and republish button to the abve the repulish butto/////
+function shareAttributes()
+{
+    var userId = $("#userId").val();
+    var artId = $("#articleId").val();
+    var partId = $("#partId").val();
+    var status = $("#status").val();
+    getComment('comment_refuse_'+userId, 'refuse_pop', partId, userId, artId, status);
+}
+////show user details/////
+function showUserAddDetails(loop)
+{
+    $('#collapsedetails'+loop).toggle();
+    $('#collapseOne'+loop).height('auto');
+    if ($('#plusimg'+loop).is('.splashy-add_small')) {
+        //$('#collapsedetails'+loop).show();
+        $('#plusimg'+loop).removeClass('splashy-add_small');
+        $('#plusimg'+loop).addClass('splashy-remove_minus_sign_small');
+    } else {
+        //$('#collapsedetails'+loop).hide();
+        $('#plusimg'+loop).removeClass('splashy-remove_minus_sign_small');
+        $('#plusimg'+loop).addClass('splashy-add_small');
+    }
+}
+
+function showLastCycle(artid, mode)
+{
+    if(mode == 'show') {
+        jQuery('tr').each(function(obj){
+            $("#lastcycles"+obj).show();
+        });
+        $("#lastcyclelablehide").show();
+        $("#lastcyclelableshow").hide();
+
+    }else{
+        jQuery('tr').each(function(obj){
+            $("#lastcycles"+obj).hide();
+        });
+        $("#lastcyclelablehide").hide();
+        $("#lastcyclelableshow").show();
+        var href="/correction/corrector-group-profiles?artId="+artid;
+        $("#groupprofile").removeData('modal');
+        $('#groupprofile .modal-body').load(href);
+        $("#groupprofile").modal();
+        $(".modal-backdrop:gt(0)").remove();
+    }
+
+
+}
+
+
+</script>
+{/literal}
+
+<form action="/correction/selectallprofiles?submenuId={$submenuId}" method="post" id="selectallprofile" name="selectallprofile" onsubmit="return validate3NewUser(1);">
+<div class="row-fluid">
+  <div class="span12">
+      <a class="alignright btn btn-info hint--bottom hint--info" id="linkidrefresh" data-hint="Reload"  href="/correction/corrector-group-profiles?artId={$delDetails[0].articleid}"><img src="/BO/theme/gebo/img/gCons/reload.png" alt="" /></a>
+      <table id="grptabledetails" class="table btn-gebo" >
+
+        <tr>
+            <td><b>Article : </b>{$delDetails[0].artname|stripslashes|utf8_encode}</td>
+            <td><b>Nom Ao : </b>{$delDetails[0].title|stripslashes|utf8_encode}</td>
+            <td><b>Fourchette Prix : </b>{$delDetails[0].correction_pricemin}-{$delDetails[0].correction_pricemax}&nbsp;&euro;</td>
+            <td><b>Client : </b>{$delDetails[0].company_name}</td>
+            <td><b>Cat&Eacute;gorie : </b>{$delDetails[0].art_category|utf8_encode}</td>
+        </tr>
+        <tr>
+            <td><b>Total Participants : </b>{if $totalusers eq ''}0{else}{$totalusers}{/if}</td>
+            <td><b>Ao Cr&Eacute;e le : </b>{$delDetails[0].created_at|date_format:"%d/%m/%Y"}</td>
+            <td><b>Statut : </b>{if $delDetails[0].status eq 'bid_corrector'} New
+                                 {elseif $delDetails[0].status eq 'bid_refused'} Refused
+                                 {elseif $delDetails[0].status eq 'published'} Published
+                                 {elseif $delDetails[0].status eq ''} No Participants
+                                 {else} Ongoing {/if}
+            </td>
+            <td><b>Refus : </b>{if $refused_arts eq ''}0{else}{$refused_arts}{/if}</td>
+            <td>{if $partStatus[0].current_stage == 'stage0'  || $partStatus[0].current_stage == 'stage2' || $partStatus[0].status == 'published' || $smarty.now < $delDetails[0].correction_participationexpires}
+                &nbsp;
+                {elseif $lastparticipant eq 1}
+                <button type="button" data-toggle="modal" data-target="#republish" href="/correction/republishcorrectorpopup?close=yes&artId={$delDetails[0].articleid}" id="closerepublish" name="closerepublish" class="btn btn-danger">Re publier</button>
+                {else}
+                <button type="button" data-toggle="modal" data-target="#republish" href="/correction/republishcorrectorpopup?close=no&artId={$delDetails[0].articleid}" id="closerepublish" name="closerepublish" class="btn btn-danger">Re publier</button>{/if}
+            </td>
+        </tr>
+    </table>
+
+
+    <table id="dt_gal" class="table table-bordered table-striped table_vam">
+        <thead>
+        <tr>
+            <th>Sl.no</th>
+            <th>Nom</th>
+            <th>Prix Propos&eacute;</th>
+            <th>Round</th>
+            <th>date Participation</th>
+            <th>Profil</th>
+            <!-- <th>Language</th>
+            <th>Profession</th> -->
+            <th>Statut</th>
+            <th>Participations</th>
+           <!--  <th>Refused</th>
+            <th>Validated</th>
+            <th>Disapproved</th
+            <th>Closed</th>
+            <th>Published</th> -->
+            <th>Action</th>
+            <th>Black list</th>
+            <th>Commentaire</th>
+        </tr>
+        </thead>
+        <tbody>
+
+         {foreach from=$contribDetails key=grpprofiles_key item=grpprofiles_item name=grpprofiles_loop}
+        <tr {if $grpprofiles_item[0].cyclecount neq 0} id="lastcycles{$smarty.foreach.grpprofiles_loop.index+1}" style="color:#F20A58;display:none;" {/if}>
+            <td><a id="elaborate{$smarty.foreach.grpprofiles_loop.index+1}" onclick="showUserAddDetails('{$smarty.foreach.grpprofiles_loop.index+1}');" class="accordion-toggle collapsed" data-toggle="collapse"
+                   data-parent="#accordion{$smarty.foreach.grpprofiles_loop.index+1}" href="#collapseOne{$smarty.foreach.grpprofiles_loop.index+1}">
+                <i id="plusimg{$smarty.foreach.grpprofiles_loop.index+1}" class="splashy-add_small"></i></a>{$smarty.foreach.grpprofiles_loop.index+1}</td>
+
+            <td>{$grpprofiles_item[0].first_name|utf8_encode} {$grpprofiles_item[0].last_name|utf8_encode}</td>
+            <td>{$grpprofiles_item[0].price_corrector}</td>
+            <td>{if $grpprofiles_item[0].cyclecount eq '0'}
+                {assign var="iSum" value=$grpprofiles_item[0].cyclecount+$maxcycle+1}enchère {$iSum}
+                {else}enchère {$grpprofiles_item[0].cyclecount} {/if}</td>
+            <td>{$grpprofiles_item[0].created_at|date_format:"%d/%m/%Y %H:%M:%S"}</td>
+            <td>{if $grpprofiles_item[0].type2 eq 'corrector'}
+                    {if $grpprofiles_item[0].profile_type2 eq 'junior'}<span class="label label-info">JUNIOR</span>
+                    {elseif $grpprofiles_item[0].profile_type2 eq 'senior'} <span class="label label-info">SENIOR</span>
+                    {elseif $grpprofiles_item[0].profile_type2 eq 'sub-junior'} <span class="label label-info">débuts</span>{/if}
+                {else}
+                    {if $grpprofiles_item[0].profile_type eq 'junior'}<span class="label label-info">JUNIOR</span>
+                    {elseif $grpprofiles_item[0].profile_type eq 'senior'} <span class="label label-info">SENIOR</span>
+                    {elseif $grpprofiles_item[0].profile_type eq 'sub-junior'} <span class="label label-info">débuts</span>{/if}
+                {/if}
+            </td>
+            <!-- <td>{$grpprofiles_item[0].language}</td>
+            <td>{$grpprofiles_item[0].profession}</td> -->
+            <td>
+                {if $grpprofiles_item[0].status == 'bid'}
+                   <span class="label label-warning">Validé</span>
+                {/if}
+                {if $grpprofiles_item[0].status == 'bid_refused'}
+                   <span class="label label-important">Refusé</span>
+                {/if}
+                {if $grpprofiles_item[0].status == 'bid_corrector' || $grpprofiles_item[0].status == 'bid_nonpremium'}
+                    <span class="label label-warning">Attente</span>
+                {/if}
+                {if $grpprofiles_item[0].status == 'under_study'}
+                    <span class="label label-warning">{if $grpprofiles_item[0].current_stage eq 'stage1'}Validé - en étude phase 1 {else}Validé - en étude phase finale{/if}</span>
+                {/if}
+                {if $grpprofiles_item[0].status == 'closed'}
+                    <span class="label label-important">{if $grpprofiles_item[0].current_stage}refus définitif{else}refus définitif{/if}</span>
+                {/if}
+                {if $grpprofiles_item[0].status == 'published'}
+                    <span class="label label-warning">Published</span>
+                {/if}
+                {if $grpprofiles_item[0].status == 'bid_temp'}
+                    <span class="label label-warning">Validation - en attente</span>
+                {/if}
+                {if $grpprofiles_item[0].status == 'bid_refused_temp'}
+                    <span class="label label-important">Refus - en attente</span>
+                {/if}
+                {if $grpprofiles_item[0].status == 'on_hold'}
+                    <span class="label label-warning">{if $grpprofiles_item[0].current_stage eq 'stage1'}locké s1{else}locké phase finale{/if}</span>
+                {/if}
+                {if $grpprofiles_item[0].status == 'disapproved'}
+                    <span class="label label-important">Refus pour resoumission</span>
+                {/if}
+                {if $grpprofiles_item[0].status == 'time_out'}
+                    <span class="label label-warning">Time out</span>
+                {/if}
+            </td>
+            <td>{$grpprofiles_item[3].no_paritcipations}</td>
+           <!--  <td>{$grpprofiles_item[2].no_disapproved}</td>
+            <td>{$grpprofiles_item[5].validated}</td>
+            <td>{$grpprofiles_item[2].no_disapproved}</td>
+            <td>{$grpprofiles_item[9].closed}</td>
+            <td>{$grpprofiles_item[1].no_approved}</td> -->
+            <td style="width: 185px;">{if $grpprofiles_item[0].cyclecount neq 0} &nbsp;
+                {elseif  $smarty.now > $grpprofiles_item[0].correction_participationexpires && $grpprofiles_item[0].correction_participationexpires!="0"}
+                    {if $grpprofiles_item[0].status == 'bid_corrector' || $grpprofiles_item[0].status == 'bid' || $grpprofiles_item[0].status == 'under_study' || $grpprofiles_item[0].status == 'bid_temp' || $grpprofiles_item[0].status == 'bid_refused_temp' || $grpprofiles_item[0].status == 'disapproved'}
+                    {if $grpprofiles_item[0].blackstatus!='yes'}
+                    {if $lastparticipant eq 1}
+                    <!--<button class="btn hint--bottom hint--info" data-hint="Refuser et re-publier" type="button" name="refuse_pop"  id="Refuser_{$grpprofiles_item[0].identifier}" data-toggle="modal" data-target="#republish" onclick="return testfunc();" href="/processao/republishpopup?close=yes&artId={$grpprofiles_item[0].id}" style="background:#F5AA1A"><i class="splashy-thumb_down"></i></button> -->
+                   <button class="btn hint--bottom hint--info" data-hint="Refuser" type="button" name="refuse_pop" id="Refuser_{$grpprofiles_item[0].identifier}"  onclick="return getComment('refuse_pop', '{$grpprofiles_item[0].partId}', '{$grpprofiles_item[0].identifier}','{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')" style="background:#F5AA1A"><i class="splashy-thumb_down"></i> </button>
+
+                    <input type="hidden" id="userId" name="userId" value="{$grpprofiles_item[0].identifier}">
+                    <input type="hidden" id="partId" name="partId" value="{$grpprofiles_item[0].partId}">
+                    <input type="hidden" id="articleId" name="articleId" value="{$delDetails[0].articleid}">
+                    <input type="hidden" id="status" name="status" value="{$grpprofiles_item[0].status}">
+                    {else}
+                    <button class="btn hint--bottom hint--info" data-hint="Refuser" type="button" name="refuse_pop" id="Refuser_{$grpprofiles_item[0].identifier}"  onclick="return getComment('refuse_pop', '{$grpprofiles_item[0].partId}', '{$grpprofiles_item[0].identifier}','{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"><i class="splashy-thumb_down"></i> </button>
+                    {/if}
+                    {/if}
+                    {/if}
+                    {if $grpprofiles_item[0].status == 'published' && $grpprofiles_item[0].premium_option=="0"}
+                    <button class="btn hint--bottom hint--info" data-hint="Refuser" type="button" name="refuse_pop" id="Refuser_{$grpprofiles_item[0].identifier}"  onclick="return getComment('refuse_pop', '{$grpprofiles_item[0].partId}', '{$grpprofiles_item[0].identifier}','{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"> <i class="splashy-thumb_down"></i></button>
+                    {/if}
+                    {if $grpprofiles_item[0].status == 'bid_corrector' || $grpprofiles_item[0].status == 'bid_temp' || $grpprofiles_item[0].status == 'bid_refused_temp'}
+                    {if $anyvalidatedCorrector eq 'NO' && $grpprofiles_item[0].blackstatus!='yes' && $grpprofiles_item[0].identifier!=$selectedwriter}
+                    <button class="btn hint--bottom hint--info" data-hint="Valider" type="button" name="submit_pop" id="Accept_{$grpprofiles_item[0].identifier}" onclick="return getComment('submit_pop', '{$grpprofiles_item[0].partId}', '{$grpprofiles_item[0].identifier}','{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"><i class="splashy-thumb_up"></i></button>
+                    {/if}
+                    {/if}
+                    {if $grpprofiles_item[0].status == 'bid_refused'}
+                    {if $anyvalidatedCorrector eq 'NO' && $grpprofiles_item[0].identifier!=$selectedwriter}
+                    <button class="btn hint--bottom hint--info" data-hint="Valider" type="button" name="submit_pop_refused" id="Accepter_{$grpprofiles_item[0].identifier}" onclick="return getComment('submit_pop', '{$grpprofiles_item[0].partId}', '{$grpprofiles_item[0].identifier}','{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"><i class="splashy-thumb_up"></i> </button>
+                    {/if}
+                    {/if}
+                {/if}
+                <button class="btn hint--bottom hint--info" data-hint="Contacter" type="button" name="send_mail"  onclick="window.open('/mails/composemail?submenuId=ML4-SL1&user_id={$grpprofiles_item[0].identifier}')"> <i class="splashy-mail_light"></i></button>
+                <a class="btn hint--bottom hint--info" data-hint="Commenter"  data-target="#comments" data-toggle="modal"  name="send_comment"  href="/proofread/getallbousercomments?userId={$grpprofiles_item[0].identifier}&artid={$grpprofiles_item[0].id}" ><i class="splashy-comments_reply"></i></a>
+            </td>
+            <td><!--<div id="text-toggle-button{$smarty.foreach.grpprofiles_loop.index}" class="toggle-button">
+                    <input name="blackstatus{$smarty.foreach.grpprofiles_loop.index}" id="blackstatus{$smarty.foreach.grpprofiles_loop.index}" type="checkbox" value="{$grpprofiles_item[0].identifier}" {if $grpprofiles_item[0].blackstatus=='yes'} checked="checked" {/if} >
+                </div>-->
+                {if $grpprofiles_item[0].blackstatus=='yes'}
+                <button type="button"  id="blackstatusyes{$grpprofiles_item[0].identifier}" onclick="blackListUser('{$grpprofiles_item[0].identifier}', 'yes', '{$grpprofiles_item[0].first_name|utf8_encode}', '{$delDetails[0].articleid}') " class="btn btn-danger hint--bottom hint--info" data-hint="click to unblacklist">OUI</button>
+                {else}
+                <button type="button"  id="blackstatusno{$grpprofiles_item[0].identifier}" onclick="blackListUser('{$grpprofiles_item[0].identifier}', 'no', '{$grpprofiles_item[0].first_name|utf8_encode}', '{$delDetails[0].articleid}') " class="btn btn-info hint--bottom hint--info" data-hint="click to blacklist">NON</button>
+                {/if}
+            </td>
+            <td><div id="fl_a">
+            {if $grpprofiles_item[0].contrib_parts_inao neq 0}
+                </div>Profil déjà sélectionné pour <span class="label label-important">{$grpprofiles_item[0].contrib_parts_inao}</span><br> articles sur cette mission
+            {/if}
+            </td>
+
+        </tr>
+        <tr id="collapsedetails{$smarty.foreach.grpprofiles_loop.index+1}" class="collapse" style="display: none;" >
+        <td colspan="11">
+            <div  id="collapseOne{$smarty.foreach.grpprofiles_loop.index+1}" class="accordion-body collapse" >
+                 <table class='table table-bordered tdleftalign'>
+                    <tr><td><b>Nom</b></td>
+						<td>{$grpprofiles_item[0].first_name|utf8_encode} {$grpprofiles_item[0].last_name|utf8_encode}</td>
+                        <td><b>Email</b></td>
+						<td><a href="/user/contributor-edit?submenuId=ML3-SL6&tab=viewcontrib&userId={$grpprofiles_item[0].identifier}">{$grpprofiles_item[0].email}</a></td>
+                        <td><b>Articles Refus&eacute;s</b></td>
+						<td>{$grpprofiles_item[2].no_disapproved}</td></tr>
+                    <tr><td><b>langue</b></td>
+                        <td><b>{$grpprofiles_item[0].language}</b>&nbsp;{$grpprofiles_item[0].language_more|utf8_encode}</td>
+                        <td><b>inscrit depuls</b></td>
+						<td>{$grpprofiles_item[0].doj|date_format:"%d/%m/%Y"}</td>
+                        <td><b>Articles Valid&eacute;s</b></td>
+						<td>{$grpprofiles_item[5].validated}</td></tr>
+
+                    <tr><td colspan="1"><b>Formation</b></td>
+						<td colspan="3">
+                            <b>Formation - </b>{$grpprofiles_item[0].educationDetails[0].title}
+                            <b>Ecole, universit&eacute; -</b> {$grpprofiles_item[0].educationDetails[0].institute}
+                            <!--<b>Duration -</b>
+                            {$grpprofiles_item[0].educationDetails[0].from_month|date_format:"%B"}/{$grpprofiles_item[0].educationDetails[0].from_year}
+                            to
+                            {if $grpprofiles_item[0].educationDetails[0].still_working neq 'yes'}
+                                {$grpprofiles_item[0].educationDetails[0].to_month|date_format:"%B"}/{$grpprofiles_item[0].educationDetails[0].to_year}
+                            {else}
+                            Actuel
+                            {/if}-->
+                        </td>
+                        <td colspan=""><b>Articles Publi&eacute;s</b></td>
+                        <td><!--{$grpprofiles_item[1].no_approved}-->{$grpprofiles_item[0].successrate}</td></tr>
+                    <tr><td><b>Exp&eacute;riences<br> professionnelles</b></td>
+                        <td colspan="3">
+                             <b>Intitul&eacute; du poste - </b>{$grpprofiles_item[0].workDetails[0].title}
+                             <b>entreprise -</b> {$grpprofiles_item[0].workDetails[0].institute}
+                             <!--<b>Duration -</b>
+                             {$grpprofiles_item[0].workDetails[0].from_month|date_format:"%B"}/{$grpprofiles_item[0].workDetails[0].from_year}
+                             to
+                            {if $grpprofiles_item[0].workDetails[0].still_working neq 'yes'}
+                                {$grpprofiles_item[0].workDetails[0].to_month|date_format:"%B"}/{$grpprofiles_item[0].workDetails[0].to_year}
+                            {else}
+                                Actuel
+                            {/if}-->
+
+                        </td>
+                        <td><b>Closed</b></td>
+                        <td>{$grpprofiles_item[9].closed}</td>
+                    </tr>
+                    <tr><td colspan="1"><b>Cat&eacute;gories</b></td>
+                        <td colspan="5">{$grpprofiles_item[0].categories|utf8_encode}</td>
+                    </tr>
+                </table>
+            </div></td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+      {if $contribDetails eq ''}<div class="span5"></div>No Participants{/if}
+      {if $grpprofiles_item[0].cyclecount neq 0}
+        <span class="label label-info" id="lastcyclelableshow" onclick="showLastCycle('{$delDetails[0].articleid}', 'show');">Montrer enchère(s) pr&eacute;c&eacute;dente(s)</span>
+      <span class="label label-info hide" id="lastcyclelablehide" onclick="showLastCycle('{$delDetails[0].articleid}', 'hide');">Cacher enchère(s) pr&eacute;c&eacute;dente(s)</span>
+      {/if}
+	  <input type="hidden" name="writerstatus" id="writerstatus" value="{$writerstatus}" />
+  </div>
+</div>
+</form>
+<!--///for mail content show up for accecpting the profile///-->
+<div class="modal hide fade" id="Acceptmail">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('Acceptmail');">×</button>
+        <h3>SELECTIONNER PARTICIPANT</h3>
+    </div>
+    <div class="modal-body">
+        <textarea name="commentsAccept" class="textarea" id="commentsAccept"></textarea>
+    </div>
+    <div class="modal-footer">
+         <input type="hidden" id="userid" name="userid" />
+         <input type="hidden" id="partid" name="partid" />
+         <input type="hidden" id="artid" name="artid" />
+        <button type="button" id="accp_comment"  name="accp_comment" class="btn btn-success"  onclick="return acceptRefuseWriter('submit_pop');" >Valider</button>
+    </div>
+</div>
+<!--///for mail content show up for refusing the profile///-->
+<div class="modal hide fade" id="refusemail">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('refusemail');">×</button>
+        <h3>Refuser Participant</h3>
+    </div>
+    <div class="modal-body">
+        <textarea name="commentsRefuse" class="textarea" id="commentsRefuse"></textarea>
+    </div>
+    <div class="modal-footer">
+         <input type="hidden" id="userid" name="userid" />
+         <input type="hidden" id="partid" name="partid" />
+         <input type="hidden" id="artid" name="artid" />
+         <label class="uni-checkbox alignleft">
+         {if $lastparticipant eq 1}
+         <input type="checkbox" name="mailannouncement" id="mailannouncement" class="uni_style" />
+          <b>PREVENIR PAR EMAIL</b></label>{/if}
+        <button type="button" id="ref_comment"  name="ref_comment" class="btn btn-danger" onclick="return acceptRefuseWriter('refuse_pop');" >Refuser</button>
+    </div>
+</div>
+<!--///BO user send comments to for the participant ///-->
+<div class="modal hide fade" id="comments">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('comments');">&times;</button>
+        <h3>Ajouter Un Commentaire</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+
+    </div>
+</div>
+<!--///for the group profiles popup///-->
+<div class="modal4 hide fade" id="groupprofile">
+    <div class="modal-header">
+        <button  class="close" onclick="closePopup('groupprofile');">&times;</button>
+        <h3>D&eacute;tail des participations</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>

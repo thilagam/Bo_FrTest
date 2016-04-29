@@ -1,0 +1,570 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/lib/iCheck/skins/square/blue.css" type="text/css"/>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jquery.validate.min.js"></script>
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script>
+<!--/BO/theme/gebo/lib/validation/jquery.validate.min.js-->
+<script type="text/javascript" >
+var maxval={/literal}"{$aoDetails[0].correction_pricemax}"{literal};
+    $(document).ready(function() {
+		$(".uni_style").uniform();
+		
+		//icheck radio/checkbox
+		$(".icheck").iCheck({
+			checkboxClass: 'icheckbox_square-blue',
+			radioClass: 'iradio_square-blue'
+		});
+		
+        $("#publish_language").chosen();
+		$('.toggle-check').toggleButtons({
+			label:{enabled: "Oui",disabled: "Non"}
+		});		
+		$(".pop_over").popover({trigger: 'hover'});
+		
+		$("#submit_option1").chosen({disable_search: true });
+		$("#resubmit_option1").chosen({disable_search: true });	
+		
+		//plag excel toggle
+		$('input[name="plag_excel_file"]').on('ifClicked', function (event) {
+			var value=this.value;
+			if(value=='yes')
+			{
+				$("#plag_excel_div").show();				
+			}	
+			else
+			{
+				$("#plag_excel_div").hide();				
+			}	
+			
+		});
+		
+		if(maxval=="")
+			maxval = 0;
+		$("#edit_aoform").validate({
+				onkeyup: false,				
+				errorClass: 'error',
+				validClass: 'valid',
+				highlight: function(element) {
+					$(element).closest('span').addClass("f_error");
+				},
+				unhighlight: function(element) {
+					$(element).closest('span').removeClass("f_error");
+				},				
+                errorPlacement: function(error, element) {
+                    $(element).closest('div').append(error);
+                    /*if($(".crtfileupload-preview").text() == '')
+                       alert("please upload file in correction");*/
+                },
+				rules: {
+						title: {
+								required: true,
+								minlength: 6
+								},
+						correction_pricemin: {
+								required: true,
+								max:maxval
+								},
+						subjunior_time:"required",	
+						junior_time:"required",	
+						senior_time:"required",	
+						jc0_resubmission:"required",	
+						jc_resubmission:"required",	
+						sc_resubmission:"required",
+						participation_time:"required",
+                        crtjunior_time:"required",
+                        crtsenior_time:"required",
+                        crtjc_resubmission:"required",
+                        crtsc_resubmission:"required",
+                        crtparticipation_time:"required",
+                        correction_pricemax:"required",
+                        crtspec_file_name:"required",
+                        selection_time:"required",
+                        correction_selection_time:"required"
+                        //crtuploadfile:"required"
+					},
+					submitHandler: function(form) {
+						//var writerbrief = $(".writerbrief").text();
+						var submitform = true;
+						var ext =$(".writerbrief").text().split('.').pop().toLowerCase();
+						if($.inArray(ext, ['xls','xlsx','csv','docx','doc','zip']) == -1) {
+							$(".fileerrortype").removeClass('hide');
+							$("#uploadfile").focus();
+							submitform = false;
+						}
+						else
+						{
+							$(".fileerrortype").addClass('hide');
+						}
+						
+						if($("#correction1:checked").length)
+						{
+							var ext =$(".correctorbrief").text().split('.').pop().toLowerCase();
+							if($.inArray(ext, ['xls','xlsx','csv','docx','doc','zip']) == -1) {
+								$(".correctorerrortype").removeClass('hide');
+								$("#uploadfile").focus();
+								submitform = false;
+							}
+							else
+							{
+								$(".correctorerrortype").addClass('hide');
+							}
+						}
+						
+						if(submitform)
+							 form.submit();
+					}
+		});
+		
+		$('#correction_pricemax').blur(function() {
+		   var mx = parseInt($(this).val());
+		   $("#correction_pricemin").rules("add", {
+			   max: mx
+		   });  
+		});
+		
+        $("#crtsubmit_option").chosen({ allow_single_deselect: true,search_contains: true});
+        $("#plag_xls").chosen({ allow_single_deselect: true,search_contains: false});
+        $("#crtresubmit_option").chosen({ allow_single_deselect: true,search_contains: true});
+
+	});
+	function setCorrection()
+    {
+        if($("#correction1").is(':checked')){
+
+                $("#crttype").show();
+        }
+        else{
+            smoke.confirm("Merci de modifier vos pr&eacute;f&eacute;rences de correction dans les articles pour lesquels la correction est externe",function(e){  // alert(e);
+                if (e)
+                {
+                    $("#correction1").prop('checked',false);
+                    $("#crttype").hide();
+                }
+                else
+                {
+                    $("#correction1").prop('checked',true);
+                    $("#crttype").show();
+                }
+            });
+
+        }
+
+
+    }
+var total_premium_services_value=0;
+function services_update_popup(node,index,value,flag,id)
+{   
+		if(node=='parent')
+		{ 
+			if(index==0)
+			{
+				$('#prem input[type=checkbox]').removeAttr('checked');
+				$('#TotPrem').val("0");
+				total_premium_services_value=0;			
+				$('#prem input[type=checkbox]').attr('disabled','true');
+				$('#prem span').removeClass('uni-checked');
+				$('#premium_'+index+' input[type=checkbox]').removeAttr('disabled');
+			}	
+			else
+			{
+				$('#TotPrem').val("0");
+				total_premium_services_value=0;	
+				$('#premium_service_'+index+' input[type=checkbox]').removeAttr('disabled');
+			}
+				
+				
+		}
+	
+		var myArray = value.split('_'); 
+		var val=myArray[1];
+		if(flag.checked == true)
+		{ 
+			total_premium_services_value=$('#TotPrem').val();
+			total_premium_services_value=parseFloat(total_premium_services_value)+parseFloat(val);
+		}	
+		else
+		{ 
+			total_premium_services_value=$('#TotPrem').val();
+			total_premium_services_value=parseFloat(total_premium_services_value)-parseFloat(val);
+		}
+		 
+	$('#TotPrem').val(total_premium_services_value);
+	
+}
+</script>	
+<style type="text/css">
+.form-horizontal .control-label {
+    float: left;
+    padding-top: 5px;
+    text-align: right;
+    width: 42%;
+	font-weight:bold;
+	cursor:default;
+}
+.form-horizontal .controls {
+    margin-left: 47%;
+}
+.popover-title{
+	padding: 8px 14px;
+}
+.popover-content
+{
+    padding: 9px 14px;
+}
+.add-on{
+    background-color: #EEEEEE;
+    border: 1px solid #CCCCCC;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    height: 20px;
+    line-height: 20px;
+    min-width: 16px;
+    padding: 4px 5px;
+    text-align: center;
+    text-shadow: 0 1px 0 #FFFFFF;
+    width: auto;
+	border-radius: 4px 0 0 4px;
+}
+.append-input {
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 0;
+    margin-left: -5px !important
+    margin-top: -4px !important;
+    position: relative;
+    vertical-align: top;
+    z-index: -8;
+}
+.error {  display: none !important;}
+.fileerrortype
+{
+	margin:0;
+}
+</style>
+{/literal}
+
+{if $aoDetails |@count gt 0}
+{foreach item=delivery from=$aoDetails name="aoDetails"}
+	<div class="row-fluid">
+		<div class="span12">		
+			<form class="form-horizontal form_validation_ttip" enctype="multipart/form-data" method="POST" name="edit_aoform" id="edit_aoform" action="/deliveryongoing/save-delivery">
+				<fieldset>
+					<div class="control-group formSep">
+						<label class="control-label">Nom de cet appel d'offres <span class="f_req">*</span></label>
+						<div class="controls">
+							<span><input type="text" name="title" style="text-transform: none;" id="title" class="input-xlarge" value="{$delivery.title|escape|utf8_encode|stripslashes}" /></span>
+						</div>
+					</div>
+
+					{* <div class="control-group formSep">
+						<label for="fileinput" class="control-label">Plagiarism <span class="f_req">*</span></label>
+						<div class="controls">
+							<div class="toggle-check">
+								<input type="checkbox" disabled name="plagiarism_check" {if $delivery.plagiarism_check eq 'yes'}checked{/if}>
+							</div>						
+						</div>
+					</div> 
+                    <div class="control-group formSep">
+                        <label for="fileinput" class="control-label">Langue des contributeurs qui verront l'AO et recevront une alerte par email <span class="f_req">*</span></label>
+                        <div class="controls" style="overflow-y: visible">
+                            <select name="publish_language[]" id="publish_language" data-placeholder="select language" disabled="disabled" style="width:250px;">
+                                {foreach from=$language_array item=langitem key=langkey}
+                                {if in_array($langkey,$delivery.publish_language)}
+                                <option value="{$langkey}" selected>{$langitem|utf8_encode}</option>
+                                {else}
+                                <option value="{$langkey}">{$langitem|utf8_encode}</option>
+                                {/if}
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div> *}
+                    <!--{if $groupId eq 1}
+                    <div class="control-group formSep">
+                        <label class="control-label"> Cacher l'AO aux chefs de projet <span class="f_req">*</span></label>
+                        <div class="controls form-inline">
+                            <label class="uni-radio">
+                                <input type="checkbox" name="ao_visibility" class="uni_style" {if $delivery.ao_visibility eq 'show'}checked{/if} />
+                            </label>
+                        </div>
+                    </div>
+                    {/if}-->
+					{*
+					<div class="control-group formSep">
+						<label class="control-label">Type de contributeurs <span class="f_req">*</span></label>
+						<div class="controls form-inline">
+							<label class="uni-radio">
+								<input type="checkbox" value="sc"  name="view_to[]" class="uni_style" {if in_array('sc',$delivery.view_to)}checked{/if} disabled />
+								Senior <b>({$delivery.sc_count})</b>
+							</label>
+							<label class="uni-radio">
+								<input type="checkbox" value="jc" name="view_to[]" class="uni_style" {if in_array('jc',$delivery.view_to)}checked{/if} disabled />
+								Junior <b>({$delivery.jc_count})</b>
+							</label>						
+							<label class="uni-checkbox">
+								<input type="checkbox" value="jc0" name="view_to[]" class="uni_style" {if in_array('jc0',$delivery.view_to)}checked{/if} disabled />
+								Debutants <b>({$delivery.jc0_count})</b>
+							</label>						
+						</div>
+					</div> 
+					*}
+					{* {if $delivery.premium_option}
+					<div class="control-group formSep">
+						<label class="control-label">Vos options Premiums <span class="f_req">*</span></label>
+						<div class="controls" id="prem">
+							{foreach from=$options item=option name=option_loop}  
+								<label class="uni-radio">
+									<div id="uniform-premium_option_{$smarty.foreach.option_loop.index}" class="uni-radio"> 
+									 {if $delivery.premium_option==$option.value || $delivery.premium_option==$option.id}
+										<input type="radio" class="uni_style" value="{$option.value}" name="premium_option" checked id="premium_option_{$smarty.foreach.option_loop.index}"  onClick="services_update_popup('parent',{$smarty.foreach.option_loop.index},this.value,this)"/>
+									 {else}
+										<input type="radio" class="uni_style" value="{$option.value}" name="premium_option"  id="premium_option_{$smarty.foreach.option_loop.index}"  onClick="services_update_popup('parent',{$smarty.foreach.option_loop.index},this.value,this)"/>
+									 {/if}
+									</div>   
+									{$option.option_name|utf8_encode}
+									<a class="pop_over" data-original-title="{$option.option_name|utf8_encode}" data-placement="right" data-content="{$option.description1|strip_tags|utf8_encode}"><i class="splashy-information"></i></a>
+								</label>
+								
+								<div style="padding-left:30px;" id="premium_service_{$smarty.foreach.option_loop.index}">
+									{foreach from=$option.childlist item=child}
+										{if $child.id!=""}
+										<label class="uni-checkbox">									
+										  {if in_array($child.value,$delivery.child_options) || in_array($child.id,$delivery.child_options)}
+											 <input type="checkbox" class="uni_style" id="premium_service_{$child.id}" name="premium_service[]" value="{$child.value}" onClick="services_update_popup('child',{$smarty.foreach.option_loop.index},this.value,this,{$child.id})" checked />
+										  {else}
+											 <input type="checkbox" class="uni_style" id="premium_service_{$child.id}" name="premium_service[]" value="{$child.value}" onClick="services_update_popup('child',{$smarty.foreach.option_loop.index},this.value,this,{$child.id})" />
+										  {/if}
+										  {$child.option_name|utf8_encode}
+										  <a class="pop_over" data-original-title="{$option.option_name|utf8_encode}" data-placement="right" data-content="{$child.description|strip_tags|utf8_encode}"><i class="splashy-information"></i></a>									
+										</label>	
+										{/if}  
+								   {/foreach}  
+							   </div>
+							   {/foreach}
+							</label>
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label class="control-label">Total des services Premium choisis <span class="f_req">*</span></label>
+						<div class="controls">
+							<input type="text" name="TotPrem" id="TotPrem" class="input-small" value="{$delivery.premium_total}" readonly />
+						</div>
+					</div>
+					{/if} *}
+					<div class="control-group formSep">
+						<label class="control-label">Appel d'offres Anonyme <span class="f_req">*</span></label>
+						<div class="controls">
+							<div class="toggle-check">
+								<input type="checkbox" name="deli_anonymous" {if $delivery.deli_anonymous}checked{/if}>
+							</div>						
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label class="control-label">Priv&eacute; <span class="f_req">*</span></label>
+						<div class="controls">						
+							<div class="toggle-check">
+								<input type="checkbox" name="ao_type" {if $delivery.AOtype eq 'private'}checked{/if}>
+							</div>
+						</div>
+					</div>
+
+					<div class="control-group formSep">
+						<label class="control-label">Brief<span class="f_req">*</span></label>
+						<div class="controls">
+							<div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" value="" id="hiddenupload" name="">
+								<span class="btn btn-file"><span class="fileupload-new">S&eacute;lectionner</span><span class="fileupload-exists">Change</span>
+								{* checking conditions and setting disabled *}
+								<input type="file" name="uploadfile" id="uploadfile" value="{$delivery.file_name|utf8_encode}" {if $writer_participating || $writer_selection}disabled{/if}/></span>
+								<span class="writerbrief fileupload-preview">{$delivery.file_name|utf8_encode}</span>
+								<a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>
+							</div>
+							 <div class="alert alert-danger span3 hide fileerrortype" style="margin:0">
+								Invalid File Type
+							</div>
+							{if $writer_participating || $writer_selection}
+							<div class="alert alert-danger span8" style="margin:0">
+							{$upload_writer_error}
+							</div>
+							{/if}
+						</div>
+					</div>
+					{*<div class="control-group formSep">
+						<label class="control-label">D&eacute;lai de rendu de l'article <span class="f_req">*</span></label>
+						<div class="controls form-inline">						
+							<span style="vertical-align:top;">JC0 <input type="text" name="subjunior_time" id="subjunior_time" class="span2" disabled value="{$delivery.subjunior_time}" /></span>
+							<span style="vertical-align:top;">JC <input type="text" name="junior_time" id="junior_time" class="span2" disabled value="{$delivery.junior_time}"/></span>&nbsp;
+							<span style="vertical-align:top;">SC <input type="text" name="senior_time" id="senior_time" class="span2" disabled value="{$delivery.senior_time}"/></span>&nbsp; 
+							<select name="submit_option" id="submit_option1" disabled style="width:90px">
+								<option value="min" {if $delivery.submit_option=="min"}selected{/if}>Min(s)</option>
+								<option value="hour" {if $delivery.submit_option=="hour"}selected{/if}>Heure(s)</option>
+								<option value="day" {if $delivery.submit_option=="day"}selected{/if}>Jour(s)</option>
+							</select>		
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label  class="control-label">D&eacute;lai de ressoumission de l'article <span class="f_req">*</span></label>
+						<div class="controls form-inline">
+							<span style="vertical-align:top;">JC0 <input type="text" name="jc0_resubmission" id="jc0_resubmission" disabled class="span2" value="{$delivery.jc0_resubmission}"/></span>
+							<span style="vertical-align:top;">JC <input type="text" name="jc_resubmission" id="jc_resubmission" disabled class="span2" value="{$delivery.jc_resubmission}"/></span>&nbsp;
+							<span style="vertical-align:top;">SC <input type="text" name="sc_resubmission" id="sc_resubmission" disabled class="span2" value="{$delivery.sc_resubmission}"/></span>&nbsp;
+							<select name="resubmit_option" id="resubmit_option1" disabled style="width:90px">
+								<option value="min" {if $delivery.resubmit_option=="min"}selected{/if}>Min(s)</option>
+								<option value="hour" {if $delivery.resubmit_option=="hour"}selected{/if}>Heure(s)</option>
+								<option value="day" {if $delivery.resubmit_option=="day"}selected{/if}>Jour(s)</option>
+							</select>
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label  class="control-label">D&eacute;lai du timing de participation <span class="f_req">*</span></label>
+						<div class="controls">
+							<span><input type="text" name="participation_time" disabled id="participation_time" class="span2" value="{$delivery.participation_time}"  /></span> mins 					
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label  class="control-label">D&eacute;lai du timing de selection<span class="f_req">*</span></label>
+						<div class="controls">
+							<span><input type="text" name="selection_time" disabled id="selection_time" class="span2 digits" value="{$delivery.selection_time}"  /></span> mins 					
+						</div>
+					</div> *}
+					<div class="control-group">
+							<label class="control-label">URLs &agrave; ne pas v&eacute;rifier dans la phase plagiat
+										<div style="color:red">(S&eacute;par&eacute;es par des virgules)</div>
+							</label>
+							<div class="controls">
+								<div>							
+								<textarea placeholder="Example:edit-place.com, www.edit-place.com" id="urlsexcluded" name="urlsexcluded" {if $plag_error}readonly{/if}>{$delivery.urlsexcluded}</textarea>
+								</div>
+								{if $plag_error}
+								<div class="alert alert-danger span8" style="margin:10px 0">
+								{$plag_error}
+								</div>
+								{/if}
+							</div>
+							
+					</div>
+                    <div class="control-group formSep">
+                        <label class="control-label">Correction<span class="f_req">*</span></label>
+                        <div class="controls">
+                                <input type="checkbox" name="correction" id="correction1" value="external" {if $delivery.correction=="external"}checked{/if} onclick="setCorrection();">
+                        </div>
+                    </div>
+					<div id="crttype" {if $delivery.correction!="external"} style="display:none"{/if}>
+					<div class="control-group formSep">
+                    <label class="control-label">Correction Priv&eacute;e <span class="f_req">*</span></label>
+                    <div class="controls">
+                        <div class="toggle-check">
+                            <input type="checkbox" name="correction_type" {if $delivery.correction_type eq 'private'}checked{/if}>
+                        </div>
+                    </div>
+                    </div>
+					<div class="row-fluid">
+						<div class="control-group">
+							<label class="control-label">Plagiarism Excel</label>
+							<div class="controls">
+								<div class="span4">
+									<div class="" id="">
+										<label class="radio inline">
+										<input type="radio" name="plag_excel_file" class="icheck" value="yes" {if $delivery.plag_xls !=""} checked{/if}/> 
+											YES&nbsp;&nbsp;&nbsp;
+										</label>
+										<label class="radio inline">
+										<input type="radio" name="plag_excel_file" class="icheck" value="no" {if $delivery.plag_xls == ''} checked{/if}/> 
+											NO
+										</label>
+									</div>
+								</div>
+							</div>
+							<div class="controls" id="plag_excel_div" {if $delivery.plag_xls == ""} style="display:none"{/if}>
+								<div class="span2" >
+									<select name="plag_xls" class="span12 customselect" id="plag_xls">
+										<option value="xls" {if $delivery.plag_xls eq 'xls'} selected {/if}>XLS</option>
+										<option value="xlsx" {if $delivery.plag_xls eq 'xlsx'} selected {/if}>XLSX</option>
+									</select>
+								</div>
+								<div class="span3">
+									<input type="text" class="span12 required" id="xls_columns" value="{$delivery.column_xls}" placeholder="# columns" name="xls_columns">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="control-group formSep" >
+                    <label class="control-label">Brief de correction<span class="f_req">*</span></label>
+                    <div class="controls">
+                        <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" value="" name="">
+                            <span class="btn btn-file"><span class="fileupload-new">S&eacute;lectionner</span><span class="fileupload-exists">Change</span><input type="file" name="crtuploadfile" id="crtuploadfile" value="{if $delivery.crtfile_name}{$delivery.crtfile_name|utf8_encode}{/if}" {if $corrector_participating || $corrector_selection}disabled{/if}/></span>
+                            <span class="correctorbrief fileupload-preview">{if $delivery.crtfile_name}{$delivery.crtfile_name|utf8_encode}{/if}</span>
+                            <a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>
+                            <!-- <input type="hidden" id="crtspec_file_name" name="crtspec_file_name" value="{$delivery.crtfile_name}" /> -->
+                        </div>
+						<div class="alert alert-danger span3 hide correctorerrortype" style="margin:0">
+								Invalid File Type
+						</div>
+						{if $corrector_participating || $corrector_selection}
+						<div class="alert alert-danger span8" style="margin:0">
+						{$upload_corrector_error}
+						</div>
+						{/if}
+                    </div>
+                    </div>
+					{*	<div class="control-group formSep" >
+                    <label  class="control-label">D&eacute;lai du timing de participation pour la correction<span class="f_req">*</span></label>
+                    <div class="controls">
+                        <span><input type="text" name="crtparticipation_time" disabled id="crtparticipation_time" class="span2" value="{$delivery.correction_participation}"  /></span> mins
+                    </div>
+                    </div>	
+					<div class="control-group formSep">
+						<label  class="control-label">D&eacute;lai du timing de participation pour la correction selection<span class="f_req">*</span></label>
+						<div class="controls">
+							<span><input type="text" name="correction_selection_time" disabled id="correction_selection_time" class="span2 digits" value="{$delivery.correction_selection_time}"  /></span> mins 					
+						</div>
+					</div>
+					<div class="control-group formSep" >
+                    <label class="control-label">D&eacute;lai de rendu de la correction<span class="f_req">*</span></label>
+                    <div class="controls form-inline">
+                        <span style="vertical-align:top;">JC <input type="text" name="crtjunior_time" disabled id="crtjunior_time" class="span2" value="{$delivery.crtjunior_time}"  /></span>&nbsp;
+                        <span style="vertical-align:top;">SC <input type="text" name="crtsenior_time" disabled id="crtsenior_time" class="span2" value="{$delivery.crtsenior_time}"  /></span>&nbsp;
+                        <select name="crtsubmit_option" id="crtsubmit_option" disabled style="width:90px">
+                            <option value="min" {if $delivery.crtsubmit_option=="min"}selected{/if}>Min(s)</option>
+                            <option value="hour" {if $delivery.crtsubmit_option=="hour"}selected{/if}>Heure(s)</option>
+                            <option value="day" {if $delivery.crtsubmit_option=="day"}selected{/if}>Jour(s)</option>
+                        </select>
+                    </div>
+                    </div>
+					<div class="control-group formSep" >
+                    <label  class="control-label">D&eacute;lai de reprise de la correction<span class="f_req">*</span></label>
+                    <div class="controls form-inline">
+                        <span style="vertical-align:top;">JC <input type="text" disabled name="crtjc_resubmission" id="crtjc_resubmission" class="span2" value="{$delivery.crtjc_resubmission}"  maxlength="2" /></span>&nbsp;
+                        <span style="vertical-align:top;">SC <input type="text" disabled name="crtsc_resubmission" id="crtsc_resubmission" class="span2" value="{$delivery.crtsc_resubmission}"  maxlength="2"/></span>&nbsp;
+                        <select name="crtresubmit_option" id="crtresubmit_option" disabled style="width:90px">
+                            <option value="min" {if $delivery.crtresubmit_option=="min"}selected{/if}>Min(s)</option>
+                            <option value="hour" {if $delivery.crtresubmit_option=="hour"}selected{/if}>Heure(s)</option>
+                            <option value="day" {if $delivery.crtresubmit_option=="day"}selected{/if}>Jour(s)</option>
+                        </select>
+                    </div>
+                    </div> *}
+					{*
+					<div class="control-group formSep" >
+                    <label class="control-label">Fourchette de prix pour la correction<span class="f_req">*</span></label>
+                    <div class="controls">
+                        <span style="vertical-align:top"><input type="text" placeholder="Min" class="number" value="{$delivery.correction_pricemin}" id="correction_pricemin" name="correction_pricemin" class="span2"/></span>
+                        <span style="vertical-align:top"><input type="text" placeholder="Max" value="{$delivery.correction_pricemax}" id="correction_pricemax" name="correction_pricemax" {if $delivery.correction_pricemax}readonly{/if} class="span2"/></span>
+                    </div>
+
+					</div> *}
+					</div>
+
+        <input type="hidden" name="ao_id" value="{$delivery.id}">
+					<input type="hidden" name="client_id" value="{$delivery.user_id}">
+					<input type="hidden" name="view" value="{$prod}">
+					<input type="hidden" name="cmid" value="{$cmid}">
+					<input type="hidden" name="artid" value="{$artid}">
+					<div class="control-group">
+						<div class="controls">
+							<button class="btn btn-gebo" type="submit" >Mettre &agrave; jour</button>
+							<button class="btn" data-dismiss="modal">Annuler</button>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+{/foreach}
+{/if}

@@ -1,0 +1,57 @@
+{literal}
+<script type="text/javascript" >
+$(document).ready(function() {
+      $('#jobs').dataTable({
+                "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 1, "asc" ]],
+					"aoColumns": [
+						{ "sType": "formatted-num" },
+						{ "sType": "string" },
+						{ "sType": "eu_date" },
+						{ "sType": "string" },
+						{ "sType": "html" }
+					],
+					"aaSorting": [[ 0, "asc" ]],
+                });
+} );
+</script>
+{/literal}
+				
+<div class="row-fluid">
+	<div class="span12">
+		<div class="alert alert-warning" align="center"><b>JOBS</b></div>
+	    <div align="right" style="padding:10px;">
+			<a href="/template/addjob?submenuId=ML4-SL10&act=add" class="btn btn-info"> 
+				New Job
+			</a>
+		</div>
+		
+			<table class="table table-bordered table-striped table_vam" id="jobs" >
+				<thead>
+					<tr>
+						<th>ID N&deg;</th>
+						<th>Job Title</th>
+						<th>Created at</th>
+						<th>Status</th>
+						<th>ACTION</th>
+					</tr>
+				</thead>
+				<tbody>
+					{foreach from=$joblist item=job_item name=job_loop}
+					  <tr>
+						   <td>{$smarty.foreach.job_loop.index+1}</td>
+						   <td style="text-align:left">{$job_item.title|stripslashes}</td>
+						   <td>{$job_item.created_at|date_format:"%d/%m/%Y %H:%M:%S"}</td>
+						   <td>{$job_item.status|ucfirst}</td>
+						   <td>
+								<a href="/template/addjob?submenuId=ML4-SL10&act=edit&id={$job_item.id}"><i class="splashy-application_windows_edit"></i></a>
+								<!--<a href="/template/Jobs?submenuId=ML4-SL10&act=delete&id={$job_item.id}" onclick='return confirm("Do you really want to delete this job?")'><i class="icon-adt_trash"></i></a>-->
+						   </td>
+					  </tr>
+					{/foreach}
+				</tbody>
+			</table>
+		
+	</div>
+</div>

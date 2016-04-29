@@ -1,0 +1,826 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/ajaxupload.3.5.js"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/jQuery.fileinput.js"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/jquery.Jcrop.min.js"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/css/jquery.Jcrop.css" />
+
+<script language="javascript">
+    $(document).ready(function() {
+        $(".uni_style").uniform();
+        $("#type").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#status").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#country").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#workplace").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#contact_language").chosen({ allow_single_deselect: false,search_contains: true  });
+
+        // gebo_validation.reg();
+        $('#datepicker1').datepicker({language: 'fr'});
+        $('#datepicker2').datepicker({language: 'fr'});
+        $("#useredit").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+        $('input[name=social_num]').change(function(e){
+            var filed = $(this).val();
+            var extension = filed.substr( (filed.lastIndexOf('.') +1) );
+            if(extension == 'jpeg' || extension == 'jpg' || extension == 'pdf' || extension== 'png')
+                return true;
+            else{
+                smoke.alert('Only JPEG,JPG,PNG & PDF files are allowed');
+                return true;
+            }
+
+        });
+
+    });
+    $(function(){
+        var btnUpload=$('#filePJ');
+        var status=$('#file_name');
+        var userid=$('#userId').val();
+        var type = 'profile';
+        new AjaxUpload(btnUpload, {
+            action: 'uploadprofilepic',
+            name: 'uploadpic',
+            data:{userid:userid, type:type},
+            onSubmit: function(file, ext){   //  alert(userid);
+                if (! (ext && /^(jpg|jpeg|gif|png)$/.test(ext))){
+                    // extension is not allowed
+                    status.text("Merci d'uploaded uniquement des fichiers JPG.").css('color','#FF0000');
+                    return false;
+                }
+
+                status.html('<div align="right"><img src="http://ep-test.edit-place.com/FO/images/loading-b.gif" /></div>') ;
+            },
+            onComplete: function(file, response){     //  alert(response);
+                //On completion clear the status
+                status.text('');
+                $('#file_name'+type).html('');
+                //Add uploaded file to list
+                var obj = $.parseJSON(response);
+                var approot="http://ep-test.edit-place.com/FO/";
+                if(obj.status=="success"){
+                    $('#spec_file_name'+type).val(file);
+                    // alert(approot+obj.path+obj.identifier+"_crop."+obj.ext+ '?' + (new Date()).getTime());
+                    $("#cropbox").attr('src','#');
+                    $(".jcrop-holder").remove();
+                    $("#cropbox").removeData('Jcrop');
+                    $("#cropbox").attr("src",approot+obj.path+obj.identifier+"_crop."+obj.ext+ '?' + (new Date()).getTime());
+
+                    $("#cropbox").show();
+                    $('#cropbox').Jcrop({
+                        aspectRatio: 1,
+                        addClass: 'jcrop-dark',
+                        setSelect: [ 60, 110, 150, 200 ],
+                        onSelect: updateCoords
+                    });
+                    $('#userId').val(userid);
+                    $('#pictype').val(type);
+                    $('#cropimagepopup').modal('show');
+                    /*if(file.length>25)
+                        $('#file_name'+type).html(file.substr(0,25)+".. Uploaded").css('color','#006600');
+                    else
+                        $('#file_name'+type).html(file+" Uploaded").css('color','#006600');*/
+                }
+                else if(obj.status=="smallfile"){
+                    $('#file_name'+type).html("L'image est trop petite, merci d'en uploader une autre").css('color','#FF0000');
+                }
+                else{
+                    $('#file_name'+type).html('Error in upload').css('color','#FF0000');
+                }
+            }
+        });
+        jQuery('img').each(function(){
+            jQuery(this).attr('src',jQuery(this).attr('src')+ '?' + (new Date()).getTime());
+        });
+    });
+
+    function uploadPictures(filetype, type, userid)
+    {
+        var btnUpload=$(filetype);
+        var status=$('#file_name');
+        var userid=$('#userId').val();
+        new AjaxUpload(btnUpload, {
+            action: 'uploadprofilepic',
+            name: 'uploadpic',
+            data:{userid:userid, type:type},
+            onSubmit: function(file, ext){   //  alert(userid);
+                if (! (ext && /^(jpg|jpeg|gif|png)$/.test(ext))){
+                    // extension is not allowed
+                    status.text("Merci d'uploaded uniquement des fichiers JPG.").css('color','#FF0000');
+                    return false;
+                }
+                alert(status);
+                status.html('<div align="right"><img src="http://ep-test.edit-place.com/FO/images/loading-b.gif" /></div>') ;
+            },
+            onComplete: function(file, response){     //  alert(response);
+                //On completion clear the status
+                status.text('');
+                $('#file_name'+type).html('');
+                //Add uploaded file to list
+                var obj = $.parseJSON(response);
+                var approot="http://ep-test.edit-place.com/FO/";
+                if(obj.status=="success"){
+                    $('#spec_file_name'+type).val(file);
+                    // alert(approot+obj.path+obj.identifier+"_crop."+obj.ext+ '?' + (new Date()).getTime());
+                    $("#cropbox").attr('src','#');
+                    $(".jcrop-holder").remove();
+                    $("#cropbox").removeData('Jcrop');
+                    $("#cropbox").attr("src",approot+obj.path+obj.identifier+"_crop."+obj.ext+ '?' + (new Date()).getTime());
+
+                    $("#cropbox").show();
+                    $('#cropbox').Jcrop({
+                        aspectRatio: 1,
+                        addClass: 'jcrop-dark',
+                        setSelect: [ 60, 110, 150, 200 ],
+                        onSelect: updateCoords
+                    });
+                    $('#userId').val(userid);
+                    $('#pictype').val(type);
+                    $('#cropimagepopup').modal('show');
+                    /*if(file.length>25)
+                        $('#file_name'+type).html(file.substr(0,25)+".. Uploaded").css('color','#006600');
+                    else
+                        $('#file_name'+type).html(file+" Uploaded").css('color','#006600');*/
+                }
+                else if(obj.status=="smallfile"){
+                    $('#file_name'+type).html("L'image est trop petite, merci d'en uploader une autre").css('color','#FF0000');
+                }
+                else{
+                    $('#file_name'+type).html('Error in upload').css('color','#FF0000');
+                }
+            }
+        });
+        jQuery('img').each(function(){
+            jQuery(this).attr('src',jQuery(this).attr('src')+ '?' + (new Date()).getTime());
+        });
+    }
+
+
+    //* validation
+  /*  gebo_validation = {
+        reg: function() {
+            reg_validator = $('.form_validation_reg').validate({
+                onkeyup: false,
+                errorClass: 'error',
+                validClass: 'valid',
+                highlight: function(element) {
+                    $(element).closest('div').addClass("f_error");
+                    $(element).closest('div').css("color", "black");
+                },
+                unhighlight: function(element) {
+                    $(element).closest('div').removeClass("f_error");
+                },
+                errorPlacement: function(error, element) {
+                    $(element).closest('div').append(error);
+                    $('.error').css("font-size", "10px");
+                    $('.error').css("padding-top", "5px");
+                },
+                rules: {
+                    first_name: { required: true, minlength: 3 },
+                    last_name: { required: true, minlength: 3 },
+                    login: { required: true, minlength: 2 },
+                    password: { required: true, minlength: 2 },
+                    phone_number: { required: true },
+                    address2: { required: true, minlength: 5 },
+                    country: { required: true, minlength: 2 },
+                    email: { required: true, email:true, minlength: 10 },
+                    email_personal: { required: true, email:true, minlength: 10 },
+                    birth_date: { required: true},
+                    birth_city: { required: true, minlength: 3 },
+                    telephone: { required: true, minlength: 5 },
+                    join_date: { required: true },
+                    interview: { required: true, minlength: 5 },
+                    workplace: { required: true },
+                    work_telephone: { required: true, minlength: 5 },
+                    skype_id: { required: true, minlength: 5 },
+                    contact_language: { required: true, minlength: 5 },
+                    rib: { required: true, minlength: 5 },
+                    ssn: {required: true, minlength: function(element) {
+                        if($('#workplace').val()=='2')
+                           return 9;
+                        else
+                            return 15;
+                        }
+                    }
+                },
+                invalidHandler: function(form, validator) {
+                    $.sticky("There are some errors. Please corect them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
+                }
+            })
+        }
+    };*/
+
+    /**closing the  languages more with sliders**/
+    var rib=0;
+    $("[id^=rib_close_]").live('click', function() {
+
+        var parentDiv=$(this).parents("div:first").attr('id');
+        var closeDiv=$("#"+parentDiv).children(".close").attr('id');
+        if($("[id^=rib_more_]").size()>1)
+        {
+            $("#"+parentDiv).remove();
+            var rib =  $("[id^=rib_close_]").length-1;
+            $("#addmore_rib_link").attr("onClick","addnewRib("+rib+")");
+            $("#ribcount").val(rib);
+        }
+        else
+        {
+            $("#"+closeDiv).hide();
+        }
+    });
+    /* edited by naseer on 27-08-2015 */
+	function addnewRib(ribmore)
+    {
+        var ribid=ribmore;
+        ribid++;
+        $('#rib_more_'+ribid+' .close').attr('id','rib_close_'+ribid);
+        $('#rib_more_'+ribid+' .close').show();
+        $("#rib_div").append('<div class="addmore form-inline span11 alert alert-success" id="rib_more_'+ribid+'" >'+
+                        '<label class="muted span3" >IBAN :<br/>'+
+                    '<input type="text" class="span9" id="rib_num_'+ribid+'" name="rib_num[]" value="" /></label>'+
+                    '<label class="muted span3" >Nom du RIB:'+
+                    '    <input type="text" class="span9 " id="rib_name_'+ribid+'" name="rib_name[]" value="" /> </label>'+
+                    '<label class="muted span3" >RIB par d&eacute;faut :'+
+                    '    <input type="radio" class="span2" id="rib_default_'+ribid+'" name="rib_default[]" value="'+ribid+'"  onchange="radio_value(this.id);"  />'+
+                    '<input type="hidden" class="rib_default_val" id="rib_default_'+ribid+'_val" name="rib_default_val[]" value="no"/>'+
+                    '<button  class="close" type="button" id="rib_close_'+ribid+'" >&times;</button></label>'+
+                    '</div>');
+        $("#addmore_rib_link").attr("onClick","addnewRib("+ribid+")");
+        $("#ribcount").val(ribid);
+    }
+    function radio_value(id){
+        $(".rib_default_val").val('no');
+        $("#"+id+"_val").val('yes');
+    }
+    /* end of edited by naseer on 27-08-2015 */
+    function setCheck(ribid)
+    {
+        $( ".rib_default" ).each(function(i) {
+            if(ribid == i)
+                $('#rib_default_'+i).val('yes');
+            else
+                $('#rib_default_'+i).val('no');
+        });
+    }
+    function sendPassToPersonalEmail(userid)
+    {
+        var target_page = "/user/sendpasswordtomail?userId="+userid;
+        $.post(target_page, function(data){
+           smoke.alert("Le mot de passe vient de vous &ecirc;tre envoy&eacute; sur votre adresse email personnelle");
+        });
+    }
+    function checkFile()
+    {
+        var extension = file.substr( (file.lastIndexOf('.') +1) ); alert(extension);
+
+    }
+    function msg(){
+        if($("#menuids").val() == '')
+            smoke.alert("Please update all required fields and re-login to avail all features");
+        else{
+            $("#usersubmit").val('saving');
+            var flag = true;
+            if(!$("#email").val().length > 0){ $("#email_error").show();scroll_to("#email");flag = false;}else{$("#email_error").hide();}
+            if(!$("#job_title").val().length > 0){ $("#job_title_error").show();scroll_to("#job_title");flag = false;}else{$("#job_title_error").hide();}
+            //if(!$("#initial").val().length > 0){ $("#initial_error").show();scroll_to("#initial_error");flag = false;}else{$("#initial_error").hide();}//radio
+            if(!$("#first_name").val().length > 0){ $("#first_name_error").show();scroll_to("#first_name");flag = false;}else{$("#first_name_error").hide();}
+            if(!$("#last_name").val().length > 0){ $("#last_name_error").show();scroll_to("#last_name");flag = false;}else{$("#last_name_error").hide();}
+            if(!$("#login").val().length > 0){ $("#login_error").show();scroll_to("#login");flag = false;}else{$("#login_error").hide();}
+            if(!$("#password").val().length > 0){ $("#password_error").show();scroll_to("#password");flag = false;}else{$("#password_error").hide();}
+            if(!$("#city").val().length > 0){ $("#city_error").show();scroll_to("#city");flag = false;}else{$("#city_error").hide();}
+            if(!$("#computer_code").val().length > 0){ $("#computer_code_error").show();scroll_to("#computer_code");flag = false;}else{$("#computer_code_error").hide();}
+            if(!$("#phone_number").val().length > 0){ $("#phone_number_error").show();scroll_to("#phone_number");flag = false;}else{$("#phone_number_error").hide();}
+            if(!$("#email_personal").val().length > 0){ $("#email_personal_error").show();scroll_to("#email_personal");flag = false;}else{$("#email_personal_error").hide();}
+            if(!$("#telephone").val().length > 0){ $("#telephone_error").show();scroll_to("#telephone");flag = false;}else{$("#telephone_error").hide();}
+            if(!$("#datepicker1").val().length > 0){ $("#datepicker1_error").show();scroll_to("#datepicker1");flag = false;}else{$("#datepicker1_error").hide();}
+            if(!$("#birth_city").val().length > 0){ $("#birth_city_error").show();scroll_to("#birth_city");flag = false;}else{$("#birth_city_error").hide();}
+            if(!$("#datepicker2").val().length > 0){ $("#datepicker2_error").show();scroll_to("#datepicker2");flag = false;}else{$("#datepicker2_error").hide();}
+            if(!$("#country").val().length > 0){ $("#country_error").show();scroll_to("#country");flag = false;}else{$("#country_error").hide();}
+            if(!$("#workplace").val().length > 0){ $("#workplace_error").show();scroll_to("#workplace");flag = false;}else{$("#workplace_error").hide();}
+            if(!$("#work_telephone").val().length > 0){ $("#work_telephone_error").show();scroll_to("#work_telephone");flag = false;}else{$("#work_telephone_error").hide();}
+            if(!$("#yahoo_id").val().length > 0){ $("#yahoo_id_error").show();scroll_to("#yahoo_id");flag = false;}else{$("#yahoo_id_error").hide();}
+            if(!$("#ssn").val().length > 0){ $("#ssn_error").show();scroll_to("#ssn");flag = false;}else{$("#ssn_error").hide();}
+            if(!$("#zipcode").val().length > 0){ $("#zipcode_error").show();scroll_to("#zipcode");flag = false;}else{$("#zipcode_error").hide();}
+            if(!$("#skype_id").val().length > 0){ $("#skype_id_error").show();scroll_to("#skype_id");flag = false;}else{$("#skype_id_error").hide();}
+            console.log(flag + "ajax initialed ");
+            var ajax_url = "/user/profile-edit-ajax?";
+            var form_data = $("#useredit").closest('form').serialize();
+            console.log(ajax_url + form_data);
+            if(flag) {
+                $.ajax({
+                    type: 'POST',
+                    url: ajax_url + form_data,
+                    success: function (data) {
+                        try {
+                            $.parseJSON(data);
+                            var data = $.parseJSON(data);
+                            smoke.alert(data.msg);
+                            $("#usersubmit").val('Valider');
+                        } catch (e) {
+                            smoke.alert('<strong class="f_req">Profile Updated Failed.</strong>');
+                            $("#usersubmit").val('Valider');
+
+                        }
+
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.status);
+                        console.log(thrownError);
+                    }
+
+                });
+            }
+            else{
+                //smoke.alert('<span class="f_req">Please fill mandatory fields,Profile Updated Failed.</span>');
+                $("#usersubmit").val('Valider');
+            }
+            //return true;
+        }
+
+    }
+    function scroll_to(myDiv){
+        $('html, body').animate({
+            scrollTop: $(myDiv).offset().top - 80
+        }, 500);
+    }
+
+    function viewProfileAjax(){
+        var ajax_url = "/user/view-profile-ajax?";
+        $.ajax({
+            type: 'POST',
+            url: ajax_url ,
+            success: function (data) {
+                //console.log(data);
+                $("#bousersprofile").html(data);
+            }
+
+        });
+    }
+</script>
+<!--<style>#clientlogo{width:30px;height:30px;}</style>-->
+{/literal}
+<div class="tabbable">
+   <ul class="nav nav-tabs">
+       <li {if $smarty.get.tab == 'profileview'} class="active" {/if}><a href="#bousersprofile" data-toggle="tab" class="lable-success"  onclick="viewProfileAjax();"><i class="icon-pencil"></i>&nbsp;<strong>Voir le Profil</strong></a></li>
+       <li {if $smarty.get.tab == 'profileedit'} class="active" {/if}><a href="#profileedit" data-toggle="tab" class="lable-success"><i class="icon-pencil"></i>&nbsp;<strong>&Eacute;diter le Profil</strong></a></li>
+   </ul>
+   <div class="tab-content">
+       <div id="bousersprofile" {if $smarty.get.tab == 'profileview'} class="tab-pane active" {else} class="tab-pane" {/if} >
+         <div class="row-fluid search_page">
+         <div class="search_panel clearfix">
+            <div class="search_item clearfix">
+               <span class="searchNb"></span>
+               <div class="thumbnail pull-left">
+                   <img alt="user pic" id="userpicv" class="thumbnail1" src="http://ep-test.edit-place.com{$profilepic}">
+               </div>
+               <div class="search_conten pull-left span5">
+                   <h4>
+                       <a href="javascript:void(0)" class="sepV_a">{$Userdetails[0].first_name} {$Userdetails[0].last_name} ({$Userdetails[0].job_title})</a>
+                   </h4>
+                   <p class="sepH_b item_description">{$Userdetails[0].email}  / <small>Depuis</small>:{$Userdetails[0].join_date|date_format:"%d/%m/%Y"|upper}</p>
+                   <p class="sepH_a"><strong>Statut:</strong> {if $Userdetails[0].usrStatus=='Active'} Active {else}Inactive {/if}</p>
+                   <p class="sepH_a"><strong>Type de profil:</strong> {$Userdetails[0].type}</p>
+               </div>
+               <!-- <div class="thumbnail pull-right">
+                    {$clogopic}
+                </div>-->
+            </div>
+         </div>
+             <div class="chat_box">
+                 <div class="chat_msg clearfix">
+                     <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>Adresse</h3></span></div>
+                     <div class="chat_msg_body">
+                         <div class="vcard-item">
+                             <ul class="list_a">
+                                 {$Userdetails[0].address}
+                                 <li><p class="sepH_a"><strong>Ville:</strong> {$Userdetails[0].city}</p></li>
+                                 <li> <p class="sepH_a"><strong>Pays:</strong> {$country}</p></li>
+                                 <li><p class="sepH_a"><strong>Code postal:</strong> {$Userdetails[0].zipcode}</p></li>
+                             </ul>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="chat_box">
+                 <div class="chat_msg clearfix">
+                     <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>Informations personnelles</h3></span></div>
+                     <div class="chat_msg_body">
+
+                         <div class="vcard-item">
+                             <ul class="list_a">
+
+                                 <li><p class="sepH_a"><strong>Adresse email perso:</strong> {$Userdetails[0].email_personal}</p></li>
+                                 <li><p class="sepH_a"><strong>Date de naissance:</strong> {$Userdetails[0].birth_date|date_format:"%d/%m/%Y"|upper}</p></li>
+                                 <li><p class="sepH_a"><strong>Lieu de naissance:</strong> {$Userdetails[0].birth_city}</p></li>
+                                 <li><p class="sepH_a"><strong>T&eacute;l&eacute;phone:</strong> {$Userdetails[0].phone_number}</p></li>
+                                 <li><p class="sepH_a"><strong>T&eacute;l&eacute;phone 2:</strong> {$Userdetails[0].telephone}</p></li>
+                             </ul>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="chat_box">
+                 <div class="chat_msg clearfix">
+                     <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>Informations professionnelles</h3></span></div>
+                     <div class="chat_msg_body">
+                         {array vars="array('Banglore','Londres','Paris','Luxembourg','T&eacute;l&eacute;travail','Freelance')" assign=places}
+                         {assign var="palcecode" value=$Userdetails[0].workplace}
+                         <div class="vcard-item">
+                             <ul class="list_a">
+                                 <li><p class="sepH_a"><strong>Lieu de travail:</strong>{$places[$palcecode]} </p></li>
+                                 <li><p class="sepH_a"><strong>Num&eacute;ro de poste:</strong> {$Userdetails[0].work_telephone}</p></li>
+                                 <li><p class="sepH_a"><strong>Langue des communications internes:</strong>
+                                         {assign var=langarray value=$Userdetails[0].contact_language|explode:","}
+                                         {foreach from=$language_array item=langitem key=langkey}
+                                         {if in_array($langkey,$langarray)}
+                                         {$langitem}
+                                         {/if}
+                                         {/foreach}
+                                     </p></li>
+                                 <li><p class="sepH_a"><strong>Yahoo Id</strong> {$Userdetails[0].yahoo_id}</p></li>
+                                 <li><p class="sepH_a"><strong>Skype Id</strong> {$Userdetails[0].skype_id}</p></li>
+                             </ul>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="chat_box">
+                 <div class="chat_msg clearfix">
+                     <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>Singature</h3></span></div>
+                     <div class="chat_msg_body">
+                         <div class="vcard-item">
+                             {$Userdetails[0].signature}
+
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+       </div>
+
+       <div id="profileedit" {if $smarty.get.tab == 'profileedit'} class="tab-pane active" {else} class="tab-pane" {/if}  >
+        <form class="form_validation_reg" action="" autocomplete="off"  method="post" id="useredit" name="useredit" enctype="multipart/form-data">
+            <input type="hidden" id="userId" name="userId" value="{$Userdetails[0].identifier}" />
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Email<span class="f_req">*</span></label>
+                        <input type="text" name="email" id="email" value="{$Userdetails[0].email}"  class="validate[required,custom[email]]" {if $groupId neq 1} readonly {/if}/>
+                        <span id="email_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Intitul&eacute; de poste<span class="f_req">*</span></label>
+                        <input type="text" name="job_title" id="job_title" value="{$Userdetails[0].job_title}" class="validate[required]" {if $groupId neq 1} readonly {/if}/>
+                        <span id="job_title_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                    {*{if $groupId eq 1}
+                    <div class="span5 form-inline">
+                        <label class="span4"> Logo </label>
+                        <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" value="" name="">
+                                              <span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span>
+                                                  <input type="file" name="file" id="fileLJ" value="clogo" onclick="uploadPictures('#fileLJ', 'clogo', '{$Userdetails[0].identifier}');"/></span>
+                            <span class="fileupload-preview"></span>
+                            <a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>
+                            <div id="file_nameclogo"></div>
+                        </div>
+                    </div>
+                    {$clogopic}
+                    {/if}*}
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Titre  <span class="f_req">*</span></label>
+                        <label class="uni-radio">
+                            <input type="radio" name="initial" id="initialmr" checked="" value="mr" {if $Userdetails[0].initial=='mr'} checked="checked" {/if} class="uni_style"/> mr
+                        </label>
+                        <label class="uni-radio">
+                            <input type="radio" name="initial" id="initialmme" value="mme"  {if $Userdetails[0].initial=='mme'} checked="checked" {/if} class="uni_style"/> mme
+                        </label>
+                        <label class="uni-radio">
+                            <input type="radio" name="initial" id="initialmlle" value="mlle" {if $Userdetails[0].initial=='mlle'} checked="checked" {/if} class="uni_style"/> mlle
+                        </label>
+                        <span id="initial_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+
+                    <div class="span5 form-inline">
+                        <label class="span4"> Photo <span class="f_req">*</span></label>
+                        <div data-provides="fileupload" class="fileupload fileupload-new">
+                                              <span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span>
+                                                  <input type="file" name="file" id="filePJ" value="profile" onclick="uploadPictures('#filePJ', 'profile', '{$Userdetails[0].identifier}');"/></span>
+                            <span class="fileupload-preview"></span>
+                            <a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>
+                            <div id="file_nameprofile"></div>
+                        </div>
+                    </div>
+                    <img alt="user pic" id="userpic" class="thumbnail1" src="http://ep-test.edit-place.com{$profilepic}">
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Nom <span class="f_req">*</span></label>
+                        <input type="text" name="first_name" id="first_name" value="{$Userdetails[0].first_name}" class="validate[required]"/>
+                        <span id="first_name_error" class="f_req hide">Ce champs est requis</span>
+
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Pr&eacute;nom <span class="f_req">*</span></label>
+                        <input type="text" name="last_name" id="last_name" value="{$Userdetails[0].last_name}" class="validate[required]"/>
+                        <span id="last_name_error" class="f_req hide">Ce champs est requis</span>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4"> Identifiant <span class="f_req">*</span></label>
+                        <input type="text" name="login" id="login" value="{$Userdetails[0].login}" class="validate[required]" {if $groupId neq 1} readonly {/if}/>
+                        <span id="login_error" class="f_req hide">Ce champs est requis</span>
+
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Mot de passe<span class="f_req">*</span></label>
+                        <input type="password" name="password" id="password" value="{$Userdetails[0].password}" class="validate[required]" {if $groupId neq 1} readonly {/if}/>
+                        <span id="password_error" class="f_req hide">Ce champs est requis</span>
+
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4"> Ville   <span class="f_req">*</span></label></label>
+                        <input type="text" name="city" id="city" value="{$Userdetails[0].city}" />
+                        <span id="city_error" class="f_req hide">Ce champs est requis</span>
+
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Code de l'ordinateur<span class="f_req">*</span></label>
+                        <input type="text" name="computer_code" id="computer_code" value="{$Userdetails[0].computer_code}" class="validate[required]"/>
+                        <input type="hidden" name="original_computer_code" id="original_computer_code" value="{$Userdetails[0].computer_code}"/>
+                        <span id="original_computer_code_error" class="f_req hide">Ce champs est requis</span>
+
+                    </div>
+                </div>
+            </div>
+            {if $loginuserId eq $Userdetails[0].manager_incharge}
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4"> Type </label>
+                        <select name="type" id="type"  placeholder="type">
+                            <option value=""></option>
+                            {html_options  options=$usergroups selected=$Userdetails[0].type}
+                        </select>
+
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4"> Active </label>
+                        <select name="status" id="status" class="text-field-big" placeholder="active">
+                            <option value=" "></option>
+                            <option value="Active" {if $Userdetails[0].status=='Active'} selected="selected" {/if}>Active</option>
+                            <option value="Inactive" {if $Userdetails[0].status=='disable'} selected="selected" {/if}>Inactive</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            {/if}
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Code postal <span class="f_req">*</span></label>
+                        <input type="text" name="zipcode" id="zipcode" value="{$Userdetails[0].zipcode}" class="validate[required,custom[zipcode]]"/>
+                        <span id="zipcode_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Num&eacute;ro de t&eacute;l&eacute;phone 1  <span class="f_req">*</span></label>
+                        <input type="text" name="phone_number" id="phone_number" value="{$Userdetails[0].phone_number}" class="validate[required,custom[phone]]"/>
+                        <span id="phone_number_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4"> Adresse </label>
+                        <textarea name="address" rows="3" id="address" value="{$Userdetails[0].address}">{$Userdetails[0].address}</textarea>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Interview  </label>
+                        <textarea  name="interview" rows="3" id="interview" value="">{$Userdetails[0].interview}</textarea>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Adresse email perso <span class="f_req">*</span></label>
+                        <input type="text" name="email_personal" id="email_personal" value="{$Userdetails[0].email_personal}" class="validate[required]"/>
+                        <span id="email_personal_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Num&eacute;ro de t&eacute;l&eacute;phone 2  <span class="f_req">*</span></label>
+                        <input type="text" name="telephone" id="telephone" value="{$Userdetails[0].telephone}" class="validate[required,custom[phone]]"/>
+                        <span id="telephone_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Date de naissance <span class="f_req">*</span></label>
+                        <input type="text" name="birth_date" id="datepicker1" data-date-format="dd/mm/yyyy" class="validate[required]"  value="{$Userdetails[0].birth_date|date_format:'%d/%m/%Y'|upper}" />
+                        <span id="datepicker1_error" class="f_req hide">Ce champs est requis</span>
+                        <!-- -->
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Ville de naissance  <span class="f_req">*</span></label>
+                        <input type="text" name="birth_city" id="birth_city" value="{$Userdetails[0].birth_city}" class="validate[required]"/>
+                        <span id="birth_city_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Date d'arriv&eacute;e <span class="f_req">*</span></label>
+                        <input type="text" name="join_date"  id="datepicker2" data-date-format="dd/mm/yyyy" class="validate[required]" value="{if $Userdetails[0].join_date neq '0000-00-00'}{$Userdetails[0].join_date|date_format:'%d/%m/%Y'|upper}{/if}"/>
+                        <span id="datepicker2_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Pays</label>
+                        <select name="country" id="country"  placeholder="country">
+                            <option value=" "></option>
+                            {html_options  options=$country_array selected=$Userdetails[0].country}
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Lieu de travail <span class="f_req">*</span></label>
+                        <select size="1" name="workplace" id="workplace" class="validate[required]">
+                            <option value=""></option>
+                            <option value="1" {if $Userdetails[0].workplace eq 1} selected="selected" {/if}>Banglore</option>
+                            <option value="2" {if $Userdetails[0].workplace eq 2} selected="selected" {/if}>Londres</option>
+                            <option value="3" {if $Userdetails[0].workplace eq 3} selected="selected" {/if}>Paris</option>
+                            <option value="4" {if $Userdetails[0].workplace eq 4} selected="selected" {/if}>Luxembourg</option>
+                            <option value="5" {if $Userdetails[0].workplace eq 5} selected="selected" {/if}>T&eacute;l&eacute;travail</option>
+                            <option value="6" {if $Userdetails[0].workplace eq 6} selected="selected" {/if}>Freelance</option>
+                        </select>
+                        <span id="workplace_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Num&eacute;ro de poste <span class="f_req">*</span></label>
+                        <input type="text" name="work_telephone" id="work_telephone" value="{$Userdetails[0].work_telephone}" class="validate[required,custom[phone]]"/>
+                        <span id="work_telephone_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Yahoo Id <span class="f_req">*</span></label>
+                        <input type="text" name="yahoo_id" id="yahoo_id" value="{$Userdetails[0].yahoo_id}" class="validate[required,ajax[ajaxYahooidValidate]]" />
+                        <input type="hidden" id="user_status" name="user_status" value="{$Userdetails[0].status}" />
+                        <span id="yahoo_id_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Skype Id <span class="f_req">*</span></label>
+                        <input type="text" name="skype_id" id="skype_id" value="{$Userdetails[0].skype_id}" class="validate[required,ajax[ajaxSkypeidValidate]]" />
+                        <span id="skype_id_error" class="f_req hide">Ce champs est requis</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Langue des communications internes </label>
+<!--                        <input type="text" name="contact_language" id="contact_language" value="{$Userdetails[0].contact_language}"/>
+-->                        <select name="contact_language[]" id="contact_language" data-placeholder="select language" multiple="multiple" style="width:250px;">
+                            {assign var=langarray value=$Userdetails[0].contact_language|explode:","}
+                            {foreach from=$language_array item=langitem key=langkey}
+                            {if in_array($langkey,$langarray)}
+                            <option value="{$langkey}" selected>{$langitem}</option>
+                            {else}
+                            <option value="{$langkey}">{$langitem}</option>
+                            {/if}
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Numero de s&eacute;cutit&eacute; sociale <span class="f_req">*</span></label>
+                        <input type="text" name="ssn" id="ssn" value="{$Userdetails[0].ssn}" class="validate[required]"/>
+                        <span id="ssn_error" class="f_req hide">Ce champs est requis</span>
+                        {if $Userdetails[0].ssn_file neq ''}
+                        <a href="/BO/download_ssn_file.php?userId={$Userdetails[0].identifier}" class="btn hint--bottom hint--info " data-hint="download ssn file"><i class="splashy-arrow_large_down"></i></a>
+                        {/if}
+                    </div>
+                    {*<div class="uni-uploader pull-left" id="uniform-uni_file" style="width:190px;">
+                        <input id="social_num" class="uni_style" type="file" name="social_num" size="19" onclick="checkFile();">
+                        <span class="uni-filename" >No file selected</span>
+                        <span class="uni-action" >Choose File</span>
+                    </div>*}
+
+
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Site URL</label>
+                        <input type="text" name="site_url" id="site_url" value="{$Userdetails[0].url}"/>
+                    </div>
+                    {if $Userdetails[0].email_personal neq ''}
+                    <div class="span5 form-inline">
+                        <label class="span4">Mot de passe de la bo&icirc;te mail</label>
+                        <button type="button" name="sentpassword" id="sentpassword" value="" onclick="sendPassToPersonalEmail('{$Userdetails[0].identifier}');" class="btn btn-inverse">Envoyer sur mon adresse personnelle</button>
+                    </div>
+                    {/if}
+                </div>
+            </div>
+
+
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span10 form-inline" id="rib_div">
+                        <label class="span3">RIB </label>
+                            {if $allribs eq 'NO'}
+                            <div id="rib_div">
+                                <div class="addmore form-inline span11 alert alert-success" id="rib_more_1" >
+                                    <label class="muted span3" >IBAN :<br/>
+                                        <input type="text" class="span9" id="rib_num_0" name="rib_num[]" value="{$ribdetials.rib_number}" /></label>
+                                    <label class="muted span3" >Nom du RIB:
+                                        <input type="text" class="span9 " id="rib_name_0" name="rib_name[]" value="{$ribdetials.rib_name}" /> </label>
+                                    <!--<label for="slider-language_number_{$smarty.foreach.ribsname.index}" class="muted span3" >RIB file :
+                                        <input type="file" id="ep_ribfile_{$smarty.foreach.ribsname.index}" value="{$ribdetials.rib_file}" name="ep_ribfile_{$smarty.foreach.ribsname.index}"  class="span9"/></label>-->
+                                    <label class="muted span3" >RIB par d&eacute;faut :
+                                        <input type="radio" class="span2" id="rib_default_1" name="rib_default[]" value="1"  onchange="radio_value(this.id);"  />
+                                        <input type="hidden" class="rib_default_val" id="rib_default_1_val" name="rib_default_val[]" value="no"/>
+                                        <button  class="close rib_close" type="button" id="rib_close_1" >&times;</button></label>
+                                </div>
+                            </div>
+                                <p class="addmore-button" id="addmore_rib_link" onclick="addnewRib('1');"><a class="btn btn-link btn-small"><i class="icon-plus"></i> Ajouter une langue</a></p>
+                                <input type="hidden" id="ribcount" name="ribcount" value="1" />
+                                <input type="hidden" id="ribdefaultselected" name="ribdefaultselected" value="" />
+
+                            {else}
+                                {foreach from=$allribs key=ribs item=ribdetials name="ribsname}
+                                {assign var=rib_index value=$smarty.foreach.ribsname.index}
+                                <!-- Start, new language row -->
+                                <div class="addmore form-inline span11 alert alert-success row" id="rib_more_{$rib_index}" >
+                                    <label class="muted span3" >IBAN :<br/>
+                                        <input type="text" class="span9" id="rib_num_{$rib_index}" name="rib_num[]" value="{$ribdetials.rib_number}" /></label>
+                                    <label class="muted span3" >Nom du RIB :
+                                        <input type="text" class="span9 " id="rib_name_{$rib_index}" name="rib_name[]" value="{$ribdetials.rib_name}" /> </label>
+                                    <!--<label for="slider-language_number_{$smarty.foreach.ribsname.index}" class="muted span3" >RIB file :
+                                        <input type="file" id="ep_ribfile_{$smarty.foreach.ribsname.index}" value="{$ribdetials.rib_file}" name="ep_ribfile_{$smarty.foreach.ribsname.index}"  class="span9"/></label>-->
+                                    <!--onclick="return setChecks('{$rib_index}');"-->
+                                    <label class="muted span3" >RIB par d&eacute;faut :
+                                        <input type="radio" class="span2 rib_default" id="rib_default_{$rib_index}" name="rib_default[]" value="{if $ribdetials.default_val eq 'yes'}{$rib_index}{else}{$rib_index}{/if}"  onchange="radio_value(this.id);"  {if $ribdetials.default_val eq 'yes'} checked {/if} />
+                                        <input type="hidden" class="rib_default_val" id="rib_default_{$rib_index}_val" name="rib_default_val[]" value="{if $ribdetials.default_val eq 'yes'}yes{else}no{/if}" />
+                                        <button  class="close rib_close" type="button" id="rib_close_{$rib_index}" >&times;</button></label>
+                                </div>
+                                {/foreach}
+                            <p class="addmore-button" id="addmore_rib_link" onclick="addnewRib('{$rib_index}');"><a class="btn btn-link btn-small"><i class="icon-plus"></i> Ajouter une langue</a></p>
+                            <input type="hidden" id="ribcount" name="ribcount" value="{$rib_index}" />
+                            <input type="hidden" id="ribdefaultselected" name="ribdefaultselected" value="" />
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <input type="hidden" id="menuids"  value="{$Userdetails[0].menuId}" />
+                        <input id="usersubmit" type="button" name="usersubmit"  class="btn btn-success pull-right" onclick="msg();" value="Valider"/>
+                    </div>
+                </div>
+            </div>
+        </form>
+       </div>
+   </div>
+</div>
+<!--///when republish the popup comes for edit details and mail for republish article///-->
+<div class="modal hide fade" id="cropimagepopup">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('cropimagepopup');">&times;</button>
+        <h3>Edit User</h3>
+    </div>
+    <div class="modal-body alignright">
+        {include file="gebo/user/profile_image_crop.phtml"}
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+

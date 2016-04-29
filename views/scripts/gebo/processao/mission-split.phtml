@@ -1,0 +1,80 @@
+{literal}
+<script type="text/javascript" >
+function addArticle()
+{
+    var num = $("#split_no").val();
+    if(num == 0 || num == '' || isNaN(num)  ){
+    smoke.alert("Please enter valid data"); return false;   }
+    else
+    {
+        var missions = $("#missions").text();
+        var each_mission = missions.split("|");
+        var existmissioncount =  each_mission.length;
+        $("#existmissioncount").val(existmissioncount)-1;
+
+        $("#TextBoxesGroup").empty();
+        var artname = $("#artname").val();
+        for(i=1;i<existmissioncount;i++)       ///filling the text with existed missions
+        {
+            var counter = i;
+            var newTextBoxDiv = $(document.createElement('div'))
+                    .attr("id", 'TextBoxDiv' + counter);
+            var each_mission_details = each_mission[counter].split("*");
+            newTextBoxDiv.append().html('Article '+ counter + '    :    ' +
+                    '<input type="text" size="50" class="span9" name="textbox' + counter +
+                    '" id="textbox' + counter + '" value="' + each_mission_details[0] +
+                    '" >' +
+                    '<input style="display: none;" type="text" size="30" name="artId' + counter +
+                    '" id="artId' + counter + '" value="' + each_mission_details[1] +
+                    '" >'
+                    );
+            newTextBoxDiv.appendTo("#TextBoxesGroup");
+            counter++;
+        }
+        for(i=existmissioncount;i<=num;i++)        ///continuing the text boxes for new missions
+        {
+            var counter = i;
+            var newTextBoxDiv = $(document.createElement('div'))
+                    .attr("id", 'TextBoxDiv' + counter);
+            newTextBoxDiv.append().html('Article '+ counter + '    :    ' +
+                    '<input type="text" size="50" class="span9" name="textbox' + counter +
+                    '" id="textbox' + counter + '" value="" >');
+            newTextBoxDiv.appendTo("#TextBoxesGroup");
+            counter++;
+        }
+        $("#TextBoxesGroup").show();
+        $("#sub_mission").show();
+    }
+}
+ </script>
+ {/literal}
+ <form action="/processao/savemissions?submenuId={$submenuId}" method="post" id="delpublish" name="delpublish" onsubmit="return validate3NewUser(1);">
+ <div class="row-fluid">
+     <div class="span12">
+         <h3 class="heading">MISSION SPLIT</h3>
+
+         <table id="grptabledetails" class="table tdleftalign btn-gebo" >
+             <tr>
+                 <td style="vertical-align: middle"><b>Delivery : </b>{$deltitle|stripslashes}</td>
+                 <td style="padding-top: 25px;"><b>EXISTING MISSIONS : </b>{assign var=missions value=$artgrouptitle|substr:-1|explode:"|"}
+                     {foreach from=$missions key=mission_key item=mission_item}
+                     {assign var=eachmissions value=$mission_item|explode:"*"} {$eachmissions[0]} <br/>
+                     {/foreach}</td>
+                 <td style="padding-top: 15px;"><b>SPLIT MISSION INTO : </b><input id="split_no" name="split_no"  type="text" class="input-mini" />&nbsp;&nbsp;</td>
+                 <td style="padding-top: 15px;">    <button type="button" id="sub_splitno" name="sub_splitno" class="btn btn-info"  onclick="addArticle();" >Split</button>
+                 <div style="display: none;" id="missions">ex*123|{$artgrouptitle|stripslashes|stripslashes|substr:-2}</div></td>
+             </tr>
+         </table>
+          <input type="hidden" id="artname" name="artname" value="{$arttitle}" />
+          <input type="hidden" id="delId" name="delId" value="{$delId}" />
+          <input type="hidden" id="clientId" name="clientId" value="{$clientId}" />
+          <div id='TextBoxesGroup' class="alert alert-success hide">
+             <div id="TextBoxDiv1"></div>
+         </div>
+         <button type="submit" id="sub_mission" name="sub_mission" class="btn btn-success hide" >create missions</button>
+         <input type="hidden" name="existmissioncount" id="existmissioncount" value=""/>
+     </div>
+ </div>
+ </form>
+
+

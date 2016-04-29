@@ -1,0 +1,92 @@
+{literal}
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        $('#quoteslist2grid').dataTable({
+			"sPaginationType": "bootstrap",
+			"iDisplayLength" : 25,
+			"sDom": "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+			"aoColumns": [
+            { "sType": "formatted-num" },
+			{ "sType": "string" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "formatted-num" },
+           ],
+			"aaSorting": [[ 0, "asc" ]],
+			"oTableTools": {
+				"aButtons": [
+					"copy",
+					"print",
+					{
+						"sExtends":    "collection",
+						"sButtonText": 'Sauvegarder <span class="caret" />',
+						"aButtons":    [ "csv", "xls", "pdf" ]
+					}
+				],
+				"sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+			}
+		
+	
+		
+		});
+	
+			var tab = getParameterByName('tab', $(location).attr('href'));
+			if(tab == '')
+				$("#ongoing").addClass('active');
+			else
+				$("#"+tab).addClass('active');
+    });
+</script>
+{/literal}
+<div class="row-fluid">
+  <div class="span12" style="">
+   
+   <div class="tabbable">
+   <ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#ongoing">En cours</a></li>
+					<li class=""><a data-toggle="tab" href="#closedQuotes">Fermé</a></li>
+					<li class=""><a data-toggle="tab" href="#validated">Envoyé</a></li>
+					<li class=""><a data-toggle="tab" href="#signed">Signé</a></li>					
+					<li class=""><a data-toggle="tab" href="#deleted">Supprimé</a></li>					
+				</ul>
+    <div class="tab-content">
+	      <div id="ongoing" class="tab-pane" >
+				<table id="quoteslist2grid" class="table table-bordered table-striped table_vam">
+					<thead>
+					<tr>
+						<th>SL NO</th>
+						<th>CLIENT NAME</th>
+						<th>EMAIL</th>
+						<th>CATEGORY</th>
+						<th>WEBSITE</th>
+						<th>DOCUMENT</th>
+						<th>cr&eacute;&eacute; le</th>
+						
+					</tr>
+					</thead>
+					<tbody>
+					
+				{if $quoteslist neq 'No Records Found'}
+					  {foreach from=$quoteslist key=quotelist_key item=quotelist_item name=quotelist_loop}
+					<tr>
+						<td>{$smarty.foreach.quotelist_loop.index+1}</td>
+						<td>{$quotelist_item.company_name}</td>
+						<td>{$quotelist_item.title}</td>
+						<td>{$quotelist_item.category}</td>
+						<td><a href="{$quotelist_item.websites}" class="link">{$quotelist_item.websites}</a></td>
+						<td>{$quotelist_item.documents_name}</td>
+						<td>{$quotelist_item.created_by|date_format}</td>
+					</tr>
+					{/foreach}
+					{/if}				
+					</tbody>
+				</table>
+				</div>
+				
+				</div>	
+			</div>	
+</div>
+</div>

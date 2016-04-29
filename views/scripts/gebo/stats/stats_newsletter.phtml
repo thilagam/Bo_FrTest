@@ -1,0 +1,64 @@
+{literal}
+<script type="text/javascript" >
+    $(document).ready(function() {
+        if ($('#stats-newsletter').length) {
+            $('#stats-newsletter').dataTable({
+                "sPaginationType" : "bootstrap",
+                "iDisplayLength" : 25,
+                "sDom" : "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+                "aoColumns" : [{
+                    "sType" : "formatted-num"
+                }, {
+                    "sType" : "string"
+                }, {
+                    "sType" : "string"
+                }, {
+                    "sType" : "formatted-num"
+                }, {
+                    "sType" : "formatted-num"
+                }, {
+                    "sType" : "string"
+                }],
+                "aaSorting" : [[0, "asc"]],
+                "oTableTools" : {
+                    "aButtons" : ["copy", "print", {
+                        "sExtends" : "collection",
+                        "sButtonText" : 'Save <span class="caret" />',
+                        "aButtons" : ["csv", "xls", "pdf"]
+                    }],
+                    "sSwfPath" : "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                }
+            });
+        }
+    });
+</script>
+{/literal}
+
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="heading">Statistiques : Newsletter</h3>
+
+        <table class="table table-striped table-bordered dTableR" id="stats-newsletter">
+            <thead>
+                <th>S.No.</th>
+                <th>User name</th>
+                <th>Email</th>
+                <th>Total NL</th>
+                <th>Total NL opened</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {foreach from=$newsletters key=newsletter_key item=newsletter_item name=newsletter_loop}
+                <tr>
+                    <td>{$smarty.foreach.newsletter_loop.index+1}</td>
+                    <td>{$newsletter_item.username}</td>
+                    <td>{$newsletter_item.email}</td>
+                    <td>{$newsletter_item.total_nl}</td>
+                    <td>{$newsletter_item.total_opened}</td>
+                    <td><a href="/stats/newsletter-details?submenuId=ML2-SL13&user_id={$newsletter_item.user_id}" target="_newsletter">View more</a></td>
+                </tr>
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,304 @@
+{if $mission_type eq 'seo'}
+	{if $seoMissionDetails|@count gt 0}
+		{foreach from=$seoMissionDetails item=mission name="tmisson"}
+		{assign var=gn_index value=$smarty.foreach.tmisson.index}
+		{assign var=ms_index value=$smarty.foreach.tmisson.index+1}		
+		<div class="row-fluid" id="seo_mission_{$ms_index}">	
+			<div class="mission-details">
+				<div class="mission-seo-product"><span id="box_title_{$ms_index}">Mission {$ms_index} {$mission.product_name}</span></div>
+				<table class="table mission-table">
+					<tr>
+						<th style="width:25%">Type</th>
+						<th style="width:25%">Langue</th>
+						<th {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="width:30%" {else} style="display:none;width:30%"{/if}  id="thead_dtime_{$ms_index}">Delivery timing</th>														
+						<th {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="width:20%" {else} style="display:none;width:20%"{/if} id="thead_cost_{$ms_index}">Co&ucirc;t (&euro;)</th>
+						<th {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="display:none;width:35%"{else} style="width:35%" {/if} id="thead_ptype_{$ms_index}">Produit</th>
+						<th {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="display:none;width:15%"{else} style="width:15%" {/if} id="thead_nwords_{$ms_index}">Nb de mots</th>
+					</tr>
+					<tr class="misson-details-text">
+						<td>{$mission.product_name}</td>
+						<td>															
+							{$mission.language_source_name|utf8_encode} 
+							{if $mission.product eq 'translation'}
+								> {$mission.language_dest_name|utf8_encode}
+							{/if}
+						</td>
+						<td id="td_dtime_{$ms_index}" {if $mission.product neq 'seo_audit' && $mission.product neq 'smo_audit' } style="display:none;"{/if}>															
+							{$mission.mission_length} {if $mission.mission_length_option eq 'days'} Jours {elseif $mission.mission_length_option eq 'hours'} Hours{/if}
+						</td>
+						<td id="td_cost_{$ms_index}" {if $mission.product neq 'seo_audit' && $mission.product neq 'smo_audit' } style="display:none;"{/if}>
+							{$mission.cost|zero_cut:2}
+						</td>
+						<td {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="display:none;"{/if} id="td_ptype_{$ms_index}">
+							{$mission.product_type_name}
+						</td>
+						<td {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="display:none;"{/if} id="td_nwords_{$ms_index}">
+							{$mission.nb_words}
+						</td>
+					</tr>	
+				</table>
+				{if $mission.before_prod eq 'yes'}
+				<div class="row-fluid" style="margin-left: 15px;">
+					<div class="span12">					
+						<b>Doit &ecirc;tre r&eacute;alis&eacute; avant de lancer la mission</b>					
+					</div>	
+				</div>
+				{/if}	
+				{if $mission.comments}
+				<div class="media mission-comment">
+					<a class="pull-left imgframe">
+						<img width="60px" src="{$fo_path}/profiles/bo/{$mission.created_by}/logo.jpg" class="media-object">
+					</a>
+					<div class="media-body">
+						<h4 class="media-heading">								
+							<a>{$mission.seo_user_name}</a> {$mission.comment_time}
+						</h4>
+						<span>{$mission.comments|utf8_encode|htmlentities|nl2br}</span>
+					</div>
+				</div>
+				{/if}
+					{*{if $mission.filenames|@count gt 0}
+					<div class="row-fluid topset2">	
+					<b>Related files</b> <br>	
+						<div class="span5">
+						{foreach from=$mission.filenames item=files name="documentnames" }
+							{assign var=file_index value=$smarty.foreach.documentnames.index}
+							<div class="topset2">																
+								<a href="/quote/download-document?type=seo_mission&mission_id={$mission.identifier}&index={$file_index}">	{$files|utf8_encode}</a>
+							</div>
+							<!--{$mission.files_base[$file_index]}-->
+						{/foreach}	
+						</div>				
+					</div>
+					{/if} *}
+					{if $mission.files}
+					<div class="row-fluid topset2" >	
+						<b style="padding:0 10px;">Related Files</b> <br/>
+						<div style="padding:0 10px;">
+							{$mission.files|utf8_encode}
+						</div>
+					</div>
+					{/if}
+			</div>	
+		</div>									
+		{/foreach}
+	{/if}
+{elseif $mission_type eq 'tech'}
+	{if $techMissionDetails|@count gt 0}
+		{foreach from=$techMissionDetails item=mission name="mission"}
+		{assign var=gn_index value=$smarty.foreach.mission.index}
+		{assign var=ms_index value=$smarty.foreach.mission.index+1}								
+			<div class="row-fluid">	
+				<div class="mission-details">
+					<div class="mission-tech-product">{$mission.title|utf8_encode}</div>
+					<table class="table mission-table">
+						<tr>
+							<th style="width:33%">Mission</th>
+							<th style="width:33%">D&eacute;lai de livraison</th>
+							<th style="width:33%">Co&ucirc;t (&{$mission.currency};)</th>
+						</tr>
+						<tr class="misson-details-text">
+							<td>{$mission.title|utf8_encode}</td>
+							<td>
+								{$mission.delivery_time}{$mission.mission_length} {if $mission.delivery_option eq 'days'} Jours {elseif $mission.delivery_option eq 'hours'} Hours{/if}									
+							</td>
+							<td>{$mission.cost|zero_cut:2}</td>														
+						</tr>	
+					</table>
+					{if $mission.before_prod eq 'yes'}
+					<div class="row-fluid" style="margin-left: 15px;">
+						<div class="span12">					
+							<b>Doit &ecirc;tre r&eacute;alis&eacute; avant de lancer la mission</b>					
+						</div>	
+					</div>
+					{/if}
+					{if $mission.comments}
+					<div class="media mission-comment">
+						<a class="pull-left imgframe">
+							<img width="60px" src="{$fo_path}/profiles/bo/{$mission.created_by}/logo.jpg" class="media-object">
+						</a>
+						<div class="media-body">
+							<h4 class="media-heading">								
+								<a>{$mission.tech_user_name}</a> {$mission.comment_time}
+							</h4>
+							<span>{$mission.comments|utf8_encode|htmlentities|nl2br}</span>
+						</div>
+					</div>
+					{/if}
+					{if $mission.files}
+					<div class="row-fluid topset2" >	
+						<b style="padding:0 10px;">Related Files</b> <br/>
+						<div style="padding:0 10px;">
+							{$mission.files|utf8_encode}
+						</div>
+					</div>
+					{/if}
+				</div>
+			</div>
+			
+		{/foreach}
+	{/if}	
+{elseif $mission_type eq 'prod'}	
+
+	{if $prodMissionDetails|@count gt 0}
+	{foreach from=$prodMissionDetails item=mission name="misson"}
+		{assign var=gn_index value=$smarty.foreach.misson.index}
+		{assign var=ms_index value=$smarty.foreach.misson.index+1}	
+		<div class="row-fluid">	
+			<div class="mission-details">
+				
+				<div class="prod-mission-product">Mission {$ms_index} : {$mission.product_name}</div>
+				<table class="table mission-table">
+					<tr>
+						<th style="width:30%">LANGUE</th>
+						<th style="width:30%">PRODUIT</th>
+						<th style="width:20%">VOLUME</th>
+						<th style="width:20%">NB MOTS</th>
+					</tr>
+					<tr class="misson-details-text">
+						<td>{$mission.language_source_name|utf8_encode} {if $mission.product eq 'translation'}>{$mission.language_dest_name|utf8_encode}{/if}</td>
+						<td>{$mission.product_type_name}</td>
+						<td>{$mission.volume}</td>
+						<td>{$mission.nb_words}</td>
+					</tr>	
+				</table>
+				<div class="row-fluid" id="prod_missions_{$mission.identifier}">
+					{if $mission.prod_mission_details|@count gt 0}
+						{foreach from=$mission.prod_mission_details item=prod_misson name="prod_mission"}
+							{assign var=pr_index value=$smarty.foreach.prod_mission.index+1}
+							<div class="row-fluid" id="prod_missions_{$prod_misson.identifier}_{$pr_index}">
+								<div class="mission-details">
+									<div class="mission-prod-product"><span id="box_title_{$pr_index}">
+									{if $prod_misson.product eq 'redaction'}
+										R&eacute;daction
+									{elseif $prod_misson.product eq 'translation'}
+										Traduction 
+									{elseif $prod_misson.product eq 'proofreading'}
+										Correction 	
+									{elseif $prod_misson.product eq 'autre'}
+										Autre 		
+									{/if}												
+									</span>										
+									</div>
+									<input type="hidden" name="prod_product_{$mission.identifier}[]" value="{$prod_misson.product}">
+									<input type="hidden" name="prod_mission_id_{$mission.identifier}[]" value="{$prod_misson.identifier}">
+									<table class="table mission-table">
+										<tr>
+											<th style="width:12%">Nb r&eacute;dacteurs</th>					
+											{* <th style="width:15%">D&eacute;lai de set up</th>
+											<th style="width:37%">Volume et tempo / livraison interm&eacute;diaire</th>
+											*}
+											<th style="width:19%">Co&ucirc;t/{$mission.product_type_name} (&{$mission.sales_suggested_currency };)</th>
+												{* <th style="width:16%">D&eacute;lai livraison</th> *}
+										</tr>				
+										<tr class="misson-details-text">
+											<td>{$prod_misson.staff}</td>
+												{*	<td>{$prod_misson.staff_time} {if $prod_misson.staff_time_option eq 'days'}Jours{elseif $prod_misson.staff_time_option eq 'hours'}Hours{/if}												
+												</td> 
+											<td>{$prod_misson.delivery_volume} {$prod_misson.delivery_volume_option} {$prod_misson.delivery_volume_time} Jours</td> *}
+											<td>{$prod_misson.cost|zero_cut:2}</td>
+												{*	<td>{$prod_misson.delivery_time} {if $prod_misson.delivery_option eq 'days'}Jours{elseif $prod_misson.delivery_option eq 'hours'}Hours{/if}
+												</td> *}
+											
+										</tr>
+									</table>
+									{if $prod_misson.comments}
+									<div class="media mission-comment">
+										<a class="pull-left imgframe">
+											<img width="60px" src="{$fo_path}/profiles/bo/{$prod_misson.created_by}/logo.jpg" class="media-object">
+										</a>
+										<div class="media-body">
+											<h4 class="media-heading">								
+												<a>{$prod_misson.prod_user_name}</a> {$prod_misson.comment_time}
+											</h4>
+											<span>{$prod_misson.comments|utf8_encode|htmlentities|nl2br}</span>
+										</div>												
+									</div>
+									{/if}
+								</div>	
+							</div>	
+						{/foreach}							
+					{/if}	
+				</div>		
+			</div>
+		</div>
+		<!-- SEO proposals for a mission-->
+			{if $mission.seoMissions|@count gt 0}
+			{foreach from=$mission.seoMissions item=seo_mission name="seo_misson"}	
+				{assign var=sms_index value=$smarty.foreach.misson.total+$smarty.foreach.seo_misson.index+1}		
+				<div class="row-fluid">	
+					<div class="mission-details">
+						<div class="prod-mission-product">Mission {$sms_index} : {$mission.product_name} <label class="label label-warning">SEO proposal</label>						
+						</div>
+						<table class="table mission-table">
+							<tr>
+								<th style="width:30%">LANGUE</th>
+								<th style="width:30%">PRODUIT</th>
+								<th style="width:20%">VOLUME</th>
+								<th style="width:20%">NB MOTS</th>
+							</tr>
+							<tr class="misson-details-text">
+								<td>{$mission.language_source_name|utf8_encode} {if $mission.product eq 'translation'}>{$mission.language_dest_name|utf8_encode}{/if}</td>
+								<td>{$mission.product_type_name}</td>
+								<td>{$seo_mission.volume}</td>
+								<td>{$seo_mission.nb_words}</td>
+							</tr>	
+						</table>
+						{if $seo_mission.prod_mission_details|@count gt 0}
+							{foreach from=$seo_mission.prod_mission_details item=prod_misson name="prod_misson"}
+								{assign var=pr_index value=$smarty.foreach.prod_misson.index+1}
+								<div class="row-fluid" id="prod_missions_{$seo_mission.identifier}">
+									<div class="row-fluid" id="prod_missions_{$seo_mission.identifier}_{$pr_index}">
+										<div class="mission-details">
+											<div class="mission-prod-product"><span id="box_title_{$pr_index}">
+											{if $prod_misson.product eq 'redaction'}
+												R&eacute;daction
+											{elseif $prod_misson.product eq 'translation'}
+												Traduction 
+											{elseif $prod_misson.product eq 'proofreading'}
+												Correction 	
+											{elseif $prod_misson.product eq 'autre'}
+												Autre 		
+											{/if}
+											</span></div>
+											<input type="hidden" name="prod_mission_id_{$seo_mission.identifier}[]" value="{$prod_misson.identifier}">
+											<input type="hidden" name="prod_product_{$seo_mission.identifier}[]" value="{$seo_mission.product}">
+											<table class="table mission-table">
+												<tr>
+													<th style="width:15%">Nb r&eacute;dacteurs</th>					
+													<th style="width:35%">D&eacute;lai de set up</th>														
+													<th style="width:35%">D&eacute;lai livraison</th>						
+													<th style="width:15%">Co&ucirc;t/produit</th>														
+												</tr>				
+												<tr class="misson-details-text">													
+													<td>{$prod_misson.staff}</td>
+													<td>{$prod_misson.staff_time} {if $prod_misson.staff_time_option eq 'days'}Jours{elseif $prod_misson.staff_time_option eq 'hours'}Hours{/if}												
+													</td>
+													<td>{$prod_misson.delivery_time} {if $prod_misson.delivery_option eq 'days'}Jours{elseif $prod_misson.delivery_option eq 'hours'}Hours{/if}
+													</td>
+													<td>{$prod_misson.cost|zero_cut:2}</td>
+												</tr>
+											</table>
+											<div class="media mission-comment">
+												<a class="pull-left imgframe">
+													<img width="60px" src="{$fo_path}/profiles/bo/{$prod_misson.created_by}/logo.jpg" class="media-object">
+												</a>
+												<div class="media-body">
+													<h4 class="media-heading">								
+														<a>{$prod_misson.prod_user_name}</a> {$prod_misson.comment_time}
+													</h4>
+													<span>{$prod_misson.comments|utf8_encode|htmlentities|nl2br}</span>
+												</div>												
+											</div>
+										</div>	
+									</div>
+								</div>	
+							{/foreach}
+						{/if}	
+					</div>
+				</div>
+			{/foreach}
+			{/if}
+	{/foreach}
+	{/if}		
+{/if}	

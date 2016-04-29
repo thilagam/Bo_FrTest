@@ -1,0 +1,188 @@
+<form class="form_validation_reg" method="POST" action="/seotool/blacklists-process" name="importcsv" id="seo" ENCTYPE="multipart/form-data">
+    <div class="span10">
+
+        <h3 class="heading">Black lists Tool</h3>
+
+        <div class="control-group formSep" id="seotool-notify" style="display: none;">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <div id="seo-message">
+                        {$msg}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Keyword<span class="f_req">*</span></label>
+                    <div class="span8 form-inline no-margin-first">
+                        <input type="text" name="keyword" class="span5"/>
+                        <span class="help-block syntax">Enter multiple keywords seperated by comma</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Type<span class="f_req">*</span></label>
+                    <label class="uni-checkbox">
+                        <input type="checkbox" class="uni_style" name="type[]" value="1" {if $type eq '1'} checked {/if} /> Regular 
+                    </label>
+                    <label class="uni-checkbox">
+                        <input type="checkbox" class="uni_style" name="type[]" value="2" {if $type eq '2'} checked {/if} /> Anchor 
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <button class="btn btn-gebo" name="submit" type="submit">
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+                    <div class="formSep" id="kwsContainer">
+                        <div class="row-fluid" id="data">{$kws}
+                            <!--<div class="span6">
+                                <span class="help-block">Normal keyword black lists</span>
+                                <ul id="tag_handler"></ul>
+                            </div>
+                            <div class="span6">
+                                <span class="help-block">Anchor type keyword black lists</span>
+                                <ul id="anchor_tag_handler"></ul>
+                            </div>-->
+                        </div>
+                    </div>
+
+{literal}
+<script type="text/javascript">
+	$.validator.addMethod("csvextension", function(value, element, param) {
+		param = typeof param === "string" ? param.replace(/,/g, '|') : "xls|csv";
+		return this.optional(element) || value.match(new RegExp(".(" + param + ")$", "i"));
+	}, $.format("Please use only csv/xls file."));
+
+	$(document).ready(function() {
+		$(".uni_style").uniform();
+		gebo_validation.reg();
+		gebo_tag_handler.init();
+        //$('#kw184').css('background-image', 'url("/BO/theme/gebo/img/delkw.jpg") center center 100 100');
+	});
+
+	//* validation
+	gebo_validation = {
+		reg : function() {
+			reg_validator = $('.form_validation_reg').validate({
+				onkeyup : false,
+				errorClass : 'error',
+				validClass : 'valid',
+				highlight : function(element) {
+					$(element).closest('div').addClass("f_error");
+					$(element).closest('div').css("color", "black");
+				},
+				unhighlight : function(element) {
+					$(element).closest('div').removeClass("f_error");
+				},
+				submitHandler : function(element) {
+					$('#seotool-notify').show();
+				},
+				errorPlacement : function(error, element) {
+					$('#seotool-notify').hide();
+					$(element).closest('div').append(error);
+					$('.error').css("font-size", "10px");
+					$('.error').css("padding-top", "5px");
+				},
+				rules : {
+					keyword : { required: true },
+					"type[]" : { required: true }
+				},
+				messages : {
+					keyword : "Please enter keyword(s).",
+					"type[]" : {required: "Please select type."}
+				},
+				invalidHandler : function(form, validator) {
+					$.sticky("There are some errors. Please corect them and submit again.", {
+						autoclose : 5000,
+						position : "top-center",
+						type : "st-error"
+					});
+				}
+			})
+		}
+	};
+    
+    //* tag handler
+    gebo_tag_handler = {
+        init: function() {
+            /*$("#tag_handler").tagHandler({
+                assignedTags: [],
+                allowAdd: false,
+                autocomplete: false
+            });
+            $("#anchor_tag_handler").tagHandler({
+                assignedTags: [],
+                allowAdd: false,
+                autocomplete: false
+            });*/
+            //$("#tag_handler").tagHandler({});
+            //$("#anchor_tag_handler").tagHandler({});
+        }
+    };
+    
+    /*$(document).ready(function() {
+        $('#tag_handler li').attr('onclick', function(i) {
+            return "return deletetag('" + (($(this).text()).trim()) +"', 'normal')";
+        });
+    });
+    
+    $(document).ready(function() {
+        $('#anchor_tag_handler li').attr('onclick', function(i) {
+            return "return deletetag('" + (($(this).text()).trim()) +"', 'anchor')";
+        });
+    });*/
+
+    function deletetag(id)
+    {
+        $('#seotool-notify').hide();
+        smoke.confirm('Do you really want to delete this keyword ?',function(e){
+            if (e){
+                $('#kw'+id).css("background-color", "#fff");
+                $('#kw'+id).html('<img width="16px" height="16px" border="0" src="/BO/theme/gebo/img/small-loading.gif">');
+                //alert("/seotool/blacklists-delete?id="+id); /BO/theme/gebo/img/delkw.jpg
+                //$('#kw'+id).css('background-image', '/BO/theme/gebo/img/delkw.jpg');
+                $.post( "/seotool/blacklists-delete?id="+id, function( data ) {
+                    $('#data').html(data);  //alert(data);
+                    $('#seo-message').removeClass();
+                    $('#seo-message').html('');
+                });
+            }else{
+                //e.preventDefault();
+                return false;
+            }
+        }, {ok:"OUI", cancel:"NON"}) ;
+        //alert(kw+'|||'+id);
+    }
+
+    function deletetag1(kw, typ)
+    {
+        smoke.confirm('Do you really want to delete the keyword "'+kw+'"?',function(e){
+            if (e){
+                $.post( "/seotool/blacklists-delete?kw="+kw+"&type="+typ, function( data ) {
+                    $('#data').html(data);  //alert(data);
+                    $('#seo-message').removeClass();
+                    $('#seo-message').html('');
+                });
+            }else{
+                return false;
+            }
+        }, {ok:"OUI", cancel:"NON"}) ;
+    }
+</script>
+<style>.help-inline, .help-block {margin:0 0 0 2px !important;}.tagHandler ul.tagHandlerContainer li{text-transform:none;}#kwsContainer{margin-top: 30px;float: left;}</style>
+
+{/literal}

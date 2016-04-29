@@ -1,0 +1,92 @@
+{if $mission_details|@count gt 0}
+	{foreach from=$mission_details item=mission name="misson"}	
+	{assign var=ms_index value=$smarty.foreach.misson.index+1}	
+		<div class="row-fluid" id="mission_details_{$mission.identifier}">	
+			<div class="mission-details">																		
+				{if $mission.previousMissionDetails|@count eq 0 && $version gt 1 }
+					<div class="new-mission-product">New mission</div>
+				{else}
+					<div class="prod-mission-product"> Mission {$ms_index} : {$mission.product_type_converted} {if $mission.misson_user_type eq 'seo'}<label class="label label-warning">SEO Proposal</label>{/if}</div>
+				{/if}	
+				
+				<input name="mission_type_{$mission.identifier}" type="hidden" value="{$mission.product}">
+				<table class="table">
+					<tr>
+						<th>LANGUE</th>
+						<th>PRODUCT TYPE</th>
+						<th>VOLUME</th>
+						<th>LENGTH OF MISSION</th>
+						<th>CO&Ucirc;T/ARTICLE</th>
+						<th>NB MOTS</th>
+					</tr>
+					<tr class="misson-details-text">
+						<td>
+							{if $mission.language_difference eq 'yes'}
+								<span class="version-change pop_over" data-placement="top" data-original-title="Quote history" data-content="{$mission.language_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+							{/if}	
+								{if $mission.product eq 'translation'}															
+									{$mission.language_source_name|utf8_encode} > 	{$mission.language_dest_name|utf8_encode} 
+								{else}
+									{$mission.language_source_name|utf8_encode}
+								{/if}
+							{if $mission.language_difference eq 'yes'}
+								</span>
+							{/if}	
+							</td>
+						<td>
+							{if $mission.product_type_difference eq 'yes'}
+								<span class="version-change pop_over" data-placement="top" data-original-title="Quote history" data-content="{$mission.product_type_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+							{/if}														
+								{if $mission.product_type_name} 
+									{$mission.product_type_name}
+								{else}
+									{$mission.product_name}
+								{/if}
+							{if $mission.product_type_difference eq 'yes'}
+								</span>
+							{/if}	
+						</td>
+						<td>
+							{if $mission.volume_difference eq 'yes'}
+								<span class="version-change pop_over" data-placement="top" data-original-title="Quote history" data-content="{$mission.volume_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i>
+							{/if}
+								{$mission.volume}
+							{if $mission.volume_difference eq 'yes'}
+								</span>
+							{/if}	
+								
+						</td>
+						<td>
+						
+							{if $mission.mission_length_difference eq 'yes'}
+								<span class="version-change pop_over" data-placement="top" data-original-title="Quote history" data-content="{$mission.mission_length_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+							{/if}
+								{$mission.mission_length} {$mission.mission_length_option|upper}
+							{if $mission.mission_length_difference eq 'yes'}
+								</span>
+							{/if}
+						</td>
+						<td>
+							{if $mission.unit_price_difference eq 'yes'}
+								<span class="version-change pop_over" data-placement="top" data-original-title="Quote history" data-content="{$mission.price_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+							{/if}
+								{$mission.unit_price|zero_cut:2} &{$mission.sales_suggested_currency};
+							{if $mission.unit_price_difference eq 'yes'}
+								</span>
+							{/if}	
+						</td>
+						<td>
+							{if $mission.nb_words_difference eq 'yes'}
+								<span class="version-change pop_over" data-placement="top" data-original-title="Quote history" data-content="{$mission.nb_words_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+							{/if}
+								{$mission.nb_words}
+							{if $mission.nb_words_difference eq 'yes'}
+								</span>
+							{/if}
+						</td>
+					</tr>	
+				</table>
+			</div>	
+		</div>
+	{/foreach}
+{/if}

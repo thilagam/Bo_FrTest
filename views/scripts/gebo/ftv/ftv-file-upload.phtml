@@ -1,0 +1,118 @@
+{literal}
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jquery.MultiFile.js"></script>
+<style type="text/css">
+    .media {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+        border-image: none;
+        border-radius: 4px;
+        border-style: solid;
+        border-width: 1px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+        margin-bottom: 15px;
+        overflow: hidden;
+        padding: 12px;
+    }
+    .close
+    {
+        padding: 3px;
+    }
+</style>
+<script type="text/javascript">
+    //Comments submission
+    $(document).ready(function() {
+        $('#attachments').MultiFile();
+    });
+    /*$("#attachdoc").click(function(){
+		//alert('HI');
+		var data= $("#document_form").serialize();
+        var file1= $("#attachments").val();
+		$.ajax({
+			type: "POST",
+			url: "/ftv/uploadfiles",
+			data: data+'&'+file1,
+			//contentType: "application/json",
+            dataType: "json",
+			success: function(data, textStatus, jqXHR)
+			{
+				//alert(data);
+				if(typeof data.error === 'undefined'  || data.error=='')
+				{	$("#comments_list").html('');
+					var counter=1;
+
+					*//*$.each(data, function(i, item) {
+						//alert(item.document);
+
+						//$("#comments_list").append('<li class="media" id="comment_'+counter+'"><div class="media-body"><div class="label">version : '+counter+' </div><a href="/ftv/downloadftv?request_id='+data[i].request_id+'&filename='+data[i].document+'" id="ftvdownload"><i class="splashy-document_small_download"></i></a><p class="muted">'+data[i].created_at+'</p></div></li>');
+						counter++;
+					});​*//*
+					$.each(data.result, function(idx, obj) {
+						var dateFr=obj.created_at.replace(/^(\d{4})-(\d{2})-(\d{2})/, '$2/$3/$1');
+						dateFr=dateFr.slice(0,-3);
+							$("#comments_list").append('<li class="media" id="comment_'+counter+'"><div class="media-body"><div class="label">version : '+counter+' </div><a href="/ftv/downloadftv?request_id='+obj.request_id+'&filename='+obj.document+'" id="ftvdownload"><i class="splashy-document_small_download"></i></a><p class="muted">'+dateFr+'</p></div></li>');
+							counter++;
+					});
+					//('#attachdoc').val('');
+					$('#attachments').MultiFile('reset')
+				}else{
+
+				}
+			},
+			error: function (jqXHR, textStatus, errorThrown)
+			{
+				alert('ERROR');
+			}
+		});
+       *//* $.post("/ftv/uploadfiles", $("#document_form").serialize(),
+                function(data) {
+                    //alert(data);
+                    if(data=='success'){
+                    var obj = $.parseJSON(data);
+                    //$("#ajaxdata").html(obj.comments);
+                    alert(data);
+						$("#ajaxdata").html(data);
+						$("#comments_list").hide();
+					}
+
+                }
+        );*//*
+
+    });
+*/
+</script>
+{/literal}
+<div class="mod">
+    <h4 id="comment"><i class="icon-comment"></i> Previous versions</h4>
+    <ul class="media-list" id="comments_list">
+        {foreach from=$previousfiles item=document name=profiles_loop}
+        <li class="media" id="comment_{$comment.identifier}">
+
+            <div class="media-body">
+                <div class="label">version : {$smarty.foreach.profiles_loop.index+1}</div>
+                <a href="/ftv/downloadftv?request_id={$document.request_id}&filename={$document.document}" id="ftvdownload">
+                    <i class="splashy-document_small_download"></i></a>
+                <p class="muted">{$document.created_at|date_format:"%d/%m/%Y %H:%M"|upper}</p>
+            </div>
+        </li>
+        {/foreach}
+    </ul>
+    <div class="row-fluid">
+        <div class=" well">
+            <form action="/{$ftvtype}/uploadfiles" method="POST" id="document_form" enctype="multipart/form-data">
+                <h4>Choose documents</h4>
+                <fieldset>
+                    <div class="controls span8">
+                        <!-- <input type="file" class="span9" name="ftv_doc" id="ftv_doc">-->
+                        <div class="mail_uploader">
+                            <input type="file" name="attachment[]" id="attachments" class="multi">
+
+                        </div>
+                        <input type="submit" id="attachdoc" name="attachdoc" value="upload" class="btn btn-file"/>
+                        <input type="hidden" id="request_id"  name="request_id" value="{$request_id}" />
+                        <input type="hidden" id="ftv_type"  name="ftv_type" value="{$ftvtype}" />
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>

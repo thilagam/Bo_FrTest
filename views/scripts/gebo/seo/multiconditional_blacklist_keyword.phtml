@@ -1,0 +1,771 @@
+<div class="row-fluid">
+
+    <h3 class="heading">Multi Blacklist Keyword Finder</h3>
+    {if $msg neq ''}
+    <div class="alert alert-{$class}" id="seo-message" style="disply:block;width:800px;">
+        <div class="row-fluid">
+            <div class="span12 form-inline">
+                {$msg}
+            </div>
+        </div>
+    </div>
+    {/if}
+       
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3"><span class="error_placement">Clients</span></label>
+                    
+                    <select name="clientblkws1" id="clientblkws1" class="chzn_c" onchange="return loadblkws(this.value, '1');"{if $data.keywords|@count gt 0}disabled{/if}>
+                        <option value="">s&#233;lectionner</option>
+                        <option value="cch" {if $data.client eq "cch"}Selected{/if}>CCH</option>
+                        <option value="bnb" {if $data.client eq "bnb"}Selected{/if}>BNB</option>
+                        <option value="sct" {if $data.client eq "sct"}Selected{/if}>SCT</option>
+                        <option value="les_furets" {if $data.client eq "les_furets"}Selected{/if}>LES FURETS</option>
+                        <option value="orange.com" {if $data.client eq "orange.com"}Selected{/if}>ORANGE.COM</option>
+                        <option value="celio" {if $data.client eq "celio"}Selected{/if}>CELIO</option>
+                        <option value="caroll" {if $data.client eq "caroll"}Selected{/if}>CAROLL</option>
+                        <option value="armand_thiery_desc" {if $data.client eq "armand_thiery_desc"}Selected{/if}>ARMAND THIERY DESC</option>
+                        <option value="ptt_fr" {if $data.client eq "ptt_fr"}Selected{/if}>PTT FR</option>
+                        <option value="meetic" {if $data.client eq "meetic"}Selected{/if}>MEETIC</option>
+                        <option value="lbm" {if $data.client eq "lbm"}Selected{/if}>LBM</option>
+                        <option value="cdc_fr" {if $data.client eq "cdc_fr"}Selected{/if}>CDC FR</option>
+                        <option value="san_marina" {if $data.client eq "san_marina"}Selected{/if}>SAN MARINA</option>
+                        <option value="morgan" {if $data.client eq "morgan"}Selected{/if}>Morgan</option>
+                        <option value="cosmoparis" {if $data.client eq "cosmoparis"}Selected{/if}>COSMOPARIS</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    
+       
+            
+        <form method="POST" id='mcblk_form' {if $data.keywords|@count gt 0 ||  $data.kws|@count gt 0}action="/seotoolrp/cond-keyword-xls-upload"{else}action="/seotoolrp/multiconditional-blacklist-keyword"{/if} name="condkwupload" class="{if $data.keywords|@count gt 0}form_validation_reg{else}form_validation_reg1{/if}"  enctype="multipart/form-data" >
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="span3 control-label">Predefined blacklist keywords</label>
+                        <div class="span5 no-margin-first controls" style="margin-left:0;">
+                            <textarea name="kw1" id="txtarea_sp1" cols="1" rows="4" class="span12">{$data.keywords_orig}</textarea>
+                        </div>
+                        {if $data.keywords|@count lt 1}
+                         <span id="colkw1" class='span2 '>
+    		              <span id="change_keywords" style="margin-top: 76px;display: inline-block;">
+                              <button class="btn btn-gebo" id="modify_kws" name="modify_kws" type="button" value="modify" style="display:none;">
+                                Modify Keywords
+                              </button>
+                          </span>
+    		           </span>
+    		          {/if}
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name='client_name' id='client_name' value="{$data.client}">
+            {if $data.keywords|@count lt 1}
+            <div class="control-group formSep" >
+                <div class="row-fluid">
+                    <div class="control-group" style='display:none;' id='newactions'>
+                        <div class="span2">
+                             <button id='loadkwsubmit' class="btn btn-gebo" name="submit" type="submit" value="load_kw" >
+                                    Load Keywords
+                            </button>
+                            
+                        </div>
+                        <span class="span1" style="margin-top: 10px;display: inline-block;">OR</span>
+                        <div class="span3" style="margin-left:0;">
+                            <select name="templateselect" id="templateselect" class="chzn_ac" onchange="template_submit()" >  
+                                <option value="">Select Template</option>
+                               
+                            </select>
+                        </div>
+                        <div class="span2">
+                             <button id='loadtemplate' class="btn btn-gebo" name="submit" type="submit" value="load_template" style="display:none;">
+                                    Load Template
+                            </button>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {/if}
+            
+             <h3 class="heading"> </h3>
+            {if $data.keywords|@count gt 0 AND $data.kws|@count lt 1}
+            <div class="formSep" id='keywordListBlocks' style='margin-left:0;'>
+            <div class="row-fluid" >
+
+                <div class="span12 form-inline" id="mkwRow1">
+                    <label class="span2" id="mkw_label">Main Keyword</label>
+                    <label class="span3 " >Simple Blacklist</label>
+                    <label class="span3 " >Conditions</label>
+                </div>
+            </div>   
+            <div id='keyword_main'> 
+            {foreach from=$data.keywords item=keyword name="kwloop"}    
+            <div class="control-group formSep">
+                <div class="row-fluid mkw" id="mkw_{$smarty.foreach.kwloop.index+1}">
+    
+                <div class="span12 form-inline" id="mkwRow{$smarty.foreach.modloop.index+1}1">
+    		     
+    		<div class="span2 no-margin-first" id="mkw_select">
+    		    <input type="text" class='span12' name="main_kw[]" value="{$keyword}"/> 
+    		</div>
+            <div class="span3 " id="mcond_select"> 
+                <label class="span8"><div class="span2"><input type="checkbox" name="simpletype{$smarty.foreach.kwloop.index+1}" class="uni-style"  value="1"></div><span style='padding-top: 5px;display: inline-block;margin-left: 10px;'>Simple Check in</span> </label>
+                <select name="main_kw_ref[]" id="main_kw_ref{$smarty.foreach.kwloop.index+1}" class="chzn_d span3" ><option value="1" selected>A</option><option value="2">B</option><option value="3">C</option><option value="4">D</option><option value="5">E</option><option value="6">F</option><option value="7">G</option><option value="8">H</option><option value="9">I</option><option value="10">J</option><option value="11">K</option><option value="12">L</option><option value="13">M</option><option value="14">N</option><option value="15">O</option><option value="16">P</option><option value="17">Q</option><option value="18">R</option><option value="19">S</option><option value="20">T</option><option value="21">U</option><option value="22">V</option><option value="23">W</option><option value="24">X</option><option value="25">Y</option><option value="26">Z</option></select>
+            </div>
+                    
+    		<div class="span7 col-kw">
+                <div class="span4">
+                <label class="span2 uni-radio"><input type="checkbox" name="conditions{$smarty.foreach.kwloop.index+1}1" class="uni-style"  value="1"> 
+                </label>
+                <input type="text" name="cond_kw{$smarty.foreach.kwloop.index+1}[]" class='span10'/> 
+                </div>
+    		    <div class="span4">
+                <select name="condn{$smarty.foreach.kwloop.index+1}[]" id="slcondn{$smarty.foreach.kwloop.index+1}1"  class="chzn_f span12"><option value="1" selected>Should contain</option><option value="2">Should not contain</option></select>       
+                </div>
+                <div class="span2">
+                    <select name="main_cond_ref{$smarty.foreach.kwloop.index+1}[]" id="main_cond_ref{$smarty.foreach.kwloop.index+1}1" class="chzn_e span12"><option value="1">A</option><option value="2">B</option><option value="3" selected>C</option><option value="4">D</option><option value="5">E</option><option value="6">F</option><option value="7">G</option><option value="8">H</option><option value="9">I</option><option value="10">J</option><option value="11">K</option><option value="12">L</option><option value="13">M</option><option value="14">N</option><option value="15">O</option><option value="16">P</option><option value="17">Q</option><option value="18">R</option><option value="19">S</option><option value="20">T</option><option value="21">U</option><option value="22">V</option><option value="23">W</option><option value="24">X</option><option value="25">Y</option><option value="26">Z</option></select>
+                </div>
+    		    <span id="colkw{$smarty.foreach.kwloop.index+1}1" class='span2'>
+    		      <span id="addmore_mkv{$smarty.foreach.kwloop.index+1}" class="addmore-button"><a class="btn" onclick="addMainKwref(1,'mkw_{$smarty.foreach.kwloop.index+1}')"><i class="icon-plus"></i></a></span>
+    		    </span>
+    		</div>
+        </div>
+    
+                </div>
+            </div>
+            {/foreach}
+            </div>
+            
+                
+                
+           <div class="control-group formSep" id="csv">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Excel file<span class="f_req">*</span></label>
+    
+                        <div data-provides="fileupload" class="fileupload fileupload-new">
+                            <input type="hidden" />
+                            <div data-provides="fileupload" class="fileupload fileupload-new">
+                                <input type="hidden" />
+                                <div class="input-append">
+                                    <div class="uneditable-input span2">
+                                        <i class="icon-file fileupload-exists"></i><span class="fileupload-preview"></span>
+                                    </div><span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span>
+                                        <input name="keyword_file1" id="keyword_file1" type="file" />
+                                    </span><a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+            <div class="control-group formSep" id="template_div" style="display:none">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Template Name<span class="f_req">*</span></label>
+                         <input type="text" id='template_name' name="template_name" class='span5'/>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+    	<input type="hidden" name="conditional" value="1" />
+                        <button class="btn btn-gebo" id='cancel_btn' name="cancel" type="button" value="cancel" onclick="history.go(-1);">
+                            Cancel
+                        </button>
+                        <button class="btn btn-gebo" id='save_template_btn' name="submit" type="submit" value="save_template" >
+                            Save Template
+                        </button>
+                        <button class="btn btn-gebo" id='check' name="submit" type="submit" value="check">
+                            Check
+                        </button>
+                        <button class="btn btn-gebo" id='check_save' name="submit" type="submit" value="check_save">
+                            Check & Save Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            {/if}
+            {if $data.kws|@count gt 0}
+            <div class="formSep" id='keywordListBlocks' style='margin-left:0;'>
+            <div class="row-fluid" >
+
+                <div class="span12 form-inline" id="mkwRow1">
+                    <label class="span2" id="mkw_label">Main Keyword</label>
+                    <label class="span3 " >Simple Blacklist</label>
+                    <label class="span3 " >Conditions</label>
+                </div>
+            </div>   
+            <div id='keyword_main'> 
+                
+                {foreach from=$data.kws item=keyword name="kwloop"}   
+                     <div class="control-group formSep">
+                        <div class="row-fluid mkw" id="mkw_{$smarty.foreach.kwloop.index+1}">
+                        
+                        {foreach from=$keyword->conditions item=ck name="cloop"} 
+                        {assign var="counter" value=$smarty.foreach.cloop.iteration}
+                        {if $counter eq 1}
+                        <div class="span12 form-inline" id="mkwRow{$smarty.foreach.modloop.index+1}1">
+
+                        <div class="span2 no-margin-first" id="mkw_select">
+                            <input type="text" class='span12' name="main_kw[]" value="{$keyword->main_kw}"/> 
+                        </div>
+                        <div class="span3 " id="mcond_select"> 
+                        <label class="span8"><div class="span2"><input type="checkbox" name="simpletype{$smarty.foreach.kwloop.index+1}" class="uni-style"  value="1" {if $keyword->simpletype eq 1}checked{/if}></div><span style='padding-top: 5px;display: inline-block;margin-left: 10px;'>Simple Check in</span> </label>
+                        <select name="main_kw_ref[]" id="main_kw_ref{$smarty.foreach.kwloop.index+1}" class="chzn_d span3" ><option value="1" {if $keyword->main_kw_ref eq 1}selected{/if}>A</option><option value="2" {if $keyword->main_kw_ref eq 2}selected{/if}>B</option><option value="3" {if $keyword->main_kw_ref eq 3}selected{/if}>C</option><option value="4" {if $keyword->main_kw_ref eq 4}selected{/if}>D</option><option value="5" {if $keyword->main_kw_ref eq 5}selected{/if}>E</option><option value="6" {if $keyword->main_kw_ref eq 6}selected{/if}>F</option><option value="7" {if $keyword->main_kw_ref eq 7}selected{/if}>G</option><option value="8" {if $keyword->main_kw_ref eq 8}selected{/if}>H</option><option value="9" {if $keyword->main_kw_ref eq 9}selected{/if}>I</option><option value="10" {if $keyword->main_kw_ref eq 10}selected{/if}>J</option><option value="11" {if $keyword->main_kw_ref eq 11}selected{/if}>K</option><option value="12" {if $keyword->main_kw_ref eq 12}selected{/if}>L</option><option value="13" {if $keyword->main_kw_ref eq 14}selected{/if}>M</option><option value="14" {if $keyword->main_kw_ref eq 14}selected{/if}>N</option><option value="15" {if $keyword->main_kw_ref eq 15}selected{/if}>O</option><option value="16" {if $keyword->main_kw_ref eq 16}selected{/if}>P</option><option value="17" {if $keyword->main_kw_ref eq 17}selected{/if}>Q</option><option value="18" {if $keyword->main_kw_ref eq 18}selected{/if}>R</option><option value="19" {if $keyword->main_kw_ref eq 19}selected{/if}>S</option><option value="20" {if $keyword->main_kw_ref eq 21}selected{/if}>T</option><option value="21" {if $keyword->main_kw_ref eq 21}selected{/if}>U</option><option value="22" {if $keyword->main_kw_ref eq 22}selected{/if}>V</option><option value="23" {if $keyword->main_kw_ref eq 23}selected{/if}>W</option><option value="24" {if $keyword->main_kw_ref eq 24}selected{/if}>X</option><option value="25" {if $keyword->main_kw_ref eq 25}selected{/if}>Y</option><option value="26" {if $keyword->main_kw_ref eq 27}selected{/if}>Z</option></select>
+                    </div>
+
+                    <div class="span7 col-kw">
+                        <div class="span4">
+                        <label class="span2 uni-radio"><input type="checkbox" name="conditions{$counter+1}1" class="uni-style"  value="1" {if $ck->condition eq 1 }checked{/if}> 
+                        </label>
+                        <input type="text" name="cond_kw{$smarty.foreach.kwloop.index+1}[]" class='span10' value='{$ck->cond_kw}'/> 
+                        </div>
+                        <div class="span4">
+                        <select name="condn{$smarty.foreach.kwloop.index+1}[]" id="slcondn{$smarty.foreach.kwloop.index+1}1"  class="chzn_f span12">
+                            <option value="1" {if $ck->condn eq 1}selected{/if}>Should contain</option>
+                            <option value="2" {if $ck->condn eq 2}selected{/if}>Should not contain</option></select>       
+                        </div>
+                        <div class="span2">
+                            <select name="main_cond_ref{$smarty.foreach.kwloop.index+1}[]" id="main_cond_ref{$smarty.foreach.kwloop.index+1}1" class="chzn_e span12"><option value="1" {if $ck->main_cond_ref eq 1}selected{/if}>A</option><option value="2" {if $ck->main_cond_ref eq 2}selected{/if}>B</option><option value="3"  {if $ck->main_cond_ref eq 3}selected{/if} >C</option><option value="4" {if $ck->main_cond_ref eq 4}selected{/if}>D</option><option value="5" {if $ck->main_cond_ref eq 5}selected{/if}>E</option><option value="6" {if $ck->main_cond_ref eq 6}selected{/if}>F</option><option value="7" {if $ck->main_cond_ref eq 7}selected{/if}>G</option><option value="8" {if $ck->main_cond_ref eq 8}selected{/if}>H</option><option value="9" {if $ck->main_cond_ref eq 9}selected{/if}>I</option><option value="10" {if $ck->main_cond_ref eq 10}selected{/if}>J</option><option value="11" {if $ck->main_cond_ref eq 11}selected{/if}>K</option><option value="12" {if $ck->main_cond_ref eq 12}selected{/if}>L</option><option value="13" {if $ck->main_cond_ref eq 13}selected{/if}>M</option><option value="14" {if $ck->main_cond_ref eq 14}selected{/if}>N</option><option value="15" {if $ck->main_cond_ref eq 15}selected{/if}>O</option><option value="16" {if $ck->main_cond_ref eq 16}selected{/if}>P</option><option value="17" {if $ck->main_cond_ref eq 17}selected{/if}>Q</option><option value="18" {if $ck->main_cond_ref eq 18}selected{/if}>R</option><option value="19" {if $ck->main_cond_ref eq 19}selected{/if}>S</option><option value="20" {if $ck->main_cond_ref eq 20}selected{/if}>T</option><option value="21" {if $ck->main_cond_ref eq 21}selected{/if}>U</option><option value="22" {if $ck->main_cond_ref eq 22}selected{/if}>V</option><option value="23" {if $ck->main_cond_ref eq 23}selected{/if}>W</option><option value="24" {if $ck->main_cond_ref eq 24}selected{/if}>X</option><option value="25" {if $ck->main_cond_ref eq 25}selected{/if}>Y</option><option value="26" {if $ck->main_cond_ref eq 26}selected{/if}>Z</option></select>
+                        </div>
+                        {if $smarty.foreach.cloop.last} 
+                             <span id="colkw{$counter+1}1" class='span2'>
+                          <span id="addmore_mkv{$counter+1}" class="addmore-button"><a class="btn" onclick="addMainKwref(1,'mkw_{$counter+1}')"><i class="icon-plus"></i></a></span>
+                        </span>
+                        {/if} 
+                       
+                    </div>
+                </div>
+                            {else}
+                                <div class="span12 form-inline" id="mkwRow{$counter+1}1">
+
+                        <div class="span2 no-margin-first" >
+                            
+                        </div>
+                        <div class="span3" > 
+                            
+                        </div>
+
+                    <div class="span7 col-kw">
+                        <div class="span4">
+                        <label class="span2 uni-radio"><input type="checkbox" name="conditions{$counter+1}1" class="uni-style"  value="1" {if $ck->condition eq 1 }checked{/if}> 
+                        </label>
+                        <input type="text" name="cond_kw{$smarty.foreach.kwloop.index+1}[]" class='span10' value='{$ck->cond_kw}'/> 
+                        </div>
+                        <div class="span4">
+                        <select name="condn{$smarty.foreach.kwloop.index+1}[]" id="slcondn{$smarty.foreach.kwloop.index+1}{$counter+1}"  class="chzn_f span12">
+                            <option value="1" {if $ck->condn eq 1}selected{/if}>Should contain</option>
+                            <option value="2" {if $ck->condn eq 2}selected{/if}>Should not contain</option></select>       
+                        </div>
+                        <div class="span2">
+                            <select name="main_cond_ref{$smarty.foreach.kwloop.index+1}[]" id="main_cond_ref{$smarty.foreach.kwloop.index+1}{$counter+1}" class="chzn_e span12"><option value="1" {if $ck->main_cond_ref eq 1}selected{/if}>A</option><option value="2" {if $ck->main_cond_ref eq 2}selected{/if}>B</option><option value="3"  {if $ck->main_cond_ref eq 3}selected{/if} >C</option><option value="4" {if $ck->main_cond_ref eq 4}selected{/if}>D</option><option value="5" {if $ck->main_cond_ref eq 5}selected{/if}>E</option><option value="6" {if $ck->main_cond_ref eq 6}selected{/if}>F</option><option value="7" {if $ck->main_cond_ref eq 7}selected{/if}>G</option><option value="8" {if $ck->main_cond_ref eq 8}selected{/if}>H</option><option value="9" {if $ck->main_cond_ref eq 9}selected{/if}>I</option><option value="10" {if $ck->main_cond_ref eq 10}selected{/if}>J</option><option value="11" {if $ck->main_cond_ref eq 11}selected{/if}>K</option><option value="12" {if $ck->main_cond_ref eq 12}selected{/if}>L</option><option value="13" {if $ck->main_cond_ref eq 13}selected{/if}>M</option><option value="14" {if $ck->main_cond_ref eq 14}selected{/if}>N</option><option value="15" {if $ck->main_cond_ref eq 15}selected{/if}>O</option><option value="16" {if $ck->main_cond_ref eq 16}selected{/if}>P</option><option value="17" {if $ck->main_cond_ref eq 17}selected{/if}>Q</option><option value="18" {if $ck->main_cond_ref eq 18}selected{/if}>R</option><option value="19" {if $ck->main_cond_ref eq 19}selected{/if}>S</option><option value="20" {if $ck->main_cond_ref eq 20}selected{/if}>T</option><option value="21" {if $ck->main_cond_ref eq 21}selected{/if}>U</option><option value="22" {if $ck->main_cond_ref eq 22}selected{/if}>V</option><option value="23" {if $ck->main_cond_ref eq 23}selected{/if}>W</option><option value="24" {if $ck->main_cond_ref eq 24}selected{/if}>X</option><option value="25" {if $ck->main_cond_ref eq 25}selected{/if}>Y</option><option value="26" {if $ck->main_cond_ref eq 26}selected{/if}>Z</option></select>
+                        </div>
+                       {if $smarty.foreach.cloop.last} 
+                             <span id="colkw{$smarty.foreach.kwloop.index+1}{$counter+1}" class='span2'>
+                          <span id="addmore_mkv{$counter+1}" class="addmore-button"><a class="btn" onclick="addMainKwref({$counter+1},'mkw_{$counter+1}')"><i class="icon-plus"></i></a></span>
+                       
+                                 <span id="rmv_mcv" class="addmore-button"><a class="btn" onclick="rmvCondKwref('{$counter-1}')"><i class="icon-minus"></i></a></span></span>
+                        {/if} 
+                    </div>
+                </div>
+                            
+                            
+                            {/if}
+                            {/foreach}
+
+                        </div>
+                    </div>
+                {/foreach}
+                </div>
+           <div class="control-group formSep" id="csv">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Excel file<span class="f_req">*</span></label>
+    
+                        <div data-provides="fileupload" class="fileupload fileupload-new">
+                            <input type="hidden" />
+                            <div data-provides="fileupload" class="fileupload fileupload-new">
+                                <input type="hidden" />
+                                <div class="input-append">
+                                    <div class="uneditable-input span2">
+                                        <i class="icon-file fileupload-exists"></i><span class="fileupload-preview"></span>
+                                    </div><span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span>
+                                        <input name="keyword_file1" id="keyword_file1" type="file" />
+                                    </span><a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+            <div class="control-group formSep" id="template_div" style="display:none">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Template Name<span class="f_req">*</span></label>
+                         <input type="text" id='template_name' name="template_name" class='span5'/>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+    	<input type="hidden" name="conditional" value="1" />
+                       
+                        <button class="btn btn-gebo" id='check' name="submit" type="submit" value="check">
+                            Check
+                        </button>
+                       
+                    </div>
+                </div>
+            </div>
+            </div>
+            {/if}
+        </form>
+    </div>
+    <div id="data"></div>
+</div>
+
+<div class="modal hide fade" id="save_template" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:5px;width:800px;">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Save Template</h3>
+    </div>
+    <div class="modal-body" id="save_template">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+    
+
+{literal}
+<script type="text/javascript">
+
+function addMainKwref(idx,parent_id)
+{
+    idx = parseInt(idx);
+    var smart_id=parent_id.match(/\d+$/)[0];
+   // alert(smart_id);
+    $('span#colkw'+smart_id+idx).html('');
+
+/*    $('#mkw').append('<div class="span12 form-inline" id="mkwRow'+(idx+1)+'"><label class="span3" id="mkw_label"></label><div class="span3 no-margin-first" id="mkw_select"><select name="main_kw_ref[]" id="main_kw_ref'+(idx+1)+'" class="chzn_d" style="width:70px;"><option value="1">A</option><option value="2" selected>B</option><option value="3">C</option><option value="4">D</option><option value="5">E</option><option value="6">F</option><option value="7">G</option><option value="8">H</option><option value="9">I</option><option value="10">J</option><option value="11">K</option><option value="12">L</option><option value="13">M</option><option value="14">N</option><option value="15">O</option><option value="16">P</option><option value="17">Q</option><option value="18">R</option><option value="19">S</option><option value="20">T</option><option value="21">U</option><option value="22">V</option><option value="23">W</option><option value="24">X</option><option value="25">Y</option><option value="26">Z</option></select></div><div class="col-kw"><input type="text" name="main_kw[]" class="span3"/><span id="colkw'+(idx+1)+'"><span id="addmore_mkv" class="addmore-button"><a class="btn" onclick="addMainKwref('+(idx+1)+')"><i class="icon-plus"></i></a></span><span id="rmv_mkv" class="addmore-button"><a class="btn" onclick="rmvMainKwref('+(idx+1)+')"><i class="icon-minus"></i></a></span></span></div></div>');*/
+    
+    $('#mkw_'+smart_id).append('<div class="span12 form-inline" id="mkwRow'+smart_id+(idx+1)+'"><div class="span2 no-margin-first"></div><div class="span3 " > </div><div class="span7 col-kw"><div class="span4"><label class="span2 uni-radio"><input type="checkbox" name="conditions'+smart_id+(idx+1)+'" class="uni-style"  value="1"> </label><input type="text" name="cond_kw'+smart_id+'[]" class="span10"/> </div><div class="span4"><select name="condn'+smart_id+'[]" id="slcondn'+smart_id+(idx+1)+'"  class="chzn_f span12"><option value="1" selected>Should contain</option><option value="2">Should not contain</option></select>       </div><div class="span2"><select name="main_cond_ref'+smart_id+'[]" id="main_cond_ref'+smart_id+(idx+1)+'" class="chzn_e span12"><option value="1">A</option><option value="2">B</option><option value="3" selected>C</option><option value="4">D</option><option value="5">E</option><option value="6">F</option><option value="7">G</option><option value="8">H</option><option value="9">I</option><option value="10">J</option><option value="11">K</option><option value="12">L</option><option value="13">M</option><option value="14">N</option><option value="15">O</option><option value="16">P</option><option value="17">Q</option><option value="18">R</option><option value="19">S</option><option value="20">T</option><option value="21">U</option><option value="22">V</option><option value="23">W</option><option value="24">X</option><option value="25">Y</option><option value="26">Z</option></select></div><span id="colkw'+smart_id+(idx+1)+'" class="span2"><span id="addmore_mkv'+smart_id+'" class="addmore-button"><a class="btn" onclick="addMainKwref('+(idx+1)+',\'mkw_'+smart_id+'\')"><i class="icon-plus"></i></a></span><span id="rmv_mkv" class="addmore-button"><a class="btn" onclick="rmvMainKwref('+(idx+1)+',\'mkw_'+smart_id+'\')"><i class="icon-minus"></i></a></span></span></div></div>');
+    
+    $(".chzn_d").chosen({
+        allow_single_deselect : true,
+        disable_search : true
+    });
+    $(".chzn_f").chosen({
+        allow_single_deselect : true,
+        disable_search : true
+    });
+    $(".chzn_e").chosen({
+        allow_single_deselect : true,
+        disable_search : true
+    });
+    $("#main_kw_ref"+smart_id+(idx+1)).trigger("liszt:updated");
+}
+
+function rmvMainKwref(idx,parent_id)
+{
+    idx = parseInt(idx);
+    var smart_id=parent_id.match(/\d+$/)[0];
+    $('#mkwRow'+smart_id+idx).remove();
+    if(idx != 2)
+        $('span#colkw'+smart_id+(idx-1)).html('<span id="addmore_mkv'+smart_id+'" class="addmore-button"><a class="btn"  onclick="addMainKwref('+(idx-1)+',\'mkw_'+smart_id+'\')"><i class="icon-plus"></i></a></span><span id="rmv_mkv" class="addmore-button"><a class="btn" onclick="rmvMainKwref('+(idx-1)+',\'mkw_'+smart_id+'\')"><i class="icon-minus"></i></a></span>');
+    else
+        $('span#colkw'+(idx-1)).html('<span id="addmore_mkv'+smart_id+'" class="addmore-button"><a class="btn" onclick="addMainKwref('+(idx+1)+',\'mkw_'+smart_id+'\')"><i class="icon-plus"></i></a></span>');
+}
+
+function addCondKwref(idx)
+{
+    idx = parseInt(idx);
+    $('span#colcond'+idx).html('');
+
+    $('#mcond').append('<div class="span12 form-inline" id="mcondRow'+(idx+1)+'"><label class="span3" id="mcond_label"></label><div class="span3 no-margin-first" id="mcond_select"><select name="main_cond_ref[]" id="main_cond_ref'+(idx+1)+'" class="chzn_e" style="width:70px;"><option value="1">A</option><option value="2">B</option><option value="3">C</option><option value="4" selected>D</option><option value="5">E</option><option value="6">F</option><option value="7">G</option><option value="8">H</option><option value="9">I</option><option value="10">J</option><option value="11">K</option><option value="12">L</option><option value="13">M</option><option value="14">N</option><option value="15">O</option><option value="16">P</option><option value="17">Q</option><option value="18">R</option><option value="19">S</option><option value="20">T</option><option value="21">U</option><option value="22">V</option><option value="23">W</option><option value="24">X</option><option value="25">Y</option><option value="26">Z</option></select><select name="condn[]" id="slcondn'+(idx+1)+'" style="width:130px;" class="chzn_f"><option value="1">Should contain</option><option value="2" selected>Should not contain</option></select></div><div class="col-cond"><input type="text" name="main_cond[]" class="span3"/><span id="colcond'+(idx+1)+'"><span id="addmore_mcv" class="addmore-button"><a class="btn" onclick="addCondKwref('+(idx+1)+')"><i class="icon-plus"></i></a></span><span id="rmv_mcv" class="addmore-button"><a class="btn" onclick="rmvCondKwref('+(idx+1)+')"><i class="icon-minus"></i></a></span></span></div></div>');
+    
+    //document.getElementById("main_cond_ref"+(idx+1)).selectedIndex = +(idx+1);
+    //document.getElementById("slcondn"+(idx+1)).selectedIndex = +(idx+1);
+    
+    $(".chzn_e").chosen({
+        allow_single_deselect : true,
+        disable_search : true
+    });
+    $(".chzn_f").chosen({
+        allow_single_deselect : true,
+        disable_search : true
+    });
+    $("#main_cond_ref"+(idx+1)).trigger("liszt:updated");
+    $("#slcondn"+(idx+1)).trigger("liszt:updated");
+}
+
+function rmvCondKwref(idx)
+{
+    idx = parseInt(idx);//alert(idx);
+    $('#mcondRow'+idx).remove();
+    if(idx != 2)
+        $('span#colcond'+(idx-1)).html('<span id="addmore_mcv" class="addmore-button"><a class="btn" onclick="addCondKwref('+(idx-1)+')"><i class="icon-plus"></i></a></span><span id="rmv_mcv" class="addmore-button"><a class="btn" onclick="rmvCondKwref('+(idx-1)+')"><i class="icon-minus"></i></a></span>');
+    else
+        $('span#colcond'+(idx-1)).html('<span id="addmore_mcv" class="addmore-button"><a class="btn" onclick="addCondKwref('+(idx-1)+')"><i class="icon-plus"></i></a></span>');
+}
+
+	$(document).ready(function() {
+	    $(".uni_style").uniform();
+		gebo_chosen.init();
+        //gebo_validation.reg();
+	});
+    
+    $.validator.addMethod("csvextension111", function(value, element, param) {
+        param = typeof param === "string" ? param.replace(/,/g, '|') : "xls|xlsx";
+        return this.optional(element) || value.match(new RegExp(".(" + param + ")$", "i"));
+    }, $.format("Only xls and xlsx files are accepted."));
+    
+    $.validator.addMethod("validateMainKw1111", function(value, element, param) {
+        var errFlg = true;
+        $('input[name="main_kw[]"]').each(function() {
+            if(($(this).val()).trim() == '')    errFlg = false ;
+        });
+        return errFlg;
+    }, $.format("Please enter keywords."));
+    
+    $.validator.addMethod("validateMainCondtn111", function(value, element, param) {
+        var errFlg = true;
+        $('input[name="main_cond[]"]').each(function() {
+            if(($(this).val()).trim() == '')    errFlg = false ;
+        });
+        return errFlg;
+    }, $.format("Please enter keywords."));
+    
+   {/literal}{if $data.keywords|@count gt 0}{literal}
+	//* validation
+	gebo_validation = {
+        reg : function() {
+            reg_validator = $('.form_validation_reg').validate({
+                onkeyup : false,
+                errorClass : 'error',
+                validClass : 'valid',
+                highlight : function(element) {
+                    $(element).closest('div').addClass("f_error");
+                    $(element).closest('div').css("color", "black");
+                },
+                unhighlight : function(element) {
+                    $(element).closest('div').removeClass("f_error");
+                },
+                submitHandler : function(element) {
+                    $('#seotool-notify').show();
+                },
+                errorPlacement : function(error, element) {
+                    $('#seotool-notify').hide();
+                    $(element).closest('div').append(error);
+                    $('.error').css("font-size", "10px");
+                    $('.error').css("padding-top", "5px");
+                },
+                rules : {
+                    keyword_file1 : {
+                        required : true,
+                        csvextension : "xlsx"
+                    }
+                   
+                },
+                messages : {
+                    keyword_file1 : {
+                        required : "Please select xlsx file.",
+                        accept : "Only xlsx files are accepted."
+                    }
+                },
+                invalidHandler : function(form, validator) {
+                    $.sticky("There are some errors. Please corect them and submit again.", {
+                        autoclose : 5000,
+                        position : "top-center",
+                        type : "st-error"
+                    });
+                }
+            });
+        }
+	};
+    {/literal}{else}{literal}
+    //* validation
+	function validateSubmitKw(){
+        $element=$('#txtarea_sp1');
+        if(element.val()!=''){
+            document.getElementById("mcblk_form").submit();
+        }else{
+             $('#seotool-notify').hide();
+            $(element).closest('div').append(error);
+            $('.error').css("font-size", "10px");
+            $('.error').css("padding-top", "5px");
+        }
+        //alert('submitform');
+       // document.getElementById("mcblk_form").submit();
+    }
+{/literal}{/if}{literal}
+	gebo_chosen = {
+		init : function() {
+			$(".chzn_c").chosen({
+				allow_single_deselect : true
+			});
+			$(".chzn_ac").chosen({
+				allow_single_deselect : true
+			});
+			$(".chzn_d").chosen({
+				allow_single_deselect : true,
+				disable_search : true
+			});
+			$(".chzn_e").chosen({
+				allow_single_deselect : true,
+				disable_search : true
+			});
+			$(".chzn_f").chosen({
+				allow_single_deselect : true,
+				disable_search : true
+			});/**/
+		}
+	};
+        
+    $('#save_template_btn').click(function(event){
+       
+        var template_title;
+        template_title=$('#template_name');
+        var template_title;
+        template_title=$('#template_name');
+        file_up=$('#keyword_file1');
+        if(template_title.val()==''){
+            event.preventDefault();
+            $('#template_div').show('slow');
+            //$('.error').css("font-size", "10px");
+            //$('.error').css("padding-top", "5px");
+            //$(template_title).closest('div').addClass("f_error");
+            //$(template_title).closest('div').css("color", "black");
+            //$(template_title).closest('div').append(error);
+            $.sticky("Add Template title.", {
+                    autoclose : 5000,
+                    position : "top-center",
+                    type : "st-error"
+                });
+            
+        }else{
+            validateSubmitForm(template_title);
+        }
+        
+    });   
+     
+   //Keywords Submit Validation 
+    $('#loadkwsubmit').click(function(event){
+       
+        var template_title = $('#txtarea_sp1');
+        kws=template_title.val();
+        console.log(kws);
+        if(kws==''){
+            event.preventDefault();
+            $('.error').css("font-size", "10px");
+            $('.error').css("padding-top", "5px");
+            $(template_title).closest('div').addClass("f_error");
+            $(template_title).closest('div').css("color", "black");
+            $(template_title).closest('div').append(error);
+            $.sticky("Keywords are empty.", {
+                    autoclose : 5000,
+                    position : "top-center",
+                    type : "st-error"
+                });
+        }else{
+            validateSubmitForm(template_title);
+        }
+        
+    });
+     
+    //Template submit validation
+     
+    $('#loadtemplate').click(function(event){
+       
+        var template_title = $('#templateselect');
+        kws=template_title.val();
+        console.log(kws);
+        if(kws==''){
+            event.preventDefault();
+            $.sticky("Select Template to Load.", {
+                        autoclose : 5000,
+                        position : "top-center",
+                        type : "st-error"
+                    });
+
+        }else{
+            validateSubmitForm(template_title);
+        }
+        
+    }); 
+    
+    // Check * Save the Template Validation  
+    $('#check_save').click(function(event){
+        var template_title;
+        template_title=$('#template_name');
+        file_up=$('#keyword_file1');
+        if(template_title.val()==''){
+            event.preventDefault();
+            $('#template_div').show('slow');
+            //$('.error').css("font-size", "10px");
+            //$('.error').css("padding-top", "5px");
+            //$(template_title).closest('div').addClass("f_error");
+            //$(template_title).closest('div').css("color", "black");
+            //$(template_title).closest('div').append(error);
+            $.sticky("Add Template title.", {
+                    autoclose : 5000,
+                    position : "top-center",
+                    type : "st-error"
+                });
+            
+        }else if(file_up.val()=='' || file_up.val().split('.').pop()!='xlsx'){
+            event.preventDefault();
+            //$(template_title).closest('div').removeClass("f_error");
+           // $('#template_div').show('slow');
+           // $('.error').css("font-size", "10px");
+           // $('.error').css("padding-top", "5px");
+          ///  $(file_up).closest('div').addClass("f_error");
+           // $(file_up).closest('div').css("color", "black");
+           
+            $.sticky("Select Xlsx file to search keywords.", {
+                    autoclose : 5000,
+                    position : "top-center",
+                    type : "st-error"
+            });
+        
+        }else{
+            validateSubmitForm();
+        }
+        
+    });   
+    
+     // Check * Save the Template Validation  
+    $('#check').click(function(event){
+        
+        file_up=$('#keyword_file1');
+        if(file_up.val()=='' || file_up.val().split('.').pop()!='xlsx'){
+            event.preventDefault();
+            //$(template_title).closest('div').removeClass("f_error");
+           // $('#template_div').show('slow');
+           // $('.error').css("font-size", "10px");
+           // $('.error').css("padding-top", "5px");
+          ///  $(file_up).closest('div').addClass("f_error");
+           // $(file_up).closest('div').css("color", "black");
+           
+            $.sticky("Select Xlsx file to search keywords.", {
+                    autoclose : 5000,
+                    position : "top-center",
+                    type : "st-error"
+            });
+        
+        }else{
+            validateSubmitForm();
+        }
+        
+    });   
+    function template_submit(){
+        $('#loadtemplate').show('slow');
+    }
+    
+    function validateSubmitForm(template_title){
+        if(template_title!=''){
+            document.getElementById("mcblk_form").submit();
+        }else{
+        
+            document.getElementById("mcblk_form").submit();
+        }
+        //alert('submitform');
+       // document.getElementById("mcblk_form").submit();
+    }
+    
+    $('#modify_kws').click(function(event){
+        var keywords='';
+        var idx=1;
+        var client=$('#clientblkws1').val();
+        keywords=$('#txtarea_sp1').val();
+        var target_page = "/seotoolrp/editkws?client=" + client;
+        if(client != ''){
+            $.post(target_page,{ kws: keywords},function(data) {
+                var data = $.trim(data);
+                $('#seo-message').html('');
+                    $('#seo-message').removeClass("alert alert-info");
+                if (data != "") {
+                    data = data.replace(/, /g, '\n');
+                    data = data.replace(/,/g, '\n');
+                    data1 = data.split('\n');
+                    //$('#client_name').val(client);
+                    if(idx == '')
+                    {
+                        $('#txtarea_sp').val(data);
+                    }
+                    else
+                    {
+                        $('#txtarea_sp1').val(data);
+                    }
+                    
+                    return false;
+                }
+                return false;
+            });
+        }
+    
+    });
+    function loadblkws(client, idx) {
+        var target_page = "/seotoolrp/loadblkws?client=" + client;
+        if (client != '') {
+            $.post(target_page, function(data) {
+                var data = $.trim(data);
+                $('#seo-message').html('');
+                $('#seo-message').removeClass("alert alert-info");
+                if (data != "") {
+                    data = data.replace(/, /g, '\n');
+                    data = data.replace(/,/g, '\n');
+                    data1 = data.split('\n');
+                   // console.log(client);
+                    $('#client_name').val(client);
+                    $('#modify_kws').show('slow');
+                    $('#newactions').show('slow');
+                    loadTemplates(client);
+                    if(idx == '')
+                    {
+                        $('#txtarea_sp').val(data);
+                    }
+                    else
+                    {
+                        $('#txtarea_sp1').val(data);
+                    }
+                    return false;
+                }
+                return false;
+            });
+            return false;
+        }
+        return false;
+    }
+    
+    function loadTemplates(client) {
+        console.log("LOADINGTEMPLATES");
+        var target_page = "/seotoolrp/loadtemplates?client=" + client;
+        if (client != '') {
+            
+            $.post(target_page, function(data) {
+                var data = $.trim(data);
+                $('#seo-message').html('');
+                $('#seo-message').removeClass("alert alert-info");
+                if (data != "") {
+                    $("#templateselect").html(data);
+                     $("#templateselect").trigger("liszt:updated");
+                }
+                return false;
+            });
+            return false;
+        }
+        return false;
+    }
+</script>
+<style>#cblkwtab, #blkwtab{min-height:500px;}
+div[id^="mkwRow"], div[id^="mcondRow"]{margin-left:0 !important;}
+#addmore_mkv,#rmv_mkv,#addmore_mcv,#rmv_mcv{padding-left:5px;}</style>
+{/literal}

@@ -1,0 +1,253 @@
+{literal}
+<script type="text/javascript">
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+var ctype = getUrlVars()["counttype"];
+var count = getUrlVars()["count"];
+
+$(document).ready(function() {
+    $("#permissionstab").addClass('active');
+    $("#sel_group").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#sel_user").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#to_sel_user").chosen({ allow_single_deselect: false,search_contains: true  });
+    $(".uni_style").uniform();
+   // gebo_validation.reg();
+    //////////////////////////////////////////////////////////////////////
+    $('#permissionsgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "formatted-num" }
+        ]
+    });
+    //* select all rows
+    $('#select_rows').click(function () {
+        var tableid = $(this).data('permissionsgrid1');
+        $('#permissionsgrid1').find('input[name=chk]').attr('checked', this.checked);
+        var selectedVal = new Array();
+        $("#permissionsgrid1 input:checkbox:checked").each(function()
+        {
+            selectedVal.push($(this).val());
+        });
+
+        $("#selectedpages").val(selectedVal);
+    });
+
+});
+function checkEmailExist()
+{
+    var email = $("#email").val();
+    var target_page = "/user/email-exits?email="+email;
+    $.post(target_page, function(data){ //alert(data);
+        var data1 = data.trim();
+        if(data1 == "yes")
+        {
+            smoke.alert("email id is already exist");
+            $("#emai").val('');
+            return false;
+        }
+        else
+        {
+
+            return true;
+        }
+    });
+}
+
+//* bootstrap datepicker
+gebo_datepicker = {
+    init: function() {
+        $('#dp1').datepicker();
+        $('#dp2').datepicker();
+        $('#actdp1').datepicker();
+        $('#actdp2').datepicker();
+    }};
+function changeStatusUser(userid, status)
+{
+    if(status == 'Inactive')
+        var statusmsg = 'Active';
+    else
+        var statusmsg = 'Inactive';
+    smoke.confirm("Do you really want to make user "+statusmsg,function(e){
+        if (e)
+        {
+           // window.location.href="users-list?submenuId=ML2-SL7&tab="+tab+"&delete=yes&userId="+userid;
+            var target_page = "/user/changeuserstatus?status="+statusmsg+"&user_id="+userid;
+            $.post(target_page, function(data){ //alert(data);
+                $('#userstatus_'+userid).html("<a onclick=\"changeStatusUser('"+userid+"', '"+statusmsg+"');\">"+statusmsg+"</a>");
+                window.location.reload();
+            });
+        }
+        else
+        {
+            return false;
+        }
+    });
+
+}
+function swift(sa)
+{
+    if(sa=='1')
+    {
+        document.getElementById('sel_user').selectedIndex=0;
+        return true;
+    }
+    else
+    {
+        document.getElementById('sel_group').selectedIndex=0;
+        return true;
+    }
+}
+
+function editDescription(pageId, mode)
+{
+    $("#descedit_"+pageId).show();
+    $("#changedesc_"+pageId).show();
+    $("#label_"+pageId).hide();
+    $("#descedit_"+pageId).val();
+    $("#descedit_"+pageId).removeAttr('disabled');
+    $("#pagename_"+pageId).removeAttr('disabled');
+    if(mode == 'save')
+    {
+        var desc = $("#descedit_"+pageId).val();
+        var pagename = $("#pagename_"+pageId).val();
+        var target_page = "/processeditplace/changepagedesc?page="+pagename+"&desc="+desc+"&pageId="+pageId;
+        $.post(target_page, function(data){ //alert(data);
+           // $('#userstatus_'+userid).html("<a onclick=\"changeStatusUser('"+userid+"', '"+statusmsg+"');\">"+statusmsg+"</a>");
+            window.location.reload();
+        });
+    }
+}
+function selectValues()
+{
+    var selectedVal = new Array();
+    $("#permissionsgrid1 input:checkbox:checked").each(function()
+    {
+        selectedVal.push($(this).val());
+    });
+    $("#selectedpages").val(selectedVal);
+}
+
+</script>
+{/literal}
+<div class="row-fluid">
+  <div class="span12" style="">
+   <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+      <div class="tabbable">
+          <ul class="nav nav-tabs">
+              <li ><a href="#permissionstab" data-toggle="tab" class="lable-info"><strong>Permissions</strong></a></li>
+          </ul>
+          <div class="tab-content">
+             <div id="permissionstab" class="tab-pane" >
+               <form action="/user/permissions?submenuId={$submenuId}&tab=permissionstab" method="post" id="permission" name="permission">
+                  <div class="alert alert-info">
+                      <div class="form-inline">
+                          <select name="sel_group" id="sel_group" onchange="javascript:swift(1); this.form.submit();">
+                              <option value="0" >S&eacute;lectionnez un groupe</option>
+                              {foreach from=$groupList item=group key=k name=groups}
+                              <option value={$group->id} {if $group->id eq $smarty.post.sel_group} selected{/if} >{$group->groupName}</option>
+                              {/foreach}
+                          </select>
+                          <select name="sel_user" id="sel_user" onchange="javascript:swift(2); javascript:this.form.submit();">
+                              <option value="0" >S&eacute;lectionnez un user</option>
+                              {foreach from=$userList item=user key=uk name=users}
+                              <option value={$user->identifier} {if $user->identifier eq $smarty.post.sel_user} selected{/if}>{$user->login}</option>
+                              {/foreach}
+                          </select>
+                          <button type="submit" id="permissionpassto" name="permissionpassto" style="margin-bottom:25px;" class="btn btn-success" value="yes">pass to </button>
+                          <select name="to_sel_user[]" id="to_sel_user" multiple=multiple>
+                              <option value="0" >S&eacute;lectionnez un user</option>
+                              {foreach from=$userList item=user key=uk name=users}
+                              <option value={$user->identifier}  >{$user->login}</option>
+                              {/foreach}
+                          </select>
+                          <input type="hidden" id="submenuId" name="submenuId" value={$submenuId} />
+                      </div>
+                  </div>
+              <!-- </form>
+               <form action="/user/permissions?submenuId={$submenuId}" method="get" id="permission2" name="permission2">-->
+                  <table id="permissionsgrid1" class="table table-bordered table-striped table_vam">
+                      <thead>
+                      <tr>
+                          <th>Page Id</th>
+                          <th class="table_checkbox"><input type="checkbox" name="select_rows" id="select_rows" class="uni_style" data-tableid="permissionsgrid1"/></th>
+                          <th>Nom de la page</th>
+                          <th>Page Description</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {if $pageList neq 'No Messages Found'}
+                      {foreach from=$pageList item=p name=rights}
+                      <tr>
+                          <td>{$p->getpageId()}</td>
+                          <td >
+                                <span> <input type="checkbox" id="chk_{$p->getpageId()}" name="chk" value="{$p->getpageId()}" onclick="selectValues();" {if isset($GpSel)} {if $p->getpageId()|in_array:$pageGpSel} checked {/if} {/if}{if isset($UsrSel)} {if $p->getpageId()|in_array:$pageUsrSel} checked {/if} {/if} ></input></span>
+                          </td>
+                          <td ><label for="chk_{$p->getpageId()}" class="pull-left" style="cursor: pointer;">{$p->getNodeName()}</label></td>
+                          <td><label id="label_{$p->getpageId()}" for="chk_{$p->getpageId()}" class="pull-left" style="cursor: pointer;" >{$p->getNodeValue()|utf8_decode}
+                              <a onclick="editDescription('{$p->getpageId()}', '');"><i class="splashy-application_windows_edit"></i> </a></label>
+
+                              <input type="text" name="descedit_{$p->getpageId()}" id="descedit_{$p->getpageId()}" value="{$p->getNodeValue()|utf8_decode}" class="span10" disabled="disabled" style="display: none;" />
+                              <input type="hidden" name="pagename_{$p->getpageId()}" id="pagename_{$p->getpageId()}" value="{$p->getNodeName()}" disabled="disabled" />
+                              <input type="button" name="changedesc_{$p->getpageId()}" id="changedesc_{$p->getpageId()}" value="Save" class="btn btn-info" style="display: none;margin-bottom: 10px;" onclick="editDescription('{$p->getpageId()}', 'save');"/></td>
+
+                      </tr>
+                      {/foreach}
+                      <input type="hidden" name="hid_totalrows" id="hid_totalrows" value={$pageList|@count} />
+                      <input type="hidden" name="tab" id="tab" value="permissionstab" />
+                      <input type="hidden" name="selectedpages"  id="selectedpages" value="" />
+
+                      {/if}
+                      </tbody>
+                  </table>
+                      <div style="height: 10px;"></div>
+                      {if $smarty.post.sel_group neq 0 || $smarty.post.sel_user neq 0}
+                        <button type="submit" value="assign" name="assign" id="assign" class="btn btn-info" style="margin-left: 50%">Assign </button>
+                      {/if}
+               </form>
+              </div>
+
+          </div>
+      </div>
+
+  </div>
+</div>
+
+
+<div style="visibility:hidden" >
+    <form id="user_login_form" name="user_login_form" method="post" action="" target="_blank">
+        <input type="text" id="login_name" name="login_name" value="">
+        <input type="password" id="login_password" name="login_password" value="{$user_detail[0].password}" >
+        <input type="submit" value="Login" />
+    </form>
+</div>
+
+
+{literal}
+<script type="text/javascript" >
+    function connect_fo(user,email,pwd)
+    {
+        document.forms["user_login_form"].action="http://mmm-new.edit-place.com/index/userfologin";
+        $('#login_name').val(email);
+        $('#login_password').val(pwd);
+        document.forms["user_login_form"].submit();
+    }
+</script>
+{/literal}
+
+

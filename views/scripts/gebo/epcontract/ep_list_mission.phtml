@@ -1,0 +1,74 @@
+{literal}
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/datempicker.js"></script>
+<script type="text/javascript" >
+	$(document).ready(function() {
+
+        $('#contractList').dataTable({
+            "bProcessing": true,
+            "bServerSide": true,
+
+            "sAjaxSource": "/mission/load-missions",
+            "oTableTools": {
+                "aButtons": [
+                    "copy",
+                    "print",
+                    {
+                        "sExtends":    "collection",
+                        "sButtonText": 'Sauvegarder <span class="caret" />',
+                        "aButtons":    [ "csv", "xls", "pdf" ]
+                    }
+                ],
+                "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+            }
+
+        } );
+	});
+</script>
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">Missions<div style="display:inline;float:right"><button onclick="window.location='/mission/add-mission?submenuId=ML2-SL27'" class="btn btn-success" name="back">Add Mission</button></div></h3>
+        
+        <table class="table table-bordered table-striped table_vam" id="contractList" >
+            <thead>
+                <tr>
+                   <th>S.NO</th>
+                   <th>Title</th>
+                   <th>Contract name</th>
+                   <th>Client</th>
+                   <th>Mission length</th>
+                   <th>Article length</th>
+                   <th>Starting date</th>
+                   <th>Number of articles</th>
+                   <th>Selling price</th>
+                   <th>Marge avant signature(%)</th>
+                   <th>Marge apr&#233;s signature(%)</th>
+                   <th>Modifier</th>
+                </tr>
+            </thead>
+           <!-- <tbody>
+            {if $missionlist|@count>0}
+                {foreach from=$missionlist item=mission_item name=mission_loop}
+                    <tr id="tr{$contract_item.id}">
+                        <td>{$smarty.foreach.mission_loop.index+1}</td>
+                        <td>{$mission_item.title}</td>
+                        <td>{$mission_item.contract_name}</td>
+                        <td>{$mission_item.company_name}</td>
+                        <td>{$mission_item.mission_length}</td>
+                        <td>{$mission_item.article_length}</td>
+                        <td>{$mission_item.starting_date}</td>
+                        <td>{$mission_item.num_of_articles}</td>
+                        <td>{$mission_item.selling_price}</td>
+                        <td>{$mission_item.margin_before_signature}</td>
+                        <td>{$mission_item.margin_after_signature}</td>
+                        <td><a href="/mission/add-mission?submenuId=ML2-SL27&id={$mission_item.id}" class="hint--left hint--info" data-hint="Edit mission"><img class="splashy-application_windows_edit"></a>&nbsp;</td>
+                    </tr>
+                {/foreach}
+            {/if}
+            </tbody>-->
+        </table>
+    </div>
+</div>	
+
+

@@ -1,0 +1,42 @@
+<div style="min-height:auto;max-height:200px;overflow:auto;margin-right:8px;overflow-x:hidden; border-radius:5px; margin-left:8px;">
+	<table border="0" id="contrib_list_quicktip" style="max-height:40px;overflow:auto;" >
+		<tr>
+			<td style="color: #841515;font-size: 14px;padding-bottom: 5px;" colspan="3" align="center" valign="top"><b>{$polllist[0].title|utf8_encode}</b></td>
+		</tr>
+		<tr>
+			<td>
+				{foreach from=$PollParticipationDetails key=condetail_key item=condetail_item name=condetail_loop}
+					<table>
+						<tr>
+							<td rowspan="4" valign="top">
+								<img src="{$condetail_item.contrib_home_picture}" style="border-radius:10px; border:1px dashed #999999;" />
+							</td>
+						</tr>
+						<tr>
+							<td>Name </td>
+							<td>: 
+								<b>
+									{if $condetail_item.first_name=="" && $condetail_item.last_name==""}
+										{$condetail_item.email}
+									{else}	
+										{$condetail_item.first_name|utf8_encode} {$condetail_item.last_name|utf8_encode}
+									{/if}	
+								</b>
+							</td>
+						</tr>
+						<tr>
+							<td>Prix </td>
+							<td>: <b>{$condetail_item.price_user|zero_cut:2} </b></td>
+						</tr>
+						<tr><td>&nbsp;</td></tr>
+						{if $PollParticipationDetails|@count>1 && $PollParticipationDetails|@count neq $condetail_key+1}
+						<tr>
+							<td colspan="4"><hr></td>
+						</tr>
+						{/if}
+					</table>
+				{/foreach}
+			</td>
+		</tr>
+	</table>
+</div>

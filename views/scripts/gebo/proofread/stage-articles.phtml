@@ -1,0 +1,325 @@
+{if $submenuId eq 'ML3-SL2'}
+{assign var="currentstage" value="1"}
+{elseif $submenuId eq 'ML3-SL3'}
+{assign var="currentstage" value="2"}
+{else}{assign var="currentstage" value="0"}{/if}
+{literal}
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        //$(".uni_style").uniform();
+        $('#marks_comments').tinymce({
+            // Location of TinyMCE script
+            script_url 							: '/BO/theme/gebo/lib/tiny_mce/tiny_mce.js?' + new Date().getTime(),
+            // General options
+            theme 								: "advanced",
+            plugins 							: "autoresize,style,table,advhr,advimage,advlink,emotions,inlinepopups,preview,media,contextmenu,paste,fullscreen,noneditable,xhtmlxtras,template,advlist",
+            // Theme options
+            theme_advanced_buttons1 			: "undo,redo,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,fontsizeselect",
+            theme_advanced_buttons2 			: "forecolor,backcolor,|,cut,copy,paste,pastetext,|,bullist,numlist,link,image,media,|,code,preview,fullscreen",
+            theme_advanced_buttons3 			: "",
+            theme_advanced_toolbar_location 	: "top",
+            theme_advanced_toolbar_align 		: "left",
+            theme_advanced_statusbar_location 	: "bottom",
+            theme_advanced_resizing 			: false,
+            height                              : 200,
+            content_css                         : "/BO/theme/gebo/css/tinymce_styles.css?" + new Date().getTime(),
+            theme_advanced_font_sizes           : "8px,10px,12px,13px,14px,16px,18px,20px",
+            font_size_style_values              : "8px,10px,12px,13px,14px,16px,18px,20px",
+            init_instance_callback				: function(){
+
+                function resizeWidth() {
+                    document.getElementById(tinyMCE.activeEditor.id+'_tbl').style.width='98%';
+                }
+                resizeWidth();
+                $(window).resize(function() {
+                    resizeWidth();
+                })
+            }
+        });
+        $('#stageartsgrid').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 3, "desc" ]],
+            "aoColumns": [
+
+                { "bSortable": false },
+                { "sType": "formatted-num" },
+                { "sType": "string" },
+                { "sType": "string" },
+                {/literal}{if $currentstage eq 2}{literal}
+                    { "sType": "formatted-num" },
+                {/literal}{/if}{literal}
+                { "sType": "formatted-num" },
+                {/literal}{if $currentstage eq 2 || $currentstage eq 1}{literal}
+                    { "sType": "string" },
+                {/literal}{/if}{literal}
+                { "sType": "formatted-num" }
+        ]
+    });
+
+    //* select all rows    
+    $('#select_rows').click(function () {
+        var tableid = $(this).data('stageartsgrid');
+        $('#stageartsgrid').find('input[name=artval]').attr('checked', this.checked);
+    });
+
+    });
+    {/literal}
+    {if ($submenuId eq 'ML3-SL2' && ($type eq 'superadmin' OR $type eq 'multilingue')) OR ($submenuId eq 'ML3-SL3')}
+    {literal}
+    /////////validate atleast one articles is been selected/////////
+    function validatearticles()
+    {
+        var $b = $('input[name=artval]');
+        var countselected = $b.filter(':checked').length;
+        var $c = $('input[name=marks]');
+        var markscountselected = $c.filter(':checked').length;
+        if(countselected == markscountselected && countselected != 0 && markscountselected != 0)
+        {
+            smoke.confirm("Tu n\'as pas donn\351 de notes \u00e0 ce contributeur pourtant il le m\351rite, non ? Allez \347a prend 2 secondes et ensuite tu auras un suivi au top et tu pourras dire \u00e0 ta m\u00e8re : regarde maman ce suivi comment il est top !",function(e){
+                if (e)
+                {
+                    var count = 1;
+                }
+                else
+                {
+                    return false;
+                }
+            },{"ok":"M'en fiche de ton truc mais c'est bien pens\351 quand m\352me","cancel":"Ah bah dans ce cas, je veux bien le noter !Merci de m'avoir ouvert les yeux"});
+        }
+        if(countselected >= 1)
+        {
+            var selected = '';
+            $('input[name=artval]:checked').each(function() {
+                if(selected)
+                    selected =   selected + '|' + ($(this).val());
+                else
+                    selected =   $(this).val();
+            });
+            var c = smoke.confirm('&#202;tes-vous s&#251;r(e) de vouloir valider ces articles ?', function(e){
+                    if (e){
+                        /*var target_page = "/proofread/bulkvalidatestage?aoid;
+                         $.post(target_page, function(data){ //alert(data);
+                         window.location.reload();
+                         });
+                         if()*/
+                        var url = "http://admin-test.edit-place.com/proofread/bulkvalidatestage{/literal}{$currentstage}{literal}arts?validate_art="+selected;
+                        window.location=url;
+                    }
+                    else{
+                        return false;
+                    }
+                },
+                {});
+        }
+        else
+        {
+            smoke.alert("S\u00e9lectionner au moins un.");
+            return false;
+        }
+        $('[id^=confirm-ok]').removeClass("btn-primary");
+        $('[id^=confirm-cancel]').addClass("btn-primary");
+    }
+    function selectMarksCheckbox(rownum)
+    {
+        $('#marks'+rownum).attr('checked', 'checked');
+    }
+
+	function deliveredarticles()
+	{
+
+        var $b = $('input[name=artval]');
+        var countselected = $b.filter(':checked').length;
+
+
+	   if(countselected >= 1)
+        {
+            var selected = '';
+            $('input[name=artval]:checked').each(function() {
+                if(selected)
+                    selected =   selected + '|' + ($(this).val());
+                else
+                    selected =   $(this).val();
+            });
+
+			   var c = smoke.confirm('I confirm as PM  that I have controled this delivery', function(e){
+                    if (e){
+                        var target_page = "http://admin-test.edit-place.com/proofread/deliveryupdate?validate_art="+selected+"&stage={/literal}{$currentstage}{literal}";
+                         $.post(target_page, function(data){
+                            var response = $.parseJSON(data);
+                            console.log(response.status);
+                            console.log(response.bulkvalidatestage);
+
+                            if( response.bulkvalidatestage === 'yes'){
+                                var c = smoke.confirm('&#202;tes-vous s&#251;r(e) de vouloir valider ces articles ?', function(e){
+                                    if (e) {
+                                        var selected = '';
+                                        $('input[name=artval]:checked').each(function () {
+                                            if (selected)
+                                                selected = selected + '|' + ($(this).val());
+                                            else
+                                                selected = $(this).val();
+                                        });
+                                        var url = "http://admin-test.edit-place.com/proofread/bulkvalidatestage{/literal}{$currentstage}{literal}arts?validate_art=" + selected;
+                                        window.location = url;
+                                    }
+                                },
+                                {});
+                            }
+                            else if(response.status === 'success'){
+                                window.location.reload();
+                            }
+                            else{
+                                 smoke.alert('Already Delivered,cannot be updated');
+                             }
+
+                         });
+					}
+                    else{
+                        return false;
+                    }
+                });
+            $("#delivered_btn").attr('disabled',true);
+            $("#delivered_btn").removeClass("btn-primary");
+            $("#delivered_btn").addClass("btn-basic");
+        }
+        else
+        {
+            smoke.alert("S\u00e9lectionner au moins un.");
+            return false;
+        }
+    }
+    {/literal}
+    {/if}
+        {literal}
+</script>
+{/literal}
+<form action="/proofread/validatestagearts?submenuId={$submenuId}" method="post" id="valstagearts" name="valstagearts" >
+    <div class="row-fluid">
+        <div class="span12">
+            <h3 class="heading">Stage {$currentstage} Articles<a class="label label-inverse pull-right"  id="return">retour</a></h3>
+            <table id="tabledetails" class="table btn-gebo tdleftalign" >
+                <tr>
+                    <td><b>Nom AO : </b>{$delDetails[0].aoName}</td>
+                    <td><b>Client : </b>{$delDetails[0].company_name}</td>
+                    <td><b>Cat&eacute;gorie : </b>{$delDetails[0].del_category}</td>
+                </tr>
+                <tr>
+                    <td><b>Total Articles : </b>{$delDetails[0].total_article}</td>
+                    <td><b>Cr&eacute;e le : </b>{$delDetails[0].created_at|date_format:"%d/%m/%Y"}</td>
+                    <td><b>Cr&eacute;e par : </b>{$delDetails[0].created_user}</td>
+                </tr>
+            </table>
+
+            <table id="stageartsgrid" class="table table-bordered table-striped table_vam">
+                <thead>
+                <tr>{if ($submenuId eq 'ML3-SL2' && ($type eq 'superadmin' OR $type eq 'multilingue')) OR ($submenuId eq 'ML3-SL3')}
+                    <th class="table_checkbox"><input type="checkbox" name="select_rows" id="select_rows" class="uni_style" data-tableid="stageartsgrid"/></th>{/if}
+                    <th>Sl.no</th>
+                    <th>Titre Article</th>
+                    <th>Contributeur</th>
+                    <th>Date d'envoi</th>
+                    {if $currentstage eq 2}
+                    <th>Marks</th>
+                    {/if}
+                    {if $currentstage eq 2 || $currentstage eq 1}
+                        <th>Delivered</th>
+                    {/if}
+                    <th>Lock / unlock</th>
+                    {if $currentstage eq 0}
+                    <th>Details</th>
+                    {/if}
+                </tr>
+                </thead>
+                <tbody>
+
+                {foreach from=$paginator key=stagearts_key item=stagearts_item name=stagearts_loop}
+                <tr>{if ($submenuId eq 'ML3-SL2' && ($type eq 'superadmin' OR $type eq 'multilingue')) OR ($submenuId eq 'ML3-SL3')}
+                    <td>
+                        <input type="checkbox" name="artval" id="artval{$smarty.foreach.stagearts_loop.index+1}" value="{$stagearts_item.artId}_{$stagearts_item.partId}" onclick="selectMarksCheckbox('{$smarty.foreach.stagearts_loop.index+1}');">
+                    </td>{/if}
+                    <td>{$smarty.foreach.stagearts_loop.index+1}
+                    </td>
+                    <td>
+                        <a href="/proofread/article-history?submenuId={$submenuId}&articleId={$stagearts_item.artId}">{$stagearts_item.title|stripslashes|wordwrap:20:"\n":true}</a>
+                    </td>
+                    <td><a class="pop_over" data-placement="right" data-original-title="DETAILS REDACTEUR" data-html="true"
+                           data-content="<table class='table table-bordered tdleftalign'>
+                        <tr><td><b>Email</b></td><td>{$stagearts_item.email}</td></tr>
+                        <tr><td><b>Profil</b></td><td>{$stagearts_item.profile_type}</td></tr>
+                        <tr><td><b>Success Rate</b></td><td>{$stagearts_item.successrate}</td></tr></table>" href="#">
+                            {if $stagearts_item.first_name neq ''}{$stagearts_item.first_name} {$stagearts_item.last_name}{else}{$stagearts_item.email}{/if}</a></td>
+                    <td>{if $stagearts_item.article_date[0].article_date eq 'NO'}Not submited{else}{$stagearts_item.article_date[0].article_date|date_format:"%d/%m/%Y %H:%M"}{/if}</td>
+                    {if $currentstage eq 2}
+                    <td><b>{if $stagearts_item.marks neq ''}{$stagearts_item.marks} {else} 0 {/if} / 10</b></td>
+                    {/if}
+                    {if $currentstage eq 2 || $currentstage eq 1}
+                    <td>{if $stagearts_item.delivered eq 'yes'}yes{else}no{/if}</td>
+                    {/if}
+                    <td><div id="lock{$stagearts_item.artId}">
+                            {if $stagearts_item.lock_status eq 'yes'}
+                                {if $stagearts_item.lockedUser eq $userId}
+                                    {if $checkstencils eq 'yes'}
+                                        <a href="/proofread/stage{$currentstage}-ebookers-correction?submenuId={$submenuId}&articleId={$stagearts_item.artId}&participateId={$stagearts_item.partId}" ><i class="splashy-application_windows_edit"></i></a>&nbsp;&nbsp;
+                                    {else}
+                                        <a href="/proofread/stage{$currentstage}-correction?submenuId={$submenuId}&articleId={$stagearts_item.artId}&participateId={$stagearts_item.partId}" ><i class="splashy-application_windows_edit"></i></a>&nbsp;&nbsp;
+                                    {/if}
+                                    <a onclick="stagesLinklockSystem('{$stagearts_item.artId}','{$stagearts_item.partId}', 'unlock', 'stage{$currentstage}', '{$smarty.foreach.stagearts_loop.index}', '{$smarty.get.submenuId}', '{$checkstencils}');"><i class="splashy-lock_large_unlocked"></i></a>
+                                {else}
+                                    <div>Lock&eacute; par {$stagearts_item.locked_by[0].login}</div>
+                                {/if}
+                            {else}
+                                <a onclick="stagesLinklockSystem('{$stagearts_item.artId}', '{$stagearts_item.partId}', 'lock', 'stage{$currentstage}', '{$smarty.foreach.stagearts_loop.index}', '{$smarty.get.submenuId}', '{$checkstencils}');"><i class="splashy-lock_large_locked"></i></a>
+                            {/if}
+                        </div>
+                    </td>
+                    {if $currentstage eq 0}
+                    <td>
+                        <a class="pop_over" data-placement="right" data-original-title="Article stats" data-html="true" data-content="{$stagearts_item.details}"><i class="splashy-marker_rounded_grey_5"></i></a>
+                        {if $stagearts_item.plag_percent[0].plag_percent >= 20 || $stagearts_item.plag_percent[0].plag_percent == 'NA'}
+                        <span style="color: #550000;font-weight: bold;"> Plagarised ({$stagearts_item.plag_percent[0].plag_percent}%)  </span>  {/if}
+                        {if $stagearts_item.plag_percent[0].plag_percent < 20 && $stagearts_item.plag_percent[0].plag_percent != NULL && $stagearts_item.plag_percent[0].plag_percent != 'NA'}
+                        <span style="color: #008200;font-weight: bold;">Not Plagarised ({$stagearts_item.plag_percent[0].plag_percent}%) </span>  {/if}
+                        {if $stagearts_item.plag_percent[0].plag_percent == NULL}
+                        <span style="color: #0033CC;font-weight: bold;">Not Processed </span>
+                        {/if}
+                    </td>
+                    {/if}
+                </tr>
+                {/foreach}
+                </tbody>
+            </table>
+            {if ($submenuId eq 'ML3-SL2' && ($type eq 'superadmin' OR $type eq 'multilingue')) OR ($submenuId eq 'ML3-SL3')}
+            <div class="span6">
+                <button type="button" name="s1art_approve" class="btn btn-success"  onclick="return validatearticles();">Valider</button>&nbsp;
+				{if $delivery_flag eq 'no'}<button type="button" name="s1art_delivery" class="btn btn-primary" id="delivered_btn"  onclick="return deliveredarticles();">Delivered</button>{/if}
+            </div>
+			{/if}
+        </div>
+    </div>
+    <input type="hidden" id="hide_total" name="hide_total"  />
+</form>
+<!--///for the article profiles popup///-->
+<div class="modal4 hide fade" id="artprofile">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">&times;</button>
+        <h3>Article Profiles</h3>
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+
+<!--///BO user send comments to for the participant ///-->
+<div class="modal hide fade" id="comments">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('comments');">&times;</button>
+        <h3>Ajouter Un Commentaire</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+
+    </div>
+</div>

@@ -1,0 +1,346 @@
+{literal}
+<style>
+	.mission-details:nth-of-type(1)
+	{
+		margin:0 0 10px;
+	}
+	
+	.mission-details
+	{
+		margin:10px 0;
+	}
+	
+	.modal1
+	{
+		margin-left:-365px;
+		width:800px;
+	}
+	
+	.modal-body1
+	{
+		min-height:400px;
+	}
+	
+	.question
+	{
+		background-color:#eeeeee;
+	}
+
+	.qcontent
+	{
+		padding:10px;
+	}
+</style>
+<link href="/BO/theme/gebo/lib/iCheck/skins/line/blue.css" rel="stylesheet">
+<link href="/BO/theme/gebo/lib/iCheck/skins/line/purple.css" rel="stylesheet">
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script> 
+<link href="/BO/theme/gebo/css/jquery.datetimepicker.css" rel="stylesheet">
+<script src="/BO/theme/gebo/js/jquery.datetimepicker.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/jquery.MultiFile.js" type="text/javascript" charset="utf-8"></script>
+<script>
+jQuery(function(){
+ jQuery('#date_timepicker_start').datetimepicker({
+  format:'d-m-Y H:i',
+  onShow:function( ct ){
+   this.setOptions({
+    maxDate:get_date($('#date_timepicker_end').val())?get_date($('#date_timepicker_end').val()):false,formatDate:'d-m-Y',minDate:0
+   })
+  }
+ });
+ jQuery('#date_timepicker_end').datetimepicker({
+   format:'d-m-Y H:i',
+  onShow:function( ct ){
+   this.setOptions({
+    minDate:get_date($('#date_timepicker_start').val())?get_date($('#date_timepicker_start').val()):false,formatDate:'d-m-Y'
+   })
+  }
+ });
+});
+
+function get_date(input) {
+if(input == '') {
+return false;
+}	else {
+// Split the date, divider is '/'
+var parts = input.match(/(\d+)/g);
+return parts[0]+'-'+parts[1]+'-'+parts[2];
+} 
+}
+
+
+$(document).ready(function(){
+		
+		$(".timingoption").chosen({ disable_search: true });
+		
+		$('input[name="quiz"]').each(function(){
+		var self = $(this),
+		  label = self.next(),
+		  label_text = label.text();
+
+		label.remove();
+		  self.iCheck({
+      checkboxClass: 'icheckbox_line-purple',
+      radioClass: 'iradio_line-purple',
+      insert: '<div class="icheck_line-icon"></div>' + label_text
+    });
+	  });
+		$(".loadtemplate").html('<p style="text-align:center;font-weight:bold">Quiz Not Found</p>');
+		$('input[name="testarticle"]').each(function(){
+		var self = $(this),
+		  label = self.next(),
+		  label_text = label.text();
+
+		label.remove();
+		self.iCheck({
+		  checkboxClass: 'icheckbox_line-blue',
+		  insert: '<div class="icheck_line-icon"></div><div class="change">' + label_text +'</div>',
+		});
+	  });
+	  
+	  $("#quiz_cat").chosen({ allow_single_deselect:false,disable_search: true });
+	  $("#submit_option").chosen({  allow_single_deselect:false,disable_search: true });
+	  $("#quiz").chosen({  allow_single_deselect:false,disable_search: true });
+	  
+		$('input[name="quiz"]').on('ifChecked', function(event){
+			$("#create_quiz").modal('show');
+			$("#create_quiz").removeClass( "hide" ).addClass("in");
+		});
+	  
+	    $('input[name="testarticle"]').on('ifChecked', function(event){
+	  
+		});
+	  
+		
+		// HTML Editor
+		
+		 if (CKEDITOR.instances['mailcontrib'])
+                CKEDITOR.instances['mailcontrib'].destroy();
+            
+              
+		 var editor = CKEDITOR.replace( 'mailcontrib',
+			 {
+				 language: 'de',
+				 uiColor: '#D9DDDC',
+				 enterMode : CKEDITOR.ENTER_BR,
+				 toolbar :
+				 [
+					 ['Undo','Redo'],
+					 ['Find','Replace','-','SelectAll','RemoveFormat'],
+					 ['Link', 'Unlink', 'Image'],
+					 '/',
+					 ['FontSize', 'Bold', 'Italic','Underline'],
+					 ['NumberedList','BulletedList','-','Blockquote'],
+					 ['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize']
+				 ]
+			 }
+		 );
+		
+		$("#insertrecruitment").validationEngine({onValidationComplete: function(form, status){
+		if($(".addbrief").length<2)
+		$('.addbrief').prop("disabled", false);
+			if(status==true)
+			{
+				return true;
+			}
+		}});
+		
+	});
+
+</script>
+<style>
+	.xdsoft_today_button
+	{
+		visibility: hidden !important;
+	}
+</style>
+{/literal}
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">
+			Edit Survey
+		</h3>
+	</div>	
+</div>
+<div class="row-fluid">
+<div class="span9">
+<form class="form-horizontal"  action="/survey/update-survey" method="POST" id="insertrecruitment" enctype="multipart/form-data">
+<input type="hidden" name="pollid" value="{$poll_details[0].pid}" />
+<input type="hidden" name="contract_mission_id" value="{$smarty.get.contract_missionid}" />
+{include file="gebo/recruitment/mission_overview.phtml"}
+	<div class="mission-details">			
+	<div class="prod-mission-product">Survey Set Up</div>
+	</div>
+	<div class="w-box">
+		<div class="w-box-header">General Rules</div>
+			<div class="w-box-content cnt_a">
+				<div class="row-fluid">
+				<div class="control-group">
+					<label class="control-label">Nom de ce Devis</label>
+					<div class="controls">
+						<div class="span6">
+							<div class="" id="">
+								<input class="span10 validate[required]" value="{$poll_details[0].ptitle}" type="text" name="title" id="" />
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">Count Down</label>
+						<div class="controls">
+							<div class="span6">
+								<div class="" id="">
+									<input class="span10 validate[required]" autocomplete="off" value="{$poll_details[0].publish_time|date_format:'%d-%m-%Y %H:%M'}" type="text" name="count_down_start" id="date_timepicker_start" /><!--<span class="add-on"><i class="splashy-calendar_day_up"></i></span> -->
+								</div>
+								<span class="help-block">Daterange - date start</span>
+							</div>
+							<div class="span6">
+								<div class="" id="">
+									<input class="span10 validate[required]" autocomplete="off" name="count_down_end" type="text" id="date_timepicker_end" value="{$poll_details[0].poll_date|date_format:'%d-%m-%Y %H:%M'}" /><!-- <span class="add-on"><i class="splashy-calendar_day_down"></i></span> -->
+								</div>
+								<span class="help-block">Daterange - date end</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				{if $poll_details|@count gt 0}
+				{foreach from=$poll_details item=questions name=question}
+				<div class="row-fluid question">
+					<div class="qcontent">
+					{if $questions.type eq 'price'}
+						<strong>About the pricing per article</strong>
+						<div class="control-group topset2">
+							<label class="control-label">Question {$smarty.foreach.question.iteration}</label>
+							<div class="controls">
+								<input type="text" name="question_title[]" id="" class="span12 validate[required]" value="{$questions.title|stripslashes}" style=""/>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Maximum</label>
+							<div class="controls">
+								<input type="text" name="maximum_{$smarty.foreach.question.index}" id="maximum_{$smarty.foreach.question.index}" value="{$questions.maximum}" class="span2 validate[custom[number]]" onfocus="$(this).next().show();" onBlur="$(this).next().hide();"; /> 
+								<div id="pricemsg" style="display:none;color:red;">Merci d'entrer un chiffre ou de laisser le champ vide pour le prix maximum</div>
+							</div>
+						</div>
+					{elseif $questions.type eq 'bulk_price'}
+						<strong>About the pricing for a pack of article</strong>
+						<div class="control-group topset2">
+							<label class="control-label">Question {$smarty.foreach.question.iteration}</label>
+							<div class="controls">
+								<input type="text" name="question_title[]" id="" class="span12 validate[required]" value="{$questions.title|stripslashes}" style=""/>
+							</div>
+						</div>
+					<!--	<div class="control-group">
+							<label class="control-label">Type</label>
+							<div class="controls">
+								Prix de gros
+							</div> 
+						</div> -->
+					{elseif $questions.type eq 'timing'}
+						<strong>About the time needed to write 1 item</strong>
+						<div class="control-group topset2">
+							<label class="control-label">Question {$smarty.foreach.question.iteration}</label>
+							<div class="controls">
+								<input type="text" name="question_title[]" id="title_{$loopindex}" class="span12 validate[required]" value="{$questions.title|stripslashes}" style=""/>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Options</label>
+							<div class="controls">
+								<select name="timingoption_{$smarty.foreach.question.index}" id="timingoption_{$smarty.foreach.question.index}" class="span3 timingoption validate[required]">
+									<option value="min" {if $questions.option eq 'min'} selected="selected" {/if}>Minute(s)</option>
+									<option value="hour" {if $questions.option eq 'hour'} selected="selected" {/if}>Heure(s)</option>
+									<option value="day" {if $questions.option eq 'day'} selected="selected" {/if}>Jour(s)</option>
+								</select>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Minimum</label>
+							<div class="controls">
+								<input type="text" name="minimum_{$smarty.foreach.question.index}" id="minimum_{$smarty.foreach.question.index}" value="{$questions.minimum}" class="span2 validate[custom[number]]" /> 
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">Maximum</label>
+							<div class="controls">
+								<input type="text" name="maximum_{$smarty.foreach.question.index}" id="maximum_{$smarty.foreach.question.index}" value="{$questions.maximum}" class="span2 validate[custom[number]]" /> 
+							</div>
+						</div>
+					{/if}
+					</div>
+					<input type="hidden" name="quesid_{$smarty.foreach.question.index}" id="" value="{$questions.id}" />
+					<input type="hidden" name="questype_{$smarty.foreach.question.index}" id="" value="{$questions.type}" />
+				</div>
+				
+				{/foreach}
+				{/if}
+	<div class="w-box row-fluid">
+		<div class="w-box-header">The Brief</div>
+			<div class="w-box-content cnt_a">
+				<div class="row-fluid">
+					<div class="span12">
+						  <div id="uploadspec">
+							<input type="file" accept="doc|docx|zip|xls|xlsx|pdf|et|rtf" name="uploadfile" class=" multi" maxlength="1">
+						</div>
+						<a href="/survey/download-file/?filename={$file}">{$file_name}</a>
+						<input type="hidden" name="filename" value="{$file}" />
+						<span class="help-block">Uniquement doc, docx, zip, xls, xlsx, pdf et rtf</span>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" id="poll_spec_name" name="poll_spec_name" value="{$poll_file}" />
+	</div>
+	
+	<div class="w-box">
+		<div class="w-box-header">Review of Editorial Chief</div>
+		<div class="w-box-content cnt_a">
+			<div class="row-fluid">
+				<div class="control-group">
+					<div class="media mission-comment">
+					<a class="pull-left imgframe">
+						<img width="60px" src="{$fo_path}/profiles/bo/{$userId}/logo.jpg" class="media-object">
+					</a>
+					<div class="media-body">														
+						<textarea name="editorial_chief_review" placeholder="Write a cool review to promote this challenge" class="span12" id="">{$poll_details[0].comment}</textarea>
+					</div>												
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="w-box">
+		<div class="w-box-header">Promotion</div>
+			<div class="w-box-content cnt_a">
+				<div class="row-fluid">
+					<div class="control-group">
+						<div class="control-group">
+						<label class="control-label" style="text-align:left;width:60px">Email</label>
+						<div class="controls">
+							<textarea rows="4" class="validate[required]" cols="80" name="email_content" id="mailcontrib" >{$poll_details[0].email_content}</textarea>  
+						</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+	</div>
+	</div>
+	<div class="control-group topset2">
+		<div class="pull-center">
+			<button class="btn btn-primary" type="submit" onclick="return removeDisabled()">Valider</button>
+		</div>
+	</div>
+	</form>
+</div>
+
+<div class="span3">
+	{include file='gebo/recruitment/info.phtml'}
+</div>
+</div>
+
+</div>

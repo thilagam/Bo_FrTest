@@ -1,0 +1,632 @@
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/lib/fullcalendar/fullcalendar_gebo.css" />
+<script src="/BO/theme/gebo/lib/datepicker/bootstrap-timepicker.min.js"></script>
+{literal}
+<style>
+    #calendar .fc-sat .fc-widget-content,
+    #calendar .fc-sun .fc-widget-content{
+        background-color:#B6B6B6;}
+    #calendar .full-calendar-month td.weekend
+    {
+        background: #FFDFDF;
+    }
+    .tooltipevent { /* hide and position tooltip */
+        background: #333;
+        background: rgba(0,0,0,.8);
+        border-radius: 5px;
+        top: -5px;
+        color: #fff;
+        content: attr(alt);
+        left: 160px;
+        padding: 5px 15px;
+        position: absolute;
+        width: 150px;
+        z-index:10001;
+    }
+
+
+</style>
+<script type="text/javascript" >
+$(document).ready(function() {
+    $("#requestto").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#leave_type").chosen({ allow_single_deselect: false,search_contains: true  });
+    /*$("#country").chosen({ allow_single_deselect: false,search_contains: true  });*/
+    $("#invite_user").chosen();
+    $("#myleave").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+    $('#leave_title').attr('data-prompt-position','bottomLeft');
+    $('#datestart').attr('data-prompt-position','bottomLeft');
+   // $('#dateend').attr('data-prompt-position','bottomLeft');
+    $('#requestto_chzn').attr('data-prompt-position','bottomLeft');
+    $('#leave_type_chzn').attr('data-prompt-position','bottomLeft');
+
+    var leaveId = getURLParameter('leaveId');
+   // var startd = 0;  var endd = 0;  var datedetails = 0;
+    var actmode ='{/literal}{$actmode}{literal}';
+    var starttime ='{/literal}{$starttime}{literal}';
+    var endtime ='{/literal}{$endtime}{literal}';
+    if(actmode == 'edit')
+    {
+        var target_page = '/hrm/apply-leaves-ajax?leaveId='+leaveId+'&mode=edit';
+        $.post(target_page, function(data){
+            var data = $.trim(data);
+            var dataobj = $.parseJSON(data);
+          var  startd = dataobj.startdate;
+           var  endd = dataobj.enddate;
+           var  datedetails = dataobj.datedetails;
+            if(dataobj.type != 'rdv'){
+                var target_page = '/hrm/dates_inbetween?start='+startd+'&end='+endd;
+                $.post(target_page, function(data){
+                    var datedetailsarr = datedetails.split(',');
+                    $.each($.parseJSON(data), function(idx, obj) {
+                        if(datedetailsarr[idx] == 'half'){
+                            $("#results").append('<input type="text" readonly="readonly" value="'+obj+'" name="date[]" /> ' +
+                                'Half day : <input type="checkbox"  checked="checked"  name="halfday_'+idx+'" /> ');
+                        }else{
+                            $("#results").append('<input type="text" readonly="readonly" value="'+obj+'" name="date[]" /> ' +
+                                'Half day : <input type="checkbox"   name="halfday_'+idx+'" /> ');
+                        }
+                    });
+                });
+            }
+            else{
+                $("#rdvdetails").show();
+                $("#rdvdaterange").show();
+                $("#rdvtimerange").show();
+                $("#rdvreasons").show();
+                $("#daterange").hide();
+                $("#daterangeresult").hide();
+            }
+
+        });
+    }
+    gebo_calendar.regular();
+    gebo_validation.reg();
+    if(actmode != 'edit') {
+        $('#tp_1').timepicker({
+            defaultTime: 'current',
+            minuteStep: 1,
+            disableFocus: true,
+            timeFormat: 'HH:mm:ss'
+        });
+        $('#tp_2').timepicker({
+            defaultTime: 'current',
+            minuteStep: 1,
+            disableFocus: true,
+            timeFormat: 'HH:mm:ss'
+        });
+    }else{
+        $('#tp_1').timepicker({
+            defaultTime: starttime,
+            minuteStep: 1,
+            disableFocus: true,
+            timeFormat: 'HH:mm:ss'
+        });
+        $('#tp_2').timepicker({
+            defaultTime: endtime,
+            minuteStep: 1,
+            disableFocus: true,
+            timeFormat: 'HH:mm:ss'
+        });
+    }
+
+    //* resize elements on window resize
+    var lastWindowHeight = $(window).height();
+    var lastWindowWidth = $(window).width();
+    $(window).on("debouncedresize",function() {
+        if($(window).height()!=lastWindowHeight || $(window).width()!=lastWindowWidth){
+            lastWindowHeight = $(window).height();
+            lastWindowWidth = $(window).width();
+            //* rebuild calendar
+            $('#calendar').fullCalendar('render');
+        }
+    });
+    $('#rdvdate').datepicker({language: 'fr'})
+    ////vlidating dates///
+    $('#datestart').datepicker({language: 'fr'}).on('changeDate', function(ev){
+        var dateText = $(this).val();//data('date');
+        var startDateTextBox = $('#datestart');
+        var startdate = startDateTextBox.val();
+        var endDateTextBox = $('#dateend');
+        var endDateTime = endDateTextBox.val();
+        if (startDateTextBox.val() != '') {
+            var testStartDate = new Date(dateText);
+            var testEndDate = new Date(endDateTextBox.val());
+            if (testStartDate > testEndDate) {
+                endDateTextBox.val(dateText);
+            }
+            $("#results").html('');
+            if(endDateTime == '')
+                var target_page = '/hrm/dates_inbetween?start='+startdate+'&end='+startdate;
+            else
+                var target_page = '/hrm/dates_inbetween?start='+startdate+'&end='+endDateTime;
+            $.post(target_page, function(data){ //alert(data);
+                var data = $.trim(data);
+                if(data != 'empty'){
+
+                    $.each($.parseJSON(data), function(idx, obj) {
+                        $("#results").append('<input type="text" readonly="readonly" value="'+obj+'" name="date[]" /> ' +
+                        'Half day : <input type="checkbox"  name="halfday_'+idx+'" /> ');
+                    });
+                } else {
+                    smoke.alert('Its not possible to apply leave on holiday');
+                }
+            });
+        }
+        else {
+            endDateTextBox.val(dateText);
+        };
+        $('#dateend').datepicker('setStartDate', dateText);
+        $('#datestart').datepicker('hide');
+    });
+    $('#dateend').datepicker({language: 'fr'}).on('changeDate', function(ev){
+        var dateText = $(this).val();//data('date');
+        var startDateTextBox = $('#datestart');
+        var startdate = startDateTextBox.val();
+        if (startDateTextBox.val() != '') {
+            var testStartDate = new Date(startDateTextBox.val());
+            var testEndDate = new Date(dateText);
+            if (testStartDate > testEndDate) {
+                startDateTextBox.val(dateText);
+            }
+            $("#results").html('');
+            var target_page = '/hrm/dates_inbetween?start='+startdate+'&end='+dateText;
+            $.post(target_page, function(data){
+                var data = $.trim(data);
+                if(data != 'empty'){
+                    $.each($.parseJSON(data), function(idx, obj) {
+                        $("#results").append('<input type="text" readonly="readonly" value="'+obj+'" name="date[]" /> ' +
+                            'Half day : <input type="checkbox"  name="halfday_'+idx+'" /> ');
+                    });
+                } else {
+                    smoke.alert('Its not possible to apply leave on holiday');
+                }
+            });
+
+        }
+        else {
+            startDateTextBox.val(dateText);
+        };
+        $('#datestart').datepicker('setEndDate', dateText);
+        $('#dateend').datepicker('hide');
+    });
+    ////vlidating dates///
+    $('#rdvdatestart').datepicker({language: 'fr'}).on('changeDate', function(ev){
+        var dateText = $(this).val();//data('date');
+
+        var endDateTextBox = $('#rdvdateend');
+        if (endDateTextBox.val() != '') {
+            var testStartDate = new Date(dateText);
+            var testEndDate = new Date(endDateTextBox.val());
+            if (testStartDate > testEndDate) {
+                endDateTextBox.val(dateText);
+            }
+
+            $('#tp_1').timepicker('setTime', '9:30 AM');   
+        }
+        else {
+            endDateTextBox.val(dateText);
+        };
+        $('#rdvdateend').datepicker('setStartDate', dateText);
+        $('#rdvdatestart').datepicker('hide');
+    });
+    ///rdv dates////
+    $('#rdvdateend').datepicker({language: 'fr'}).on('changeDate', function(ev){
+        var dateText = $(this).val();//data('date');
+        var startDateTextBox = $('#rdvdatestart');
+        var startdate = startDateTextBox.val();
+        if (startDateTextBox.val() != '') {
+            var testStartDate = new Date(startDateTextBox.val());
+            var testEndDate = new Date(dateText);
+            if (testStartDate > testEndDate) {
+                startDateTextBox.val(dateText);
+            }
+        }
+        else {
+            startDateTextBox.val(dateText);
+        };
+        $('#rdvdatestart').datepicker('setEndDate', dateText);
+        $('#rdvdateend').datepicker('hide');
+    });
+    var date = new Date();
+    var d = date.getDate();
+    var m = date.getMonth();
+    var y = date.getFullYear();
+    $('#calendar').find ('td.fc-sun' ).css('background-color', '#E0DBDD');
+    $('#calendar').find ('td.fc-sat' ).css('background-color', '#E0DBDD');
+    $('#calendar').find ('td.fc-sun' ).css('pointer-events', 'none');
+    $('#calendar').find ('td.fc-sat' ).css('pointer-events', 'none');
+});
+function convert(str) {
+    var date = new Date(str),
+        mnth = ("0" + (date.getMonth()+1)).slice(-2),
+        day  = ("0" + date.getDate()).slice(-2);
+    return [ date.getFullYear(), mnth, day ].join("-");
+}
+// validation
+function validateLeaveLimit()
+{
+    if(($("#datestart").val() == '' || $("#dateend").val() == '') && $("#leave_type").val() != 'rdv')
+    {
+        smoke.alert('Please select dates');
+        return false;
+    }
+    var values1 = $('input[name="date[]"]').map(function(){
+        return this.value;
+    }).get();
+
+    var halfday = $('input:checkbox:checked').length;
+    var dateparam = values1;
+    var ltype = $("#leave_type").val();
+    var target_page = "/hrm/leavelimit?halfday="+halfday+"&date="+dateparam+"&ltype="+ltype;
+    $.post(target_page, function(data){ //alert(data);
+        var data1 =$.trim(data);
+        if(data1 == 'compoffexceed')
+        {
+            smoke.confirm("comp off limit exceeded, extra deducted form vacation count ?", function(e){
+                if (e){
+                    $("#myleave").submit();
+                }else{
+                    return false;
+                }
+            });
+        }
+        else if(data1 == 'exceeded'){
+            smoke.confirm("leave limit exceeded still want to proceed ?", function(e){
+                if (e){
+                    $("#myleave").submit();
+                }else{
+                    return false;
+                }
+            });
+        }
+        else
+            $("#myleave").submit();
+    });
+
+}
+
+gebo_validation = {
+    reg: function() {
+        reg_validator = $('#myleave').validate({
+            onkeyup: false,
+            errorClass: 'error',
+            validClass: 'valid',
+            highlight: function(element) {
+                $(element).closest('div').addClass("f_error");
+            },
+            unhighlight: function(element) {
+                $(element).closest('div').removeClass("f_error");
+            },
+            rules: {
+                datestart: { required: true},
+                dateend: { required: true }
+            },
+            invalidHandler: function(form, validator) {
+                $.sticky("There are some errors. Please correct them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
+            }
+        })
+    }
+};
+
+//* calendar
+gebo_calendar = {
+    regular: function() {
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+        var calendar = $('#calendar').fullCalendar({
+
+            header: {
+                left: 'prev next',
+                center: 'title,today',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            buttonText: {
+                prev: '<i class="icon-chevron-left cal_prev" />',
+                next: '<i class="icon-chevron-right cal_next" />'
+            },
+            aspectRatio: 2,
+            selectable: false,
+            selectHelper: true,
+            events: '/hrm/show-applied-leaves',
+            timeFormat: { agenda: 'H:mm{ - h:mm}'},
+
+            select: function(start, end, allDay) {
+                $.ajax({
+                    type: "POST",
+                    url: "/hrm/all-public-holidays",
+                    data: "year="+date.getFullYear(start),
+                    dataType: 'json',
+                    async:false,
+                    success: function(result) {
+                        weekendsarray = result;
+                    }
+                });
+                var leave_type = $("#leave_type").val();
+                var sel_manager = $("#sel_manager").val();
+                if (leave_type != 0 && sel_manager != 0)
+                {
+                    var holidays = weekendsarray;
+                    var indexdates = holidays.indexOf(convert(start));
+                    if( indexdates != -1) {
+                        smoke.alert("You cannot book on this day!");
+                        return false;
+                        // $(cell).addClass('disabled');
+                    }else{
+                        smoke.prompt("Enter Title for Leave?", function(title){
+                            var leave_type = $("#leave_type").val();
+                            var sel_manager = $("#sel_manager").val();
+                            var invite_user = $("#invite_user").val();
+                            var meeting_place = $("#meeting_place").val();
+                            var meeting_reason = $("#meeting_reason").val();
+
+                            if (title && leave_type != 0 && sel_manager != 0){
+                                calendar.fullCalendar('renderEvent',
+                                    {
+                                        title: title,
+                                        start: start,
+                                        end: end,
+                                        allDay: allDay
+                                    },
+                                    true // make the event "stick"
+                                );
+                                $.ajax({
+                                    type: "POST",
+                                    url: '/hrm/save-leave',
+                                    data: "title=" + title+"&start="+start+"&end="+end+"&allDay="+allDay+"&requestto="+sel_manager
+                                        +"&type="+leave_type+"&invitees="+invite_user+"&place="+meeting_place+"&reasons="+meeting_reason+"&save=yes"
+                                });
+
+                            }else{
+                                $('#calendar').fullCalendar('updateEvent', event);
+                            }
+                        }, {
+                            ok: "Yes",
+                            cancel: "No",
+                            classname: "custom-class",
+                            reverseButtons: true,
+                            value: "Please enter the Title"
+                        });
+                    }
+                }
+                else{
+                    smoke.alert('please select user and leave type');
+                    return true;
+                }
+                calendar.fullCalendar('unselect');
+            },
+            eventClick: function(event, element) {
+                if(event.status != 'inprocess')
+                {
+                    smoke.alert("Not possible to edit this request as its already "+event.status);
+                    return false;
+                }
+                if(event.leavetype == 'public' && event.usergroup != 1)
+                {
+                    smoke.alert("Your not eligible to edit public holiday");
+                    return false;
+                }
+                smoke.confirm("Do you want to edit this request?", function(e){
+                    if (e){
+                        window.location.href = "/hrm/apply-leaves?submenuId=ML12-SL2&mode=edit&leaveId=" +event.id;
+                    }else{
+                        return false;
+                    }
+                });
+                calendar.fullCalendar('unselect');
+            },
+            eventMouseover: function(calEvent,jsEvent) {
+                var tooltip = '<div class="tooltipevent" >' + calEvent.tooltipcont + '</div>';
+                //var tooltip = '<a class="pop_over" '="" data-content="+ calEvent.title +" data-html="true" data-original-title="Article Details" data-placement="right">test article 1</a>';
+                $("body").append(tooltip);
+                $(this).mouseover(function(e) {
+                    $(this).css('z-index', 10000);
+                    $('.tooltipevent').fadeIn('500');
+                    $('.tooltipevent').fadeTo('10', 1.9);
+                }).mousemove(function(e) {
+                        $('.tooltipevent').css('top', e.pageY + 10);
+                        $('.tooltipevent').css('left', e.pageX + 20);
+                    });
+            },
+            eventMouseout: function(calEvent, jsEvent) {
+                $(this).css('z-index', 8);
+                $('.tooltipevent').remove();
+            },
+            editable: true,
+            eventColor: '#bcdeee'
+        })
+    }
+};
+function rdvDetails()
+{
+    var leavetype = $("#leave_type").val();
+    if(leavetype == 'rdv')
+    {
+        $("#rdvdetails").show();
+        $("#rdvdaterange").show();
+        $("#rdvtimerange").show();
+        $("#rdvreasons").show();
+        $("#daterange").hide();
+        $("#daterangeresult").hide();
+    } else{
+        $("#daterange").show();
+        $("#daterangeresult").show();
+        $("#rdvdetails").hide();
+        $("#rdvdaterange").hide();
+        $("#rdvtimerange").hide();
+        $("#rdvreasons").hide();
+    }
+}
+</script>
+{/literal}
+<div class="alert alert-info span4">
+    <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>Leaves Statistics</h3></span></div>
+    <div class="chat_msg_body">
+
+        <table class="table table-condensed">
+            <thead>
+            <th></th>
+            <th>Applied</th>
+            <th>Approved</th>
+            <th>Refused</th>
+            <th>In process</th>
+            </thead>
+            <tbody>
+            <tr {if $statistics.slcount gt $hrmsicktotal}style="background: #f8b9b7" {/if}><td class="label label-success span1">Maladie ({$hrmsicktotal})</td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=sick&status=total">{$statistics.slcount}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=sick&status=approved">{$statistics.slapproved}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=sick&status=refused">{$statistics.slrefused}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=sick&status=inprocess">{$statistics.slpending}</a></td>
+            </tr>
+
+            <tr {if $statistics.plcount gt $hrmvacationtotal}style="background: #f8b9b7" {/if}><td class="label label-warning span1">Vacances ({$hrmvacationtotal})</td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=vacation&status=total">{$statistics.plcount}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=vacation&status=approved">{$statistics.plapproved}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=vacation&status=refused">{$statistics.plrefused}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=vacation&status=inprocess">{$statistics.plpending}</a></td>
+            </tr>
+            <tr {if $statistics.plcount gt $hrmmaternaltotal}style="background: #f8b9b7" {/if}><td class="label label-info span1">Materit&eacute; ({$hrmmaternaltotal})</td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=maternity&status=total">{$statistics.mtcount}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=maternity&status=approved">{$statistics.mtapproved}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=maternity&status=refused">{$statistics.mtrefused}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=maternity&status=inprocess">{$statistics.mtpending}</a></td>
+            </tr>
+            <tr><td class="label label-gebo span1">RDV</td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=rdv&status=total">{$statistics.rdvcount}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=rdv&status=approved">{$statistics.rdvapproved}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=rdv&status=refused">{$statistics.rdvrefused}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=rdv&status=inprocess">{$statistics.rdvpending}</a></td>
+            </tr>
+            <tr {if $statistics.plcount gt $hrmcompofftotal}style="background: #f8b9b7" {/if}><td class="label span1">Comp Off ({$hrmcompofftotal})</td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=compoff&status=total">{$statistics.compoffcount}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=compoff&status=approved">{$statistics.compoffapproved}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=compoff&status=refused">{$statistics.compoffrefused}</a></td>
+                <td><a data-toggle="modal" data-target="#leavedetials" href="/hrm/leave-details?type=compoff&status=inprocess">{$statistics.compoffpending}</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="alert alert-gebo span5" >
+    <form id="myleave" name="myleave" action="/hrm/save-my-leave">
+
+        <table class="focus">
+            <tr class="span">
+                <td colspan="2"><input type="text" placeholder="leave title" name="leave_title" id="leave_title"  value="{if  $smarty.get.mode eq 'edit'}{$leavedetials[0].leave}{/if}"  class="validate[required]" data-prompt-position="bottomLeft"/> </td>
+                <td ><input type="text" readonly name="country1" id="country1" value="{if  $smarty.get.mode eq 'edit'}{$leavedetials[0].country}{else}{$usercountry}{/if}"  />
+                    <input type="hidden" name="country" id="country" value="{if  $smarty.get.mode eq 'edit'}{$leavedetials[0].country}{else}{$usercountry}{/if}"  /></td>
+                <!--<td><select name="country" id="country" readonly="readonly">
+                          <option value="0" >S&eacute;lectionnez Country</option>
+                        <option value="ind" {if  $smarty.get.mode eq 'edit' && $leavedetials[0].country == 'ind'} selected {/if} >India</option>
+                        <option value="fr" {if  $smarty.get.mode eq 'edit' && $leavedetials[0].country == 'fr'} selected {/if} >France</option>
+                        <option value="uk" {if  $smarty.get.mode eq 'edit' && $leavedetials[0].country == 'uk'} selected {/if} >Uk</option>
+                    </select> </td>-->
+            </tr>
+            <tr class="span">
+                <td><select name="requestto" id="requestto" data-placeholder="S&eacute;lectionnez un user" class="validate[required]" data-prompt-position="bottomLeft">
+                        <option value="" ></option>
+                        {foreach from=$userList item=user key=uk name=users}
+                        <option value={$user->identifier} {if $smarty.get.mode eq 'edit' && $leavedetials[0].in_charge == $user->identifier} selected='selected'{/if}>{$user->first_name} {$user->last_name}</option>
+                        {/foreach}
+                    </select></td>
+                <td><select name="leave_type" id="leave_type" onchange="rdvDetails();" data-placeholder="S&eacute;lectionnez Leave type" class="validate[required]" data-prompt-position="bottomLeft">
+                        <option value="" ></option>
+                        <option value="vacation" {if $smarty.get.mode eq 'edit' && $leavedetials[0].type == 'vacation'} selected='selected'{/if}>Vacances </option>
+                        <option value="sick" {if $smarty.get.mode eq 'edit' && $leavedetials[0].type == 'sick'} selected='selected'{/if}>Maladie </option>
+                        <option value="maternity" {if $smarty.get.mode eq 'edit' && $leavedetials[0].type == 'maternity'} selected='selected'{/if}>Maternit&eacute; </option>
+                        <option value="rdv" {if $smarty.get.mode eq 'edit' && $leavedetials[0].type == 'rdv'} selected='selected'{/if}>RDV </option>
+                        {if ($hrmcompofftotal > 0 && $compofflimit < $hrmcompofftotal) || ($smarty.get.mode eq 'edit' && $leavedetials[0].type == 'compoff')}
+                        <option value="compoff" {if $smarty.get.mode eq 'edit' && $leavedetials[0].type == 'compoff'} selected='selected'{/if}>Comp Off </option>
+                        {/if}
+                    </select></td>
+                <input type="hidden" id="submenuId" name="submenuId" value={$submenuId} />
+            </tr>
+
+
+            <tr class="span" id="rdvdaterange" style="display: none">
+                <td><input type="text" placeholder="RDV start" id="rdvdatestart" name="rdvstartdate" data-date-format="dd-mm-yyyy" value="{if  $smarty.get.mode eq 'edit'} {$leavedetials[0].start|date_format:'%d-%m-%Y'} {/if}" class="validate[required]" data-prompt-position="bottomLeft"/></td>
+                <td><input type="text"  placeholder="RDV end" id="rdvdateend" name="rdvenddate" data-date-format="dd-mm-yyyy" value="{if  $smarty.get.mode eq 'edit'} {$leavedetials[0].end|date_format:'%d-%m-%Y'} {/if}" class="validate[required]" data-prompt-position="bottomLeft"/></td>
+            </tr>
+            <tr class="span" id="rdvtimerange" style="display: none">
+                <td><input id="tp_1" name="rdvtimestart" type="text" placeholder="From time" value="{if  $smarty.get.mode eq 'edit'} {$leavedetials[0].start|date_format:'%I:%M %p'} {/if}" class="validate[required]"> </td>
+                <td><input id="tp_2"  name="rdvtimeend" type="text" placeholder="To time" value="{if  $smarty.get.mode eq 'edit'} {$leavedetials[0].end|date_format:'%I:%M %p'} {/if}" class="validate[required]"> </td>
+            </tr>
+            <tr class="span" id="rdvdetails" style="display: none">
+                <td><select multiple="multiple" name="invite_user[]" id="invite_user" data-placeholder="invite user to meeting">
+                        <option value="0" >Invite user</option>
+                        {foreach from=$userList item=user key=uk name=users}
+                        {if in_array($user->identifier,$invitees_array) && $smarty.get.mode eq 'edit'}
+                        <option value="{$user->identifier}" selected>{$user->first_name} {$user->last_name}</option>
+                        {else}
+                        <option value="{$user->identifier}">{$user->first_name} {$user->last_name}</option>
+                        {/if}
+<!--                        <option value={$user->identifier} {if $smarty.get.mode eq 'edit' && $leavedetials[0].rdv_invitees == $user->identifier} selected='selected'{/if}>{$user->first_name} {$user->last_name}</option>
+-->                        {/foreach}
+                    </select> </td>
+                <td><input type="text"  id="meeting_place" name="meeting_place" value="{if  $smarty.get.mode eq 'edit'} {$leavedetials[0].meeting_place} {/if}" placeholder="place" /> </td>
+            </tr>
+            <tr class="span" id="rdvreasons" style="display: none">
+                <td colspan="2"><textarea id="meeting_reason"  name="meeting_reason" placeholder="Reasons for meeting">{if  $smarty.get.mode eq 'edit'} {$leavedetials[0].rdv_reasons} {/if}</textarea> </td>
+            </tr>
+
+            <tr class="span" id="daterange">
+                <td><input type="text" placeholder="From" id="datestart" name="startdate" data-date-format="dd-mm-yyyy" value="{if  $smarty.get.mode eq 'edit'} {$leavedetials[0].start|date_format:'%d-%m-%Y'} {/if}" class="validate[required]"/></td>
+                <td><input type="text"  placeholder="To" id="dateend" name="enddate" data-date-format="dd-mm-yyyy" value="{if  $smarty.get.mode eq 'edit'} {$leavedetials[0].end|date_format:'%d-%m-%Y'} {/if}" /></td>
+            </tr>
+            <tr class="span" id="daterangeresult"><td colspan="2"><div class="span alert" id="results"></div></td></tr>
+
+            <tr class="span pull-right"><td colspan="2"><input type="hidden" name="holidayId" id="holidayId" value="{$publicleaves[0].id}"  />
+                    {if $smarty.get.mode eq 'edit'}
+                    <input type="hidden" name="editvalue" id="editvalue" value="yes"  />
+                    <input type="hidden" name="savevalue" id="savevalue" value="no"  />
+                    <input type="hidden" name="leaveid" id="leaveid" value="{$leavedetials[0].id}"  />
+                    <button type="submit" class="btn btn-success" id="edit" name="edit" value="edit" >Update</button>
+                    {else}
+                    <input type="hidden" name="savevalue" id="savevalue" value="yes"  />
+                    <input type="hidden" name="editvalue" id="editvalue" value="no"  />
+                    <button type="button" class="btn btn-success" id="save" name="save" value="save" onclick="return validateLeaveLimit();" >Apply</button>
+                    {/if}
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        <h2 class="heading">Calendar</h2>
+        <div id="calendar" class="fc">
+        </div>
+    </div>
+</div>
+<!--///for the display of applied leaves detials///-->
+<div class="modal4 hide fade" id="leavedetials">
+    <div class="modal-header">
+        <button  class="close" onclick="closePopup('leavedetials');">&times;</button>
+        <h3>REQUEST DETAILS</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!--///for the group profiles popup///-->
+<div class="modal4 hide fade" id="leavepopup">
+    <div class="modal-header">
+        <button  class="close" onclick="closePopup('leavepopup');">&times;</button>
+        <h3>Manage your Leave</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<script src="/BO/theme/gebo/lib/fullcalendar/fullcalendar.min.js"></script>
+<script src="/BO/theme/gebo/lib/fullcalendar/gcal.js"></script>
+
+

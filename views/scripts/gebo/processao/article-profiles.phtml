@@ -1,0 +1,825 @@
+{literal}
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/countdown.js"></script>
+<script type="text/javascript" >
+$(document).ready(function() {
+
+    ////////////to show the timer in selection profile page///////
+    var cur_date={/literal}{$smarty.now}{literal};
+    var js_date=(new Date().getTime())/ 1000;
+    var diff_date=Math.floor(js_date-cur_date);
+
+    //////////show timer//////////
+    $("[id^=time_]").each(function(i) {
+        var article=$(this).attr('id').split("_");
+        var ts=article[2];
+        $("#time_"+article[1]+"_"+article[2]).countdown({
+            timestamp   : ts,
+            diff_date  : diff_date,
+            callback    : function(days, hours, minutes, seconds){
+                var message = "";
+                message += days + " jours"  +", ";
+                message += hours + " h" +", ";
+                message += minutes + " mns"+ ", ";
+                message += seconds + " s";
+                $("#text_"+article[1]+"_"+article[2]).html(message);
+                if(days==0 && hours==0 && minutes==0 && seconds==0)
+                {
+                    //window.location.reload();
+                }
+            }
+        });
+    });
+    //////////////////////////////////////////////////////////////////
+    $('#artprofilesgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+        ]
+    });
+    ///////return to back page/////
+    $( "#return" ).click(function() {
+        history.go(-1);
+    });
+    $(".uni_style").uniform();
+
+    $("#selectAlsl").click(function(){
+        var checked_status = this.checked;
+        $("input[name='artchk[]']").each(function(){
+            this.checked = checked_status;
+        });
+    });
+
+});
+
+////////re publish the confirmation ////////
+function republishConfirm(artid)
+{
+    var msg = "<p style='color:#F50531'>Warning : Selected writers will be refused. Are you sure to be republish ? </p>";
+    smoke.confirm("L\'article sera remis en ligne"+msg,function(e){
+        if (e){
+            //smoke.alert('"yeah it is" pressed', {ok:"close"});
+            smoke.confirm("Announcement by email",function(e){
+                if(e)
+                    window.location.href = "/processao/publisharticlefo?art_id="+artid+"&sendmail=yes";
+                else
+                    window.location.href = "/processao/publisharticlefo?art_id="+artid+"&sendmail=no";
+            });
+        }else{
+            return false;
+        }
+    });
+}
+
+
+/*///////////when click on TO BE CLOSED in list of profiles/////////////
+function closeArtprofile(artid, closemode)
+{
+    var closemode = closemode;
+    if(closemode == 'close')
+    {
+        if(artid == 'firstvalidate')
+        {
+           smoke.alert("Please first validate the profile");
+        }
+        else
+        {
+            smoke.confirm("Do you really want to close this aritcle",function(e){
+                if (e)
+                {
+                    $.ajax({
+                        url: "/processao/closeartprofile?artid="+artid+"&closemode="+closemode,
+                        global: false,
+                        type: "GET",
+                        dataType: "html",
+                        async:false,
+                        success: function(msg){ //alert(msg);
+                            //location.reload();
+                            $('#closeart'+artid).html("<a onclick=\"return closeArtprofile('"+artid+"', 'disclose');\" class='btn btn-info'>Closed</a>");
+                        }
+                    });
+                }
+                else
+                {
+                    return false;
+                }
+            });
+        }
+    }
+    else
+    {
+        smoke.confirm("Do you really want to disclose this aritcle",function(e){
+            if (e)
+            {
+                $.ajax({
+                    url: "/processao/closeartprofile?artid="+artid+"&closemode="+closemode,
+                    global: false,
+                    type: "GET",
+                    dataType: "html",
+                    async:false,
+                    success: function(msg){ //alert(msg);
+                        //location.reload();
+                        $('#closeart'+artid).html("<a onclick=\"return closeArtprofile('"+artid+"', 'close');\" class='btn btn-info'>ouvert</a>");
+                    }
+                });
+            }
+            else
+            {
+                return false;
+            }
+        });
+    }
+}*/
+///////////when click on TO BE CLOSED in list of profiles/////////////
+function closeArtprofile(artid, participants)
+{
+    var participants = participants;
+    if(participants == 'no')
+    {
+        smoke.confirm("Voulez-vous r\351ellement fermer cet article? Aucun contributeur n'a particip\351, aucun email ne sera donc envoy\351",function(e){
+            if (e)
+            {
+                $.ajax({
+                    url: "/republish/closeartprofile?art_id="+artid+"&participants="+participants,
+                    global: false,
+                    type: "GET",
+                    dataType: "html",
+                    async:false,
+                    success: function(msg){ //alert(msg);
+                        location.reload();
+                        // $('#closeart'+artid).html("<a onclick=\"return closeArtprofile('"+artid+"', 'disclose');\" class='btn btn-info'>Closed</a>");
+                    }
+                });
+            }
+            else
+            {
+                return false;
+            }
+        });
+    }
+    else
+    {
+        var artid = $('#artid').val();
+        var comment = CKEDITOR.instances['closemailcontent'].getData();
+        var target_page = "/republish/closeartprofile?comment="+escape(comment)+"&art_id="+artid+"&participants="+participants;
+        $.post(target_page, function(data){  //alert(data);
+            window.location.reload();
+        });
+    }
+}
+///////////when click on TO BE CLOSED in list of profiles/////////////
+function closeBulkArtprofile(artid)
+{
+    var $b = $('input[type=checkbox]');
+    var countselected = $b.filter(':checked').length;
+    if(countselected > 1)
+    {
+        var selected = new Array();
+        $b.filter(':checked').each(function() {
+            selected.push($(this).attr('value'));
+        });
+        smoke.confirm("Do you really want to close this aritcle",function(e){
+            if (e)
+            {
+                var target_page =  "/processao/closeartprofile?type=bulk&artid="+selected;
+                $.post(target_page, function(data){  //alert(data);
+                    location.reload();
+                });
+            }
+            else
+            {
+                return false;
+            }
+        });
+    }
+    else
+    {
+        alert("Please select atleast one");
+        return false;
+    }
+}
+//////locking system/////////////
+function articlProfilelockSystem(artid, mode, page, rownum)
+{
+    var cur_date={/literal}{$smarty.now}{literal};
+    var part_time = $("#parttime"+rownum).val();
+
+    var target_page = "/proofread/missionowner?artId="+artid;
+    $.post(target_page, function(data){ // alert(data);
+        var obj = data.split(",");
+        var lockedsamuser = obj[0].trim();
+        if(lockedsamuser == 'no' && mode=='lock')
+        {
+            smoke.confirm("Etes vous s&#219;r(e) de vouloir faire ce choix &#224; la place de "+obj[1],function(e){
+                if (e)
+                {
+                    $("#grpprofile"+rownum).attr("href", "/processao/group-profiles?artId="+artid);
+                    $("#grpprofile"+rownum).attr("data-toggle", "modal");
+                    $("#grpprofilelink"+rownum).attr("href", "/processao/group-profiles?artId="+artid);
+                    $("#grpprofilelink"+rownum).attr("data-toggle", "modal");
+                    if(cur_date > part_time){
+                        $("#closerepublish"+rownum).removeAttr("disabled");
+                        $("#closebutton"+rownum).removeAttr("disabled");
+                    }
+                    lockSystemArtProfile(artid, mode, page, rownum);
+                    var target_page = "/proofread/missionowner?artId="+artid+"&sendmail=yes";
+                    $.post(target_page, function(data){  //alert(data);
+                    });
+                }
+                else
+                {
+                    $("#grpprofile"+rownum).removeAttr("href", "/processao/group-profiles?artId="+artid);
+                    $("#grpprofile"+rownum).removeAttr("data-toggle", "modal");
+                    $("#grpprofilelink"+rownum).removeAttr("href", "/processao/group-profiles?artId="+artid);
+                    $("#grpprofilelink"+rownum).removeAttr("data-toggle", "modal");
+                    $("#closerepublish"+rownum).attr("disabled", "disabled");
+                    $("#closebutton"+rownum).attr("disabled", "disabled");
+                    return false;
+                }
+            });
+        }
+        else
+        {
+            lockSystemArtProfile(artid, mode, page, rownum);
+            if(mode == 'lock'){
+                $("#grpprofile"+rownum).attr("href", "/processao/group-profiles?artId="+artid);
+                $("#grpprofile"+rownum).attr("data-toggle", "modal");
+                $("#grpprofilelink"+rownum).attr("href", "/processao/group-profiles?artId="+artid);
+                $("#grpprofilelink"+rownum).attr("data-toggle", "modal");
+                if(cur_date > part_time){
+                    $("#closerepublish"+rownum).removeAttr("disabled");
+                    $("#closebutton"+rownum).removeAttr("disabled");
+                }
+            }
+            else
+            {
+                $("#grpprofile"+rownum).removeAttr("href", "/processao/group-profiles?artId="+artid);
+                $("#grpprofile"+rownum).removeAttr("data-toggle", "modal");
+                $("#grpprofilelink"+rownum).removeAttr("href", "/processao/group-profiles?artId="+artid);
+                $("#grpprofilelink"+rownum).removeAttr("data-toggle", "modal");
+                $("#closerepublish"+rownum).attr("disabled", "disabled");
+                $("#closebutton"+rownum).attr("disabled", "disabled");
+            }
+        }
+    });
+}
+//////locking system/////////////
+function lockSystemArtProfile(artid, mode, page, rownum)
+{
+    if(mode == 'lock')
+    {
+        var target_page = "/proofread/locksystem?artId="+artid+"&mode=lock&stage="+page;
+        $.post(target_page, function(data){  //alert(data);
+            if(page == 'articleprofile')
+                $('#lock'+artid).html("<a data-toggle='modal' data-target='#groupprofile' href='/processao/group-profiles?artId="+artid+"'>" +
+                        "<i class='splashy-application_windows_edit'></i>" +
+                        "</a>&nbsp;&nbsp;<a onclick=\"articlProfilelockSystem('"+artid+"', 'unlock', '"+page+"', '"+rownum+"');\"><i class='splashy-lock_large_unlocked'></i></a>");
+            else
+                $('#lock'+artid).html("<a href='/proofread/'"+page+"'-correction?submenuId=ML3-SL2&articleId="+artid+"'><i class='splashy-application_windows_edit'></i></a>&nbsp;&nbsp;<a onclick='articlProfilelockSystem('"+artid+"', 'unlock', '"+page+"', '"+rownum+"');'><i class='splashy-lock_large_unlocked'></i></a>");
+
+        });
+    }
+    else{
+        var target_page = "/proofread/locksystem?artId="+artid+"&mode=unlock&stage="+page;
+        $.post(target_page, function(data){
+            $('#lock'+artid).html("<a onclick=\"articlProfilelockSystem('"+artid+"','lock', '"+page+"', '"+rownum+"');\"><i class='splashy-lock_large_locked'></i></a>");
+        });
+    }
+}
+///////////for all contributors details list in popup//////////////////
+function acceptRefuseWriter(button)
+{
+    var userid = $('#userid').val();
+    var partid = $('#partid').val();
+    var artid = $('#artid').val();
+
+    if(button == 'refuse_pop')
+    {
+        var comment = $('#refusemailcontent').val();
+        var sendtofo;
+        //////////// is it the last participation and refusing it ////////////////////////////////////
+        var target_page = "/processao/getlastarts?artid="+artid;
+        $.post(target_page, function(data){   //alert(data);
+            var data1 = $.trim(data);
+            if(data1 == "yes")
+            {
+                smoke.confirm("L\'article sera remis en ligne",function(e){
+                    if (e)
+                    {
+                        sendtofo = 'yes';
+                        var mailannoucement;
+                        if($(mailannouncement).is(':checked'))
+                            mailannoucement = "sendmail";
+                        else
+                            mailannoucement = "dontsendmail"; //alert(mailannoucement);
+                        var target_page = "/processao/selectcontributor?contrib_id="+userid+"&particip_id="+partid+"&button=refuse_pop&comment="+escape(comment)+"&sendtofo="+sendtofo+"&mailannoucement="+mailannoucement+"&art_id="+artid;
+                        $.post(target_page, function(data){  //alert(data);
+                            //////////to reload the contirbutor list////////////
+                            window.location.reload();
+
+                        });
+                    }
+                    else
+                    {
+                        sendtofo = 'no';
+                        var target_page = "/processao/selectcontributor?contrib_id="+userid+"&particip_id="+partid+"&button=refuse_pop&comment="+escape(comment)+"&sendtofo="+sendtofo+"&art_id="+artid;
+                        $.post(target_page, function(data){  //alert(data);
+                            window.location.reload();
+                        });
+                    }
+                });
+            }
+            else
+            {
+                ///////////////////////////////////////////////////////////////
+                var target_page = "/processao/selectcontributor?contrib_id="+userid+"&particip_id="+partid+"&button=refuse_pop&comment="+escape(comment)+"&art_id="+artid;
+                $.post(target_page, function(data){  //alert(data);
+                    window.location.reload();
+                });
+            }
+        });
+    }
+    else
+    {
+        var comment = $('#acceptmailcontent').val();
+        //alert(comment);
+        var target_page = "/processao/selectcontributor?contrib_id="+userid+"&particip_id="+partid+"&button=submit_pop&comment="+escape(comment)+"&art_id="+artid;
+        $.post(target_page, function(data){  //alert(data);
+            window.location.reload();
+        });
+    }
+}
+//////////get comment for refusal when the republish button is pressed///
+function getCloseComment(artid, partscount)
+{
+    $('#artid').val(artid);
+    if (CKEDITOR.instances['closemailcontent'])
+    {
+        CKEDITOR.instances['closemailcontent'].destroy();
+    }
+    var editor = CKEDITOR.replace( 'closemailcontent',
+            {
+                language: 'de', uiColor: '#D9DDDC', enterMode : CKEDITOR.ENTER_BR, removePlugins : 'resize',
+                toolbar : [ ['Undo','Redo'], ['Find','Replace'],['Link', 'Unlink', 'Image'], ['FontSize', 'Bold', 'Italic','Underline'],
+                    ['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize'] ]
+            }
+    );
+    var target_page = "/republish/getclosemailpopup?artid="+artid+"&usercount="+partscount;
+    $.post(target_page, function(data){   //alert(data);
+         data1 = data.split("*");
+        CKEDITOR.instances['closemailcontent'].setData(data1[0]);
+        $('#bodymsg').html(data1[1]);
+    });
+    $('#closemail').modal('show');
+
+}
+//////////get comment for refusal when the republish button is pressed///
+function getComment(commentid, button, partid, userid, artid, status)
+{
+    ///passing these 3 values for the popup for next post///
+    $('#userid').val(userid);
+    $('#partid').val(partid);
+    $('#artid').val(artid);
+    if(button=='refuse_pop')
+    {
+        if (CKEDITOR.instances['refusemailcontent'])
+        {
+            CKEDITOR.instances['refusemailcontent'].destroy();
+        }
+        var editor = CKEDITOR.replace( 'refusemailcontent',
+                {
+                    language: 'de', uiColor: '#D9DDDC', enterMode : CKEDITOR.ENTER_BR, removePlugins : 'resize',
+                    toolbar : [ ['Undo','Redo'], ['Find','Replace'],['Link', 'Unlink', 'Image'], ['FontSize', 'Bold', 'Italic','Underline'],
+                        ['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize'] ]
+                }
+        );
+        var target_page = "/processao/getcommentpopup?mailId=27&contrib_id="+userid+"&particip_id="+partid+"&button="+button+"&artid="+artid;
+        $.post(target_page, function(data){   //alert('data');
+            CKEDITOR.instances['refusemailcontent'].setData(data);
+        });
+        $('#refusemail').modal('show');
+    }
+    else
+    {
+        if (CKEDITOR.instances['acceptmailcontent'])
+        {
+            CKEDITOR.instances['acceptmailcontent'].destroy();
+        }
+        var editor = CKEDITOR.replace( 'acceptmailcontent',
+                {
+                    language: 'de', uiColor: '#D9DDDC', enterMode : CKEDITOR.ENTER_BR, removePlugins : 'resize',
+                    toolbar : [ ['Undo','Redo'], ['Find','Replace'],['Link', 'Unlink', 'Image'], ['FontSize', 'Bold', 'Italic','Underline'],
+                        ['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize'] ]
+                }
+        );
+        var target_page = "/processao/getcommentpopup?mailId=25&contrib_id="+userid+"&particip_id="+partid+"&button="+button+"&artid="+artid;
+        $.post(target_page, function(data){   //alert(data);
+            CKEDITOR.instances['acceptmailcontent'].setData(data);
+        });
+        $('#Acceptmail').modal('show');
+    }
+}
+function refreshModal(artid)
+{
+    var target_page = "/processao/group-profiles?artId="+artid;
+    $.post(target_page, function(data){   //alert(data);
+        $('#groupprofile').modal('show');
+    });
+
+}
+
+//////to select all check boxes/////////////
+function CheckALL()
+{
+    if($("#selectAll").attr('checked'))
+    {
+        var $b = $('form#artprofile input[type=checkbox]');
+        $b.attr('checked', true);
+        postBulkRepublish();
+    }
+    else
+    {
+        var $b = $('input[type=checkbox]');
+        $b.attr('checked', false);
+    }
+}
+
+
+function postBulkRepublish()
+{
+    var artarray = new Array();
+    $("input:checkbox[name=artchk]:checked").each(function()
+    {
+        artarray.push($(this).val());
+    });
+    if(artarray == '')
+    {
+        smoke.alert("select atleast one article");
+        return false;
+    }
+    else
+    {
+        var aoId = $("#delId").val();
+        $("#bulkrepublish1").hide();
+        //window.location.href = "/republish/bulkrepublishpopup?nopart=no&close=no&aoId="+aoId+"&artList="+artarray;
+        $("#next").html($('<button type="button" data-toggle="modal" data-target="#republish" href="/republish/bulkrepublishpopup?nopart=no&close=no&aoId='+aoId+'&artlist='+artarray+'" id="bulkrepublish" name="bulkrepublish" class="btn btn-info">Re publier</button>'));
+    }
+
+}
+</script>
+{/literal}
+
+<h3 class="heading">Article profiles<a class="label label-inverse pull-right" href="/processao/profiles-list?submenuId=ML2-SL2" id="returnback">retour</a></h3>
+<div class="row-fluid">
+<div class="span12">
+<table id="grptabledetails" class="table tdleftalign btn-gebo" >
+    <tr>
+        <td><b>Nom Ao : </b>{$delDetails[0].aoName}</td>
+        <td><b>Client : </b>{$delDetails[0].company_name}</td>
+        <td><b>Cat&eacute;gorie : </b>{$delDetails[0].del_category}</td>
+    </tr>
+    <tr>
+        <td><b>Total Articles : </b>{$delDetails[0].total_article}</td>
+        <td><b>Cr&Eacute;e le : </b>{$delDetails[0].created_at|date_format:"%d/%m/%Y"}</td>
+        <td><b>Cr&Eacute;e par : </b>{$delDetails[0].created_user}</td>
+    </tr>
+</table>
+<form id="artprofile" name="artprofile" method="post">
+<table id="artprofilesgrid1" class="table table-bordered table-striped table_vam">
+    <thead>
+    <tr>
+        <th><label class="uni-checkbox" style="position: relative;top: 4px;left: 15px;">
+        <input type="checkbox" id="selectAll" name="selectAll" value="selectall" class="uni_style" onclick="CheckALL();" />
+    </label></th>
+        <!--<th><input type="checkbox" id="selectAll" name="selectAll" value="selectall" class="uni_style" onclick="CheckALL();" /></th>-->
+        <th>Sl.no</th>
+        <!--  <th><label class="uni-checkbox" style="position: relative;top: 4px;">
+              <input type="checkbox" id="selectAll" name="selectAll" value="selectall" class="uni_style" onclick="CheckALL();"  />
+          </label>Select All</th>-->
+        <th>Titre Article</th>
+        <th>Participants</th>
+        <th>Statut</th>
+        <th>Action</th>
+        <!-- <th>Lock</th>-->
+    </tr>
+    </thead>
+    <tbody>
+    {foreach from=$paginator key=artprofiles_key item=artprofiles_item name=artprofiles_loop}
+    <input  hidden="hidden" id="parttime{$smarty.foreach.artprofiles_loop.index}" name="parttime{$smarty.foreach.artprofiles_loop.index}" value="{$artprofiles_item.participation_expires}"/>
+    <tr>
+        <td>{if $artprofiles_item.current_stage != 'stage0' && $artprofiles_item.current_stage != 'stage1' && $artprofiles_item.current_stage != 'stage2' && $artprofiles_item.status != 'published' && $smarty.now > $artprofiles_item.participation_expires}
+
+                <input type="checkbox" id="artchk_{$artprofiles_item.artId}" name="artchk" value="{$artprofiles_item.artId}" onclick="postBulkRepublish();" />
+
+            {/if}</td>
+        <td> {$smarty.foreach.artprofiles_loop.index+1} </td>
+
+        <!--<td>
+            <label class="uni-checkbox">
+                <input type="checkbox" id="chk_{$smarty.foreach.artprofiles_loop.index}" name="chk_{$smarty.foreach.artprofiles_loop.index}" value="{$artprofiles_item.artId}" class="uni_style" {if $artprofiles_item.selection_type eq 'bo' || $artprofiles_item.selection_type eq 'auto'} disabled=disabled {/if}/>
+            </label>
+        </td>-->
+        <td> <a class="pop_over" data-placement="right" data-original-title="Article Details" data-html="true"
+                data-content="<table class='table table-bordered tdleftalign'>
+                        <tr><td><b>Article</b></td><td>{$artprofiles_item.artName|escape|stripslashes|wordwrap:25:"<br />\n"}</td></tr>
+    <tr><td><b>Prix demand</b></td><td>{$artprofiles_item.price_min}-{$artprofiles_item.price_max} &euro;</td></tr>
+    <tr><td><b>Cr&Eacute;e le</b></td><td>{$artprofiles_item.created_at|date_format:'%d/%m/%Y'}</td></tr>
+    <tr><td><b>Statut</b></td><td>{if $artprofiles_item.status eq 'bid_premium'} New
+        {elseif $artprofiles_item.status eq 'bid_refused'} Refused
+        {elseif $artprofiles_item.status eq 'published'} Published
+        {elseif $artprofiles_item.status eq ''} No Participants
+        {else} Ongoing {/if}</td></tr>
+</table>"'>{$artprofiles_item.artName|escape|stripslashes|wordwrap:25:"<br />\n"}</a></td>
+<td>{if $artprofiles_item.lock_status eq 'yes' && $artprofiles_item.lockedUser eq $userId}
+    <a data-target="#groupprofile"  class="artprofiles {if $artprofiles_item.cycle0UserCount neq 1} num-large {/if}" id="grpprofilelink{$smarty.foreach.artprofiles_loop.index}"  data-toggle="modal" data-refresh="true" role="button"  href="/processao/group-profiles?artId={$artprofiles_item.artId}" >
+        {if $artprofiles_item.cycle0UserCount eq 1}
+        {$artprofiles_item.first_name} {$artprofiles_item.last_name|wordwrap:10:"\n":true}
+        {if $artprofiles_item.userCount neq 0}
+        <span class="label label-inverse">of {$artprofiles_item.userCount}</span>
+        {/if}
+        {else}
+        <span class="label label-warning">{$artprofiles_item.cycle0UserCount}</span>
+        {if $artprofiles_item.userCount neq 0}
+        <span class="label label-inverse">of {$artprofiles_item.userCount}</span>
+        {/if}
+        {/if}</a>
+    {else}
+    <a data-target="#groupprofile"  class="artprofiles {if $artprofiles_item.cycle0UserCount neq 1} num-large {/if}" id="grpprofile{$smarty.foreach.artprofiles_loop.index}"  data-refresh="true" role="button" >
+        {if $artprofiles_item.cycle0UserCount eq 1}
+        {$artprofiles_item.first_name} {$artprofiles_item.last_name|wordwrap:10:"\n":true}
+        {if $artprofiles_item.userCount neq 0}
+        <span class="label label-inverse">of {$artprofiles_item.userCount}</span>
+        {/if}
+        {else}
+        <span class="label label-warning">{$artprofiles_item.cycle0UserCount}</span>
+        {if $artprofiles_item.userCount neq 0}
+        <span class="label label-inverse">of {$artprofiles_item.userCount}</span>
+        {/if}
+        {/if}</a>
+    {/if}
+</td>
+<td>
+    {if $artprofiles_item.bo_closed_status eq "closed"}
+    <span class="label label-info">Article ferm&eacute;</span>
+    {elseif $artprofiles_item.pstatus eq ""}
+    <span class="label label-info">pas de participation</span>
+    {if $smarty.now < $artprofiles_item.participation_expires && $artprofiles_item.participation_expires neq '0'}
+                       <span id="time_{$artprofiles_item.artId}_{$artprofiles_item.participation_expires}" class="alert alert-danger">
+                        <a data-hint="click here to extend time" data-toggle="modal" data-target="#extendpartime" href="/processao/extend-part-expire-time?artId={$artprofiles_item.artId}&aoId={$smarty.get.aoId}"><i class="icon-time"></i> <span id="text_{$artprofiles_item.artId}_{$artprofiles_item.participation_expires}"></span> </a>
+                        </span>
+    {/if}
+    {else}
+    {assign var=arrstatus value=$artprofiles_item.pstatus|explode:","}
+    {if in_array('bid_premium|senior', $arrstatus) || in_array('bid_premium|junior', $arrstatus) || in_array('bid_premium|sub-junior', $arrstatus)}
+    {if $smarty.now > $artprofiles_item.participation_expires && $artprofiles_item.participation_expires neq '0'}
+    <span class="label label-success">A valider</span>
+    {if $smarty.now < $artprofiles_item.participation_expires}
+                            <span id="time_{$artprofiles_item.artId}_{$artprofiles_item.participation_expires}" class="alert alert-danger">
+                            <a data-hint="click here to extend time" data-toggle="modal" data-target="#extendpartime" href="/processao/extend-part-expire-time?artId={$artprofiles_item.artId}&aoId={$smarty.get.aoId}"><i class="icon-time"></i> <span id="text_{$artprofiles_item.artId}_{$artprofiles_item.participation_expires}"></span> </a>
+                            </span>
+    {/if}
+    {elseif $artprofiles_item.participation_expires eq '0'}
+    <span class="label label-success">A valider</span>
+    {if $smarty.now < $artprofiles_item.participation_expires}
+                            <span id="time_{$artprofiles_item.artId}_{$artprofiles_item.delivery_date_timestamp}" class="alert alert-danger">
+                            <a data-hint="click here to extend time" data-toggle="modal" data-target="#extendpartime" href="/processao/extend-part-expire-time?artId={$artprofiles_item.artId}&aoId={$smarty.get.aoId}"><i class="icon-time"></i> <span id="text_{$artprofiles_item.artId}_{$artprofiles_item.delivery_date_timestamp}"></span></a>
+                            </span>
+    {/if}
+    {else}
+    <span class="label label-success">en cours</span>
+    {if $smarty.now < $artprofiles_item.participation_expires}
+                            <span id="time_{$artprofiles_item.artId}_{$artprofiles_item.participation_expires}" class="alert alert-danger">
+                            <a data-hint="click here to extend time" data-toggle="modal" data-target="#extendpartime" href="/processao/extend-part-expire-time?artId={$artprofiles_item.artId}&aoId={$smarty.get.aoId}"><i class="icon-time"></i> <span id="text_{$artprofiles_item.artId}_{$artprofiles_item.participation_expires}"></span></a>
+                            </span>
+    {/if}
+    {/if}
+
+    {elseif in_array('bid_temp|senior', $arrstatus) || in_array('bid_temp|junior', $arrstatus) }<span class="label label-success">JC &agrave; valider</span>
+    {if $artprofiles_item.current_stage == 'contributor'}
+    <span class="label label-warning">R&eacute;dacteur</span>{/if}
+    {elseif in_array('bid_temp|sub-junior', $arrstatus)}<span class="label label-success">JC0 &agrave; valider</span>
+    {if $artprofiles_item.current_stage == 'contributor'}
+    <span class="label label-warning">R&eacute;dacteur</span>{/if}
+    {elseif  in_array('bid_nonpremium|senior', $arrstatus) || in_array('bid_nonpremium|junior', $arrstatus) || in_array('bid_nonpremium|sub-junior', $arrstatus)}<span class="label label-success"> Client valid&eacute;</span><!-- BY CLIENT-->
+    {if $artprofiles_item.current_stage == 'contributor'}
+    <span class="label label-warning">R&eacute;dacteur</span>{/if}
+    {elseif in_array('bid|senior', $arrstatus) || in_array('under_study|senior', $arrstatus) || in_array('disapproved|senior', $arrstatus)
+    || in_array('plag_exec|senior', $arrstatus) || in_array('on_hold|senior', $arrstatus) || in_array('time_out|senior', $arrstatus)}
+    <span class="label label-success">SC valid&eacute;</span>
+    {if $artprofiles_item.current_stage == 'contributor'}
+    <span class="label label-warning">R&eacute;dacteur</span>{/if}
+
+    {elseif in_array('published|senior', $arrstatus)}
+    <span class="label label-success">SC valid&eacute;</span>
+    {if $artprofiles_item.current_stage == 'contributor'}
+    <span class="label label-warning">Published</span>{/if}
+
+    {elseif in_array('published|junior', $arrstatus)}
+    <span class="label label-success">JC valid&eacute;</span>
+    {if $artprofiles_item.current_stage == 'contributor'}
+    <span class="label label-warning">Published</span>{/if}
+
+    {elseif in_array('published|sub-junior', $arrstatus)}
+    <span class="label label-success">JC0 valid&eacute;</span>
+    {if $artprofiles_item.current_stage == 'contributor'}
+    <span class="label label-warning">Published</span>{/if}
+
+    {elseif in_array('bid|junior', $arrstatus) || in_array('under_study|junior', $arrstatus) || in_array('plag_exec|junior', $arrstatus)|| in_array('disapproved|junior', $arrstatus)
+    || in_array('on_hold|junior', $arrstatus) || in_array('time_out|junior', $arrstatus) || in_array('published|junior', $arrstatus)}
+    <span class="label label-success">JC valid&eacute;</span>
+    {if $artprofiles_item.current_stage == 'contributor'}
+    <span class="label label-warning">R&eacute;dacteur</span>{/if}
+
+    {elseif in_array('bid|sub-junior', $arrstatus) || in_array('under_study|sub-junior', $arrstatus) || in_array('plag_exec|sub-junior', $arrstatus) || in_array('disapproved|sub-junior', $arrstatus)
+    || in_array('on_hold|sub-junior', $arrstatus) || in_array('time_out|sub-junior', $arrstatus) || in_array('published|sub-junior', $arrstatus)}
+    <span class="label label-success">JC0 valid&eacute;</span>
+    {if $artprofiles_item.current_stage == 'contributor'}
+    <span class="label label-warning">R&eacute;dacteur</span>{/if}
+    {elseif  in_array('bid_refused|junior', $arrstatus)  || in_array('bid_refused|senior', $arrstatus) || in_array('closed|senior', $arrstatus) || in_array('closed|junior', $arrstatus)
+    || in_array('bid_refused|sub-junior', $arrstatus) || in_array('closed|sub-junior', $arrstatus)}
+    {if $smarty.now > $artprofiles_item.participation_expires && $artprofiles_item.participation_expires neq '0'}
+    <span class="label label-success">en cours</span>
+    {if $smarty.now < $artprofiles_item.participation_expires}
+                            <span id="time_{$artprofiles_item.artId}_{$artprofiles_item.participation_expires}" class="alert alert-danger">
+                            <a data-hint="click here to extend time" data-toggle="modal" data-target="#extendpartime" href="/processao/extend-part-expire-time?artId={$artprofiles_item.artId}&aoId={$smarty.get.aoId}"><i class="icon-time"></i> <span id="text_{$artprofiles_item.artId}_{$artprofiles_item.participation_expires}"></span></a>
+                            </span>
+    {/if}
+    {elseif $artprofiles_item.participation_expires eq '0'}
+    <span class="label label-success">en cours</span>
+    {if $smarty.now < $artprofiles_item.participation_expires}
+                            <span id="time_{$artprofiles_item.artId}_{$artprofiles_item.delivery_date_timestamp}" class="alert alert-danger">
+                            <a data-hint="click here to extend time" data-toggle="modal" data-target="#extendpartime" href="/processao/extend-part-expire-time?artId={$artprofiles_item.artId}&aoId={$smarty.get.aoId}"><i class="icon-time"></i> <span id="text_{$artprofiles_item.artId}_{$artprofiles_item.delivery_date_timestamp}"></span></a>
+                            </span>
+    {/if}
+    {else}
+    <span class="label label-important">en cours</span>
+    {if $smarty.now < $artprofiles_item.participation_expires}
+                            <span id="time_{$artprofiles_item.artId}_{$artprofiles_item.participation_expires}" class="alert alert-danger">
+                            <a data-hint="click here to extend time" data-toggle="modal" data-target="#extendpartime" href="/processao/extend-part-expire-time?artId={$artprofiles_item.artId}&aoId={$smarty.get.aoId}"><i class="icon-time"></i> <span id="text_{$artprofiles_item.artId}_{$artprofiles_item.participation_expires}"></span></a>
+                            </span>
+    {/if}
+    {/if}
+    {/if}
+    {if $artprofiles_item.current_stage == 'stage0'}
+    <span class="label label-warning">plagiarism</span>
+    {elseif $artprofiles_item.current_stage == 'stage1'}
+    <span class="label label-warning">stage 1</span>
+    {elseif $artprofiles_item.current_stage == 'stage2'}
+    <span class="label label-warning">stage 2</span>
+    {elseif $artprofiles_item.current_stage == 'client'}
+    <span class="label label-warning">published</span>
+    {elseif $artprofiles_item.current_stage == 'corrector'}
+    <span class="label label-warning">correction</span>
+    {/if}
+    {/if}
+</td>
+<td><!--<span id="closeart{$artprofiles_item.artId}">
+
+                {if $artprofiles_item.bo_closed_status eq ''}
+
+                     {if $artprofiles_item.status neq ''}
+                        {if $artprofiles_item.status eq 'bid_premium' || $artprofiles_item.status eq 'bid_temp' || $artprofiles_item.status eq 'bid_refused_temp'}
+                            <button type="button" id="closebutton{$smarty.foreach.artprofiles_loop.index}" {if $smarty.now < $artprofiles_item.participation_expires} disabled="disabled" {/if} onclick="closeArtprofile('firstvalidate', 'close');" class="btn btn-info">ouvert</button>
+                        {else}
+                            <button type="button" id="closebutton{$smarty.foreach.artprofiles_loop.index}" {if $smarty.now < $artprofiles_item.participation_expires} disabled="disabled" {/if} onclick="return closeArtprofile('{$artprofiles_item.artId}', 'close');" class="btn btn-info">ouvert</button>
+                        {/if}
+                     {else}
+                        <button  type="button" id="closebutton{$smarty.foreach.artprofiles_loop.index}" {if $smarty.now < $artprofiles_item.participation_expires} disabled="disabled" {/if} onclick="return closeArtprofile('{$artprofiles_item.artId}', 'close');" class="btn btn-info">ouvert</button>
+                     {/if}
+                {else}
+                 <button type="button" id="closebutton{$smarty.foreach.artprofiles_loop.index}" {if  $smarty.now < $artprofiles_item.participation_expires} disabled="disabled" {/if} onclick="return closeArtprofile('{$artprofiles_item.artId}', 'disclose');" class="btn btn-info">Closed</button>
+                {/if}
+                </span>-->
+    {if $artprofiles_item.current_stage == 'stage0' || $artprofiles_item.current_stage == 'stage1' || $artprofiles_item.current_stage == 'stage2' || $artprofiles_item.status == 'published' || $smarty.now < $artprofiles_item.participation_expires || $artprofiles_item.missiontest eq 'yes'}
+    &nbsp;
+    {else}
+        <button type="button" data-toggle="modal" data-target="#republish" href="/republish/republishpopup?artId={$artprofiles_item.artId}" id="closerepublish{$smarty.foreach.artprofiles_loop.index}" name="closerepublish" class="btn btn-danger">Re publier</button>
+    {/if}
+    <a data-toggle="modal" data-target="#groupprofile" href="/processao/group-profiles?artId={$artprofiles_item.artId}"><button type="button" class="btn btn-success">S&eacute;lectionner</button></a>
+    {if $artprofiles_item.bo_closed_status eq ''}
+    {if $artprofiles_item.status neq 'bid' ||  $artprofiles_item.status neq 'under_study'}
+        {if $artprofiles_item.cycle0UserCount eq 0}
+        <a data-toggle="modal" data-target="#close" href="#" onclick="closeArtprofile('{$artprofiles_item.artId}', 'no');"><button type="button" class="btn btn-inverse">Clore</button></a>
+        {else}
+        <a data-toggle="modal" data-target="#close" href="#" onclick="return getCloseComment('{$artprofiles_item.artId}', '{$artprofiles_item.cycle0UserCount}')"><button type="button" class="btn btn-inverse">Clore</button></a>
+        {/if}
+    {/if}
+    {/if}
+</td>
+<!-- <td>
+ <div id="lock{$artprofiles_item.artId}">
+         {if $artprofiles_item.lock_status eq 'yes'}
+             {if $artprofiles_item.lockedUser eq $userId}
+                <a data-toggle="modal" data-target="#groupprofile" href="/processao/group-profiles?artId={$artprofiles_item.artId}"><i class="splashy-application_windows_edit"></i></a>&nbsp;&nbsp;
+                <a onclick="articlProfilelockSystem('{$artprofiles_item.artId}', 'unlock', 'articleprofile', '{$smarty.foreach.artprofiles_loop.index}');"><i class="splashy-lock_large_unlocked"></i></a>
+             {else}
+                <div>Lock&eacute; par {$artprofiles_item.lockedby_name[0].login}</div>
+                        {/if}
+                    {else}
+                           <a onclick="articlProfilelockSystem('{$artprofiles_item.artId}', 'lock', 'articleprofile', '{$smarty.foreach.artprofiles_loop.index}');"><i class="splashy-lock_large_locked"></i></a>
+                    {/if}
+                </div>
+            </td>-->
+</tr>
+{/foreach}
+</tbody>
+</table>
+<div>
+    <input type="hidden" id="delId" name="delId" value="{$aoId}" />
+    <button type="button" onclick="postBulkRepublish();" id="bulkrepublish1" name="bulkrepublish1" class="btn btn-info">Re publier</button>
+    <div id="next">   </div>
+    <div>
+</form>
+</div>
+</div>
+
+
+<!--///for the group profiles popup///-->
+<div class="modal4 hide fade" id="groupprofile">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>D&eacute;tail des participations</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!--///for mail content show up for refusing the profile for republish///-->
+<div class="modal hide fade" id="refusemail">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('refusemail');">&times;</button>
+        <h3>Refuse the Profile</h3>
+    </div>
+    <div class="modal-body">
+        <textarea name="refusemailcontent" class="textarea" id="refusemailcontent"></textarea>
+    </div>
+    <div class="modal-footer">
+        <input type="hidden" id="userid" name="userid" />
+        <input type="hidden" id="partid" name="partid" />
+        <input type="hidden" id="artid" name="artid" />
+        <label class="uni-checkbox alignleft">
+            <input type="checkbox" name="mailannouncement" id="mailannouncement" class="uni_style" />
+            <b>announcement by email</b></label>
+        <button type="button" id="ref_comment"  name="ref_comment" class="btn btn-danger" onclick="return acceptRefuseWriter('refuse_pop');" >Refuse</button>
+    </div>
+</div>
+<!--///for mail content show up for close the profile for close popup///-->
+<div class="modal hide fade" id="closemail">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('closemail');">&times;</button>
+        <h3>FERMETURE DE L'ARTICLE</h3>
+    </div>
+    <div class="modal-body">
+        <h3 id="bodymsg"></h3>
+        <textarea name="closemailcontent" class="textarea" id="closemailcontent"></textarea>
+    </div>
+    <div class="modal-footer">
+        <input type="hidden" id="artid" name="artid" />
+        <button type="button" id="closeart"  name="closeart" class="btn btn-danger" onclick="closeArtprofile('{$artprofiles_item.artId}', 'yes');" >Valider</button>
+    </div>
+</div>
+
+<!--///when republish the popup comes for edit details and mail for republish article///-->
+<div class="modal4 hide fade" id="republish">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Re-publication de l'article</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!--///when republish the popup comes for edit details and mail for republish article///-->
+<div class="modal4 hide fade" id="bulkrepublish">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Bulk Re-publication de l'article</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--///when participate time is extended///-->
+<div class="modal hide fade" id="extendpartime">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Extend the Participation time</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+

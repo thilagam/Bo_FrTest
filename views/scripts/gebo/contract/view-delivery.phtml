@@ -1,0 +1,133 @@
+{literal}
+<script type="text/javascript">
+function fnvalidatedelivery(deliveryId)
+{
+	if(deliveryId!='')
+	{	
+		   var target_page = "/contract/update-status?deliveryId="+deliveryId;
+				//alert(target_page);
+				$.post(target_page, function(data){
+						
+						$("#status").html(data);
+					
+					});
+				
+			
+	}
+}
+</script>
+{/literal}
+<!--Bread Crumbs-->
+<nav>
+	<div id="jCrumbs" class="breadCrumb module">
+		<ul>
+			<li>
+				<a href="/index"><i class="icon-home"></i></a>
+			</li>
+			<li>
+				<a>Boursorama</a>
+			</li>
+			<li>
+				<a href="/contract/delivery-list?submenuId=ML7-SL2">Delivery list</a>
+			</li>			
+			<li>
+				View Delivery :: {$delivery_name}
+			</li>
+		</ul>
+	</div>
+</nav>
+
+<div class="row-fluid">
+	<div class="w-box">
+		<div class="w-box-header">
+			Informations sur l'appel d'offre
+		</div>
+		<div class="w-box-content cnt_a">
+		<table class="table table-striped table-bordered">
+			<tr>
+				<th colspan="2" style="width:40%">AO INFO</th>
+				<th colspan="2" style="width:60%">MISSIONS INFO</th>
+			</tr>
+			<tr>
+				<th>Client</th>
+				<td>{$client}</td>	
+				<td colspan="2" rowspan="5">
+					<table class="table table-striped table-bordered">          
+						<tr>
+							<th>S.No.</th>
+							<th>Mission Title</th>
+							<th>Category</th>
+							<th>Action</th>
+						</tr>
+						{if $articleDetails|@count gt 0}
+						  {foreach from=$articleDetails item=article name=article_loop}
+							  <tr>
+								<td>{$smarty.foreach.article_loop.index+1}.</td>
+								<td>{$article.title|stripslashes}</td>
+								<td>{$article.category}</td>
+								<td>
+									{if $article.article_exist eq 'exists'} 
+										<a class="label label-warning" href="/contract/download-file?type=article&aid={$article.id}">
+											Download
+										</a>
+									{else}
+										<span class="label">Not Exist</span> 
+									{/if}									
+									{if $article.xml_exist eq 'exists'} <a class="label label-info" href="/contract/parse-xml?aid={$article.id}" target="_blank">Parse XML</a> {/if}
+								</td>
+							  </tr>
+						  {/foreach}
+						{else}
+						  <tr>
+							<td colspan="4"><b>No Articles Exist</b></td>
+						  </tr>
+						{/if}
+						</table>
+				
+				
+				</td>	
+			</tr>
+			<tr>
+				<th>Titre du contrat</th>
+				<td>{$contract_name}</td>				
+			</tr>
+			<tr>
+				<th>Chief Editor </th>
+				<td>{$chiefEditor}</td>
+			</tr>
+			<tr>
+				<th>Titre de la livraison</th>
+				<td>{$delivery_name}</td>				
+			</tr>						
+			<tr>						
+				<th>Date de livraison</th>
+				<td>{$delivery_date|date_format:"%d/%m/%Y"}</td>				
+			</tr>			
+			<tr>
+				<td colspan="4">
+					 {if $articleDetails|@count gt 0}<a class="btn btn-gebo" href="/contract/xml-creation-popup?deliveryId={$delivery_id}" data-toggle="modal" role="button" data-target="#create_xml_modal" id="create_xml">Create XML</a>{/if}
+					 <span id="status">
+					 {if $status eq 'validated'} <span class="label label-success">Validated</span> {else} <button class="btn btn-inverse" type="button" onclick="fnvalidatedelivery({$delivery_id})"><i class="splashy-check"></i> Validate</button>{/if}
+					 </span>
+					 
+					{if $spec1}<a class="btn btn-warning" href="/contract/download-file?type=spec&did={$delivery_id}&index=1">Spec1 Download</a>{/if} 					 
+					{if $spec2}<a class="btn btn-warning" href="/contract/download-file?type=spec&did={$delivery_id}&index=2">Spec2 Download</a>{/if}
+					{if !$spec1 && !$spec2}	<span class="label label-danger">No Brief</span>{/if}
+					{if $zip_xml} <a class="btn btn-success" href="/contract/download-file?type=zip&did={$delivery_id}">Download XML</a> {/if} 
+					 
+				</td>				
+			</tr>
+		</table>
+		</div>
+	</div>					
+</div>
+
+<!--///for the article edit popup///-->
+<div class="modal container hide fade" id="create_xml_modal">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>Create XML</h3>		
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>

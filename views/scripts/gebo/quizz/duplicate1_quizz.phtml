@@ -1,0 +1,64 @@
+{literal}
+<script type="text/javascript" charset="ISO-8859-1" src="/BO/theme/gebo/js/custom/validation_quizz.js"></script>
+<script>
+	$(document).ready(function() {
+		$("#category").chosen({ disable_search: true });	
+		$("#status").chosen({ disable_search: true });	
+	});
+    function clearText()
+    {
+        $('#quizztitle').val('');
+        $('#quest_count').val('');
+        $('#correct_ans_count').val('');
+        $('#setuptime').val('');
+        return false ;
+    }
+</script>
+<style>
+	input {text-transform:none !important;}
+</style>
+{/literal}
+
+<form action="/quizz/duplicate1quizz?submenuId=ML2-SL22{php}echo '&id='.$_REQUEST['id'];{/php}" name="bo_quizzstep1_form" method="post" enctype="multipart/form-data"  onSubmit="return validate_bo_quizzstep1();" >
+  <div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">QUIZZ UPDATE PAGE</h3>
+		<table align="center" cellpadding="4" cellspacing="4" width="78%">
+			<tr>
+				<td>Titre du quizz</td>
+				<td><input type="text" name="quizztitle" id="quizztitle" value="{$quizztitle}" /></td>
+			</tr>
+			<tr>
+				<td>Cat&eacute;gorie</td>
+				<td>{html_options name=category id=category options=$categories selected=$category}</td>
+			</tr>   
+			<tr>
+				<td>Statut du quizz</td>
+				<td>
+					<select name="status" id="status">
+						<option value="1">Active</option>
+						<option value="2" {if $status eq '2'}selected{/if}>Not Active</option>
+					</select>
+				</td>
+			</tr>   
+			<tr>
+				<td>Nombre de questions</td>
+				<td>
+					<input type="text" name="quest_count" id="quest_count" value="{$quest_count}" class="span2"/></td>
+			</tr>   
+			<tr>
+				<td>Nombre de r&eacute;ponses correctes min</td>
+				<td><input type="text" name="correct_ans_count" id="correct_ans_count" value="{$correct_ans_count}" class="span2"/></td>
+			</tr>   
+			<tr>
+				<td>Dur&eacute;e du quizz</td>
+				<td><input type="text" name="setuptime" id="setuptime" value="{$setuptime}" class="span2"/> minutes</td>
+			</tr>
+		</table>
+		<div align="right" style="padding-right:150px;padding-top:50px">  
+			<input type="button" value="ANNULER" class="btn btn-info" onClick="return clearText()" />
+			<input type="submit" value="ETAPE SUIVANTE" class="btn btn-info" />
+		</div>
+	</div>
+ </div>		
+</form>

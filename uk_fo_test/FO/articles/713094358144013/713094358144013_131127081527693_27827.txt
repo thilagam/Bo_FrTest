@@ -1,0 +1,149 @@
+
+             1
+            Language
+fr_FR   march 2015   &lt;p&gt;   Pazar   lördag wifi
+             2
+            Destinations
+  apartment  colmar   hari   Ağustos
+             3
+Category
+                                                                   Where to Eat
+             4
+Destination
+“  chand %
+             5
+Country
+4 &amp;nbsp;min    
+             6
+Content name
+10 &amp;nbsp;km  eur  B&amp;B alsos
+             7
+Destination ID
+
+             8
+Introduction
+12 may 2015
+             9
+
+
+             10
+
+
+             11
+Neighbourhood/Area 1 content
+  français    éditorial    
+             12
+Restaurant 1 nam e  4 &amp;nsb;h  
+
+             13
+
+
+             14
+
+
+             15
+
+
+             16
+
+
+             17
+
+
+             18
+Restaurant 2 Tel.
+
+             19
+Website URL
+  воскресенье
+Воскресенье   вторник
+             20
+Neighbourhood/Area 2 name
+
+             21
+Neighbourhood/Area 2 content
+
+             22
+Restaurant 1 name
+français
+             23
+Restaurant 1 address
+
+             24
+Restaurant 1 Tel.
+
+             25
+Website URL
+
+             26
+Restaurant 2 name
+
+             27
+Restaurant 2 address
+
+             28
+Restaurant 2 Tel.
+
+             29
+Website URL
+
+             30
+
+
+             31
+Neighbourhood/Area 3 content
+
+             32
+Restaurant 1 name
+
+             33
+Restaurant 1 address
+
+             34
+Restaurant 1 Tel.
+
+             35
+Website URL
+
+             36
+Restaurant 2 name
+
+             37
+Restaurant 2 address
+
+             38
+Restaurant 2 Tel.
+
+             39
+Website URL
+
+             40
+
+
+             41
+
+
+             42
+
+
+             43
+
+
+             44
+
+
+             45
+
+
+             46
+Restaurant 2 name
+
+             47
+Restaurant 2 address
+
+             48
+Restaurant 2 Tel.
+
+             49
+Website URL
+

@@ -1,0 +1,105 @@
+{literal}
+<script type="text/javascript">
+$(document).ready(function(){     
+	//$("#poll_questions_div_ok").hide();
+	$("#poll_validate").click(function(e){	
+		//e.preventDefault();	
+		
+		var poll_id=$("#poll_id").val();
+		var poll_cookie='poll_brief_'+poll_id;
+		//alert(poll_cookie);
+		var poll_cookie_value=cookieManager.readCookie(poll_cookie);		
+		if(poll_cookie_value==1)
+		{
+			$("#poll_questions").validate({		
+				submitHandler: function(form) {					
+					$.post("/contrib/save-poll-response",$("#poll_questions").serialize(),function(data){	
+						//alert(data);
+						fnCartDevisModifiers('p_add',poll_id,'','yes');	
+					});			
+				}
+		
+			}); 
+		}
+		else
+		{
+			bootbox.alert("Vous devez t&eacute;l&eacute;charger et lire le brief client avant d'ajouter cet  article &agrave; votre s&eacute;lection (en haut &agrave; droite en vert).");			
+			return false;
+		}
+	});
+    
+})
+</script>
+{/literal}
+<br />
+{if $poll_questions | @count gt 0}
+<div class="mod" id="poll_questions_div">
+	<h3 class="offset1" id="question">Questionnaire de pr&eacute;s&eacute;lection</h3>
+	<p class="offset1 lead">Blabla concernant expliquant pourquoi le contributeur doit r&eacute;pondre aux questions</p>
+	<form class="offset1 span9" id="poll_questions" method="POST">				
+		<fieldset>
+		{foreach from=$poll_questions item=question name=poll_question}
+			{assign var=question_index value=$smarty.foreach.poll_question.index+1}			
+			{assign var=poll_id value=$question.pollid}
+			{if $question.type eq 'price'}
+				<label><strong>{$question.title}</strong></label>
+				<input type="text" class="span6 required number" data-msg-required="Please enter your price" data-msg-number="Please enter only numbers" name="price_user_{$question.id}" id="price_user">
+
+			{elseif $question.type eq 'bulk_price'}
+				<label><strong>{$question.title}</strong></label>
+				<input type="text" class="span6 required number" data-msg-required="Please enter your bulk price" data-msg-number="Please enter only numbers" name="bulk_price_user_{$question.id}" id="bulk_price_user">	
+			{elseif $question.type eq 'timing'}
+				<label><strong>{$question.title}</strong></label>
+				<input type="text" class="span1 required digits" data-msg-required="Please enter your time" data-msg-digits="Please enter only digits"  name="question_{$question.id}" id="question_{$question.id}"> 
+				<span class="text-middle">
+				{if $question.option eq 'min'}  Minute(s)
+				{elseif $question.option eq 'hour'}  Heure(s)
+				{elseif $question.option eq 'day'}  Jour(s)
+				{/if}
+				</span>	
+				<input type="hidden" name="timing_{$question.id}" id="timing_{$question.id}" value="$question.option">
+				<!--<select class="span2" name="timing_{$question.id}" id="timing_{$question.id}">
+					{if $question.option eq 'min'}	
+						<option value="minute">Minute(s)</option>
+					{elseif $question.option eq 'hour'}
+						<option value="hour">Heure(s)</option>
+					{elseif $question.option eq 'day'}	
+						<option value="day">Jour(s)</option>					
+					{/if}
+				</select>-->
+			{elseif $question.type eq 'radio'}
+				<label><strong>{$question.title}</strong></label>
+				<label class="radio">
+				<input type="radio" class="required" name="question_{$question.id}" id="question_{$question.id}" value="yes" checked>
+				Yes
+				</label>
+				<label class="radio">
+				<input type="radio" class="required" name="question_{$question.id}" id="question_{$question.id}" value="no">
+				No
+				</label>
+			
+			{/if}				
+		{/foreach}	
+		<input type="hidden" id="poll_id" name="poll_id" value="{$poll_id}">		
+			<hr>
+
+			<button id="poll_validate" type="submit" class="btn btn-primary btn-large">Valider</button>
+		</fieldset>
+	</form>
+</div>
+<div class="mod" id="poll_questions_div_ok" style="display:none">
+	<div id="free_form">
+		<p class="checked">Questionnaire termin&eacute;</p>
+		<h3 class="pull-center"><span>Merci. Nous avons bien enregistr&eacute; vos r&eacute;ponses</span></h3>
+		<br /><br />
+		<p class="pull-center">
+			<button aria-hidden="true" data-dismiss="modal" class="btn">Retour aux annonces</button>
+			<a class="btn btn-primary" href="/cart/cart-selection"><i class="icon-list-alt icon-white"></i> Voir ma s&eacute;lection <span class="badge badge-warning" id="cart-selection">0</span></a>
+		</p>
+	</div>
+</div>
+{/if}
+
+
+
+

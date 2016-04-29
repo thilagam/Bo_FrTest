@@ -1,0 +1,78 @@
+{literal}
+    <script type="text/javascript" >
+		$(document).ready(function() {
+			 $('#premiumtable').dataTable({
+				"sDom": "<'row'<'span5'<'dt_actions'>l><'span5'f>r>t<'row'<'span5'i><'span5'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 0, "asc" ]],
+				"aoColumns": [
+					{ "sType": "formatted-num" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" }, 
+					{ "sType": "string" },
+					{ "sType": "string" }  
+				]
+			});
+		} );
+		
+		function deleteHistory(histid)
+		{
+			if(confirm("Do you really want to delete this History ?"))
+			{
+				$.ajax({
+				type : 'post', 
+				url : '/ao/deletehistory', 
+				data :  'history='+histid, 
+				   
+				success : function(response)
+			   {
+					smoke.alert("History deleted successfully !!"); 	
+					window.location.reload();
+			   }
+			});
+			}
+			else
+				return false;
+		}
+    </script>
+{/literal}
+
+<div class="row-fluid">
+  <div class="span12">
+	 <h3 class="heading">Quotes History</h3>
+	<div align="right" style="padding-bottom:10px;">	
+		<a href="/ao/edithistory?submenuId=ML2-SL29" class="btn btn-info">Add History</a>
+	</a>
+	<table class="table table-bordered table-striped table_vam" id="premiumtable">
+		<thead>
+			<tr>
+				<th>ID N°</th>
+				<th>Type</th>
+				<th>Language</th>
+				<th>Content type</th>
+				<th>Volume</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+	 	{foreach from=$historylist item=quote name="quotes_loop"}  
+	        <tr>
+				<td>{$smarty.foreach.quotes_loop.index+1}</td>
+				<td>{if $quote.type=="writing"}R&eacute;daction{else}Traduction{/if}</td>
+				<td>{$quote.languagestring}</td>
+				<td>{$type_array[$quote.content_type]}</td>
+				<td>{$quote.volume}</td>
+				<td>
+					<a data-hint="Edit History" class="hint--left hint--info" href="/ao/edithistory?submenuId=ML2-SL29&qid={$quote.id}"><img class="splashy-application_windows_edit"></a>
+					{if $usertype=='superadmin'}
+					<a data-hint="Delete History" onclick="deleteHistory('{$quote.id}');" href="javascript:void(0);"><i class="splashy-remove"></i></a>
+					{/if}
+				</td>
+			</tr>
+        {/foreach}
+    	</tbody>
+	</table>
+  </div>
+</div>
+

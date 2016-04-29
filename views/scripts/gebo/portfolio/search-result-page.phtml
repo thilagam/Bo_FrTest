@@ -1,0 +1,323 @@
+<link href="/BO/theme/lbd/css/style.css" rel="stylesheet" />
+<script src="/BO/theme/lbd/js/Chart.js"></script>
+<script src="/BO/theme/lbd/js/portfolio-scripts.js"></script>
+<script src="/BO/theme/lbd/js/portfolio/search-result-page.js"></script>
+<!-- js file to create download export image -->
+<script src="/BO/theme/lbd/lib/html2canvas/dist/html2canvas.js"></script>
+<!-- **********************
+         STAR NEW CODE
+     ********************** -->
+<div id="resultPortfolio">
+    <div class="container-fluid">
+        <div class="container" id="titlePortfolio">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-xs-6 text-right vcenter">
+                                    <span class="flag flag-uk"></span>
+                                    <i class="material-icons dp48" id="share_icon"  onclick="javascript:copify();">share</i>
+                                    			<span class="nbrPortfolio" id="count_results">
+													{$count_results}
+												</span>
+                                </div>
+                                <div class="col-xs-6 vcenter">
+												<span class="nbrLabelPortfolio">
+													Portfolio <br> trouv&eacute;s
+												</span>
+                                </div>
+                                <div class="col-xs-12 vcenter">
+                                    <input type="text" class="form-control" value="" id="copify"/>
+                                </div>
+                               
+                               
+                            </div><!-- de row -->
+                        </div>
+                    </div>
+                </div><!-- de col-md-8 -->
+            </div><!--row -->
+        </div><!-- de container -->
+        <div class="container" id="portfolioFilterFixed">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="content">
+                            <div class="portfolioFilter">
+                                <i class="material-icons">
+                                    tune
+                                </i>
+                            </div>
+                            <form id="main_form">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-sm-3">
+                                            Langue maternelle
+                                        </div>
+                                        <div class="col-sm-3">
+                                            Contributeur
+                                        </div>
+                                        <div class="col-sm-3">
+                                            Status
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <span class="dest_lang {if $params.language_more neq true}hide{/if}">parlant</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="col-sm-3">
+                                            <select  multiple data-title="all" name="langauge[]" id="langauge" >
+                                                {foreach from=$language_array key=lang_id item=lang_val}
+                                                {assign var='selected' value=''}
+                                                {foreach from=$params.langauge key=param_key item=param_val}
+                                                {if $param_val eq $lang_id}{assign var='selected' value='selected'}{break}{/if}
+                                                {/foreach}
+                                                <option value="{$lang_id}" {$selected}>{$lang_val}</option>
+                                                {/foreach}
+                                                {*{html_options  id=language options=$language_array selected=$language }*}
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <select multiple data-title="contributors" name="type[]" id="type" onchange="admSelectCheck();" >
+                                                <option value="writer" {if 'writer'|in_array:$params.type eq true}selected{/if} >writer</option>
+                                                <option value="translator" {if 'translator'|in_array:$params.type eq true}selected{/if} >translator</option>
+                                                <option value="corrector" {if 'corrector'|in_array:$params.type eq true}selected{/if} >corrector</option>
+                                                <option value="corrector-translator" {if 'corrector-translator'|in_array:$params.type eq true}selected{/if} >corrector-translator</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <select  multiple data-title="any"  name="status[]" id="status">
+                                                <option value="sub-junior" {if 'sub-junior'|in_array:$params.status eq true}selected{/if}>sub-junior</option>
+                                                <option value="junior" {if 'junior'|in_array:$params.status eq true}selected{/if}>junior</option>
+                                                <option value="senior" {if 'senior'|in_array:$params.status eq true}selected{/if}>senior</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 dest_lang {if $params.language_more neq true}hide{/if}">
+                                            <select multiple data-title="all" name="language_more[]" id="language_more" >
+                                                {foreach from=$language_array key=lang_id item=lang_val}
+                                                {assign var='selected' value=''}
+                                                {foreach from=$params.language_more key=param_key item=param_val}
+                                                {if $param_val eq $lang_id}{assign var='selected' value='selected'}{break}{/if}
+                                                {/foreach}
+                                                <option value="{$lang_id}" {$selected}>{$lang_val}</option>
+                                                {/foreach}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    &nbsp;
+                                    <div class="form-group">
+                                        <button class="btn btn-fill btn-primary" type="button" onclick="javascript:filter_search();" id="main_filter_search">Rechercher</button>
+                                    </div>
+                                    <div id="stick" style="display:none;"><i class="material-icons dp48" id="donwload_icon" onclick="javascript:export_multi_portfoilio();">cloud_download</i></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!--        <div class="container" id="portfolioFilterLabel">-->
+<!--            <div class="row">-->
+<!--                <div class="col-md-12">-->
+<!--                    <div class="card">-->
+<!--                        <div class="content">-->
+<!---->
+<!--                            <span class="label">Blog article<i class="fa fa-times-circle"></i></span>-->
+<!--                            <span class="label">Quizz <i class="fa fa-times-circle"></i></span>-->
+<!--                            <span class="label">Expert <i class="fa fa-times-circle"></i>  Mode <i class="fa fa-times-circle"></i></span>-->
+<!---->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+        <!-- ******** portfolioFilter ******** -->
+        {literal}
+        <script>
+            $(document).ready(function(){
+                $('.portfolioFilter').click(function(){
+                    $("#portfolioFilterModal").toggleClass('show');
+                    $("#main_filter_search").toggle();
+                });
+                // $('#resultPortfolio .btnFiltreCancel').click(function(){
+                // 	$("#portfolioFilterModal").addClass('hide');
+                // });
+            });/**** .ready ****/
+        </script>
+        {/literal}
+        <div class="container" id="portfolioFilterModal">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="content">
+                            <h3>
+                                Filtrer par
+                            </h3>
+                            <form id="filter_form">
+                                <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <div class="col-sm-3 text-right">
+                                            <label class="beforeSelect">Contributeur</label>
+                                        </div>
+                                        <div class="col-sm-9 marginB20">
+                                            <!--<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Name, firstname, mail or phone number" name="contrib_details">-->
+                                            <select multiple name="favcontribcheck[]" id="favcontribcheck"  >
+                                                {foreach from=$contriblistall1 item=contrib key=contribkey}
+                                                    <option value="{$contrib.identifier}" {if $contrib.identifier|in_array:$params.favcontribcheck eq true}selected{/if}>{$contrib.name}</option>
+                                                {/foreach}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-3 text-right">
+                                            <label class="beforeSelect">Client</label>
+                                        </div>
+                                        <div class="col-sm-9 marginB20">
+                                            <!--<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Client" name="client">-->
+                                            <select multiple data-title="Select Client" name="client_list[]" id="client_list"  >
+                                                {foreach from=$client_invoiced item=client key=clientkey}
+                                                <option value="{$clientkey}"  {if $clientkey|in_array:$params.client_list eq true}selected{/if} >{$client}</option>
+                                                {/foreach}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-3 text-right">
+                                            <label class="beforeSelect">Secteur</label>
+                                        </div>
+                                        <div class="col-sm-9 marginB20">
+                                            <!--<input type="text" class="form-control" id="exampleInputEmail1" placeholder="Client" name="client">-->
+                                            <select multiple data-title="Select category" name="category_list[]" id="category_list"  >
+                                                {foreach from=$categories_array item=category key=categorykey}
+                                                {if $categorykey neq '0'}
+                                                <option value="{$categorykey}"  {if $categorykey|in_array:$params.category_list eq true}selected{/if} >{$category}</option>
+                                                {/if}
+                                                {/foreach}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div> <!-- Col-sm-6 -->
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <div class="col-sm-3 text-right">
+                                            <label>Type d'article</label>
+                                        </div>
+                                        <div class="col-sm-9 marginB20">
+                                            <!--<select class="form-control" multiple name="article_type" id="article_type" name="article_type[]">
+                                                <option value="article_de_blog">Article de blog</option>
+                                                <option value="news">News</option>
+                                                <option value="descriptif_produit">Desc.Produit</option>
+                                                <option value="article_seo">Article SEO</option>
+                                                <option value="guide">Guide</option>
+                                                <option value="infographie">Infographie</option>
+                                                <option value="integration">Integration</option>
+                                            </select>-->
+                                            <div>
+                                                <input type="checkbox" value="article_de_blog" name="article_type[]"  {if 'article_de_blog'|in_array:$params.article_type eq true}checked{/if} >
+                                                Article de blog
+                                                </input>
+                                            </div>
+                                            <div>
+                                                <input type="checkbox" value="news" name="article_type[]" {if 'news'|in_array:$params.article_type eq true}checked{/if}>
+                                                News
+                                                </input>
+                                            </div>
+                                            <div>
+                                                <input type="checkbox" value="descriptif_produit" name="article_type[]" {if 'descriptif_produit'|in_array:$params.article_type eq true}checked{/if}>
+                                                Desc.Produit
+                                                </input>
+                                            </div>
+                                            <div>
+                                                <input type="checkbox" value="article_seo" name="article_type[]" {if 'article_seo'|in_array:$params.article_type eq true}checked{/if}>
+                                                Article SEO
+                                                </input>
+                                            </div>
+                                            <div>
+                                                <input type="checkbox" value="guide" name="article_type[]" {if 'guide'|in_array:$params.article_type eq true}checked{/if}>
+                                                Guide
+                                                </input>
+                                            </div>
+                                            <div>
+                                                <input type="checkbox" value="infographie" name="article_type[]" {if 'infographie'|in_array:$params.article_type eq true}checked{/if}>
+                                                infographie
+                                                </input>
+                                            </div>
+                                            <div>
+                                                <input type="checkbox" value="integration" name="article_type[]" {if 'integration'|in_array:$params.article_type eq true}checked{/if}>
+                                                integration
+                                                </input>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div><!-- row -->
+                            <div class="btnFiltreValide text-center">
+                                <button type="button" class="btn btn-fill btn-primary" onclick="javascript:filter_search();">Recherche</button>
+                                <button type="reset" class="btn btn-default btnFiltreCancel">Annuler</button>
+                            </div>
+                        </div>
+                        </form>
+                    </div> <!-- Content -->
+                </div> <!-- Cards -->
+            </div>
+        </div> <!-- Row -->
+    </div><!-- Portfolio Filter -->
+    <form id="ajax_load">
+        {include file="gebo/portfolio/ajax.phtml"}
+    </form>
+    <div id="ajax_download_img">
+    </div>
+
+    </div> <!-- container-fluid -->
+</div> <!-- resultPortfolio -->
+<!-- Modal Export -->
+<div class="modal fade" id="portfolioExport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">G&eacute;n&eacute;rer un portfolio</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <button class="btn btn-fill btn-primary">Export PDF</button>
+                    <button class="btn btn-fill btn-warning">Get the link</button>
+                </div>
+                <div>
+                    <button class="btn btn-fill btn-danger">Export PPT</button>
+                    <button class="btn btn-fill btn-success">Export excel</button>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- model for download status -->
+
+<div class="modal fade bs-example-modal-lg" id="exportStatus" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="z-index: 10000;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="exportStatusContent">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">We're exporting your portfolio ! Please wait...</h4>
+            </div>
+            <div class="modal-body">
+                <div id="modal_download_zip">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+

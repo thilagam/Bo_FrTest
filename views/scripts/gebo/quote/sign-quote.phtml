@@ -1,0 +1,172 @@
+<form action="/quote/sign-quote/" class="form-horizontal" method="post" id="sign-quote-form">
+
+	<input type="hidden" name="quote_id" id="signquoteid" value="{$qid}" />
+
+	<section>
+
+		<div class="row-fluid topset2">
+
+			<div class="control-group">
+
+				<label class="control-label">Siret</label>
+
+				<div class="controls">
+
+					<input type="text" class="{if $siret_applicable !='yes'} validate[required] {/if}" id="siret" value="{$siret}" name="siret">
+
+					<label class="checkbox">
+
+						<span><input type="checkbox" value="yes" id="siret_applicable" class="" {if $siret_applicable =='yes'} checked {/if} name="siret_applicable">Siret not applicable</span>
+
+					</label>
+
+				</div>
+
+			</div>
+
+			<div class="control-group">
+
+				<label class="control-label">Num&eacute;ro du client<span class="f_req">*</span></label>
+
+				<div class="controls">
+
+				{if $ca_number}
+					<input type="text" class="validate[required,minSize[4],maxSize[8],funcCall[checkclientcode],ajax[ajaxClientNoValidate]]" id="ca_number" value="{$ca_number}" name="client_code" >{*readonly*}
+				{else}	
+					<input type="text" class="validate[required,minSize[4],maxSize[4],funcCall[checkclientcode],ajax[ajaxClientNoValidate]]" id="ca_number" value="C" name="client_code">
+				{/if}
+					
+					<input type="hidden" value="{$client_id}" id="user_id" name="user_id"  />
+
+				</div>
+
+			</div>
+
+			<div class="control-group">
+
+				<div class="controls">
+
+					<button id="valid-sign-old" class="btn btn-primary" type="submit">Valider</button>
+
+					<button  class="btn" data-dismiss="modal" type="reset">Annuler</button>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</section>
+
+</form>
+
+{literal}
+
+<script>
+var cexists ={/literal}"{$contractexists}"{literal};
+var c_codeexists ={/literal}"{$ca_number}"{literal};
+
+function checkclientcode(field, rules, i, options)
+{
+	//if(cexists || c_codeexists)
+	if(cexists)
+	{
+		var character = "C";
+		//var re = /^[c|C]\d{3}$/g; 
+		var re = /(^[c|C]\d{3}$)|(^[c|C]\d{3}_new?$)/gi; 
+		var scharacter = "or CXXX_new";
+	}
+	else
+	{
+		//var character = "P";
+		//var re = /^[p|P]\d{3}$/g; 
+		
+		var character = "C";
+		var re = /^[c|C]\d{3}$/g; 
+	}
+	
+	var str = $.trim(field.val());
+	var m;
+	 
+	if ((m = re.exec(str)) === null) {
+		return "Code should be in format "+character+"XXX "+scharacter+" where XXX are numbers";
+	} 
+	//return "Number should be in format PXXX or CXXX";
+}
+
+$(document).ready(function() {
+
+	$("#sign-quote-form").validationEngine({
+		onValidationComplete: function(form, valid){
+			 if (valid===true) {
+				
+               var msg = "Assurez-vous que le contrat signe par le client est mis sur Workplace.";
+			   var alertinfo = false;
+				smoke.confirm(msg,function(e){
+					if (e)
+					{
+						$("#sign-quote-form").validationEngine('detach');
+						$("#sign-quote-form").submit();
+					}
+					else
+					{
+						var target_page='/quote/create-client?uaction=edit&client_id='+client_identifier+'&submenuId=ML13-SL1&from=validated';
+						window.location.href =target_page;
+						return false;
+					}
+
+					},{"ok":"Oui","cancel":"Non"});
+
+			}
+        }
+	});
+
+	var client_identifier='{/literal}{$client_identifier}{literal}';
+
+	$("#siret_applicable").click(function(){
+
+		if($("#siret_applicable:checked").length)
+
+			$("#siret").removeClass('validate[required]');
+
+		else
+
+			$("#siret").addClass('validate[required]');
+
+	});
+
+	$( "#valid-sign" ).live('click', function () {
+
+		var msg = "Assurez-vous que le contrat signe par le client est mis sur Workplace.";
+		//var valid=$("#sign-quote-form").validationEngine('validate');
+		//alert(valid);
+		//if(valid==true)
+		//{
+			smoke.confirm(msg,function(e){
+
+				if (e)
+				{
+
+					$('#sign-quote-form').submit();
+
+				}
+				else
+				{
+
+					var target_page='/quote/create-client?uaction=edit&client_id='+client_identifier+'&submenuId=ML13-SL1&from=validated';
+
+					window.location.href =target_page;
+
+				}
+
+			},{"ok":"Oui","cancel":"Non"});
+
+		//}	
+
+	});
+
+});		
+
+</script>
+
+{/literal}

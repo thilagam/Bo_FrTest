@@ -1,0 +1,166 @@
+{literal}
+<script type="text/javascript" >
+    $(document).ready(function() {
+        $('#stagedelgrid').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "bSort": true,
+            "aaSorting": [ [ 7, 'desc' ] ],
+            "aoColumns": [
+                { "sType": "formatted-num" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "numeric-html" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "date-euro" },
+                { "sType": "string" }
+            ]
+        });
+        jQuery.fn.dataTableExt.oSort['numeric-html-asc']  = function(a,b) {
+            a = parseInt($(a).text());
+            b = parseInt($(b).text());
+            return ((a < b) ? -1 : ((a > b) ?  1 : 0));
+        };
+
+        jQuery.fn.dataTableExt.oSort['numeric-html-desc']  = function(a,b) {
+            a = parseInt($(a).text());
+            b = parseInt($(b).text());
+            return ((a < b) ? 1 : ((a > b) ?  -1 : 0));
+        };
+    });
+
+    ////////re publish the confirmation ////////
+    function republishConfirm(artid)
+    {
+        var confirmation = confirm("L\'article sera remis en ligne")
+        if(confirmation)
+        {
+            var confirmation1 = confirm("PREVENIR PAR EMAIL")
+            if(confirmation1)
+               // $(location).href("/processao/publisharticlefo?art_id="+artid+"&sendmail=yes");
+                window.location.href = "/processao/publisharticlefo?art_id="+artid+"&sendmail=yes";
+            else
+                //$(location).href("/processao/publisharticlefo?art_id="+artid+"&sendmail=no");
+                window.location.href = "/processao/publisharticlefo?art_id="+artid+"&sendmail=no";
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+</script>
+{/literal}
+<!--<nav>
+	<div id="jCrumbs" class="breadCrumb module">
+		<ul>
+			<li>
+				<a href="/index"><i class="icon-home"></i></a>
+			</li>
+			<li>
+				<a>Relecture</a>
+			</li>
+			<li>
+				Relecture phase 1
+			</li>
+		</ul>
+	</div>
+</nav>
+-->{if $submenuId eq 'ML3-SL2'}
+{assign var="currentstage" value="1"}
+{elseif $submenuId eq 'ML3-SL3'}
+{assign var="currentstage" value="2"}
+{else}{assign var="currentstage" value="0"}{/if}
+<div class="row-fluid">
+  <div class="span12">
+    <h3 class="heading">{if $currentstage eq 1} Relecture phase 1 {elseif $currentstage eq 2}  Phase finale {else} Plagiarism Phase{/if}<a href="#searchblock"  onclick="showSearch();"  class="label label-inverse alignright">Search</a></h3>
+      <div class="hide" id="searchblock" >
+          <form action={$smarty.server.REQUEST_URI} method="get" id="searchform" name="searchform" >
+              <input type="hidden" id="submenuId" name="submenuId"  value="{$submenuId}"/>
+              <table id="searchtable" class="table tdleftalign">
+                  <tr><td class="span1"><input type="text" placeholder="From" id="dp1" name="startdate" data-date-format="dd-mm-yyyy" value="{$smarty.get.startdate}"/></td>
+                      <td class="span1"><input type="text"  placeholder="To" id="dp2" name="enddate" data-date-format="dd-mm-yyyy" value="{$smarty.get.enddate}"/></td>
+                      <td class="span5">
+                          <select id="clientId" name="clientId" onChange=fnloadao(this.value); data-placeholder="clients" class="span12">
+                            {html_options  options=$client_array   selected=$smarty.get.clientId}
+                          </select>
+                      </td>
+                      <td class="span1"> <button class="btn btn-info pull-center" id="clear" name="clear" type="button" value="clear" onclick="clearAll();" >Clear</button></td>
+                  </tr>
+                  <tr>
+                      <td class="span1">
+                          <select   name=inchargeId id=inchargeId data-placeholder="&Eacute;diteur en charge">
+                          {html_options options=$incharge_array selected=$smarty.get.inchargeId}
+                          </select>
+                      </td>
+                      <td class="span1"> <select name="closed" id="closed" data-placeholder="Type d'AO">
+                          <option value="0"></option>
+                          <option value="all" {if $smarty.get.closed eq 'all'}selected="selected"{/if}>ALL</option>
+                          <option value="closed" {if $smarty.get.closed eq 'closed'}selected="selected"{/if}>CLOSED</option>
+                          <option value="notclosed" {if $smarty.get.closed eq 'notclosed'}selected="selected"{/if}>NOT CLOSED</option>
+                          </select></td>
+                      <td  class="span5" id="aolist" style="display:none;"> <span id="ao_load"></span></td>
+                      <td  class="span5" id="aolistall">
+                          <select  name=aoId id=aoId data-placeholder="Appel d'offre" class="span12">
+                            {html_options  options=$delivery_array  selected=$smarty.get.aoId}
+                          </select>
+                      </td>
+
+                      <td class="span1"><button class="btn btn-info pull-center" id="search" name="search" type="submit" value="search" onclick="return validateSearch();" >Search</button></td>
+                  </tr>
+              </table>
+          </form>
+      </div>
+      <table id="stagedelgrid" class="table table-bordered table-striped table_vam">
+          <thead>
+          <tr>
+            <th>Sl.no</th>
+            <th>Titre AO</th>
+            <th>Client</th>
+            <th>Total Articles</th>
+            <th>Articles à traiter</th>
+            <th>Articles trait&#233;s</th>
+            <th>Cat&#233;gorie</th>
+            <th>Cr&#233;e le</th>
+            <th>Editeur en charge</th>
+            {*<th>Close/Not close</th>*}
+          </tr>
+          </thead>
+          <tbody>
+          {foreach from=$paginator key=stagedel_key item=stagedel_item name=stagedel_loop}
+          <tr>
+              <td>{$smarty.foreach.stagedel_loop.index+1}</td>
+              <td>{$stagedel_item.deliveryTitle|stripslashes|wordwrap:20:"\n":true}</td>
+              <td>{if $stagedel_item.client neq ''}{$stagedel_item.client}{else}{$stagedel_item.client}{/if}</td>
+              <td>{if $groupId eq 1 || $groupId eq 4}<a class="num-large" href="/ongoing/ao-details?client_id={$stagedel_item.client_id}&ao_id={$stagedel_item.delivery_id}&submenuId=ML2-SL4">{$stagedel_item.total_article}</a>{else}{$stagedel_item.total_article}{/if}</td>
+              <td><a class="num-large" href="/proofread/stage-articles?submenuId={$submenuId}&aoId={$stagedel_item.delivery_id}" >{$stagedel_item.atraiter}</a> {if $currentstage eq 0} <span class="label label-important" data-hint="Not processed count">{$stagedel_item.not_plagprocessed}</span>{/if}</td>
+              <td>{if $groupId eq 1 || $groupId eq 4}{$stagedel_item.traiter}{else}{$stagedel_item.traiter}{/if}</td>
+              <td>{$stagedel_item.del_category}</td>
+              <td>{$stagedel_item.delcreatedat|date_format:"%d/%m/%Y %H:%M:%S"|upper}</td>
+              <td>{$stagedel_item.incharge}</td>
+              {*<td>{if $stagedel_item.notclosedprofiles eq 'NO'}NOT CLOSED{else}CLOSED{/if}</td>*}
+          </tr>
+         {/foreach}
+         </tbody>
+      </table>
+      <div style="width: 100%;float: left;"><span class="label label-important"  style="float: left; margin-left: 400px;">Total à Traiter Articles : {$totalatraiter} </span><span class="label label-success"  style="float: left; margin-left: 400px;">Total not processed count : {$totalnotprocessed} </span</div>
+  </div>
+</div>
+    <input type="hidden" id="hide_total" name="hide_total"  />
+
+<!--///for the article profiles popup///-->
+<div class="modal4 hide fade" id="artprofile">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">&times;</button>
+        <h3>Article Profiles</h3>
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+
+
+
+

@@ -1,0 +1,95 @@
+<table class="table surveyselect" id="surveyselect">	
+	<thead>
+		<tr style="display:none">
+			<th></th><th></th><th></th><th></th><th></th>
+		</tr>
+	</thead>
+	<tbody>
+	{if $surveyParticipants|@count gt 0}
+		{foreach from=$surveyParticipants item=survey name="survey" }
+			<tr>
+				<td style="width:15%">
+					<div class="imageHolder">									
+						<img class="media-object  img-circle" width="50px" height="50px"  src="{$fo_path}/{$survey.image}" >
+						<span class="caption label label-level">
+							<i class="icon-bookmark"></i>
+							{$survey.profile_type}
+						</span>
+					</div>
+				</td>
+				<td style="width:18%">
+					<b>{$survey.first_name|utf8_encode}&nbsp;{$survey.last_name|utf8_encode}</b>
+				</td>
+				<td {if $survey.under_smic eq 'yes'} class="under_smic" {else} class="smic" {/if}>
+					{if $survey.under_smic eq 'yes'}
+						<img src="/BO/theme/gebo/img/gCons/dollar.png" alt="" />
+					{else}	
+						<img src="/BO/theme/gebo/img/gCons/green-dollar.png" alt="" />	
+					{/if}	
+					<div class="text">{$survey.price_user} &{$currency}; / art</div>
+				</td>
+				<td {if $survey.under_smic eq 'yes'} class="under_smic" {else} class="smic" {/if}>
+					{if $survey.under_smic eq 'yes'}
+						<img src="/BO/theme/gebo/img/gCons/copy-item.png" alt="" />
+					{else}
+						<img src="/BO/theme/gebo/img/gCons/green-copy-item.png" alt="" />
+					{/if}50 <div class="text">
+								{$survey.response_details[1].response} &{$currency}; / art
+							</div>
+				</td>
+				<td>
+					<input type="checkbox" name="status[]" {if $survey.status eq 'active'} checked {/if} value="{$survey.participate_id}" class="validate[minCheckbox[1]]"/>
+				</td>
+			</tr>
+		{/foreach}	
+			<tr class="avgprice_row">
+				<td></td>
+				<td>
+					Average price/art
+				</td>
+				<td>
+					<span class="avgprice">{$avg_price|zero_cut:2} &{$currency};</span>
+				</td>
+				<td>
+					Average price/art <br> for 50 articles
+				</td>
+				<td>
+					<span class="avgprice">{$avg_bulk_price|zero_cut:2} &{$currency};</span>
+				</td>
+			</tr>
+	{else}
+		<tr>
+			<td colspan="5">No Participants Found!</td>
+		</tr>
+	{/if}
+	</tbody>
+</table>
+{literal}
+<script type="text/javascript">
+	 $('input[name="status[]"]').each(function(){		
+			$(this).iCheck({
+				checkboxClass: 'icheckbox_square-yellow',
+				radioClass: 'iradio_square-yellow'
+			});
+		  }); 
+	
+		  
+{/literal}
+{if $surveyParticipants|@count gt 0}
+{literal}
+	 $('#surveyselect').dataTable({
+			 "bPaginate":   false,
+			 "bSort":   false,
+			"aoColumns": [
+				null,
+				null,
+				null,
+				null,
+				null
+			]
+		});
+{/literal}
+{/if}
+{literal}
+</script>
+{/literal}

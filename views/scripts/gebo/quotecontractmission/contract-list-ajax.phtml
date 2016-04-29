@@ -1,0 +1,407 @@
+{if $opened eq '1'}
+<table class="table table-bordered table-hover table_vam" id="openedList" >
+	<thead>
+		<tr>
+		   <th style="display:none"></th>
+		   <th>Contract Name</th>
+		   <th>Turnover</th>
+		   <th>% Done</th>
+		   <th>Duration</th>
+		   <th>Company Name</th>
+		   <th>Expected Launch</th>
+		   <th>Expected End</th>
+		   <th>Action</th>
+		    {if $user_type=="superadmin"}
+		   <th>Close
+		   <br>
+			<input type="checkbox" id="checktoassign" />
+		   </th>
+		   {/if}
+		</tr>
+	</thead>
+	<tbody>
+	{foreach from=$contracts item="contract" name="contracts" }
+		<tr>
+		   <td style="display:none"></td>
+		   <td>
+		   <a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view">{$contract.contractname|utf8_encode}</a>
+		   </td>
+		   <td>{$contract.turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</td>
+		   <td>{$contract.percentage}</td>
+		   <td>{$contract.duration}</td>
+		   <td> <a class="hint--left" data-hint="{if $contract.clfname || $contract.cllname}{$contract.clfname|utf8_encode} {$contract.cllname|utf8_encode}{else}{$contract.clemail}{/if}" target="_blank" href="/quote/create-client?uaction=view&client_id={$contract.client_id}&submenuId=ML13-SL1">
+		   {$contract.company_name|utf8_encode}
+				</a>
+		   </td>
+		   <td>{$contract.expected_launch_date|date_format:'%d/%m/%Y'}</td>
+		   <td>{$contract.expected_end_date|date_format:'%d/%m/%Y'}</td>
+		   <td>
+			<div class="btn-group">
+				<a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view" class="btn">View contract</a>
+				<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+				<ul class="dropdown-menu">
+				  <li><a href="/contractmission/missions-list?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}"><i class="icon-list-alt"></i> View Missions</a></li>
+				</ul>
+			</div>
+			</td>
+			{if $user_type=="superadmin"}
+				<td>
+					<input type="checkbox" class="closecontract" name="closecontract[{$contract.quotecontractid}]" value="{$contract.quoteid}" />
+				</td>
+			{/if}
+		</tr>
+	{/foreach}
+	</tbody>
+</table>
+{literal}
+<script>
+	/* $(".tooltips").popover({ trigger: "manual" ,placement: 'top', html: true, animation:false})
+		.on("mouseenter", function () {
+			var _this = this;
+			$(this).popover("show");
+			$(".popover").on("mouseleave", function () {
+				$(_this).popover('hide');
+			});
+		}).on("mouseleave", function () {
+			var _this = this;
+			setTimeout(function () {
+				if (!$(".popover:hover").length) {
+					$(_this).popover("hide");
+				}
+			}, 300);
+		}); */
+	if(usertype=="superadmin")
+	{
+		$('#openedList').dataTable({
+				"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 0, "asc" ]],
+				"iDisplayLength":50,
+				"aoColumns": [
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "numeric" },
+					{ "sType": "string" },
+					{ "sType": "eu_date" },
+					{ "sType": "eu_date" },
+					{ "sType": "string" },
+					{ "sType": "string","bSortable": false  }
+				]
+			});
+	}
+	else
+	{
+		$('#openedList').dataTable({
+				"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 0, "asc" ]],
+				"iDisplayLength":50,
+				"aoColumns": [
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "numeric" },
+					{ "sType": "string" },
+					{ "sType": "eu_date" },
+					{ "sType": "eu_date" },
+					{ "sType": "string" }
+				]
+			});
+	}
+</script>
+{/literal}
+{elseif $opened eq '2'}
+	<table class="table table-bordered table-hover table_vam" id="closedlist" >
+	<thead>
+		<tr>
+		   <th style="display:none"></th>
+		   <th>Contract Name</th>
+		   <th>Turnover</th>
+		   <th>% Done</th>
+		   <th>Duration</th>
+		   <th>Company Name</th>
+		   <th>Expected Launch</th>
+		   <th>Expected End</th>
+		   <th>Action</th>
+		   <th>Status</th>
+		</tr>
+	</thead>
+	<tbody>
+	{foreach from=$contracts item="contract" name="contracts" }
+		<tr>
+		   <td style="display:none"></td>
+		   <td>
+		    <a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view">{$contract.contractname|utf8_encode}</a>
+		   </td>
+		   <td>{$contract.turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</td>
+		   <td>{$contract.percentage}</td>
+		   <td>{$contract.duration}</td>
+		   <td> <a class="hint--left" data-hint="{if $contract.clfname || $contract.cllname}{$contract.clfname|utf8_encode} {$contract.cllname|utf8_encode}{else}{$contract.clemail}{/if}" target="_blank" href="/quote/create-client?uaction=view&client_id={$contract.client_id}&submenuId=ML13-SL1">
+		   {$contract.company_name|utf8_encode}
+				</a>
+		   </td>
+		   <td>{$contract.expected_launch_date|date_format:'%d/%m/%Y'}</td>
+		   <td>{$contract.expected_end_date|date_format:'%d/%m/%Y'}</td>
+		   <td>
+			<div class="btn-group">
+				<a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view" class="btn">View contract</a>
+				<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+				<ul class="dropdown-menu">
+				  <li><a href="/contractmission/missions-list?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}"><i class="icon-list-alt"></i> View Missions</a></li>
+				</ul>
+			</div>
+			</td>
+			<td><label class="label label-info">Finished</label></td>
+		</tr>
+	{/foreach}
+	{foreach from=$contracts_closed item="contract" name="contracts" }
+		<tr>
+		   <td style="display:none"></td>
+		   <td>
+		    <a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view">{$contract.contractname|utf8_encode}</a>
+			{assign var=closedc_status value=0}
+			  {if $contract.closed_comment}
+					<a href="/contractmission/add-comments?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}&comment={$closedc_status}&quote_id={$contract.quoteid}&cstatus=view" data-toggle="modal" tabindex="-1" data-target="#closed_comment">
+						<i class="splashy-comments"></i>
+					</a>
+					 {assign var=closedc_status value=1}
+			  {/if}
+		   </td>
+		   <td>{$contract.turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</td>
+		   <td>{$contract.percentage}</td>
+		   <td>{$contract.duration}</td>
+		   <td> <a class="hint--left" data-hint="{if $contract.clfname || $contract.cllname}{$contract.clfname|utf8_encode} {$contract.cllname|utf8_encode}{else}{$contract.clemail}{/if}" target="_blank" href="/quote/create-client?uaction=view&client_id={$contract.client_id}&submenuId=ML13-SL1">
+		   {$contract.company_name|utf8_encode}
+				</a>
+		   </td>
+		   <td>{$contract.expected_launch_date|date_format:'%d/%m/%Y'}</td>
+		   <td>{$contract.expected_end_date|date_format:'%d/%m/%Y'}</td>
+		   <td>
+			<div class="btn-group">
+				<a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view" class="btn">View contract</a>
+				<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+				<ul class="dropdown-menu">
+				  <li><a href="/contractmission/missions-list?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}"><i class="icon-list-alt"></i> View Missions</a></li>
+				  {if $user_type=="superadmin" || $user_type=="facturation"}
+					<li><a href="/contractmission/add-comments?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}&comment={$closedc_status}&quote_id={$contract.quoteid}&cstatus=add" data-toggle="modal" tabindex="-1" data-target="#closed_comment"><i class="splashy-comments"></i></i> Add comment</a></li>
+				  {/if}
+				</ul>
+			</div>
+			</td>
+			<td><label class="label label-important">Closed</label>
+			</td>
+		</tr>
+	{/foreach}
+	</tbody>
+</table>
+{literal}
+<script>
+	/* $(".tooltips").popover({ trigger: "manual" ,placement: 'top', html: true, animation:false})
+		.on("mouseenter", function () {
+			var _this = this;
+			$(this).popover("show");
+			$(".popover").on("mouseleave", function () {
+				$(_this).popover('hide');
+			});
+		}).on("mouseleave", function () {
+			var _this = this;
+			setTimeout(function () {
+				if (!$(".popover:hover").length) {
+					$(_this).popover("hide");
+				}
+			}, 300);
+		}); */
+		
+		$('#closedlist').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "numeric" },
+                { "sType": "string" },
+                { "sType": "eu_date" },
+                { "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string" }
+            ]
+        });
+</script>
+{/literal}
+{elseif $opened eq '3'}
+<table class="table table-bordered table-hover table_vam" id="deletedlist" >
+	<thead>
+		<tr>
+		   <th style="display:none"></th>
+		   <th>Contract Name</th>
+		   <th>Turnover</th>
+		   <th>% Done</th>
+		   <th>Duration</th>
+		   <th>Company Name</th>
+		   <th>Expected Launch</th>
+		   <th>Expected End</th>
+		   <th>Action</th>
+		</tr>
+	</thead>
+	<tbody>
+	{foreach from=$contracts_deleted item="contract" name="contracts" }
+		<tr>
+		   <td style="display:none"></td>
+		   <td>
+		  <a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view">{$contract.contractname|utf8_encode}</a>
+		   </td>
+		   <td>{$contract.turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</td>
+		   <td>{$contract.percentage}</td>
+		   <td>{$contract.duration}</td>
+		   <td>
+		   <a class="hint--left" data-hint="{if $contract.clfname || $contract.cllname}{$contract.clfname} {$contract.cllname}{else}{$contract.clemail}{/if}" target="_blank" href="/quote/create-client?uaction=view&client_id={$contract.client_id}&submenuId=ML13-SL1">
+		   {$contract.company_name|utf8_encode}
+		   </a>
+		   </td>
+		   <td>{$contract.expected_launch_date|date_format:'%d/%m/%Y'}</td>
+		   <td>{$contract.expected_end_date|date_format:'%d/%m/%Y'}</td>
+		   <td>
+			<div class="btn-group">
+				<a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view" class="btn">View contract</a>
+				<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+				<ul class="dropdown-menu">
+				  <li><a href="/contractmission/missions-list?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}"><i class="icon-list-alt"></i> View Missions</a></li>
+				</ul>
+			</div>
+			</td>
+		</tr>
+	{/foreach}
+	</tbody>
+</table>
+{literal}
+<script>
+$('#deletedlist').dataTable({
+	"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+	"sPaginationType": "bootstrap",
+	"aaSorting": [[ 0, "asc" ]],
+	"iDisplayLength":50,
+	"aoColumns": [
+		{ "sType": "string" },
+		{ "sType": "string" },
+		{ "sType": "string" },
+		{ "sType": "string" },
+		{ "sType": "numeric" },
+		{ "sType": "string" },
+		{ "sType": "eu_date" },
+		{ "sType": "eu_date" },
+		{ "sType": "string" }
+	]
+});
+</script>
+{/literal}
+{else}
+<table class="table table-bordered table-hover table_vam" id="validatelist" >
+	<thead>
+		<tr>
+		   <th style="display:none"></th>
+		   <th>Contract Name</th>
+		   <th>Turnover</th>
+		   <th>Duration</th>
+		   <th>Company Name</th>
+		   <th>Expected Launch</th>
+		   <th>Expected End</th>
+		   <th>Action</th>
+		    {if $user_type=="superadmin"}
+		   <th>
+			<input type="checkbox" id="checktoassign2" />
+		   </th>
+		   {/if}
+		</tr>
+	</thead>
+	<tbody>
+	{assign var=toassigncount value=0}
+	{foreach from=$contracts item="contract" name="contracts" }
+		<tr>
+		   <td style="display:none"></td>
+		   <td>
+		   <a href='/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}'> {$contract.contractname|utf8_encode}</a></td>
+		   <td>{$contract.turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</td>
+		   <td>{$contract.duration}</td>
+		   <td> 
+			   <a class="hint--left" data-hint="{if $contract.clfname || $contract.cllname}{$contract.clfname|utf8_encode} {$contract.cllname|utf8_encode}{else}{$contract.clemail}{/if}" target="_blank" href="/quote/create-client?uaction=view&client_id={$contract.client_id}&submenuId=ML13-SL1">
+						{$contract.company_name|utf8_encode}
+				</a>
+			</td>
+		   <td>{$contract.expected_launch_date|date_format:'%d/%m/%Y'}</td>
+		   <td>{$contract.expected_end_date|date_format:'%d/%m/%Y'}</td>
+		   <td> <a href='/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}' class="btn">Validate Contract</a></td>
+		    {if $user_type=="superadmin"}
+				<td>
+					<input type="checkbox" class="closecontract2" name="closecontract[{$contract.quotecontractid}]" value="{$contract.quoteid}" />
+				</td>
+			{/if}
+		</tr>
+		{assign var=toassigncount value=$toassigncount+1}
+	{/foreach}
+	</tbody>
+</table>
+{literal}
+<script>		
+var assigncount =  {/literal}"{$toassigncount}"{literal};
+	if(usertype=="superadmin")
+	{
+		$('#validatelist').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "string" },
+                { "sType": "eu_date" },
+                { "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string","bSortable": false }
+            ]
+        });
+	}
+	else
+	{
+		$('#validatelist').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "string" },
+                { "sType": "eu_date" },
+                { "sType": "eu_date" },
+				{ "sType": "string" }
+            ]
+        });
+	}
+if(assigncount>0)
+	{
+		$("#assigncount").text(assigncount);
+		$("#assigncount").removeClass('hide');
+	}
+	else
+	$("#assigncount").addClass('hide');
+</script>
+{/literal}
+{/if}
+{literal}
+<script>
+$("#showcmclose2").hide();
+$("#showcmclose").hide();
+</script>
+{/literal}

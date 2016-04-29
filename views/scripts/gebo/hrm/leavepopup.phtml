@@ -1,0 +1,918 @@
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/ajaxupload.3.5.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jQuery.fileinput.js"></script>
+{literal}
+<style type="text/css">
+    .mod .error
+    {
+        display:none !important;
+    }
+    .error {
+        color: #C62626;
+        font-size: 11px;
+        font-weight: 700;
+    }
+    .mod {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+        border-image: none;
+        border-radius: 4px;
+        border-style: solid;
+        border-width: 1px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+        margin-bottom: 15px;
+        overflow: hidden;
+        padding: 12px;
+    }
+</style>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+    $("#country").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#mandatory").chosen({ allow_single_deselect: false,search_contains: true  });
+    $(".uni_style").uniform();
+   // $("#editholiday").validationEngine({prettySelect : true,useSuffix: "_chzn", promptPosition : "topRight:-100",autoPositionUpdate: false});
+    var gridmode ='{/literal}{$usergridview}{literal}';
+    var usermode ='{/literal}{$gridview}{literal}';
+    if(gridmode == 'yes' && usermode == 'no') {
+        $('#userleavesgrid').dataTable({
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[0, 'asc']],
+            "aoColumns": [
+                null,
+                null,
+                {"sType": "eu_date"},
+                null,
+                null,
+                null,
+                null
+            ]
+        });
+    }else {
+        $('#leavesgrid').dataTable({
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[0, 'asc']],
+            "aoColumns": [
+                null,
+                null,
+                {"sType": "eu_date"},
+                null,
+                null,
+                null,
+                null,
+                null
+            ]
+        });
+    }
+    $('#create_at').datepicker({language: 'fr' }).on('changeDate', function(ev){
+
+    });
+    //Add More my exenses
+    var leave=1;
+    $("[id^=pholiday_close_]").live('click', function() {
+        var DivId = $(this).attr('id');
+        var parentDiv=$(this).parents("div:first").attr('id');
+        var client_identifier=$(this).attr('rel');
+        var closeDiv=$("#"+parentDiv).children(".close").attr('id');
+        if(!client_identifier)
+            $("#"+parentDiv).remove();
+        else
+        {
+            smoke.confirm("Do you really want to delete this contact ?",function(e){
+                if (e)
+                {
+                    if($("[id^=public_holiday_]").size()>1)
+                    {
+                        $("#"+parentDiv).html('<center><img alt="" src="/BO/theme/gebo/img/ajax_loader.gif"> Deleting Contact... </center>');
+                        ajaxProfileUpdate('sccontact',client_identifier,parentDiv,'');
+                    }
+                    else
+                    {
+                        $("#"+parentDiv).html('<center><img alt="" src="/BO/theme/gebo/img/ajax_loader.gif"> Deleting Contact... </center>');
+                        ajaxProfileUpdate('sccontact',client_identifier,parentDiv,'final');
+
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            });
+        }
+
+    });
+    // expense = 1;
+    $("[id^=public_holiday_]" ).each(function(z) {
+        $("[id^=create_at_0]").datepicker({language: 'fr'}).on('changeDate', function(ev){
+
+        });
+
+        $("[id^=create_at_"+leave+"]").datepicker({language: 'fr'}).on('changeDate', function(ev){
+            leave =++z;
+        });
+
+    });
+
+    $(document).on("click", "#create_at_0", function(){
+        $("#create_at_0").datepicker({language: 'fr'}).on('changeDate', function(ev){
+
+        });
+
+    });
+
+    //$("#addmore_pholidays").click(function(){
+    $(document).on("click", "#addmore_pholidays", function(){
+       // $("#upload").hide();
+        var cloned =$("#addmore_pholidays");
+
+        $("#public_holiday_0").clone().attr('id', 'public_holiday_'+(leave) ).insertBefore( cloned );
+        $("#public_holiday_"+leave).show();
+
+        $('#public_holiday_'+leave+' input[name="leave_title[]"]').attr('id','leave_title_'+leave).val('');
+        $('#public_holiday_'+leave+' select[name="country[]"]').attr('id','country_'+leave).val('');
+        $('#public_holiday_'+leave+' select[name="mandatory[]"]').attr('id','mandatory_'+leave).val('');
+        $('#public_holiday_'+leave+' input[name="create_at[]"]').attr('id','create_at_'+leave).val('');
+        $('#public_holiday_'+leave+' input[name="pholiday_close[]"]').attr('id','pholiday_close_'+leave);
+        $("#pholiday_close_"+leave).show();
+        $("[id^=create_at_"+leave+"]").datepicker({language: 'fr'}).on('changeDate', function(ev){
+
+        });
+        $("#public_holiday_"+leave).css('border-color', '');
+      //  $("#country_"+leave).removeClass("country chzn-done" ).addClass( "country" );
+      //  $("#my_leave_"+leave+ " .chzn-container").remove();
+
+
+       //$(".country").chosen({ allow_single_deselect: false,search_contains: true});
+
+        $(".uni_style").uniform();
+        leave++;
+        //clearChildren(document.getElementById('my_expense_'+expense));
+
+    });
+   /* var validator = $("form[name='editholiday']").validate({
+        showErrors: function(errorMap, errorList) {
+            $(".errormsg").html($.map(errorList, function(el) {
+                return el.message;
+            }).join(", "));
+        },
+        wrapper: "span",
+        rules: {
+            'leave_title[]': {
+                required: true,
+                minlength: 2
+               *//* remote: {
+                    url: '/sales/invoice_check',
+                    async: false,
+                    type: 'post'
+                }*//*
+
+            }
+        },
+        messages: {
+            'leave_title[]': {
+                required: "Enter Reg Number",
+                minlength: jQuery.format("Enter at least {0} characters")
+               // remote: jQuery.format("{0} is already in use")
+            }
+        }
+    });*/
+
+});
+$(function(){
+
+    var btnUpload=$('#upload');
+    var status=$('#file_name');
+    new AjaxUpload(btnUpload, {
+        action: 'uploadartcsv',
+        name: 'uploadfile',
+        onSubmit: function(file, ext){
+            if (! (ext && /^(csv)$/.test(ext))){
+                // extension is not allowed
+                $("#addmore_pholidays").hide();
+
+                status.html('Only csv file type allowed').css('color','#FF0000');
+                return false;
+            }
+            var href="/hrm/save-public-holiday?add=show";
+            //$("#publicholiday").removeData('modal');
+            //$('#publicholiday .modal-body').load(href);
+            //$(".modal-backdrop:gt(0)").remove();
+            //$("#publicholiday").modal();
+            //$(".modal-backdrop:gt(0)").remove();
+            //$("#addmore_pholidays").hide();
+            status.html('<img src="http://ep-test.edit-place.com/FO/images/loading.gif" />');
+        },
+        onComplete: function(file, response){
+            //On completion clear the status
+            status.text('');
+            //Add uploaded file to list
+            if(response!="error"){  console.log(response);
+                ar=response.split("*");
+                var totallength= ar.length;
+                for(var i=0;i<totallength;i=i+1){
+                    inp=ar[i].split(",");
+                   // alert(inp[0]+"-"+inp[1]+"-"+inp[2]);
+                    if(i == 0)
+                    { // alert(inp[1].trim());
+                         $("#leave_title_0").val(inp[0]);
+                         $("#country_0").val(inp[1].trim());
+                         $("#mandatory_0").val(inp[2].trim());
+                        var dateinp = inp[3].split('/');
+                        if(dateinp[0].length == 1)
+                            dateinp[0] = 0+dateinp[0];
+                        if(dateinp[1].length == 1)
+                            dateinp[1] = 0+dateinp[1];
+                        var finaldate = dateinp[0]+'/'+dateinp[1]+'/'+dateinp[2];
+                         $("#create_at_0").val(finaldate);
+                        $("[id^=create_at_0]").datepicker({language: 'fr'}).on('changeDate', function(ev){
+
+                        });
+
+                    }else {
+                        var cloned = $("#addmore_pholidays");
+                        $("#public_holiday_0").clone().attr('id', 'public_holiday_' + (i)).insertBefore(cloned);
+                       // $("#public_holiday_" + i).show();
+
+                        $('#public_holiday_' + i + ' input[name="leave_title[]"]').attr('id', 'leave_title_' + i).val(inp[0]);
+                        $('#public_holiday_' + i + ' select[name="country[]"]').attr('id', 'country_' + i).val(inp[1].trim());
+                        $('#public_holiday_' + i + ' select[name="mandatory[]"]').attr('id', 'mandatory_' + i).val(inp[2].trim());
+                        var dateinp = inp[3].split('/');
+                        if(dateinp[0].length == 1)
+                            dateinp[0] = 0+dateinp[0];
+                        if(dateinp[1].length == 1)
+                            dateinp[1] = 0+dateinp[1];
+                        var finaldate = dateinp[0]+'/'+dateinp[1]+'/'+dateinp[2];
+                        $('#public_holiday_' + i + ' input[name="create_at[]"]').attr('id', 'create_at_' + i).val(finaldate);
+                        $('#public_holiday_' + i + ' input[name="pholiday_close[]"]').attr('id', 'pholiday_close_' + i);
+                        $("#pholiday_close_" + i).show();
+                        $("[id^=create_at_" + i + "]").datepicker({language: 'fr'}).on('changeDate', function (ev) {
+
+                        });
+                    }
+                    /*$("#leave_title_"+i).val(inp[0]);
+                    $("#country_"+i).val(inp[1]);
+                    $("#mandatory_"+i).val(inp[2]);
+                    $("#create_at_"+i).val(inp[3]);*/
+
+                }
+            }
+            else{
+                $('#file_name').html('Sorry!! File not uploaded').css('color','#FF0000');
+            }
+        }
+    });
+});
+data1 = '';
+function addPublicHolidayold()
+{
+    var leavetitle = $("#leave_title").val();
+    var mandatory = $("#mandatory").val();
+    var create = $("#create_at").val();
+    var country = $("#country").val();
+    /*var target_page = '/hrm/validate-public-holiday?save=save&leave_title='+leavetitle+'&create_at='+create+'&country='+country+'&mandatory='+mandatory;
+    $.post(target_page, function(data){
+         data1 = $.trim(data);
+    });*/
+    $.ajax({
+        type: "POST",
+        url: "/hrm/validate-public-holiday",
+        data: 'save=save&leave_title='+leavetitle+'&create_at='+create+'&country='+country,
+        async:false,
+        success: function(result) { alert(result);
+            data1 = $.trim(result);
+        }
+    });
+    if(leavetitle == '' || create=='' || country==0 || mandatory==0){
+        smoke.alert("Please enter all valid inputs");
+        return false;
+    }else if(data1 == 'exist') {
+        smoke.alert("This holiday name is already exist");
+        return false;
+    }
+    else{
+        var target_page = '/hrm/save-public-holiday?save=save&leave_title='+leavetitle+'&create_at='+create+'&country='+country+'&mandatory='+mandatory;
+        $.post(target_page, function(data){
+            $("#leave_title").val('');
+            $("#create_at").val('');
+            $("#msg").show();
+            $("#msg").text('Holiday added successfully, you can proceed with another');
+            $("#country").val('0').trigger("liszt:updated");
+            $("#mandatory").val('0').trigger("liszt:updated");
+        });
+    }
+}
+function addPublicHoliday()
+{
+     var error = 'no'; var errormsg;  var titlecounter=0; var countrycounter=0; var datecounter=0; var mandatorycounter=0;
+    $('input[name^="leave_title"]').each(function() {
+
+        if($(this).val() == '')
+        {
+            error = 'yes';
+            $("#public_holiday_"+titlecounter).css('border-color', 'red');
+
+           // $("#leave_title_"+titlecounter).focus();
+        }else
+            $("#public_holiday_"+titlecounter).css('border-color', '');
+        titlecounter++;
+    });
+    $('select[name^="country"]').each(function() {
+        if($(this).val() == 0)
+        {
+            error = 'yes';
+            $("#public_holiday_"+countrycounter).css('border-color', 'red');
+           // $("#country_"+countrycounter).focus();
+        }else
+            $("#public_holiday_"+countrycounter).css('border-color', '');
+        countrycounter++;
+    });
+
+    $('input[name^="create_at"]').each(function() {
+        if($(this).val() == '')
+        {
+            error = 'yes';
+            $("#public_holiday_"+datecounter).css('border-color', 'red');
+           // $("#create_at_"+datecounter).focus();
+        }else{
+            var dateform = $(this).val().split('/');
+            var dateformate = dateform[2]+"-"+dateform[1]+"-"+dateform[0];
+            var n = new Date(dateformate);
+            var dayl = n.getDay();
+            if(dayl == 0 || dayl == 6){
+               /*if(confirm("you have selected weekend ?"))
+                {
+                    error = 'no';
+                    ///$("#public_holiday_"+datecounter).css('border-color', 'red');
+                }
+                else
+                {
+                    error = 'yes';
+                    $("#public_holiday_"+datecounter).css('border-color', 'red');
+                }*/
+
+                smoke.alert("you have selected weekend");
+                error = 'yes';
+                $("#public_holiday_"+datecounter).css('border-color', 'red');
+               // $("#create_at_"+datecounter).focus();
+            }else
+                $("#public_holiday_"+datecounter).css('border-color', '');
+        }
+        datecounter++;
+    });
+    $('select[name^="mandatory"]').each(function() {
+        if($(this).val() == 0)
+        {
+            error = 'yes';
+            $("#public_holiday_"+mandatorycounter).css('border-color', 'red');
+           // $("#mandatory_"+mandatorycounter).focus();
+        }else
+            $("#public_holiday_"+mandatorycounter).css('border-color', '');
+        mandatorycounter++;
+    });
+    if(error == 'yes')
+    {
+        return false;
+    }
+    else {
+        $(".mod").css('border-color', '');
+        $.ajax({
+            type: "POST",
+            url: "http://admin-test.edit-place.com/hrm/validate-public-holiday",
+            data: $('#addholiday').serialize(),
+            async:false,
+            success: function(result) { // alert(result);
+                var obj = $.parseJSON(result);
+                if(obj[0] != 'no'){
+                    smoke.alert(obj[1]+" is duplicated");
+                    $("#public_holiday_"+obj[0]).css('border-color', 'red');
+                    return false;
+                }
+                else if(obj[2] != ''){
+                    smoke.alert("Holiday leave count has been exceeded for "+obj[2]);
+                    $("#public_holiday_"+obj[0]).css('border-color', 'red');
+                    return false;
+                }else{
+                $("#public_holiday_"+obj[0]).css('border-color', '');
+                $("#save").val('save');
+                $("#addholiday").submit();  }
+
+            }
+        });
+
+    }
+
+}
+    function editPublicHoliday(formname)
+    {
+        var error = 'no'; var errormsg;  var titlecounter=0; var countrycounter=0; var datecounter=0; var mandatorycounter=0;
+        $('input[name^="leave_title"]').each(function() {
+
+            if($(this).val() == '')
+            {
+                error = 'yes';
+                $("#public_holiday_"+titlecounter).css('border-color', 'red');
+
+                // $("#leave_title_"+titlecounter).focus();
+            }else
+                $("#public_holiday_"+titlecounter).css('border-color', '');
+            titlecounter++;
+        });
+        $('select[name^="country"]').each(function() {
+            if($(this).val() == 0)
+            {
+                error = 'yes';
+                $("#public_holiday_"+countrycounter).css('border-color', 'red');
+                // $("#country_"+countrycounter).focus();
+            }else
+                $("#public_holiday_"+countrycounter).css('border-color', '');
+            countrycounter++;
+        });
+
+        $('input[name^="create_at"]').each(function() {
+            if($(this).val() == '')
+            {
+                error = 'yes';
+                $("#public_holiday_"+datecounter).css('border-color', 'red');
+                // $("#create_at_"+datecounter).focus();
+            }else{
+                var dateform = $(this).val().split('/');
+                var dateformate = dateform[2]+"-"+dateform[1]+"-"+dateform[0];
+                var n = new Date(dateformate);
+                var dayl = n.getDay();
+                if(dayl == 0 || dayl == 6){
+                    /*if(confirm("you have selected weekend ?"))
+                     {
+                     error = 'no';
+                     ///$("#public_holiday_"+datecounter).css('border-color', 'red');
+                     }
+                     else
+                     {
+                     error = 'yes';
+                     $("#public_holiday_"+datecounter).css('border-color', 'red');
+                     }*/
+
+                    smoke.alert("you have selected weekend");
+                    error = 'yes';
+                    $("#public_holiday_"+datecounter).css('border-color', 'red');
+                    // $("#create_at_"+datecounter).focus();
+                }else
+                    $("#public_holiday_"+datecounter).css('border-color', '');
+            }
+            datecounter++;
+        });
+        $('select[name^="mandatory"]').each(function() {
+            if($(this).val() == 0)
+            {
+                error = 'yes';
+                $("#public_holiday_"+mandatorycounter).css('border-color', 'red');
+                // $("#mandatory_"+mandatorycounter).focus();
+            }else
+                $("#public_holiday_"+mandatorycounter).css('border-color', '');
+            mandatorycounter++;
+        });
+        if(error == 'yes')
+        {
+            return false;
+        }
+        else {
+           // $(".mod").css('border-color', '');
+            $.ajax({
+                type: "POST",
+                url: "/hrm/validateedit-public-holiday",
+                data: $('#'+formname).serialize(),
+                async:false,
+                success: function(result) {  //alert(result);
+                    var obj = $.parseJSON(result);
+                    if(obj[0] != 'no'){
+                        smoke.alert(obj[1]+" is duplicated");
+                        $("#public_holiday_"+obj[0]).css('border-color', 'red');
+                        return false;
+                    }
+                    else if(obj[2] != ''){
+                        smoke.alert("Holiday leave count has been exceeded for "+obj[2]);
+                        $("#public_holiday_"+obj[0]).css('border-color', 'red');
+                        return false;
+                    }else if(obj[0] == 'no' && obj[2] == ''){ // alert('');
+                        $("#public_holiday_"+obj[0]).css('border-color', '');
+                        $("#"+formname).submit();
+                    }
+                }
+            });
+        }
+    }
+function getapproverefusemail(type,eventid,ltype)
+{
+	$.ajax({
+			type: "POST",
+			url: "/hrm/getvalidmailpopup",
+			data: "leaveId=" +eventid+"&type="+type+"&ltype="+ltype,
+			async:false,
+			success: function(result) {  //alert(result);
+				if(type=="accept")
+				{
+					$("#acceptmailcontent").html(result);
+					$("#eventId").val(eventid);
+                    $("#ltype").val(ltype);
+				}
+				else
+				{
+					 $("#refusemailcontent").html(result);
+					$("#refuse_eventId").val(eventid);
+                    $("#ltype").val(ltype);
+				}
+			}
+		});
+	
+}
+
+</script>
+{/literal}
+{if $usergridview eq 'yes' && $gridview eq 'no'}
+<table id="userleavesgrid" class="table table-bordered table-striped table_vam">
+    <thead>
+    <tr>
+        <th>Sl.no</th>
+        <th>Leave</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Total days</th>
+        <th>Type</th>
+        <th>Staus</th>
+    </tr>
+    </thead>
+    <tbody>
+    {if $userleaves neq 'NO'}
+    {foreach from=$userleaves key=userleave_key item=userleave_item name=userleave_loop}
+    <tr>
+        <td>{$smarty.foreach.userleave_loop.index+1}</td>
+        <td>{$userleave_item.leave|stripslashes|wordwrap:20:"\n":true}</td>
+        <td>{$userleave_item.start|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{$userleave_item.end|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{$userleave_item.days}</td>
+        <td>
+			{if $userleave_item.type=="vacation"}
+				Vacances
+			{elseif $userleave_item.type=="sick"}
+				Maladie
+			{elseif $userleave_item.type=="maternity"}	
+				Materite
+            {elseif $userleave_item.type=="compoff"}
+            Comp Off
+			{elseif $userleave_item.type=="rdv"}
+				RDV
+            <a id="rdvdetails" class="editable editable-click" data-target="#rdvdetails_modal" role="button" data-toggle="modal" href="/hrm/rdv-details?leaveId={$userleave_item.id}"><i class="splashy-information"></i></a>
+
+			{/if}
+		</td>
+        <td>
+			<div id="status_{$userleave_item.id}">
+			{if $userleave_item.status=="inprocess"}
+				<a class="label label-success" data-toggle="modal" data-target="#Acceptmail" href="javascript:void(0);" onClick="getapproverefusemail('accept','{$userleave_item.id}');" style="margin-left:10px">Accept</a> / 
+				<a class="label label-warning" data-toggle="modal" data-target="#refusemail" href="javascript:void(0);" onClick="getapproverefusemail('refuse','{$userleave_item.id}');" style="margin-left:10px">Refuse</a>
+			{else}
+				{$userleave_item.status}
+			{/if}
+			</div>
+		</td>
+    </tr>
+    {/foreach}
+    {/if}
+    </tbody>
+</table>
+{elseif $gridview eq 'yes' && $usergridview eq 'no'}
+<table id="leavesgrid" class="table table-bordered table-striped table_vam">
+    <thead>
+    <tr>
+        <th>Sl.no</th>
+        <th>Leave</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Total days</th>
+        <th>Type</th>
+        <th>Request By</th>
+        <th>Staus</th>
+    </tr>
+    </thead>
+    <tbody>
+    {if $userleaves neq 'NO'}
+    {foreach from=$userleaves key=userleave_key item=userleave_item name=userleave_loop}
+    <tr>
+        <td>{$smarty.foreach.userleave_loop.index+1}</td>
+        <td>{$userleave_item.leave|stripslashes|wordwrap:20:"\n":true}</td>
+        <td><div style="display:none">{$userleave_item.start}</div>{$userleave_item.start|date_format:"%d/%m/%Y"|upper}</td>
+        <td><div style="display:none">{$userleave_item.end}</div>{$userleave_item.end|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{$userleave_item.days}</td>
+        <td>
+            {if $userleave_item.type=="vacation"}
+            Vacances
+            {elseif $userleave_item.type=="sick"}
+            Maladie
+            {elseif $userleave_item.type=="maternity"}
+            Materite
+            {elseif $userleave_item.type=="compoff"}
+            Comp Off
+            {elseif $userleave_item.type=="rdv"}
+            RDV
+            <a id="rdvdetails" class="editable editable-click" data-target="#rdvdetails_modal" role="button" data-toggle="modal" href="/hrm/rdv-details?leaveId={$userleave_item.id}"><i class="splashy-information"></i></a>
+            {/if}
+        </td>
+        <th>{$userleave_item.username}</th>
+        <td>
+            <div id="status_{$userleave_item.id}">
+                {if $userleave_item.status=="inprocess"}
+                <a class="label label-success" data-toggle="modal" data-target="#Acceptmail" href="javascript:void(0);" onClick="getapproverefusemail('accept','{$userleave_item.id}','{$userleave_item.type}');" style="margin-left:10px">Accept</a> /
+                <a class="label label-warning" data-toggle="modal" data-target="#refusemail" href="javascript:void(0);" onClick="getapproverefusemail('refuse','{$userleave_item.id}','{$userleave_item.type}');" style="margin-left:10px">Refuse</a>
+                {else}
+                {$userleave_item.status}
+                {/if}
+            </div>
+        </td>
+    </tr>
+    {/foreach}
+    {/if}
+    </tbody>
+</table>
+{elseif $addholiday eq 'yes'}
+<form id="addholiday" name="addholiday" action="/hrm/save-public-holiday" >
+    <div class="errormsg" style="display: none;" id="msg"></div>
+    {if $addholiday eq 'yes'}
+
+    <div class="alert alert-warning">
+        <div id="upload"> You can feed the form through csv file. <input type="file" name="file" size="30"/><div id="file_name"></div>
+        </div>
+        <a class="btn btn-inofo" href="/hrm/downloadsamplecsv?download=downloadcsv"> Download sample csv</a>
+    </div>
+    {/if}
+    <div class="mod" id="public_holiday_0">
+        <input  type="button" name="pholiday_close[]" id="pholiday_close_0" class="close"  style="display:none" value="x" />
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Title <span class="f_req">*</span></label>
+                    <input type="text" name="leave_title[]" id="leave_title_0"  value="{$publicleaves[0].leave}"  />
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Country <span class="f_req">*</span></label>
+                    <select name="country[]" id="country_0"  data-placeholder="S&eacute;lectionnez Country">
+                        <option value="0" >S&eacute;lectionnez Country</option>
+                        <option value="ind" {if $publicleaves[0].country eq 'ind'} selected {/if} >India</option>
+                        <option value="fr" {if $publicleaves[0].country eq 'fr'} selected {/if} >France</option>
+                        <option value="uk" {if $publicleaves[0].country eq 'uk'} selected {/if} >Uk</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Type <span class="f_req">*</span></label>
+                    <select name="mandatory[]" id="mandatory_0"  data-placeholder="S&eacute;lectionnez Option">
+                        <option value="0" >S&eacute;lectionnez Option</option>
+                        <option value="yes" {if $publicleaves[0].mandatory eq 'ind'} selected {/if} >Mandatory</option>
+                        <option value="no" {if $publicleaves[0].mandatory eq 'fr'} selected {/if} >Optional</option>
+                    </select>
+                    <!--<label class="span3">Type <span class="f_req">*</span></label>
+                        <label class="uni-radio">
+                            <input type="radio" name="mandatory" id="mandatory" class="uni_style" value="yes" checked="checked" {if $publicleaves[0].mandatory=='yes'}  checked="checked" {/if} /> mandatory
+                        </label>
+                        <label class="uni-radio">
+                            <input type="radio" name="mandatory" id="optional" class="uni_style"  value="no" {if $publicleaves[0].mandatory=='no'}  checked="checked" {/if} /> optional
+                        </label>-->
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Date <span class="f_req">*</span></label>
+                    <input type="text" name="create_at[]"  id="create_at_0" data-date-format="dd/mm/yyyy" value="{$publicleaves[0].start|date_format:'%d/%m/%Y'}" />
+                </div>
+            </div>
+        </div>
+    </div>
+    {if $addholiday eq 'yes'}
+    <div class="addmore-button" id="addmore_pholidays"><a class="btn"><i class="icon-plus"></i>more</a></div>
+    {/if}
+    <div class="row-fluid">
+        <div class="span7 pull-right form-inline">
+            <input type="hidden" name="holidayId" id="holidayId" value="{$publicleaves[0].id}"  />
+            <input type="hidden" name="save" id="save" value=""  />
+            {if $addholiday eq 'yes'}
+            <button type="button" class="btn btn-success" id="savebtn" name="savebtn" value="" onclick="addPublicHoliday();">Add</button>
+            {else}
+            <button type="submit" class="btn btn-success" id="edit" name="edit" value="edit"  onclick="addPublicHoliday();">Edit</button>
+            {/if}
+        </div>
+    </div>
+
+</form>
+<!--single edit-->
+{elseif $editholiday eq 'yes'}
+<form id="editholiday" name="editholiday" action="/hrm/save-public-holiday" >
+    <div class="errormsg" style="display: none;" id="msg"></div>
+       <div class="mod" id="public_holiday_0">
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Title <span class="f_req">*</span></label>
+                    <input type="text" name="leave_title" id="leave_title"  value="{$publicleaves[0].leave}"  />
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Country <span class="f_req">*</span></label>
+                    <select name="country" id="country"  data-placeholder="S&eacute;lectionnez Country">
+                        <option value="0" >S&eacute;lectionnez Country</option>
+                        <option value="ind" {if $publicleaves[0].country eq 'ind'} selected {/if} >India</option>
+                        <option value="fr" {if $publicleaves[0].country eq 'fr'} selected {/if} >France</option>
+                        <option value="uk" {if $publicleaves[0].country eq 'uk'} selected {/if} >Uk</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Type <span class="f_req">*</span></label>
+                    <select name="mandatory" id="mandatory"  data-placeholder="S&eacute;lectionnez Option">
+                        <option value="0" >S&eacute;lectionnez Option</option>
+                        <option value="yes" {if $publicleaves[0].mandatory eq 'yes'} selected {/if} >Mandatory</option>
+                        <option value="no" {if $publicleaves[0].mandatory eq 'no'} selected {/if} >Optional</option>
+                    </select>
+                    <!--<label class="span3">Type <span class="f_req">*</span></label>
+                        <label class="uni-radio">
+                            <input type="radio" name="mandatory" id="mandatory" class="uni_style" value="yes" checked="checked" {if $publicleaves[0].mandatory=='yes'}  checked="checked" {/if} /> mandatory
+                        </label>
+                        <label class="uni-radio">
+                            <input type="radio" name="mandatory" id="optional" class="uni_style"  value="no" {if $publicleaves[0].mandatory=='no'}  checked="checked" {/if} /> optional
+                        </label>-->
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Date <span class="f_req">*</span></label>
+                    <input type="text" name="create_at"  id="create_at" data-date-format="dd/mm/yyyy" value="{$publicleaves[0].start|date_format:'%d/%m/%Y'}" />
+                </div>
+            </div>
+        </div>
+       </div>
+    <div class="row-fluid">
+        <div class="span7 pull-right form-inline">
+            <input type="hidden" name="holidayId" id="holidayId" value="{$publicleaves[0].id}"  />
+            <input type="hidden" name="singleedit" id="singleedit" value="yes"  />
+            <input type="hidden" name="edit" id="editsingle" value="edit"  />
+            <button type="button" class="btn btn-success" id="edit" name="edit" value="edit"  onclick="return editPublicHoliday('editholiday');">Edit</button>
+        </div>
+    </div>
+
+
+</form>
+{elseif $bulkedit eq 'yes'}
+<form id="bulkeditholiday" name="bulkeditholiday" action="/hrm/bulkedit-public-holiday" >
+    {foreach from=$editpublicleaves key=publicleaves_key item=publicleaves_item name=publicleaves_loop}
+        <div class="mod" id="public_holiday_0">
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Title <span class="f_req">*</span></label>
+                    <input type="text" name="leave_title[]" id="leave_title_{$smarty.foreach.publicleaves_loop.index}"  value="{$editpublicleaves[$publicleaves_key][0].leave}"  />
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Country <span class="f_req">*</span></label>
+                    <select name="country[]" id="country_{$smarty.foreach.publicleaves_loop.index}"  data-placeholder="S&eacute;lectionnez Country">
+                        <option value="0" >S&eacute;lectionnez Country</option>
+                        <option value="ind" {if $editpublicleaves[$publicleaves_key][0].country eq 'ind'} selected {/if} >India</option>
+                        <option value="fr" {if $editpublicleaves[$publicleaves_key][0].country eq 'fr'} selected {/if} >France</option>
+                        <option value="uk" {if $editpublicleaves[$publicleaves_key][0].country eq 'uk'} selected {/if} >Uk</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Type  <span class="f_req">*</span></label>
+                    <select name="mandatory[]" id="mandatory_{$smarty.foreach.publicleaves_loop.index}"  data-placeholder="S&eacute;lectionnez Option">
+                        <option value="0" >S&eacute;lectionnez Option</option>
+                        <option value="yes" {if $editpublicleaves[$publicleaves_key][0].mandatory eq 'yes'} selected {/if} >Mandatory</option>
+                        <option value="no" {if $editpublicleaves[$publicleaves_key][0].mandatory eq 'no'} selected {/if} >Optional</option>
+                    </select>
+
+                </div>
+            </div>
+        </div>
+        <div class="formSep">
+            <div class="row-fluid">
+                <div class="span9 form-inline">
+                    <label class="span3">Date <span class="f_req">*</span></label>
+                    <input type="text" name="create_at[]"  id="create_at_{$smarty.foreach.publicleaves_loop.index}" data-date-format="dd/mm/yyyy" value="{$editpublicleaves[$publicleaves_key][0].start|date_format:'%d/%m/%Y'}" />
+                </div>
+            </div>
+        </div>
+			<input type="hidden" name="holidayId[]" id="holidayId_{$smarty.foreach.publicleaves_loop.index}"  
+			value="{$editpublicleaves[$publicleaves_key][0].id}"  />
+			<input type="hidden" name="id[]" id="id_{$smarty.foreach.publicleaves_loop.index}"  value="{$editpublicleaves[$publicleaves_key][0].id}"  />
+    </div>
+ 
+    {/foreach}
+    <div class="row-fluid">
+        <div class="span7 pull-right form-inline">
+            <input type="hidden" name="edit" id="edit" value="edit"  />
+            <button type="button" class="btn btn-success" id="edit" name="edit" value="edit" onclick="return editPublicHoliday('bulkeditholiday');" >Edit</button>
+        </div>
+    </div>
+</form>
+{elseif $leavedetails eq 'yes'}
+<table id="userleavesgrid" class="table table-bordered table-striped table_vam">
+    <thead>
+    <tr> 
+        <th>Sl.no</th>
+        <th>Leave</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>{if $popname eq 'rdv'}Duration{else}Days{/if}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {if $userleaves neq 'NO'}
+    {foreach from=$userleaves key=userleave_key item=userleave_item name=userleave_loop}
+    <tr>
+        <td>{$smarty.foreach.userleave_loop.index+1}</td>
+        <td>{$userleave_item.leave|stripslashes|wordwrap:20:"\n":true}</td>
+        <td>{$userleave_item.start|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{$userleave_item.end|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{$userleave_item.days}</td>
+    </tr>
+    {/foreach}
+    {/if}
+    </tbody>
+</table>
+
+{else}
+<div class="alert alert-block span6">
+
+<div class="formSep">
+    <div class="row-fluid">
+        <div class="span9 form-inline">
+            <label class="span3">Title <span class="f_req">*</span></label>
+            <input type="text" name="leave_title" id="leave_title" value="{$leavedetails[0].leave}"  />
+        </div>
+    </div>
+</div>
+<div class="formSep">
+    <div class="row-fluid">
+        <div class="span9 form-inline">
+            <label class="span3">Description <span class="f_req">*</span></label>
+            <textarea  name="leave_desc" id="leave_desc" >{$leavedetails[0].description}</textarea>
+        </div>
+    </div>
+</div>
+<div class="formSep">
+    <div class="row-fluid">
+        <div class="span11 form-inline">
+            <label class="span2">Type  <span class="f_req">*</span></label>
+            <label class="uni-radio">
+                <input type="radio" name="type" id="type_vacation" checked="" value="vacation" {if $leavedetails[0].type=='vacation'} checked="checked" {/if} class="uni_style"/>Vacances
+            </label>
+            <label class="uni-radio">
+                <input type="radio" name="type" id="type_illness" value="illness"  {if $leavedetails[0].type=='illness'} checked="checked" {/if} class="uni_style"/> Maladie
+            </label>
+            <label class="uni-radio">
+                <input type="radio" name="type" id="type_pregnancy" value="pregnancy" {if $leavedetails[0].type=='pregnancy'} checked="checked" {/if} class="uni_style"/> Maternit&eacute;
+            </label>
+            <label class="uni-radio">
+                <input type="radio" name="type" id="type_rdv" value="rdv" {if $leavedetails[0].type=='rdv'} checked="checked" {/if} class="uni_style"/> RDV
+            </label>
+        </div>
+
+    </div>
+</div>
+</div>
+<div class="alert alert-success span4">
+    <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>Leaves Statistics</h3></span></div>
+    <div class="chat_msg_body">
+        <div class="vcard-item">
+            <ul class="list_a">
+                <li><p class="sepH_a"><strong>Vacation:</strong> 4 / 12 {$leavedetails[0].illness}</p></li>
+                <li><p class="sepH_a"><strong>Maladie:</strong> 7 / 12{$leavedetails[0].vacation}</p></li>
+                <li> <p class="sepH_a"><strong>Maternit&eacute;:</strong> 0 / 12{$leavedetails[0].pregnancy}</p></li>
+                <li><p class="sepH_a"><strong>RDV:</strong> 18 breaks{$leavedetails[0].rdv}</p></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{/if}
+
+

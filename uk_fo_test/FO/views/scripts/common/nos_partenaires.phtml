@@ -1,0 +1,25 @@
+<section class="gray">
+    <div class="container padding pull-top">
+		<div class="center-block">
+			<h1>Our partners</h1>
+		</div>
+		<div class="page-inner">
+			<h2>Our partners</h2>
+				
+			<hr>
+			{foreach from=$partnerlist item=part_item}		
+			<div class="mod media">
+				<a  class="pull-left"title="Oboulo" href="http://{$part_item.website}">
+					<img class="media-object" alt="Oboulo" src="/FO/images/logos/partners/{$part_item.logoname}" width="245" height="45"/>
+				</a>
+			
+				<div class="media-body">
+					<h4 class="media-heading"><a title="Oboulo" href="http://{$part_item.website}">{$part_item.name}</a></h4>
+					{$part_item.description}
+				</div>
+			</div>
+			{/foreach}		
+		</div>
+		<p>&nbsp;</p>
+	</div>   
+</section>

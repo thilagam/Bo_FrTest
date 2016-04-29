@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>{$page_title}</title>
+		<meta name="description" content="{$meta_desc}">
+		<meta name="author" content=""> 
+		<link rel="shortcut icon" type="image/x-icon" href="/FO/favicon.ico" />
+		{assign var='cssfiles' value=''}
+		{foreach from=$cssList item=css}
+			<link type="text/css" rel="stylesheet" href="/FO/css/{$css}"/>  
+		{/foreach}
+		<!--{assign var='cssfiles' value=$cssfiles$css,}-->
+		<link type="text/css" rel="stylesheet" href="/min/b=FO/css&f={$cssfiles|substr:-1}"/>
+		 <link href="/FO/plugins/skins/square/blue.css" rel="stylesheet"> 
+		 
+		<!-- Le styles -->
+		
+			
+		<!--[if lt IE 9]>
+		  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="/FO/script/bootstrap3/bootstrap.min.js"></script>
+		
+		<script src="/FO/script/common/login_validation.js"></script> 
+		<script src="/FO/script/common/jquery.validate.min.js"></script> 
+		
+	</head>
+
+	<body class="quote">
+		{foreach from=$headerList item=frame}
+			{include file="$frame"}
+		{/foreach}
+		
+		{foreach from=$mainList item=frame} 
+			{include file="$frame"}
+		{/foreach} 	
+		
+		{foreach from=$footerList item=frame}
+			{include file="$frame"}
+		{/foreach}	
+		
+		<script src="/FO/script/bootstrap3/wow.min.js"></script>
+		<script src="/FO/script/bootstrap3/icheck.min.js"></script>
+		<script src="/FO/script/bootstrap3/bootstrap-select.min.js"></script>
+		<script src="/FO/script/bootstrap3/ep.js"></script>
+		{literal}
+		<style>
+			.dropdown-menu {top:30px; right:50px !important}  
+		</style>
+		{/literal}
+  </body>
+</html>
+

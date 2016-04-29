@@ -1,0 +1,1017 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/ajaxupload.3.5.js"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/jQuery.fileinput.js"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/jquery.Jcrop.min.js"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/css/jquery.Jcrop.css" />
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/lib/flot/jquery.flot.curvedLines.min.js"></script>
+
+
+<script language="javascript">
+    $(document).ready(function() {
+        $(".uni_style").uniform();
+        $("#type").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#status").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#country").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#moy_language").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#moy_category").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#stats_language").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#stats_category").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#missionstats_language").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#missionstats_category").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#graph_language").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#graph_category").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#workplace").chosen({ allow_single_deselect: false,search_contains: true  });
+        $("#parentId").chosen({ allow_single_deselect: false,search_contains: true  });
+
+        setdim('monthlyGraph');//setTimeout(function(){setdim('monthlyGraph')},300);
+        fontwt('dailyChart', 0);fontwt('weeklyChart', 0);fontwt('monthlyChart', 1);
+        $('#dailyGraph').hide();$('#weeklyGraph').hide();$('#monthlyGraph').show();
+       // gebo_validation.reg();
+        gebo_charts.fl_m();
+
+        $('#bousermissions').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" },
+                { "sType": "natural" }
+            ]
+
+        });
+        $('#datepicker1').datepicker({language: 'fr'});
+        $('#datepicker2').datepicker({language: 'fr'});
+        $("#useredit").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+    });
+    /**closing the  languages more with sliders**/
+    var rib=0;
+    $("[id^=rib_close_]").live('click', function() {
+
+        var parentDiv=$(this).parents("div:first").attr('id');
+        var closeDiv=$("#"+parentDiv).children(".close").attr('id');
+        if($("[id^=rib_more_]").size()>1)
+        {
+            $("#"+parentDiv).remove();
+            var rib =  $("[id^=rib_close_]").length-1;
+            $("#addmore_rib_link").attr("onClick","addnewRib("+rib+")");
+        }
+        else
+        {
+            $("#"+closeDiv).hide();
+        }
+    });
+    function fontwt(clas, bval)
+    {
+        if(bval)
+            $('.'+clas).css( "font-weight", "bold" );
+        else
+            $('.'+clas).css( "font-weight", "normal" );
+    }
+    function setdim(id)
+    {
+        $('#'+id).css( "width", "99%" );$('#'+id).css( "height", "269px" );
+    }
+
+    function uploadPictures(filetype, type)
+    {
+        var btnUpload=$(filetype);
+        var status=$('#file_name');
+        var userid=$('#userId').val();
+        new AjaxUpload(btnUpload, {
+            action: 'uploadprofilepic',
+            name: 'uploadpic',
+            data:{userid:userid, type:type},
+            onSubmit: function(file, ext){     //alert(userid);
+                if (! (ext && /^(jpg|jpeg|gif|png)$/.test(ext))){
+                    // extension is not allowed
+                    status.text("Merci d'uploaded uniquement des fichiers JPG.").css('color','#FF0000');
+                    return false;
+                }
+                status.html('<div align="right"><img src="http://ep-test.edit-place.com/FO/images/loading-b.gif" /></div>') ;
+            },
+            onComplete: function(file, response){     //  alert(response);
+                //On completion clear the status
+                status.text('');
+                $('#file_name'+type).html('');
+                //Add uploaded file to list
+                var obj = $.parseJSON(response);
+                var approot="http://ep-test.edit-place.com/FO/";
+                if(obj.status=="success"){
+                    $('#spec_file_name'+type).val(file);
+                    // alert(approot+obj.path+obj.identifier+"_crop."+obj.ext+ '?' + (new Date()).getTime());
+                    $("#cropbox").attr('src','#');
+                    $(".jcrop-holder").remove();
+                    $("#cropbox").removeData('Jcrop');
+                    $("#cropbox").attr("src",approot+obj.path+obj.identifier+"_crop."+obj.ext+ '?' + (new Date()).getTime());
+
+                    $("#cropbox").show();
+                    $('#cropbox').Jcrop({
+                        aspectRatio: 1,
+                        addClass: 'jcrop-dark',
+                        setSelect: [ 60, 110, 150, 200 ],
+                        onSelect: updateCoords
+                    });
+                    $('#pictype').val(type);
+                    $('#cropimagepopup').modal('show');
+                    if(file.length>25)
+                        $('#file_name'+type).html(file.substr(0,25)+".. Uploaded").css('color','#006600');
+                    else
+                        $('#file_name'+type).html(file+" Uploaded").css('color','#006600');
+                }
+                else if(obj.status=="smallfile"){
+                    $('#file_name'+type).html("L'image est trop petite, merci d'en uploader une autre").css('color','#FF0000');
+                }
+                else{
+                    $('#file_name'+type).html('Error in upload').css('color','#FF0000');
+                }
+            }
+        });
+        jQuery('img').each(function(){
+            jQuery(this).attr('src',jQuery(this).attr('src')+ '?' + (new Date()).getTime());
+        });
+    }
+
+
+    //* validation
+  /*  gebo_validation = {
+        reg: function() {
+            reg_validator = $('.form_validation_reg').validate({
+                onkeyup: false,
+                errorClass: 'error',
+                validClass: 'valid',
+                highlight: function(element) {
+                    $(element).closest('div').addClass("f_error");
+                    $(element).closest('div').css("color", "black");
+                },
+                unhighlight: function(element) {
+                    $(element).closest('div').removeClass("f_error");
+                },
+                errorPlacement: function(error, element) {
+                    $(element).closest('div').append(error);
+                    $('.error').css("font-size", "10px");
+                    $('.error').css("padding-top", "5px");
+                },
+                rules: {
+                    first_name: { required: true, minlength: 3 },
+                    last_name: { required: true, minlength: 3 },
+                    login: { required: true, minlength: 2 },
+                    password: { required: true, minlength: 2 },
+                    phone_number: { required: true },
+                    address2: { required: true, minlength: 5 },
+                    country: { required: true, minlength: 2 },
+                    email: { required: true, email:true, minlength: 10 },
+                    email_personal: { required: true, email:true, minlength: 10 },
+                    birth_date: { required: true},
+                    birth_city: { required: true, minlength: 3 },
+                    telephone: { required: true, minlength: 5 },
+                    join_date: { required: true },
+                    interview: { required: true, minlength: 5 },
+                    workplace: { required: true },
+                    work_telephone: { required: true, minlength: 5 },
+                    skype_id: { required: true, minlength: 5 },
+                    contact_language: { required: true, minlength: 5 },
+                    rib: { required: true, minlength: 5 },
+                    ssn: {required: true, minlength: function(element) {
+                        if($('#workplace').val()=='2')
+                           return 9;
+                        else
+                            return 15;
+                        }
+                    }
+                },
+                invalidHandler: function(form, validator) {
+                    $.sticky("There are some errors. Please corect them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
+                }
+            })
+        }
+    };*/
+    function getBoUserMoyennes(userid)
+    {
+        var moy_user = $("#moy_user_type").val();
+        var moy_lang = $("#moy_language").val();
+        var moy_categ = $("#moy_category").val();
+        var userid = userid;
+        if($("#moy_language").val() != '0'){
+            var target_page = "/user/bousermoyennes?userid="+userid+"&bousermoy_lang="+moy_lang;
+            $.post(target_page, function(data){  //alert(data);
+                $("#moy_lang_stats").text(data);
+            });
+        }
+        if($("#moy_category").val() != '0'){
+            var target_page = "/user/bousermoyennes?userid="+userid+"&bousermoy_categ="+moy_categ;
+            $.post(target_page, function(data){  //alert(data);
+                $("#moy_categ_stats").text(data);
+            });
+        }
+    }
+    function getBoUserStatistics(userid)
+    {
+        var stats_lang = $("#stats_language").val();
+        var stats_categ = $("#stats_category").val();
+        var userid = userid;
+        var target_page = "/user/bouserstatistics?userid="+userid+"&stats_lang="+stats_lang+"&stats_categ="+stats_categ;
+        $.post(target_page, function(data){  //alert(data);
+            var obj = $.parseJSON(data);
+            $("#validated").text(obj[2]+"/"+obj[1]+" ("+(obj[2]/obj[1]).toFixed(2)+" %)");
+            $("#refusedreasons").text(obj[3]+"/"+obj[4]+" ("+(obj[3]/obj[4]).toFixed(2)+" %)");
+            $("#refusedreasonscrt").text(obj[5]+"/"+obj[4]+" ("+(obj[5]/obj[4]).toFixed(2)+" %)");
+            $("#refused").text(obj[0]+"/"+obj[1]+" ("+(obj[0]/obj[1]).toFixed(2)+" %)");
+            $("#numclients").text(obj[6]);
+            $("#clientlist").text(obj[7]);
+        });
+    }
+    /////stats at mission level for this user/////
+    function getBoUserMissionStatistics(userid)
+    {
+        var stats_lang = $("#missionstats_language").val();
+        var stats_categ = $("#missionstats_category").val();
+        var userid = userid;
+
+        var target_page = "/user/bousermissionstatistics?userid="+userid+"&stats_lang="+stats_lang+"&stats_categ="+stats_categ;
+        $.post(target_page, function(data){  //alert(data);
+            var obj = $.parseJSON(data); //alert(obj[15][0]['topcontrib']);
+            $("#publicarts").text(obj[0]+"/"+obj[12]+" ("+(obj[0]/obj[12]).toFixed(2)+" %)");
+            $("#bopublic").text(obj[2]+"/"+obj[0]+" ("+(obj[2]/obj[0]).toFixed(2)+" %)");
+            $("#pubfopubcount").text(obj[4]+"/"+obj[0]+" ("+(obj[4]/obj[0]).toFixed(2)+" %)");
+            $("#pubfoprivcount").text(obj[5]+"/"+obj[0]+" ("+(obj[5]/obj[0]).toFixed(2)+" %)");
+            $("#privatearts").text(obj[1]+"/"+obj[12]+" ("+(obj[1]/obj[12]).toFixed(2)+" %)");
+            $("#boprivate").text(obj[3]+"/"+obj[1]+" ("+(obj[3]/obj[1]).toFixed(2)+" %)");
+            $("#privfopubcount").text(obj[6]+"/"+obj[1]+" ("+(obj[6]/obj[1]).toFixed(2)+" %)");
+            $("#privfoprivcount").text(obj[7]+"/"+obj[1]+" ("+(obj[7]/obj[1]).toFixed(2)+" %)");
+            $("#pubjc0count").text(obj[13]['jc0']+"/"+obj[0]+" ("+(obj[13]['jc0']/obj[0]).toFixed(2)+" %)");
+            $("#pubjccount").text(obj[13]['jc']+"/"+obj[0]+" ("+(obj[13]['jc']/obj[0]).toFixed(2)+" %)");
+            $("#pubsccount").text(obj[13]['sc']+"/"+obj[0]+" ("+(obj[13]['sc']/obj[0]).toFixed(2)+" %)");
+            $("#puballprofiles").text(obj[13]['all']+"/"+obj[0]+" ("+(obj[13]['all']/obj[0]).toFixed(2)+" %)");
+            $("#privjc0count").text(obj[14]['jc0']+"/"+obj[1]+" ("+(obj[14]['jc0']/obj[1]).toFixed(2)+" %)");
+            $("#privjccount").text(obj[14]['jc']+"/"+obj[1]+" ("+(obj[14]['jc']/obj[1]).toFixed(2)+" %)");
+            $("#privsccount").text(obj[14]['sc']+"/"+obj[1]+" ("+(obj[14]['sc']/obj[1]).toFixed(2)+" %)");
+            $("#top1writer").text(obj[15][0]['topcontrib'] +":"+ obj[15][0]['topwriterscount']+"/"+obj[19]+" ("+(obj[15][0]['topwriterscount']/obj[19]).toFixed(2)+" %)");
+            $("#top2writer").text(obj[15][1]['topcontrib'] +":"+ obj[15][1]['topwriterscount']+"/"+obj[19]+" ("+(obj[15][1]['topwriterscount']/obj[19]).toFixed(2)+" %)");
+            $("#top3writer").text(obj[15][2]['topcontrib'] +":"+ obj[15][2]['topwriterscount']+"/"+obj[19]+" ("+(obj[15][2]['topwriterscount']/obj[19]).toFixed(2)+" %)");
+            $("#top1corrector").text(obj[16][0]['topcorrector'] +":"+ obj[16][0]['topcorrectorscount']+"/"+obj[20]+" ("+(obj[16][0]['topcorrectorscount']/obj[20]).toFixed(2)+" %)");
+            $("#top2corrector").text(obj[16][1]['topcorrector'] +":"+ obj[16][1]['topcorrectorscount']+"/"+obj[20]+" ("+(obj[16][1]['topcorrectorscount']/obj[20]).toFixed(2)+" %)");
+            $("#top3corrector").text(obj[16][2]['topcorrector'] +":"+ obj[16][2]['topcorrectorscount']+"/"+obj[20]+" ("+(obj[16][2]['topcorrectorscount']/obj[20]).toFixed(2)+" %)");
+            $("#missionclientnum").text(obj[18]);
+            $("#missionclientlist").text(obj[17]);
+            $("#timespend").text(obj[21]);
+
+
+        });
+    }
+    function getStatisticsGraph(userid)
+    {
+        var stats_lang = $("#stats_language").val();
+        var stats_categ = $("#stats_category").val();
+        var userid = userid;
+
+        if($("#stats_language").val() != ''){
+            $("#stats_category").chosen({ allow_single_deselect: true,search_contains: true  });
+            var target_page = "/user/marksContributorGraph?userid="+userid+"&stats_lang="+stats_lang;
+            $.post(target_page, function(data){ // alert(data);
+                var obj = $.parseJSON(data);
+
+            });
+        }
+        if($("#stats_category").val() != ''){
+            $("#stats_language").chosen({ allow_single_deselect: true,search_contains: true  });
+            var target_page = "/user/statistics?userid="+userid+"&stats_categ="+stats_categ;
+            $.post(target_page, function(data){ // alert(data);
+                var obj = $.parseJSON(data);
+
+            });
+        }
+
+    }
+    function changeGraph(userid)
+    {
+        var stats_lang = $("#graph_language").val();
+        var stats_categ = $("#graph_category").val();
+        var stats_date = $("#dp1").val();
+        var userid = userid;
+        var target_page = "/user/bousergraph?userid="+userid+"&type=bouser&stats_lang="+stats_lang+"&stats_categ="+stats_categ+"&stats_date="+stats_date;
+        $.post(target_page, function(data){  //alert(data);
+          $("#newgraph").html(data);
+
+        });
+    }
+    function addnewRib(ribmore)
+    {
+        var ribid=ribmore;
+        var cloned =$("#addmore_rib_link");// $('#languageage_more_'+language);
+        $("#rib_more_"+ribid).clone().attr('id', 'rib_more_'+(++ribid) ).insertBefore( cloned );// alert(ribid);
+
+        $('#rib_more_'+ribid+' .close').attr('id','rib_close_'+ribid);
+        $('#rib_more_'+ribid+' .close').show();
+        $("#addmore_rib_link").attr("onClick","addnewRib("+ribid+")");
+        $('#rib_defualt_'+ribid).val(ribid);
+        /**resetting the div**/
+        clearChildren(document.getElementById('rib_more_'+ribid));
+        $("#ribcount").val(ribid);
+    }
+    function setCheck(ribid)
+    {
+        $( ".rib_default" ).each(function(i) {
+            if(ribid == i)
+                $('#rib_default_'+i).val('yes');
+            else
+                $('#rib_default_'+i).val('no');
+        });
+    }
+    function sendPassToPersonalEmail(userid)
+    {
+        var target_page = "/user/sendpasswordtomail?userId="+userid;
+        $.post(target_page, function(data){
+           smoke.alert("Password has been sent to your email");
+        });
+    }
+
+</script>
+<!--<style>#clientlogo{width:30px;height:30px;}</style>-->
+{/literal}
+<div class="row-fluid">
+    <a class="label label-inverse pull-right" href="/user/users-list?submenuId=ML3-SL6&tab=bouserstab">retour</a>
+<div id="helo"></div>
+<div class="tabbable">
+   <ul class="nav nav-tabs">
+       <li class="active"><a href="#bouserstab" data-toggle="tab" class="lable-success"><i class="icon-pencil"></i>&nbsp;<strong>Edit user</strong></a></li>
+       <li {if $smarty.get.tab == 'bouserstats'} class="active" {/if}><a href="#bouserstats" data-toggle="tab" class="lable-danger"><i class="icon-eye-open"></i>&nbsp;<strong>Statistiques chef de projet</strong></a></li>
+       <li {if $smarty.get.tab == 'bouserarts'} class="active" {/if}><a href="#bouserarts" data-toggle="tab" class="lable-danger"><i class="icon-eye-open"></i>&nbsp;<strong>Suivi chef de projet</strong></a></li>
+   </ul>
+   <div class="tab-content">
+       <div id="bouserstab" class="active tab-pane" >
+        <form class="form_validation_reg" autocomplete="off" action="" onsubmit="return validateNewUser();" method="post" id="useredit" name="useredit" enctype="multipart/form-data">
+            <input type="hidden" id="userId" name="userId" value="{$Userdetails[0].identifier}" />
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Email<span class="f_req">*</span></label>
+                        <input type="text" name="email" id="email" value="{$Userdetails[0].email}"   {if $groupId neq 1} readonly {/if}/>
+                    </div>
+                    <!--<div class="span5 form-inline">
+                        <label class="span4"> Logo </label>
+                        <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" value="" name="">
+                                              <span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span>
+                                                  <input type="file" name="file" id="fileLJ" value="clogo" onclick="uploadPictures('#fileLJ', 'clogo');"/></span>
+                            <span class="fileupload-preview"></span>
+                            <a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>
+                            <div id="file_nameclogo"></div>
+                        </div>
+                    </div>
+                    {$clogopic}-->
+
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Titre  <span class="f_req">*</span></label>
+                        <label class="uni-radio">
+                            <input type="radio" name="initial" id="initialmr" checked="" value="mr" {if $Userdetails[0].initial=='mr'} checked="checked" {/if} class="uni_style"/> mr
+                        </label>
+                        <label class="uni-radio">
+                            <input type="radio" name="initial" id="initialmme" value="mme"  {if $Userdetails[0].initial=='mme'} checked="checked" {/if} class="uni_style"/> mme
+                        </label>
+                        <label class="uni-radio">
+                            <input type="radio" name="initial" id="initialmlle" value="mlle" {if $Userdetails[0].initial=='mlle'} checked="checked" {/if} class="uni_style"/> mlle
+                        </label>
+                    </div>
+
+                    <div class="span5 form-inline">
+                        <label class="span4"> Upload picture </label>
+                        <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" value="" name="">
+                                              <span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span>
+                                                  <input type="file" name="file" id="filePJ" value="profile" onclick="uploadPictures('#filePJ', 'profile');"/></span>
+                            <span class="fileupload-preview"></span>
+                            <a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>
+                            <div id="file_nameprofile"></div>
+                        </div>
+                    </div>
+                    <img alt="user pic" id="userpic" class="thumbnail1" src="http://ep-test.edit-place.com{$profilepic}">
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Nom <span class="f_req">*</span></label>
+                        <input type="text" name="first_name" id="first_name" value="{$Userdetails[0].first_name}"  />
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Pr&eacute;nom <span class="f_req">*</span></label>
+                        <input type="text" name="last_name" id="last_name" value="{$Userdetails[0].last_name}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4"> Login Name <span class="f_req">*</span></label>
+                        <input type="text" name="login" id="login" value="{$Userdetails[0].login}"/>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Password<span class="f_req">*</span></label>
+                        <input type="password" name="password" id="password" value="{$Userdetails[0].password}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4"> City   </label>
+                        <input type="text" name="city" id="city" value="{$Userdetails[0].city}" />
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">State </label>
+                        <input type="text" name="state" id="state" value="{$Userdetails[0].state}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4"> Type </label>
+                        <select name="type" id="type"  placeholder="type">
+                            <option value=""></option>
+                            {html_options  options=$usergroups selected=$Userdetails[0].type}
+                        </select>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4"> Active </label>
+                        <select name="status" id="status" class="text-field-big" placeholder="active">
+                            <option value=" "></option>
+                            <option value="Active" {if $Userdetails[0].usrStatus=='Active'} selected="selected" {/if}>Active</option>
+                            <option value="Inactive" {if $Userdetails[0].usrStatus=='Inactive'} selected="selected" {/if}>Inactive</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Zip Code </label>
+                        <input type="text" name="zipcode" id="zipcode" value="{$Userdetails[0].zipcode}"/>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Phone Number  <span class="f_req">*</span></label>
+                        <input type="text" name="phone_number" id="phone_number" value="{$Userdetails[0].phone_number}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4"> Adresse </label>
+                        <textarea name="address" rows="3" id="address" value="{$Userdetails[0].address}">{$Userdetails[0].address}</textarea>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Interview  </label>
+                        <textarea  name="interview" rows="3" id="interview" value="">{$Userdetails[0].interview}</textarea>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Adresse email perso <span class="f_req">*</span></label>
+                        <input type="text" name="email_personal" id="email_personal" value="{$Userdetails[0].email_personal}"/>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Num&eacute;ro de t&eacute;l&eacute;phone 2  <span class="f_req">*</span></label>
+                        <input type="text" name="telephone" id="telephone" value="{$Userdetails[0].telephone}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Date de naissance <span class="f_req">*</span></label>
+                        <input type="text" name="birth_date" id="datepicker1" data-date-format="dd-mm-yyyy"  value="{$Userdetails[0].birth_date|date_format:"%d/%m/%Y"|upper}"/>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Ville de naissance  <span class="f_req">*</span></label>
+                        <input type="text" name="birth_city" id="birth_city" value="{$Userdetails[0].birth_city}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Date d'arriv&eacute;e <span class="f_req">*</span></label>
+                        <input type="text" name="join_date"  id="datepicker2" data-date-format="dd-mm-yyyy" value="{$Userdetails[0].join_date|date_format:"%d/%m/%Y"|upper}"/>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Pays</label>
+                        <select name="country" id="country"  placeholder="country">
+                            <option value=" "></option>
+                            {html_options  options=$country_array selected=$Userdetails[0].country}
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Lieu de travail <span class="f_req">*</span></label>
+                        <select size="1" name="workplace" id="workplace" >
+                            <option value=""></option>
+                            <option value="1" {if $Userdetails[0].workplace eq 1} selected="selected" {/if}>Banglore</option>
+                            <option value="2" {if $Userdetails[0].workplace eq 2} selected="selected" {/if}>Londres</option>
+                            <option value="3" {if $Userdetails[0].workplace eq 3} selected="selected" {/if}>Paris</option>
+                            <option value="4" {if $Userdetails[0].workplace eq 4} selected="selected" {/if}>Luxembourg</option>
+                            <option value="5" {if $Userdetails[0].workplace eq 5} selected="selected" {/if}>T&eacute;l&eacute;travail</option>
+                            <option value="6" {if $Userdetails[0].workplace eq 6} selected="selected" {/if}>Freelance</option>
+                        </select>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Num&eacute;ro de poste <span class="f_req">*</span></label>
+                        <input type="text" name="work_telephone" id="work_telephone" value="{$Userdetails[0].work_telephone}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Yahoo Id </label>
+                        <input type="text" name="yahoo_id" id="yahoo_id" value="{$Userdetails[0].yahoo_id}"/>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Skype Id <span class="f_req">*</span></label>
+                        <input type="text" name="skype_id" id="skype_id" value="{$Userdetails[0].skype_id}"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Langue des communications internes </label>
+                        <input type="text" name="contact_language" id="contact_language" value="{$Userdetails[0].contact_language}"/>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Numero de s&eacute;cutit&eacute; sociale <span class="f_req">*</span></label>
+                        <input type="text" name="ssn" id="ssn" value="{$Userdetails[0].ssn}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Site URL</label>
+                        <input type="text" name="site_url" id="site_url" value="{$Userdetails[0].url}"/>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Job Title<span class="f_req">*</span></label>
+                        <input type="text" name="job_title" id="job_title" value="{$Userdetails[0].job_title}"/>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Computer code<span class="f_req">*</span></label>
+                        <input type="text" name="computer_code" id="computer_code" value="{$Userdetails[0].computer_code}"/>
+                        <input type="hidden" name="original_computer_code" id="original_computer_code" value="{$Userdetails[0].computer_code}"/>
+                    </div>
+                    <div class="span5 form-inline">
+                        <label class="span4">Email Password</label>
+                        <button type="button" name="sentpassword" id="sentpassword" value="" onclick="sendPassToPersonalEmail('{$Userdetails[0].identifier}');" class="btn btn-inverse">Send password to my personal email</button>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <label class="span4">Parent User</label>
+                        <select  data-placeholder="Assignation" name="parentId" id="parentId" >
+                            {foreach from=$incharge_array item=bouseritem key=bouserkey}
+                            <option value="{$bouserkey}" {if $Userdetails[0].parentId eq $bouserkey} selected {/if}>{$bouseritem}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span10 form-inline">
+                        <label class="span3">RIB </label>
+                        {if $allribs eq 'NO'}
+                        <div class="addmore form-inline span11 alert alert-success" id="rib_more_1" >
+                            <label class="muted span3" >RIB Number :
+                                <input type="text" class="span9" id="rib_num_0" name="rib_num[]" value="{$ribdetials.rib_number}" /></label>
+                            <label class="muted span3" >RIB Name :
+                                <input type="text" class="span9 " id="rib_name_0" name="rib_name[]" value="{$ribdetials.rib_name}" /> </label>
+                            <!--<label for="slider-language_number_{$smarty.foreach.ribsname.index}" class="muted span3" >RIB file :
+                                <input type="file" id="ep_ribfile_{$smarty.foreach.ribsname.index}" value="{$ribdetials.rib_file}" name="ep_ribfile_{$smarty.foreach.ribsname.index}"  class="span9"/></label>-->
+                            <label class="muted span3" >RIB default :
+                                <input type="radio" class="span2" id="rib_default_1" name="rib_default[]" value="1"  />
+                                <button  class="close" type="button" id="rib_close_1" >&times;</button></label>
+                        </div>
+                        <p class="addmore-button" id="addmore_rib_link" onclick="addnewRib('1');"><a class="btn btn-link btn-small"><i class="icon-plus"></i> Ajouter une langue</a></p>
+                        <input type="hidden" id="ribcount" name="ribcount" value="1" />
+                        <input type="hidden" id="ribdefaultselected" name="ribdefaultselected" value="" />
+                        {else}
+                        {foreach from=$allribs key=ribs item=ribdetials name="ribsname}
+                        {assign var=rib_index value=$smarty.foreach.ribsname.index}
+                        <!-- Start, new language row -->
+                        <div class="addmore form-inline span11 alert alert-success" id="rib_more_{$rib_index}" >
+                            <label class="muted span3" >RIB Number :
+                                <input type="text" class="span9" id="rib_num_{$rib_index}" name="rib_num[]" value="{$ribdetials.rib_number}" /></label>
+                            <label class="muted span3" >RIB Name :
+                                <input type="text" class="span9 " id="rib_name_{$rib_index}" name="rib_name[]" value="{$ribdetials.rib_name}" /> </label>
+                            <!--<label for="slider-language_number_{$smarty.foreach.ribsname.index}" class="muted span3" >RIB file :
+                                <input type="file" id="ep_ribfile_{$smarty.foreach.ribsname.index}" value="{$ribdetials.rib_file}" name="ep_ribfile_{$smarty.foreach.ribsname.index}"  class="span9"/></label>-->
+                            <label class="muted span3" >RIB default :
+                                <input type="radio" class="span2 rib_default" id="rib_default_{$rib_index}" name="rib_default[]" value="{if $ribdetials.default_val eq 'yes'}{$rib_index}{else}{$rib_index}{/if}" onclick="return setChecks('{$rib_index}');"   {if $ribdetials.default_val eq 'yes'} checked {/if} />
+                                <button  class="close" type="button" id="rib_close_{$rib_index}" >&times;</button></label>
+                        </div>
+                        {/foreach}
+                        <p class="addmore-button" id="addmore_rib_link" onclick="addnewRib('{$rib_index}');"><a class="btn btn-link btn-small"><i class="icon-plus"></i> Ajouter une langue</a></p>
+                        <input type="hidden" id="ribcount" name="ribcount" value="{$allribs|@count}" />
+                        <input type="hidden" id="ribdefaultselected" name="ribdefaultselected" value="" />
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span5 form-inline">
+                        <button type="submit" name="usersubmit" class="btn btn-success pull-right">Edit User</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+       </div>
+       <!-- bo users statistics-->
+       <div id="bouserstats" class="tab-pane" >
+
+           <div class="formSep">
+               <div class="row-fluid">
+                   <div class="span4 form-inline">
+                       <label class="span4">Filtrer par langue(s) </label>
+                       <select  id=graph_language name=graph_language onchange="changeGraph('{$smarty.get.userId}');"   data-placeholder="Select Langue">
+                           <option value="0"> </option>
+                           {html_options  id=language options=$language_array selected=$language }
+                       </select>
+                   </div>
+                   <div class="span4 form-inline">
+                       <label class="span4">Filtrer par cat&eacute;gorie(s) </label>
+                       <select  name="graph_category" id="graph_category" onchange="changeGraph('{$smarty.get.userId}');" data-placeholder="select category">
+                           <option value=""></option>
+                           {html_options options=$category_array selected=$user_detail[0].category}
+                       </select>
+                   </div>
+                   <div class="span4 form-inline">
+                       <label class="span4">Date </label>
+                       <input type="text" name="graph_date" onchange="changeGraph('{$smarty.get.userId}');" placeholder="select date" id="dp1" readonly data-date-format="dd-mm-yyyy" value="{$smarty.get.startdate}"/>
+
+                   </div>
+               </div>
+           </div>
+           <div class="formSep" id="newgraph">
+               <div class="row-fluid">
+                   <div class="span6" style="width: 600px;">
+                       <h3 class="heading pull-center">Mark</h3>
+                       <div id="monthlyGraph" style="height:270px;width:100%;margin:15px auto 0"></div>
+                      <!-- <div id="fl_m" style="height:270px;width:100%;margin:15px auto 0"></div>-->
+                   </div>
+               </div>
+           </div>
+
+           <div class="formSep">
+               <div class="row-fluid">
+                   <div class="span6">
+                       <h3 class="heading pull-center">Moyennes</h3>
+                       <table class="table table-striped table-bordered table-condensed span9">
+                           <tr>
+                               <td class="span3"><span class="pull-right alpbold">G&eacute;n&eacute;rale :</span></td>
+                               <td class="span9"><span class="span5"> <span class="alert alert-info pull-right" style="padding:10px;margin-bottom:0px;font: bold;" >{$marks}</span> </td>
+                           </tr>
+                           <tr>
+                               <td class="span3"><span class="pull-right alpbold">Langue(s) : </span></td>
+                               <td class="span9"><span class="pull-left ">
+                                    <select  name="moy_language" id="moy_language" data-placeholder="select language" onchange="getBoUserMoyennes('{$smarty.get.userId}')">
+                                        <option value="0"> </option>
+                                        {html_options  id=language options=$language_array selected=$language }
+                                    </select>
+                                </span><span class="alert alert-info pull-right" style="padding:10px;margin-bottom:0px;font: bold;" id="moy_lang_stats"></span></td>
+                           </tr>
+                           <tr>
+                               <td class="span3"><span class="pull-right alpbold">Cat&eacute;gorie(s) :</span></td>
+                               <td class="span9"><span class="pull-left ">
+                                    <select  name="moy_category" id="moy_category" data-placeholder="select category" onchange="getBoUserMoyennes('{$smarty.get.userId}')">
+                                        <option value="0"></option>
+                                        {html_options options=$category_array selected=$user_detail[0].language}
+                                    </select>
+                                </span><span class="alert alert-success pull-right" style="padding:10px;margin-bottom:0px;font: bold;" id="moy_categ_stats"></span></td>
+                           </tr>
+                       </table>
+                   </div>
+               </div>
+           </div>
+           <div class="formSep">
+               <h3 class="heading pull-center bold">Statistiques</h3>
+               <div class="row-fluid">
+
+                   <div class="span6 form-inline">
+                       <label class="span4">Filtrer par langue(s)</label>
+                       <select  name="stats_language" id="stats_language" data-placeholder="select language" onchange="getBoUserStatistics('{$smarty.get.userId}')">
+                           <option value="">  </option>
+                           {html_options  options=$language_array  }
+                       </select>
+                   </div>
+                   <div class="span6 form-inline">
+                       <label class="span4">Filtrer par cat&eacute;gorie(s)</label>
+                       <select  name="stats_category" id="stats_category" data-placeholder="select category" onchange="getBoUserStatistics('{$smarty.get.userId}')">
+                           <option value=""> </option>
+                           {html_options options=$category_array }
+                       </select>
+                   </div>
+
+                   <label class="span5 alert alert-danger" >Nombre d'articles valid&eacute;s : <span id="validated">{$published_arts}/{$total_parts}
+                        {if $total_parts neq 0}
+                        {assign var="validatedpercentage" value=$published_arts/$total_parts}{/if}
+                        ({$validatedpercentage|string_format:"%.2f"} %)</span></label>
+
+                   <label class="span5 alert alert-success" id="">Raison du refus la plus resoumission fr&eacute;quente : <span id="refusedreasons"> {$freqbotempreason}{$freqbotempreasoncount}/{$total_refusalreasons}
+                        ({if $freqbotempreasoncount || $total_refusalreasons neq ''}{$freqbotempreasoncount/$total_refusalreasons|string_format:"%.2f"}{else}0{/if} %)</span><a class="hint--bottom hint--info" data-hint="Refuse reasons"  data-target="#refusereasonslist" data-toggle="modal"  name="send_comment"  href="/user/refused-reasons?userid={$smarty.get.userId}&type=bouser&reasontype=temp"" >Voir plus</a></label>
+                   <label class="span5 alert alert-info">Nombre d'articles refus&eacute;s :<span id="refused"> {$refused_arts}/{$total_parts}
+                        {if $total_parts neq 0}
+                        {assign var="refusedpercentage" value=$refused_arts/$total_parts}{/if}
+                        ({$refusedpercentage|string_format:"%.2f"} %)</span></label>
+                   <label class="span5 alert alert-gebo">Raison du refus la plus fr&eacute;quente  : <span id="refusedreasonscrt">{$freqbopermreason}  {$freqbopermreasoncount}/{$total_refusalreasons}
+                        ({if $freqbopermreasoncount || $total_refusalreasons neq ''}{$freqbopermreasoncount/$total_refusalreasons|string_format:"%.2f"}{else}0{/if} %) </span><a class="hint--bottom hint--info" data-hint="Refuse reasons corrector"  data-target="#refusereasonslist" data-toggle="modal"  name="send_comment"  href="/user/refused-reasons?userid={$smarty.get.userId}&type=bouser&reasontype=perm" >Voir plus</a></label>
+
+                   <label class="span5 alert alert-info">Nombre de clients avec lesquels il a travaill&eacute; :<span id="numclients"> {$num_clients}</span></label>
+                   <label class="span5 alert alert-info">Noms des clients : <span id="clientlist">{$client_list}</span></label>
+               </div>
+
+
+
+           </div>
+           <div class="formSep">
+               <h3 class="heading pull-center bold">Statistiques missions</h3>
+               <div class="row-fluid">
+                   <div class="span6 form-inline">
+                       <label class="span4">Filtrer par langue(s)</label>
+                       <select  name="missionstats_language" id="missionstats_language" data-placeholder="select language" onchange="getBoUserMissionStatistics('{$smarty.get.userId}')">
+                           <option value="">  </option>
+                           {html_options  options=$language_array  }
+                       </select>
+                   </div>
+                   <div class="span6 form-inline">
+                       <label class="span4">Filtrer par cat&eacute;gorie(s)</label>
+                       <select  name="missionstats_category" id="missionstats_category" data-placeholder="select category" onchange="getBoUserMissionStatistics('{$smarty.get.userId}')">
+                           <option value=""> </option>
+                           {html_options options=$category_array }
+                       </select>
+                   </div>
+                   <div class="span10 form-inline"></div>
+                   <label class="span5"><h4>Nombre de missions de r&eacute;daction publiques : <span id="publicarts">{$publicCount}/{$total_articles} (0.31 %)</span></h4>
+                       <div class="span1" style="height:10px;"></div>
+                       <label class="span12 alert alert-success pull-right">
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i>avec Correction BO : <span id="bopublic">{$publicBoCount}/{$publicCount} (0%) </span></div>
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i> avec Correction FO publique : <span id="pubfopubcount">{$publicFoPubCount}/{$publicCount} (0%) </span></div>
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i> avec Correction FO priv&eacute;e : <span id="pubfoprivcount"> {$publicFoPrvCount}/{$publicCount} (0%) </span></div></label>
+                   </label>
+                   <label class="span5 "><h4>Nombre de missions de r&eacute;daction priv&eacute;es : <span id="privatearts">{$privateCount}/{$total_articles} (0.31 %)</span></h4>
+                       <div class="span1" style="height:10px;"></div>
+                       <label class="span12 alert alert-success pull-right">
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i> avec Correction BO : <span id="boprivate">{$privateBoCount}/{$privateCount} (0%) </span></div>
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i> avec Correction FO publique :<span id="privfopubcount"> {$privateFoPubCount}/{$privateCount} (0%) </span></div>
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i> avec Correction FO priv&eacute;e : <span id="privfoprivcount">{$privateFoPrvCount}/{$privateCount} (0%) </span></div></label>
+                   </label>
+                   <label class="span8 alert alert-success" id="">Langue des missions la plus fr&eacute;quente : {$freqlanguage|utf8_decode}<span id="refusedreasons"> {$freqlanguageCount}/{$total_articles}
+                        ({if $freqlanguageCount neq 0 && $total_articles neq 0} {$freqlanguageCount/$total_articles|string_format:"%.2f"} {else} 0 {/if} %)</span><!--<a class="hint--bottom hint--info" data-hint="Refuse reasons"  data-target="#refusereasonslist" data-toggle="modal"  name="send_comment"  href="/user/refused-reasons?userid={$smarty.get.userId}&type=bouser&reasontype=notcorrector"" >Voir plus</a>--></label>
+                   <label class="span8 alert alert-success" id="">Cat&eacutegorie des missions la plus fr&eacute;quente : {$freqcateg|utf8_decode}<span id="refusedreasons"> {$freqcategCount}/{$total_articles}
+                        ({if $freqcategCount neq 0 && $total_articles neq 0}{$freqcategCount/$total_articles|string_format:"%.2f"} {else} 0 {/if} %)</span><!--<a class="hint--bottom hint--info" data-hint="Refuse reasons"  data-target="#refusereasonslist" data-toggle="modal"  name="send_comment"  href="/user/refused-reasons?userid={$smarty.get.userId}&type=bouser&reasontype=notcorrector"" >Voir plus</a>--></label>
+                   <label class="span8 alert alert-success" id="">Temps moyen de s&eacute;lection manuelle apr&eacute;s bidding : <span id="timespend"> {$timespend}</span></label>
+                   <label class="span8 " id=""><h4>Nombre de missions publi&eacute;es aux :</h4><span id="">  </span>
+                       <label class="span12 alert alert-block pull-right">
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i>aux JC0 : <span id="pubjc0count">{$viewto.jc0}/{$publicCount} (0 %) </span></div>
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i>aux JC : <span id="pubjccount">{$viewto.jc}/{$publicCount} (0%) </span></div>
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i>aux SC : <span id="pubsccount">{$viewto.sc}/{$publicCount} (0%) </span></div>
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i>ALL  : <span id="puballprofiles">{$viewto.all}/{$publicCount} (0%) </span></div></label>
+                   </label>
+                   <label class="span8 " id=""><h4>Nombre de contributeurs s&eacute;lectionn&eacute;s par type :</h4><span id="">  </span>
+                       <label class="span12 alert alert-block pull-right">
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i>aux JC0 : <span id="privjc0count">{$selviewto.jc0}/{$PMpartscount} (0%) </span></div>
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i>aux JC : <span id="privjccount">{$selviewto.jc}/{$PMpartscount} (0%) </span></div>
+                           <div class="span8 "><i class="splashy-breadcrumb_separator_arrow_1_dot"></i>aux SC : <span id="privsccount">{$selviewto.sc}/{$PMpartscount} (0%) </span></div>
+                       </label>
+                   </label>
+
+                   <label class="span5"><h4>TOP 3 des r&eacute;dacteurs les plus souvent s&eacute;lectionn&eacute;s : <span id=""></span></h4>
+                       <div class="span1" style="height:10px;"></div>
+                       <label class="span12 alert alert-success pull-right">
+                           <div class="span9"><i class="splashy-breadcrumb_separator_arrow_1_dot"></i><span id="top1writer">{$topwriter[0].topcontrib} : {$topwriter[0].topwriterscount}/{$PMpartscount}
+                              ({if $topwriter[0].topwriterscount neq 0 && $PMpartscount neq 0} {$topwriter[0].topwriterscount/$PMpartscount|string_format:"%.2f"} {else} 0 {/if} %) </span></div>
+                           <div class="span9"><i class="splashy-breadcrumb_separator_arrow_1_dot"></i> <span id="top2writer">{$topwriter[1].topcontrib} : {$topwriter[1].topwriterscount}/{$PMpartscount}
+                              ({if $topwriter[1].topwriterscount neq 0 && $PMpartscount neq 0} {$topwriter[0].topwriterscount/$PMpartscount|string_format:"%.2f"} {else} 0 {/if} %) </span></div>
+                           <div class="span9"><i class="splashy-breadcrumb_separator_arrow_1_dot"></i> <span id="top3writer">{$topwriter[2].topcontrib} : {$topwriter[2].topwriterscount}/{$PMpartscount} )
+                              ({if $topwriter[2].topwriterscount neq 0 && $PMpartscount neq 0} {$topwriter[0].topwriterscount/$PMpartscount|string_format:"%.2f"} {else} 0 {/if} %) </span></div>
+                       </label>
+                   </label>
+                   <label class="span5"><h4>TOP 3 des correcteurs les plus souvent s&eacute;lectionn&eacute;s : <span id=""></span></h4>
+                       <div class="span1" style="height:10px;"></div>
+                       <label class="span12 alert alert-success pull-right">
+                           <div class="span9"><i class="splashy-breadcrumb_separator_arrow_1_dot"></i><span id="top1corrector">{$topcorrector[0].topcorrector} : {$topcorrector[0].topcorrectorscount}/{$PMcrtpartcount}
+                               ({if $topcorrector[0].topcorrectorscount neq 0 && $PMcrtpartcount neq 0} {$topcorrector[0].topcorrectorscount/$PMcrtpartcount|string_format:"%.2f"}{else} 0 {/if} %) </span></div>
+                           <div class="span9"><i class="splashy-breadcrumb_separator_arrow_1_dot"></i><span id="top2corrector"> {$topcorrector[1].topcorrector} : {$topcorrector[1].topcorrectorscount}/{$PMcrtpartcount}
+                               ({if $topcorrector[1].topcorrectorscount neq 0 && $PMcrtpartcount neq 0} {$topcorrector[1].topcorrectorscount/$PMcrtpartcount|string_format:"%.2f"}{else} 0 {/if} %) </span></div>
+                           <div class="span9"><i class="splashy-breadcrumb_separator_arrow_1_dot"></i><span id="top3corrector"> {$topcorrector[2].topcorrector} : {$topcorrector[2].topcorrectorscount}/{$PMcrtpartcount}
+                               ({if $topcorrector[2].topcorrectorscount neq 0 && $PMcrtpartcount neq 0} {$topcorrector[2].topcorrectorscount/$PMcrtpartcount|string_format:"%.2f"}{else} 0 {/if} %) </span></div>
+                       </label>
+                   </label>
+                   <div class="span6 form-inline">
+                       <label class="span12 alert alert-info">Nombre de clients g&eacute;r&eacute;s  :<span id="missionclientnum"> {$clientpartnum}</span></label>
+                       <label class="span12 alert alert-danger">Noms des clients : <span id="missionclientlist">{$clientparts_list}</span></label>
+                   </div>
+               </div>
+       </div>
+   </div>
+       <div id="bouserarts" class="tab-pane" >
+           <table id="bousermissions" class="table table-bordered table-striped table_vam"  >
+               <thead>
+               <tr>
+                   <th>Nom de l'annonce</th>
+                   <th>Nom de l'article</th>
+                   <th>Nombre d'articles en r&eacute;daction</th>
+                   <th>Nombre d'articles en relecture</th>
+                   <th>Nombre d'articles valid&eacute;s</th>
+                   <th>Nombre d'articles refus&eacute;s pour resoumission</th>
+                   <th>Nom du client</th>
+                   <th>Langue</th>
+                   <th>Cat&eacute;gories</th>
+                   <th>Date de r&eacute;ception du dernier article</th>
+               </tr>
+               </thead>
+               <tbody>
+               {if $bouserstatsarticles neq 'NO'}
+               {foreach from=$bouserstatsarticles key=bouserarts_key item=bouserarts_item name=bouserarts_loop}
+               <tr>
+                   <td>{$bouserarts_item.deliveryName|utf8_decode}</td>
+                   <td><a href="/ongoing/ao-details?client_id={$bouserarts_item.clientId}&ao_id={$bouserarts_item.id}&submenuId=ML2-SL4">{$bouserarts_item.artName|utf8_decode}</a></td>
+                   <td>{$bouserarts_item.inwriting}</td>
+                   <td>{$bouserarts_item.instages}</td>
+                   <td>{$bouserarts_item.validated}</td>
+                   <td>{$bouserarts_item.republish_count}</td>
+                   <td>{$bouserarts_item.company_name|utf8_decode}</td>
+                   <td>{$bouserarts_item.language|utf8_decode}</td>
+                   <td>{$bouserarts_item.category|utf8_decode}</td>
+                   <td>nill</td>
+               </tr>
+               {/foreach}
+               {/if}
+               </tbody>
+           </table>
+       </div>
+</div>
+<!--///when republish the popup comes for edit details and mail for republish article///-->
+<div class="modal hide fade" id="cropimagepopup">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('cropimagepopup');">&times;</button>
+        <h3>Edit User</h3>
+    </div>
+    <div class="modal-body alignright">
+        {include file="gebo/user/profile_image_crop.phtml"}
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+    <!--///for the contributor history popup///-->
+    <div class="modal hide fade" id="refusereasonslist">
+        <div class="modal-header">
+            <button class="close" onclick="closePopup('refusereasonslist');" >&times;</button>
+            <h3>Refuse Reasons List</h3>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+        </div>
+    </div>
+{literal}
+<script type="text/javascript" >
+
+   $(document).ready(function() {
+
+       //gebo_charts.fl_m();
+   });
+   {/literal}{$dates}{literal}
+   for (var i = 0; i < d2.length; ++i) {d2[i][0] += 60 * 120 * 1000};
+   //* charts
+   gebo_charts = {
+       fl_m : function() {
+              // Setup the placeholder reference
+           var elem = $('#monthlyGraph');
+               var options = {
+                   lines: { show: true },
+                   points: { show: true },
+                   yaxes: [
+                       {min: 0},
+                       {max: 10},
+                       {position: "left"}
+                   ],
+                   xaxis: {
+                       mode: "time",
+                       timeformat: "%b %y",
+                       minTickSize: [1, "month"],
+                       autoscaleMargin: 0.10
+
+                   },
+                   grid: { hoverable: true },
+                   legend: { position: 'nw' },
+                   colors: [ "#3ca0ca" ]
+               };
+
+               // Setup the flot chart using our data
+               fl_d_plot = $.plot(elem,
+                   [
+                       {   data: d2,
+                           label: "Users marks",
+                           yaxis: 2,
+                           points: { show: true },
+                           stack: null
+                       }
+                   ], options);
+
+               // Create a tooltip on our chart
+               elem.qtip({
+                   prerender: true,
+                   content: 'Loading...', // Use a loading message primarily
+                   position: {
+                       viewport: $(window), // Keep it visible within the window if possible
+                       target: 'mouse', // Position it in relation to the mouse
+                       adjust: { x: 11 } // ...but adjust it a bit so it doesn't overlap it.
+                   },
+                   show: false, // We'll show it programatically, so no show event is needed
+                   style: {
+                       classes: 'ui-tooltip-shadow ui-tooltip-tipsy',
+                       tip: false // Remove the default tip.
+                   }
+               });
+
+               // Bind the plot hover
+               elem.on('plothover', function(event, coords, item) {
+                   // Grab the API reference
+                   var self = $(this),
+                       api = $(this).qtip(),
+                       previousPoint, content,
+
+                   // Setup a visually pleasing rounding function
+                       round = function(x) { return Math.round(x * 1000) / 1000; };
+
+                   // If we weren't passed the item object, hide the tooltip and remove cached point data
+                   if(!item) {
+                       api.cache.point = false;
+                       return api.hide(event);
+                   }
+
+                   // Proceed only if the data point has changed
+                   previousPoint = api.cache.point;
+                   if(previousPoint !== item.seriesIndex)
+                   {
+                       // Update the cached point data
+                       api.cache.point = item.seriesIndex;
+
+                       // Setup new content
+                       content = item.series.label +': '+ round(item.datapoint[1]);
+
+                       // Update the tooltip content
+                       api.set('content.text', content);
+
+                       // Make sure we don't get problems with animations
+                       api.elements.tooltip.stop(1, 1);
+
+                       // Show the tooltip, passing the coordinates
+                       api.show(coords);
+                   }
+               });
+       }
+   }
+
+</script>
+   <style>
+       #dailyGraph, #weeklyGraph, #monthlyGraph, #cdailyGraph, #cweeklyGraph, #cmonthlyGraph {width: 90%; margin: 15px auto 0px; padding: 0px; }
+       #cstmm{float: left;display: block; position: relative;}
+       .dailyChart, .weeklyChart, .monthlyChart, .cdailyChart, .cweeklyChart, .cmonthlyChart{cursor: pointer;}
+   </style>
+{/literal}
+
+

@@ -1,0 +1,91 @@
+<?xml version="1.0"?><plag>
+  <article>
+    <title id="resultFile">Stencils_plagiarism_27681.xlsx</title>
+    <results>
+      <result class="bgplain" id="1" onclick="plagres(1)" tokenname="Key1">
+        <url>
+          <b>URL :</b>
+          <p class="bluelink">NoResult</p>
+        </url>
+        <percentage>
+          <b>PLAG PERCENTAGE :</b>
+          <p class="yellowlink">0.0</p>
+        </percentage>
+        <content>
+          <b>content:</b>
+          <p class="contentwrap"></p>
+        </content>
+      </result>
+      <result class="bgplain" id="2" onclick="plagres(2)" tokenname="Key2">
+        <url>
+          <b>URL :</b>
+          <p class="bluelink">NoResult</p>
+        </url>
+        <percentage>
+          <b>PLAG PERCENTAGE :</b>
+          <p class="yellowlink">0.0</p>
+        </percentage>
+        <content>
+          <b>content:</b>
+          <p class="contentwrap"></p>
+        </content>
+      </result>
+      <result class="bgplain" id="3" onclick="plagres(3)" tokenname="Key3">
+        <url>
+          <b>URL :</b>
+          <p class="bluelink">NoResult</p>
+        </url>
+        <percentage>
+          <b>PLAG PERCENTAGE :</b>
+          <p class="yellowlink">0.0</p>
+        </percentage>
+        <content>
+          <b>content:</b>
+          <p class="contentwrap"></p>
+        </content>
+      </result>
+      <result class="bgplain" id="4" onclick="plagres(4)" tokenname="Key4">
+        <url>
+          <b>URL :</b>
+          <p class="bluelink">NoResult</p>
+        </url>
+        <percentage>
+          <b>PLAG PERCENTAGE :</b>
+          <p class="yellowlink">0.0</p>
+        </percentage>
+        <content>
+          <b>content:</b>
+          <p class="contentwrap"></p>
+        </content>
+      </result>
+      <result class="bgplain" id="5" onclick="plagres(5)" tokenname="Key5">
+        <url>
+          <b>URL :</b>
+          <p class="bluelink">NoResult</p>
+        </url>
+        <percentage>
+          <b>PLAG PERCENTAGE :</b>
+          <p class="yellowlink">0.0</p>
+        </percentage>
+        <content>
+          <b>content:</b>
+          <p class="contentwrap"></p>
+        </content>
+      </result>
+      <result class="bgplain" id="6" onclick="plagres(6)" tokenname="Key6">
+        <url>
+          <b>URL :</b>
+          <p class="bluelink">NoResult</p>
+        </url>
+        <percentage>
+          <b>PLAG PERCENTAGE :</b>
+          <p class="yellowlink">0.0</p>
+        </percentage>
+        <content>
+          <b>content:</b>
+          <p class="contentwrap"></p>
+        </content>
+      </result>
+    </results>
+  </article>
+</plag>

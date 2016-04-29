@@ -1,0 +1,87 @@
+{literal}
+
+<script type="text/javascript" >
+	$(document).ready(function() {
+
+      /*  $('#contractList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+            "aoColumns": [
+                { "sType": "formatted-num" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" }
+            ]
+        });*/
+        $('#contractList').dataTable({
+            "bProcessing": true,
+            "bServerSide": true,
+
+            "sAjaxSource": "/mission/load-contracts",
+            "oTableTools": {
+                "aButtons": [
+                    "copy",
+                    "print",
+                    {
+                        "sExtends":    "collection",
+                        "sButtonText": 'Sauvegarder <span class="caret" />',
+                        "aButtons":    [ "csv", "xls", "pdf" ]
+                    }
+                ],
+                "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+            }
+
+        } );
+	});
+</script>
+{/literal}
+<div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">Contracts<div style="display:inline;float:right"><button onclick="window.location='/mission/add-contract?submenuId=ML2-SL26'" class="btn btn-success" name="back">Add Contract</button></div></h3>
+        <table class="table table-bordered table-striped table_vam" id="contractList" >
+            <thead>
+                <tr>
+                   <th>S.NO</th>
+                   <th>Nom du client</th>
+                   <th>Nom du contrat</th>
+                   <th>Code client</th>
+                   <!--<th>Client</th>-->
+                   <th>Type de paiement</th>
+                   <th>CA du contrat</th>
+                   <th>Date of signature</th>
+                   <th>End date</th>
+                   <th>Actions</th>
+                </tr>
+            </thead>
+            <!--<tbody>
+            {if $contractlist|@count>0}
+                {foreach from=$contractlist item=contract_item name=contract_loop}
+                    <tr id="tr{$contract_item.id}">
+                        <td>{$smarty.foreach.contract_loop.index+1}</td>
+                        <td>{$contract_item.client_name}</td>
+                        <td>{$contract_item.contract_name}</td>
+                        <td>{$contract_item.code}</td>
+                        <td>{$contract_item.company_name}</td>
+                        <td>{$contract_item.payment_type}</td>
+                        <td>{$contract_item.turnover}</td>
+                        <td>{$contract_item.date_of_signature}</td>
+                        <td>{$contract_item.end_date}</td>
+                        <td><a href="/mission/edit-contract?submenuId=ML2-SL26&id={$contract_item.id}" class="hint--left hint--info" data-hint="Edit contract"><i class="splashy-application_windows_edit"></i></a>&nbsp;
+                            <a href="/mission/add-mission?submenuId=ML2-SL27&cid={$contract_item.id}" class="hint--left hint--info" data-hint="Add mission"><i class="splashy-application_windows_add"></i></a>&nbsp;
+                            <a href="/mission/list-mission?submenuId=ML2-SL27&cid={$contract_item.id}" class="hint--left hint--info" data-hint="List missions"><i class="icon-eye-open"></i></a></td>
+                    </tr>
+                {/foreach}
+            {/if}
+            </tbody>-->
+        </table>
+    </div>
+</div>	
+
+

@@ -1,0 +1,239 @@
+{literal}
+<script src="/BO/theme/gebo/js/jquery.slimscroll.js"></script>
+
+<script language="javascript">
+$(document).ready(function() {		
+	$("#langauge_ao").chosen({search_contains: true});
+	 $(".uni_style").uniform();
+	 //updateAoList();
+	 
+	 //super client creation form validation	 
+	$(".form_validation_permission").validate({
+		onkeyup: false,				
+		errorClass: 'error',
+		validClass: 'valid',
+		ignore: ":hidden:not(select)",
+		highlight: function(element) {
+			$(element).closest('span').addClass("f_error");
+		},
+		unhighlight: function(element) {
+			$(element).closest('span').removeClass("f_error");
+		},				
+		errorPlacement: function(error, element) {
+			if ($(element).is("input:checkbox")) {
+				$("#status_error").html(error);
+			}
+			else
+				$(element).closest('div').append(error);
+		},
+		rules: {					   
+				user_visible:"required",	
+				"status_visible[]": { required: true, minlength: 1 },
+				"langauge_ao[]":"required"				
+		},
+		messages:{
+			"status_visible[]":"please check atleast one status",
+			"langauge_ao[]":" please select atleast one language"
+		}
+	});	
+	
+	$('a.select-all').bind('click', function() {		
+		var alphabet = ['a', 'b', 'c', 'd','e','f','g','h','i','j'];
+			$.each(alphabet, function(i,val) {				
+				$('#uni_r1' + val).click();
+		});
+		if(this.innerHTML.indexOf('Deselect') != -1) {
+			var $b = $('input[name=status_visible\\[\\]]');
+			$b.attr('checked', false);
+			$(this).text('Select all');
+		} else {
+			$(this).text('Deselect all');
+			var $b = $('input[name=status_visible\\[\\]]');
+			$b.attr('checked', true);
+		}
+	}); 
+	
+	
+	
+});	
+
+function updateAoList()
+{
+	var languages=$("select#langauge_ao").val();
+	
+	var target_page="/user/get-deliveries?languages="+languages;
+	
+	$.get(target_page,function(data){
+	
+		data=$.trim(data);
+		
+		$("#span_ao_list").html(data);
+		$("#ao_list_div").show();
+		$(".uni_style").uniform();
+		if(data!='NO')
+		{
+			$('#span_ao_list').slimscroll({
+				height: '200px'
+			});
+			$('.slimScrollDiv').css("height","200px");
+		}
+		else
+		{
+			$('.slimScrollDiv').css("height","30px");
+		}
+		
+		
+	});
+
+}
+
+
+</script>
+<style type="text/css">
+.error {
+    color: #C62626;
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+}
+ul.double {
+    margin: 15px 0;
+}
+.double li {    
+    display: inline;
+    float: left;
+    padding: 7px 0;
+    width: 50%;
+}
+</style>
+{/literal}
+
+<div class="row-fluid">    
+	<div class="span12">
+		<h3 class="heading">CR&Eacute;ATION D'UN SUPER CLIENT - PERMISSIONS</h3>
+		<form class="form_validation_permission" action="/user/save-super-client" method="post" id="user" name="user" enctype="multipart/form-data">
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span8 form-inline">
+						<label class="span8"> <b>Acc&egrave;s client : {$super_client.email}</b> </label>
+					</div>
+				</div>					
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span12 form-inline">
+						<label class="span4">Langue(s) affich&eacute;e(s)</label>						
+						<select multiple data-placeholder="Choose a language..." class="span6" name="langauge_ao[]" id="langauge_ao">
+							{html_options  options=$language_array selected=$super_client.langauge_ao}	
+						</select>	
+					</div>					
+				</div>
+			</div>
+			<div class="formSep" id="ao_list_div" style="display:none">
+				<div class="row-fluid">
+					<div class="span12 form-inline">
+						<label class="span4">S&eacute;lectionner un appel d'offre </label>
+						<div class="span8" id="span_ao_list"></div>
+					</div>					
+				</div>
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span12">
+						<label class="span4">Affichage des noms des contributeurs</label>						
+						<div class="span6">
+							<label class="uni-radio">
+								<input type="radio" value="full_name" id="nuni_r1a" name="user_visible" class="uni_style" {if $super_client.user_visible=='full_name'} checked {elseif !$super_client.user_visible} checked {/if} />
+								Nom complet
+							</label>
+							<label class="uni-radio">
+								<input type="radio" value="first_name" id="nuni_r1b" name="user_visible" class="uni_style" {if $super_client.user_visible=='first_name'} checked {/if} />
+								Pr&eacute;nom seulement
+							</label>
+							<label class="uni-radio">
+								<input type="radio" value="anonymous" id="nuni_r1c" name="user_visible" class="uni_style" {if $super_client.user_visible=='anonymous'} checked {/if} />
+								Anonyme
+							</label>
+						</div>
+					</div>					
+				</div> 
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span12">
+						<label class="span4">Affichage de la liste des statuts
+						<span style="display: block;" id="select_all"><a href="javascript:void(0);" class="label label-info select-all">Select all</a></span>
+						</label>						
+						<div class="span6">
+							<label class="uni-checkbox">
+								<input type="checkbox"  value="participation_ongoing" id="uni_r1a" name="status_visible[]" class="uni_style" {if in_array('participation_ongoing',$super_client.status_visible)} checked {/if} />
+								Participations en cours
+							</label>
+							<label class="uni-checkbox">
+								<input type="checkbox" value="pending_selection" id="uni_r1b" name="status_visible[]" class="uni_style"{if in_array('pending_selection',$super_client.status_visible)} checked {/if} />
+								En attente de s&eacute;lection
+							</label>
+							<label class="uni-checkbox">
+								<input type="checkbox" value="writing_progress" id="uni_r1c" name="status_visible[]" class="uni_style" {if in_array('writing_progress',$super_client.status_visible)} checked {/if} />
+								R&eacute;daction en cours
+							</label>
+							<label class="uni-checkbox">
+								<input type="checkbox" value="time_out" id="uni_r1d" name="status_visible[]" class="uni_style" {if in_array('time_out',$super_client.status_visible)} checked {/if} />
+								Article non envoy&eacute;
+							</label>
+							<label class="uni-checkbox">
+								<input type="checkbox" value="disapproved" id="uni_r1e" name="status_visible[]" class="uni_style" {if in_array('disapproved',$super_client.status_visible)} checked {/if} />
+								Article en reprise
+							</label>
+							<label class="uni-checkbox">
+								<input type="checkbox" value="correction_ongoing" id="uni_r1f" name="status_visible[]" class="uni_style" {if in_array('correction_ongoing',$super_client.status_visible)} checked {/if} />
+								Correction en cours
+							</label>
+							<label class="uni-checkbox">
+								<input type="checkbox" value="stage2" id="uni_r1g" name="status_visible[]" class="uni_style" {if in_array('stage2',$super_client.status_visible)} checked {/if} />
+								En attente de validation (EP)
+							</label>
+							<label class="uni-checkbox">
+								<input type="checkbox" value="published_client" id="uni_r1h" name="status_visible[]" class="uni_style" {if in_array('published_client',$super_client.status_visible)} checked {/if} />
+								En attente de validation (Client)
+							</label>
+							<label class="uni-checkbox">
+								<input type="checkbox" value="published" id="uni_r1i" name="status_visible[]" class="uni_style" {if in_array('published',$super_client.status_visible)} checked {/if} />
+								Valid&eacute;
+							</label>
+							<label class="uni-checkbox">
+								<input type="checkbox" value="closed" id="uni_r1j" name="status_visible[]" class="uni_style" {if in_array('closed',$super_client.status_visible)} checked {/if} />
+								Close
+							</label>
+						</div>
+						<div id="status_error" class="span8 pull-right"></div>
+					</div>					
+				</div>
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span12 form-inline">
+						<label class="span4">Rendre les commentaires obligatoires en cas de refus / doute sur un article</label>						
+						<div class="span6">
+							<label class="uni-radio">
+								<input type="radio" value="yes" id="muni_r1a" name="comments_mandatory" class="uni_style" {if $super_client.comments_mandatory=='yes'} checked {elseif !$super_client.comments_mandatory} checked {/if} />
+								OUI
+							</label>
+							<label class="uni-radio">
+								<input type="radio" value="no" id="muni_r1b" name="comments_mandatory" class="uni_style" {if $super_client.comments_mandatory=='no'} checked {/if} />
+								NON
+							</label>							
+						</div>
+					</div>					
+				</div>
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span6 form-inline">
+						<button type="submit" name="superclient_permission" class="btn btn-success pull-right">Finaliser la cr&eacute;ation</button>
+					</div>
+				</div>
+			</div>
+		</form>		
+	</div>
+</div>	

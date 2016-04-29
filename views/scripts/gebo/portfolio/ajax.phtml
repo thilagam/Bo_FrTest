@@ -1,0 +1,607 @@
+{if $page eq 'initial_load'}
+{literal}
+    <script>
+        function load_more_contributor(){
+            console.log('ajax initiated');
+            $("#load_more").text('Loading...');
+            $.ajax({
+                type: 'POST',
+                url: '/portfolio/send-parted-result',
+                success: function (data) {
+                    console.log(data);
+                    if(data.trim() == '0'){
+                        $("#load_more").hide();
+                    }
+                    else
+                        $("#contributorList").append(data);
+                    $("#load_more").text('Load More');
+                }
+
+            });
+        }
+        function load_charts(){
+            console.log('ajax initiated');
+            console.log('ajax initiated');
+            var form_data = $("#main_form").serialize()+'&'+$("#filter_form").serialize();
+            $.ajax({
+                type: 'POST',
+                url: '/portfolio/load-charts?'+form_data,
+                success: function (data) {
+                    console.log(data);
+                    $("#ajax_load_charts").html(data);
+                }
+            });
+        }
+        $(document).ready(function () {
+            $("#count_results").html('{/literal}{$count_results}{literal}');//display the actual count of results
+            var count_results = {/literal}{$count_results}{literal};
+            if(count_results < 20){
+                $("#load_more").hide();
+            }
+            //to load the charts
+            load_charts();
+        });
+    </script>
+
+{/literal}
+<div class="container" id="containerBestContrib">
+    <div class="row" id="contributorList">
+        {foreach from=$results key=key item=result}
+
+        <div class="col-sm-3 containerBestContribContainerCard">
+             <div class="containerBestContribCard">
+            {assign var=param value=''}
+                {foreach from=$params.category_list item=category }
+                    {assign var=param value=$param|cat:'&category_list[]='|cat:$category}
+                {/foreach}
+               <div class="numberCircle">{$result.participation_wins}</div>
+            <a href="/portfolio/view-portfolio?id={$result.identifier}{$param}" target="_blank" class="bestContribLinkIMG">
+                <img alt="{$result.full_name|lower}" class="containerBestContribCardPP" src="{$result.profile_pic}">
+            </a>
+            <div class="containerBestContribInfo">
+
+                <p class="containerBestContribName">
+                     <a href="/portfolio/view-portfolio?id={$result.identifier}{$param}" target="_blank">{if $call_type eq 'ajax_call'}{$result.full_name|lower|@utf8_encode}{else}{$result.full_name|lower}{/if} </a>
+                      <img src="/BO/theme/lbd/img/flag/{$result.language}.gif" >
+                 
+                </p>
+                <p class="containerBestContribStatus">
+                    {if $result.initial eq 'mr'}
+                        R&eacute;dacteur {$result.profile_type} <br>
+                        {if $result.translator eq 'yes'}Traducteur {$result.translator_type} <br> {/if}
+                        {if $result.type2 eq 'corrector'}Correcteur {$result.profile_type2}  <br>{/if}
+                    {else}
+                        R&eacute;dactrice {$result.profile_type} <br>
+                        {if $result.translator eq 'yes'}Traductrice {$result.translator_type} <br> {/if}
+                        {if $result.type2 eq 'corrector'}Correctrice {$result.profile_type2}  <br>{/if}
+                    {/if}
+                </p>
+
+                <div class="containerBestContribhide">
+                    <div class="containerBestContribContact">
+                        <i class="material-icons">phone</i> {$result.phone_number} <br>
+                        <i class="material-icons">mail_outline</i> {$result.email}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-right containerBestContribCardCheckbox">
+         <input type="checkbox" id="contributors_{$result.index}" name="contributors[]" class="contributors" value="{$result.identifier}" onclick="javascript:toggle_download();"/>
+        </div>
+
+       </div>
+        {/foreach}
+    </div>
+            <button  type="button" class="btn btn-block btn-fill"  onclick="load_more_contributor();" id="load_more">Load More</button>
+        <hr>
+   
+</div><!--fin de container -->
+<div id="ajax_load_charts"></div>
+{elseif $page eq 'load_charts'}
+<div class="container" id="containerStats">
+    <div class="row ">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="content">
+                    <div class="digramComparSJ">
+                        <h3>
+                            R&eacute;partition contributeur Junior / S&eacute;nior
+                        </h3>
+                        <div class="text-center">
+
+                            <canvas id="myChart" width="300" height="300"></canvas>
+                            {literal}
+                            <script>
+                                $(document).ready(function(){
+                                var data = [
+                                    {
+                                        value: {/literal}{$cjunior}{literal},
+                                        color: "#51BA6E",
+                                        highlight: "#46B062",
+                                        label: "Junior(Free)"
+                                    },
+                                    {
+                                        value: {/literal}{$csenior}{literal},
+                                        color: "#00A74D",
+                                        highlight: "#009846",
+                                        label: "Senior(Free)"
+                                    },
+
+                                    {
+                                        value: {/literal}{$csub_junior}{literal},
+                                        color: "#008000",
+                                        highlight: "#5AD3D1",
+                                        label: "Sub-Junior"
+                                    },
+                                    {
+                                        value: {/literal}{$c_busy}{literal},
+                                        color:"#F44740",
+                                        highlight: "#F22019",
+                                        label: "J/S(Busy)"
+                                    }
+                                ];
+
+                                var context = document.getElementById('myChart').getContext('2d');
+                                var myPieChart = new Chart(context).Pie(data)
+                                });
+                            </script>
+                            {/literal}
+
+                        </div>
+                    </div><!-- de titlePortfolio-->
+                </div>
+            </div>
+
+            <!--<div class="card digramEvolNbrContrib">
+                <div class="content">
+                    <h3>
+                        Evolution du nombre de contributeur en 2015
+                    </h3>
+                    <div class="text-center">
+                        <img src="http://www.dr-aart.nl/Statistiek_bestanden/Lijndiagram1EN.jpg" alt="">
+                    </div>
+                </div>
+            </div>-->
+
+        </div><!-- de col-md-6 -->
+
+        <div class="col-md-6">
+            <div id="containerSmallTableContrib">
+                <div class="card">
+                    <div class="content">
+                        <table class="table table-hover table-bordered text-center">
+                            <thead>
+                            <tr class="smallTableContribTitle">
+                                <th>
+
+                                </th>
+                                <th class="text-center">
+                                    Senior
+                                </th>
+                                <th class="text-center">
+                                    Junior
+                                </th>
+                                <th class="text-center">
+                                    Sub-Junior
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {$countPerLangTable}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> <!-- container -->
+        </div><!-- de col-md-6 -->
+    </div><!--row -->
+</div><!-- de container -->
+{elseif $page eq 'load_contributor_on_ajax'}
+
+    {foreach from=$results key=key item=result}
+ <div class="col-sm-3 containerBestContribContainerCard">
+             <div class="containerBestContribCard">
+            {assign var=param value=''}
+                {foreach from=$params.category_list item=category }
+                    {assign var=param value=$param|cat:'&category_list[]='|cat:$category}
+                {/foreach}
+               <div class="numberCircle">{$result.participation_wins}</div> 
+            <a href="/portfolio/view-portfolio?id={$result.identifier}{$param}" target="_blank" class="bestContribLinkIMG">
+                <img alt="{$result.full_name|lower|@utf8_encode}" class="containerBestContribCardPP" src="{$result.profile_pic}">
+            </a>
+            <div class="containerBestContribInfo">
+
+                <p class="containerBestContribName">
+                     <a href="/portfolio/view-portfolio?id={$result.identifier}{$param}" target="_blank">{$result.full_name|lower|@utf8_encode} </a>
+                      <img src="/BO/theme/lbd/img/flag/{$result.language}.gif" >
+                 
+                </p>
+                <p class="containerBestContribStatus">
+                    {if $result.initial eq 'mr'}
+                        R&eacute;dacteur {$result.profile_type} <br>
+                        {if $result.translator eq 'yes'}Traducteur {$result.translator_type} <br> {/if}
+                        {if $result.type2 eq 'corrector'}Correcteur {$result.profile_type2}  <br>{/if}
+                    {else}
+                        R&eacute;dactrice {$result.profile_type} <br>
+                        {if $result.translator eq 'yes'}Traductrice {$result.translator_type} <br> {/if}
+                        {if $result.type2 eq 'corrector'}Correctrice {$result.profile_type2}  <br>{/if}
+                    {/if}
+                </p>
+
+                <div class="containerBestContribhide">
+                    <div class="containerBestContribContact">
+                        <i class="material-icons">phone</i> {$result.phone_number} <br>
+                        <i class="material-icons">mail_outline</i> {$result.email}
+                    </div>
+
+                    <!--<div class="containerBestContribClient">
+                        <img src="https://pbs.twimg.com/profile_images/684779713009680384/oxATZBy8_400x400.png" alt="client">
+                        <img src="https://pbs.twimg.com/profile_images/684779713009680384/oxATZBy8_400x400.png" alt="client">
+                        <img src="https://pbs.twimg.com/profile_images/684779713009680384/oxATZBy8_400x400.png" alt="client">
+                        <img src="https://pbs.twimg.com/profile_images/684779713009680384/oxATZBy8_400x400.png" alt="client">
+                    </div>-->
+                </div>
+            </div>
+        </div>
+
+        <div class="text-right containerBestContribCardCheckbox">
+            <input type="checkbox" id="contributors_{$result.index}" name="contributors[]" class="contributors" value="{$result.identifier}" onclick="javascript:toggle_download();"/>
+        </div>
+
+        </div>
+    {/foreach}
+    {literal}
+        <script>
+            $(document).ready(function () {
+                var count_results = {/literal}{$count_results}{literal};
+                if(count_results < 20){
+                    $("#load_more").hide();
+                }
+            });
+        </script>
+    {/literal}
+{elseif $page eq 'download_png'}
+<link href="/BO/theme/lbd/css/view-portfolio.css" rel="stylesheet" />
+<!-- **********************
+         STAR NEW CODE
+     ********************** -->
+<div id="onePortfolio" >
+    <div class="container-fluid">
+        <div class="container" id="onePortfolioPerso">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-md-3" >
+                                    <img id="profile_pic" class="img-responsive imageCache" width="300" src="{$result.profile_pic}" alt="">
+                                </div>
+                                <div class="col-md-7 onePortfolioPersoInfo">
+                                    <h2 class="containerBestContribName" >{$result.first_name|lower|@utf8_encode} <span class="secured">{$result.last_name|lower|@utf8_encode}</span>
+									</h2>
+                                    <div class="onePortfolioPersoFlag">
+                                        <img src="/BO/theme/lbd/img/flag/{$result.language}.gif" alt=""><span>({$languages_array[$result.language]|@utf8_encode})</span>
+                                    </div>
+                                    <div class="onePortfolioPersoContrib containerBestContribStatus">
+                                        <div>
+                                            {if $result.initial eq 'mr'}
+                                                R&eacute;dacteur {$result.profile_type} <br>
+                                                {if $result.translator eq 'yes'}Traducteur {$result.translator_type} <br> {/if}
+                                                {if $result.type2 eq 'corrector'}Correcteur {$result.profile_type2}  <br>{/if}
+                                            {else}
+                                                R&eacute;dactrice {$result.profile_type} <br>
+                                                {if $result.translator eq 'yes'}Traductrice {$result.translator_type} <br> {/if}
+                                                {if $result.type2 eq 'corrector'}Correctrice {$result.profile_type2}  <br>{/if}
+                                            {/if}
+                                        </div>
+                                    </div>
+                                    <div class="onePortfolioPersoContact">
+											<span class="secured">
+												<i class="material-icons">mail</i><a href="#">{$result.email}</a>
+											</span>
+											<span class="secured">
+												<i class="material-icons">phone</i> {$result.phone_number}
+											</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 onePortfolioPersoStat"><p>Inscrit depuis : {$result.joined_since}</p>
+                                    <p class="onePortfolioPersoStatBorder">Nombre d'articles : {$result.articale_written}</p>
+                                    <!--<p>Client : {$result.total_client}</p>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- updated design on 18.04.2016 -->
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-3">
+                    <div id="onePortfolioAbout">
+                        <div class="card">
+                            <div class="content">
+                                <div class="text-center onePortfolioAboutIMG">
+                                    <img src="/BO/theme/lbd/img/quote.png" alt="">
+                                </div>
+                                <p>
+                                    {$result.self_details|@utf8_encode}
+                                </p>
+                            </div> <!-- content -->
+                        </div> <!-- card -->
+                    </div> <!-- ID -->
+                </div> <!-- col-sm-2 -->
+
+
+                <div class="col-md-9">
+
+                    <div id="onePortfolioCustomers">
+                        <div class="card">
+                            <div class="content">
+                                <h3> {if $result.random_client|@count lte '1'} A travaill&eacute; pour...{else} {$result.random_client|@count} clients lui font confiance{/if}</h3>
+                                {foreach from=$result.random_client item=client_id name=client_pics}
+                                <a href="/portfolio/download-lastest-article-zip?clinetId={$client_id|strip}&contribId={$result.identifier}">
+                                    <img id="client_pics_{$smarty.foreach.client_pics.index}" src="{$url}/profiles/clients/logos/{$client_id|strip}/{$client_id|strip}.png" alt="Logo Custommers">
+                                </a>
+                                {/foreach}
+                                <p class="onePortfolioCustomersClic"><span class="glyphicon glyphicon-info-sign"></span> Click on a logo to download articles</p>
+                            </div> <!-- Content -->
+                        </div> <!-- card -->
+                    </div> <!-- id -->
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="onePortfolioLanguage">
+                                <div class="card">
+                                    <div class="content">
+                                        <h3>Niveaux de Langue</h3>
+                                        <div class="row">
+                                            {foreach from=$result.language_more item=item1 key=key1}
+                                            <div class="col-md-3 onePortfolioLang text-center">
+                                                {if $item1 eq 100}
+                                                <div class="onePortfolioLangInfo">
+                                                    <h4>
+                                                        <img src="/BO/theme/lbd/img/flag/{$key1}.gif" alt=""><br>
+                                                        {$languages_array[$key1]|@utf8_encode}
+                                                        <br />
+                                                        <small>Courant (C2)</small>
+                                                    </h4>
+                                                </div>
+                                                {elseif $item1 gte 80}
+                                                <div class="onePortfolioLangInfo">
+                                                    <h4>
+                                                        <img src="/BO/theme/lbd/img/flag/{$key1}.gif" alt=""><br>
+                                                        {$languages_array[$key1]|@utf8_encode}<br />
+                                                        <small>Avanc&eacute; (C1)</small>
+                                                    </h4>
+                                                </div>
+
+                                                {elseif $item1 gte 66}
+                                                <div class="onePortfolioLangInfo">
+                                                    <h4>
+                                                        <img src="/BO/theme/lbd/img/flag/{$key1}.gif" alt=""><br>
+                                                        {$languages_array[$key1]|@utf8_encode}<br />
+                                                        <small>Interm&eacute;diaire sup&eacute;rieur (B2)</small>
+                                                    </h4>
+                                                </div>
+                                                {elseif $item1 gte 50}
+                                                <div class="onePortfolioLangInfo">
+                                                    <h4>
+                                                        <img src="/BO/theme/lbd/img/flag/{$key1}.gif" alt=""><br>
+                                                        {$languages_array[$key1]|@utf8_encode}<br />
+                                                        <small>Interm&eacute;diaire (B1)</small>
+                                                    </h4>
+                                                </div>
+                                                {/if}
+                                            </div>
+                                            {foreachelse}
+                                            <div class="alert alert-warning" role="alert">
+                                                <span class="glyphicon glyphicon-info-sign"></span> Other languages not specified yet
+                                            </div>
+                                            {/foreach}
+                                        </div>
+                                    </div> <!-- Content -->
+                                </div> <!-- card -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="onePortfolioSector">
+                                <div class="card">
+                                    <div class="content">
+                                        <h3>Ses r&eacutealisations</h3>
+                                        <div class="row">
+                                            <ul>
+                                                <li class="col-md-6 text-center onePortfolioSectorOneCategory">
+                                                    <ul>
+                                                        {foreach from=$result.article_type item=type }
+                                                        {if $type_array[$type] neq ''}
+                                                        <li>
+                                                            {$type_array[$type]|@utf8_encode|stripslashes}
+                                                        </li>
+                                                        {/if}
+                                                        {foreachelse}
+                                                        <h3>No Article type to display</h3>
+                                                        {/foreach}
+                                                    </ul>
+                                                </li>
+                                                <li class="col-md-6">
+                                                    <div class="onePortfolioSectorOne">
+                                                        <ul>
+                                                            {foreach from=$result.category_more item=item2 key=key2}
+                                                            <li>
+                                                                <i class="material-icons">{$icon_list[$key2]}</i>
+                                                                {$categories_array[$key2]|@strip|@utf8_encode}
+                                                                {*{$item2}%*}
+                                                            </li>
+                                                            {foreachelse}
+                                                            <h3>No category to display</h3>
+                                                            {/foreach}
+                                                        </ul>
+
+                                                    </div>
+                                                </li>
+                                            </ul>
+
+
+                                        </div>
+                                    </div> <!-- content -->
+                                </div> <!-- card -->
+                            </div> <!-- ID -->
+                        </div>
+                    </div>
+
+                </div> <!-- col-sm-10 -->
+
+            </div> <!-- row -->
+        </div> <!-- container -->
+
+        <!-- end of updated design on 18.04.2016 -->
+    </div> <!-- container-fluid -->
+</div> <!-- onePortfolio -->
+<!-- Modal Export -->
+<div class="modal fade" id="portfolioOneExport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Export result portfolio</h4>
+            </div>
+            <div class="modal-body">
+                <div class="portfolioExportBtnArticle">
+                    <button class="btn btn-fill btn-primary" onclick="javascript:download_img();">Download IMG</button>
+                </div>
+                <!--<div>
+                    <button class="btn btn-fill btn-primary">Export PDF</button>
+                    <button class="btn btn-fill btn-warning">Get the link</button>
+                </div>
+                <div>
+                    <button class="btn btn-fill btn-danger">Export PPT</button>
+                    <button class="btn btn-fill btn-success">Export excel</button>
+                </div>
+                <div class="portfolioExportBtnArticle">
+                    <button class="btn btn-fill btn-default">Download article example</button>
+                </div>
+-->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- **********************
+         END NEW CODE
+     ********************** -->
+<div id="lightbox" style="display:none;">
+    <div id="lightbox-footer" ><a>Download as png</a></div>
+    <div id="lightbox_canvas"></div>
+</div>
+{literal}
+<style>
+</style>
+<script>
+    $("#download_icon ").on('click',function(){
+        setTimeout(function(){$(".modal-backdrop").remove();},1000);
+    });
+    function download_img(){
+        $(".secured").hide();
+        html2canvas(document.querySelector("#onePortfolio") ).then(function(canvas) {
+//            console.log('initiated canvas');
+            $('#portfolioOneExport').modal('hide');
+//            $('#lightbox').show();
+            $('#lightbox_canvas').html(canvas);
+            var tmp_canvas = document.querySelector('#lightbox_canvas canvas');
+            var dataURL = tmp_canvas.toDataURL("image/png");
+            console.log('completed canvas: '+'{/literal}{$result.first_name}_{$result.identifier}.png{literal}');
+            imgName ='{/literal}{$result.first_name}_{$result.identifier}.png{literal}'
+//            console.log(dataURL);
+                $.ajax({
+                    method: 'POST',
+                    url: '/portfolio/save-image-to-server',
+                    cache: false,
+                    contentType: "application/x-www-form-urlencoded",
+                    data: {
+                        dataURL: dataURL,
+                        imgName: imgName
+                    },
+                    success:function(data){
+                        console.log(data);
+                        $("#modal_download_zip").append('( <sapn class="success">Successfully exported <strong>'+imgName+'</strong> </span>)');
+                        export_files = export_files+data.trim()+',';
+//                        console.log('completed export_files');
+
+                    },
+                    complete:function(data){
+                        n++;
+                        call_export_ajax(n);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $("#modal_download_zip").append('( <span class="failed"> Server error,Failed to export <strong>'+imgName+'</strong> </span>)');
+                        console.log(xhr.status);
+                        console.log(thrownError);
+                    }
+                });
+
+//            $("#lightbox-footer").html('<a id="downloadImgLink"  download="{/literal}{$result.first_name}_{$result.identifier}.png{literal}" href="#" target="_blank">Download Drawing</a> &nbsp; <a href="javascript:void" onclick="close_lightbox();">Close</a>');
+//            $("#downloadImgLink").attr("href", dataURL);
+        });
+    }
+    function close_lightbox(){
+        $(".secured").show();
+        $("#lightbox").hide();
+    }
+    function download_img_to_server(){
+        var profile_pic = '{/literal}{$result.profile_pic}{literal}';
+        $.ajax({
+            type: 'POST',
+            async: false,
+            url: '/portfolio/download-img-to-server?profile_pic='+profile_pic,
+            success: function (data) {
+                var src = '/BO/assets/temp_img/'+data.trim();
+                $("#profile_pic").attr('src',src);
+            },
+            complete:function(data){
+//                console.log('donwload img completed');
+                setTimeout(function(){  download_img(); }, 3000);
+            }
+        });
+    }
+    function download_client_img_to_server(){
+        var i =0;
+        var client_pics = '';
+        //create an array of all client images urls//
+        {/literal}{foreach from=$result.random_client item=client_id }{literal}
+        client_pics += "client_pics_"+i+"={/literal}{$url}/profiles/clients/logos/{$client_id|strip}/{$client_id|strip}.png{literal}&";
+        i++;//increment i to updatepic number
+        {/literal}{/foreach}{literal}
+        //end of create an array of all client images urls//
+        // convert the array to string to pass to php function easyily//
+        $.ajax({
+            type: 'POST',
+            async: false,
+            url: '/portfolio/download-client-img-to-server?&'+client_pics+'&count='+i,
+            success: function (data) {
+                $result = JSON.parse(data);
+                for(j=0;j<i;j++){
+                    var src = '/BO/assets/temp_img/'+$result[j].trim();
+                    $("#client_pics_"+j).attr('src',src);
+                }
+            },
+            complete:function(data){
+//                console.log('donwload completed');
+                download_img_to_server();
+            }
+        });
+    }
+    $(document).ready(function(){
+        //console.log("page loaded proceed ajax");
+//        download_img_to_server();
+        download_client_img_to_server();
+    });
+</script>
+{/literal}
+
+{/if}

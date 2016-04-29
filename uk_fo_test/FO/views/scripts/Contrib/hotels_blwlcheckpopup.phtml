@@ -1,0 +1,212 @@
+<div class="modal-header">
+    <button type="button" class="close" id="reload" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>R&eacute;sultats des mots/expressions whitelist&eacute;s et blacklist&eacute;s contenus dans votre fichier</h3>
+</div>
+<div class="modal-body">
+<div class="row-fluid">
+	<div class="span12">
+
+      {if $singlefile eq 'yes'}
+         <!--<div class="span12 pull-center">
+             <h4 class="clearfix">The black / White list result</h4></p>
+         </div>-->
+        $$$$file_data$$$
+         <!--<table id="bllist" class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Nom du fichier</th>
+                <th>Mots-cl&eacute;s interdits</th>
+                <th>Mots-cl&eacute;s autoris&eacute;s</th>
+                <th>Probl&egrave;mes d'espace</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{$blwloutput.filename}<br>{$documenttitle}</td>
+                <td><font color="red">{if $blwloutput.blkeyword neq ''}{$blwloutput.blkeyword}{else}--{/if}</font></td>
+                <td>{if $blwloutput.wlkeyword neq ''}{$blwloutput.wlkeyword}{else}--{/if}</td>
+                <td>{if $blwloutput.nospace neq ''}{$blwloutput.nospace}{else}--{/if}</td>
+                </td>
+            </tr>
+            </tbody>
+         </table>-->
+         <div class="form-group span7 pull-right">
+             {if $crt_participationId neq ''}
+               <button type="button" class="btn btn-warning " id="blackclose" name="blackclose" onclick="refreshModel('{$crt_participationId}','{$articleId}');" >Annuler</button>
+                <button type="button" class="btn btn-success "  id="proceedcrt" name="proceedcrt" >Valider</button>
+                 <input type="hidden" id="crtparticipationId" name="crtparticipationId" value="{$crt_participationId}" />
+
+             {else}
+               <button type="button" class="btn btn-warning " id="blackclose" name="blackclose" onclick="" >Annuler</button>
+                <button type="button" class="btn btn-success "  id="proceed" name="proceed" >Valider</button>
+             {/if}
+
+         </div>
+
+            <input type="hidden" id="article_id" name="article_id" value="{$article_id}" />
+            <input type="hidden" id="articlepath" name="articlepath" value="{$articlepath}" />
+            <input type="hidden" id="articlename" name="articlename" value="{$articleName}" />
+            <input type="hidden" id="filenameupload" name="filenameupload" value="{$blwloutput.filename}" />
+            <input type="hidden" id="outputfilename" name="outputfilename" value="{$blwlwcheckoutputfile}" />
+            <input type="hidden" id="participationId" name="participationId" value="{$participationId}" />
+      {else}
+        <!--<div class="span12 pull-center">
+            <h4 class="clearfix">The black / White list result</h4></p>
+        </div>-->
+        $$$$file_data$$$
+       <!-- <table id="bllist" class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Nom du fichier</th>
+                <th>Mots-cl&eacute;s interdits</th>
+                <th>Mots-cl&eacute;s autoris&eacute;s</th>
+                <th>Probl&egrave;mes d'espace</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach item=blwloutput from=$blwloutput name=blwloutput_name}
+            {if $blwloutput.filename neq ''}
+            <tr>
+                <td>{$blwloutput.filename}<br>{$documenttitle}</td>
+                <td ><font color="red">{if $blwloutput.blkeyword neq ''}{$blwloutput.blkeyword|htmlentities}{else}--{/if}</font></td>
+                <td>{if $blwloutput.wlkeyword neq ''}{$blwloutput.wlkeyword}{else}--{/if}</td>
+                <td>{if $blwloutput.nospace neq ''}{$blwloutput.nospace}{else}--{/if}</td>
+                </td>
+            </tr>
+            {/if}
+            {/foreach}
+            </tbody>
+        </table>-->
+        <div class="form-group span7 pull-right">
+            {if $crt_participationId neq ''}
+                <button type="button" class="btn btn-warning " id="blackclose" name="blackclose" onclick="refreshModel('{$crt_participationId}','{$articleId}');" >Annuler</button>
+                <button type="button" class="btn btn-success " id="proceedcrt" name="proceedcrt" onclick="" >Valider</button>
+                <input type="hidden" id="crtparticipationId" name="crtparticipationId" value="{$crt_participationId}" />
+
+            {else}
+                <button type="button" class="btn btn-warning " id="blackclose" name="blackclose" onclick="" >Annuler</button>
+                <button type="button" class="btn btn-success " id="proceed" name="proceed" onclick="" >Valider</button>
+            {/if}
+
+        </div>
+            <input type="hidden" id="article_id" name="article_id" value="{$article_id}" />
+            <input type="hidden" id="articlepath" name="articlepath" value="{$articlepath}" />
+            <input type="hidden" id="articlename" name="articlename" value="{$articleName}" />
+            <input type="hidden" id="filenameupload" name="filenameupload" value="{$zipfilename}" />
+            <input type="hidden" id="outputfilename" name="outputfilename" value="{$blwlwcheckoutputfile}" />
+            <input type="hidden" id="participationId" name="participationId" value="{$participationId}" />
+      {/if}
+	</div>
+</div>
+</div>
+{literal}
+<script>
+
+    $('#reload').click(function() {
+        location.reload();
+    });
+    $('#blackclose').click(function() {
+        location.reload();
+       // $('#wlblresult').hide();
+    });
+    $('#reuploadoption1').click(function() {
+        bootbox.confirm("Are you sure with this action",function(e){
+            if (e)
+            {
+                location.reload();
+            }
+            else
+            {
+                return false;
+            }
+        });
+    });
+    $('#reuploadoption2').click(function() {
+        $('.propose').show();
+        $('#addnewkeyword').show();
+        $('#addnewkeywordsingle').show();
+    });
+    $('#proceedwithmultiple').click(function() {
+        var arr = [];
+        var chks = document.getElementsByName('proposewl[]');//here rr[] is the name of the textbox
+        for (var i = 0; i < chks.length; i++)
+        {
+            if (chks[i].value=="")
+            {
+                bootbox.alert("Please enter new keywords");
+                chks[i].focus();
+                return false;
+            }else
+                arr.push(chks[i].value);
+        }
+        var target_page = "/Contrib/sendarticlewithwlnewkeyword?nkword="+arr+"&data="+$("#newwlkeywords").serialize();
+        $.post(target_page, function(data){   //alert(data);
+            var obj = $.parseJSON(data);
+            if(obj.status=="success"){
+                location.reload();
+            }else if(obj.status=="wlnwkwmissing"){
+                bootbox.alert("The proposed keyword is not present in your document");
+            }
+
+        });
+    });
+    $('#proceed').click(function() {
+         var articlepath = $('#articlepath').val();
+         var articleName = $('#articlename').val();
+         var participationId = $('#participationId').val();
+         var filename = $('#filenameupload').val();
+         var outputfilename = $('#outputfilename').val();
+
+            var target_page = "/Contrib/sendarticle-hotels-dev?articlepath="+articlepath+"&outputfilename="+outputfilename
+             +"&articleName="+articleName+"&filename="+filename+"&participation_id="+participationId+"&single=yes";
+            $.post(target_page, function(data){   //alert(data);
+                var obj = $.parseJSON(data);
+                //location.reload();
+                if(obj.status=="success"){
+                    location.reload();
+                }else if(obj.status=="wlnwkwmissing"){
+                   bootbox.alert("The proposed keyword is not present in your document");
+                }
+
+            });
+    });
+    $('#proceedcrt2').click(function() {
+        var articlepath = $('#articlepath').val();
+        var articleName = $('#articlename').val();
+        var participationId = $('#participationId').val();
+        var filename = $('#filename').val();
+        var outputfilename = $('#outputfilename').val();
+        var crtparticipationId = $('#crtparticipationId').val();
+        var article_id = $('#article_id').val();
+        var marks = $('#marks').val();
+        var marksreasons = $('#marksreasons').val();
+        var comments = $('#comments').val();
+        //var target_page = "/Contrib/sendcorrectorarticle-hotels-dev?data="+$("#blwlprocess1").serialize();
+        var target_page = "/Contrib/sendcorrectorarticle-hotels-dev?articlepath="+articlepath+"&outputfilename="+outputfilename
+            +"&articleName="+articleName+"&filename="+filename+"&participation_id="+participationId+"&single=yes&crtparticipation_id="+crtparticipationId
+            +"&marks="+marks+"&marksreasons="+marksreasons+"&comments="+comments+"&article_id="+article_id;
+        $.post(target_page, function(data){   //alert(data);
+            var obj = $.parseJSON(data);
+            //location.reload();
+
+        });
+    });
+    $('#proceedcrt').on('click',function() {
+        var articlepath = $('#articlepath').val();
+        var articleName = $('#articlename').val();
+        var filename1 = $('#filenameupload').val();
+        var outputfilename = $('#outputfilename').val();
+        var target_page = "/Contrib/sendcorrectorarticle-hotels-dev?data="+$("#v_corrector_form").serialize()+"&outputfilename="+outputfilename
+            +"&articlepath="+articlepath+"&articleName="+articleName+"&uploadfilename="+filename1;
+			$('#proceedcrt').html('Transfert en cours...');
+			$('#proceedcrt').attr('disabled','disabled');
+        $.post(target_page, function(data){  // alert(data);
+            //var obj = $.parseJSON(data);
+            location.reload();
+
+        });
+        //$("#v_corrector_form").submit();
+    });
+
+</script>    
+{/literal}

@@ -1,0 +1,75 @@
+{literal}
+<script type="text/javascript" >
+    loadEditors('editor_comment');
+    ///////////write the comment in popup//////////////////
+    function writeCorrectorComment(userid, partid, artid, stage)
+    {
+        // var $comment = $("#editor_comment").val();
+        var $comment = tinyMCE.get('editor_comment').getContent();
+        var target_page = "/proofread/getwritecomments?userId="+userid+"&partId="+partid+"&stage="+stage+"&comment="+escape($comment);
+        $.post(target_page, function(data){
+            $("#ajaxdata").html(data);
+            $("#loaddata").hide();
+            // $("#editor_comment").data("wysihtml5").editor.clear();
+            $('#editor_comment').html('');
+        });
+    }
+    ///////////write the comment in popup//////////////////
+    function writeBoUserComment(userOn, userBy, artId)
+    {
+        var $comment = tinyMCE.get('editor_comment').getContent();
+        var target_page = "/proofread/getwritecomments?commented_on_userid="+userOn+"&commented_by_userid="+userBy+"&comment="+escape($comment);
+        $.post(target_page, function(data){  // alert(data);
+            $("#ajaxdata").html(data);
+            $("#loaddata").hide();
+            // $("#editor_comment").data("wysihtml5").editor.clear();
+            $('#editor_comment').html('');
+        });
+    }
+
+</script>
+{/literal}
+
+{if $writerName neq 'NO' && $writerName neq ''}
+<div class="alert alert-error pull-center">
+    Commentaire pour <b>{if $writerName[0].first_name neq '' || $writerName[0].last_name neq ''}
+        {$writerName[0].first_name|utf8_encode} {$writerName[0].last_name|utf8_encode} {else}{$writerName[0].email|utf8_encode}{/if}</b>
+</div>
+{/if}
+
+<textarea id="editor_comment" name="editor_comment" class="textarea"></textarea>
+{if $bouserscomments eq 'yes'}
+<button type="button" id="sub_usercomment" name="sub_usercomment"  class="btn btn-danger" onClick="writeBoUserComment('{$commented_on_userid}','{$commented_by_userid}', '{$articleId}');" >Ajouter</button>
+{else}
+<input type="button" id="sub_comment" name="sub_comment" value="Submit" class="btn btn-danger" onClick="writeCorrectorComment('{$userId}','{$partId}','{$articleId}','{$stage}');" ></input>
+{/if}
+<div></div>
+<div class="alert pull-center" ><h4>Commentaire(s) Pr&eacute;c&eacute;dent(s)</h4></div>
+
+<div id="loaddata">
+    {if $comments neq 'NO'}
+    {foreach from=$comments key=comments_key item=comments_item name=comments_loop}
+    <div class="alignleft">{if $comments_item.first_name neq '' || $comments_item.last_name neq ''}
+        {$comments_item.first_name} {$comments_item.last_name} {else}{$comments_item.email}{/if}
+        <label class="label label-info">at {$comments_item.created_at|date_format:"%d/%m/%Y %H:%I"}</label>
+        {if $bouserscomments neq 'yes'}
+        at <strong>{if $comments_item.stage == 's1'} stage 1{else} stage 2{/if}:</strong>
+        {/if}
+    </div><br>
+    <table class="table table-bordered">
+        {if $bouserscomments neq 'yes'}
+        <tr>
+            <td class="alert alert-success">{$comments_item.edited_content|replace:"<br />":"###"|strip_tags:true|escape:'htmlall'|replace:"###":""}</td>
+        </tr>
+        {else}
+        <tr>
+            <td class="alert alert-success">{$comments_item.comments|replace:"<br />":"###"|strip_tags:true|escape:'htmlall'|replace:"###":""}</td>
+        </tr>
+        {/if}
+    </table>
+    {/foreach}
+    {else}
+    Aucun Commentaire
+    {/if}
+</div>
+<div id="ajaxdata"></div>

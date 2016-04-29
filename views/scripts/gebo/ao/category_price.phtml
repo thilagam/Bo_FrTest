@@ -1,0 +1,72 @@
+{literal}
+    <script type="text/javascript" >
+		$(document).ready(function(){
+			$('#categorytable').dataTable({
+				"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 0, "asc" ]],
+				"aoColumns": [
+					{ "sType": "formatted-num" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" } 
+				]
+			});
+		});
+
+		function UpdatePricecatrgory(cat)
+		{
+			target_page = "/ao/categorypricepopup?cat="+cat;
+
+			query = $("#myForm").serialize();
+
+			 $.get(target_page, query, function(data){
+				$("#categoryform").html(data);
+			});
+		}
+	</script>
+
+ {/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">Statistiques de prix par cat&eacute;gorie</h3>
+		<table class="table table-bordered table-striped table_vam" id="categorytable">
+			<thead>
+				<tr>
+				   <th>ID N&deg;</th>
+				   <th>Categorie</th>
+				   <th>Prix par caract&egrave;re</th>
+				   <th>Prix par mot</th>
+				   <th>Prix par feuillet</th>
+				   <th>Action</th>
+				</tr>
+            </thead>
+		<tbody>
+			{foreach from=$PriceList item=price_item name=cat_loop}
+				<tr>
+				   <td>{$smarty.foreach.cat_loop.index+1} </td>
+				   <td>{$categories_array[$price_item.category_id]}</a></td>
+				   <td>{$price_item.charprice}</td>
+				   <td>{$price_item.wordprice}</td>
+				   <td>{$price_item.sheetprice}</td>
+				   <td><a data-toggle="modal" data-target="#categoryupdate" OnClick="UpdatePricecatrgory('{$price_item.category_id}');"><i class="splashy-application_windows_edit"></i></a></td>
+				</tr>
+			{/foreach}
+		</tbody>
+		 </table>
+    </div>
+</div>	
+		
+<div class="modal hide fade" id="categoryupdate">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">&times;</button>
+        <h3>Update Category Price </h3>
+    </div>
+    <div class="modal-body" id="categoryform">
+	</div>
+    <div class="modal-footer">
+    </div>
+</div>

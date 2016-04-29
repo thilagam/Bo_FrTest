@@ -1,0 +1,146 @@
+<div class="mod">
+	<h3 id="soon">Coming up next...</h3>
+
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th><a href="#orderByType">Type</a></th>
+				<th>
+					{if $smarty.get.uorderByTitle eq 'desc'}
+						<a href="/contrib/aosearch?search_article={$smarty.get.search_article|utf8_decode}&search_type={$smarty.get.search_type}&search_language={$smarty.get.search_language}&search_ao_type={$smarty.get.search_ao_type}&uorderByTitle=asc#soon">Title</a>
+						<i class="icon-circle-arrow-down"></i>
+					{elseif $smarty.get.uorderByTitle eq 'asc'}
+						<a href="/contrib/aosearch?search_article={$smarty.get.search_article|utf8_decode}&search_type={$smarty.get.search_type}&search_language={$smarty.get.search_language}&search_ao_type={$smarty.get.search_ao_type}&uorderByTitle=desc#soon">Title</a>
+						<i class="icon-circle-arrow-up"></i>
+					{else}
+						<a href="/contrib/aosearch?search_article={$smarty.get.search_article|utf8_decode}&search_type={$smarty.get.search_type}&search_language={$smarty.get.search_language}&search_ao_type={$smarty.get.search_ao_type}&uorderByTitle=asc#soon">Title</a>	
+					{/if}	
+				</th>
+				<th class="pc">
+					{if $smarty.get.uorderByLang eq 'desc'}
+						<a href="/contrib/aosearch?search_article={$smarty.get.search_article|utf8_decode}&search_type={$smarty.get.search_type}&search_language={$smarty.get.search_language}&search_ao_type={$smarty.get.search_ao_type}&uorderByLang=asc#soon">Languages</a>
+						<i class="icon-circle-arrow-down"></i>
+					{elseif $smarty.get.uorderByLang eq 'asc'}
+						<a href="/contrib/aosearch?search_article={$smarty.get.search_article|utf8_decode}&search_type={$smarty.get.search_type}&search_language={$smarty.get.search_language}&search_ao_type={$smarty.get.search_ao_type}&uorderByLang=desc#soon">Languages</a>
+						<i class="icon-circle-arrow-up"></i>
+					{else}
+						<a href="/contrib/aosearch?search_article={$smarty.get.search_article|utf8_decode}&search_type={$smarty.get.search_type}&search_language={$smarty.get.search_language}&search_ao_type={$smarty.get.search_ao_type}&uorderByLang=asc#soon">Languages</a>	
+					{/if}								
+				</th>
+				<th class="pc">
+					{if $smarty.get.uorderBytime eq 'desc'}
+						<a href="/contrib/aosearch?search_article={$smarty.get.search_article|utf8_decode}&search_type={$smarty.get.search_type}&search_language={$smarty.get.search_language}&search_ao_type={$smarty.get.search_ao_type}&uorderBytime=asc#soon">Publishing date</a>
+						<i class="icon-circle-arrow-down"></i>
+					{elseif $smarty.get.uorderBytime eq 'asc'}
+						<a href="/contrib/aosearch?search_article={$smarty.get.search_article|utf8_decode}&search_type={$smarty.get.search_type}&search_language={$smarty.get.search_language}&search_ao_type={$smarty.get.search_ao_type}&uorderBytime=desc#soon">Publishing date</a>
+						<i class="icon-circle-arrow-up"></i>
+					{else}
+						<a href="/contrib/aosearch?search_article={$smarty.get.search_article|utf8_decode}&search_type={$smarty.get.search_type}&search_language={$smarty.get.search_language}&search_ao_type={$smarty.get.search_ao_type}&uorderBytime=asc#soon">Publishing date</a>	
+					{/if}
+					
+				</th>								
+				<th class="pc"></th>
+			</tr>
+		</thead>
+		{if $upcomingArticles |@count gt 0}
+			{foreach item=article from=$upcomingArticles name="articledetails"} 								
+				<tr>
+					{if $article.ao_type eq 'correction'}
+								<td><span class="label label-correction" data-original-title="Mission guaranteed by Edit-place" rel="tooltip" data-placement="right">Proofreading Mission</span>
+								{if $article.view_to eq 'sc'}
+									<span data-original-title="Available to Seniors" data-content="I have at least 5 articles approved by Edit-place. I am an approved contributor for Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>S</span>
+								{elseif $article.view_to eq 'jc'}
+										<span data-original-title="Available to Junior" data-content="At least 1 article accepted on Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>J</span>
+								{elseif $article.view_to eq 'jc0'}
+										<span data-original-title="Available to Beginner" data-content="No articles accepted on Edit-place yet" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>B</span>	
+								{/if}
+								</td>
+								<td class="title"><a href="/contrib/article-details?misson_type=correction&mission_identifier={$article.articleid}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $article.title|strlen gt 55} rel="tooltip" align="top" data-original-title="{$article.title|stripslashes}"{/if}>{$article.title|truncate:55:"...":true|stripslashes}  {$article.picon} </span>
+					{elseif $article.ao_type eq 'poll_premium'}
+								<td><span class="label label-quote-premium" data-original-title="This offer may become a Premium mission" rel="tooltip" data-placement="right">Premium Quote</span>
+								{if $article.contributors eq '0'}
+									<span data-original-title="Senior level" data-content="I have at least 5 articles approved by Edit-place. I am an approved contributor for Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>S</span>
+								{elseif $article.contributors eq '1'}
+										<span data-original-title="Available to Junior" data-content="At least 1 article accepted on Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>J</span>
+								{elseif $article.contributors eq '3'}
+										<span data-original-title="Available to Beginner" data-content="No articles accepted on Edit-place yet" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>B</span>	
+								{/if}
+								</td>
+								<td class="title"><a href="/contrib/article-details?upcoming=yes&misson_type=poll_premium&mission_identifier={$article.pollId}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $article.title|strlen gt 55} rel="tooltip" align="top" data-original-title="{$article.title|stripslashes}"{/if}>{$article.title|truncate:55:"...":true|stripslashes}</span>
+					{elseif $article.ao_type eq 'poll_nopremium'}
+								<td><span class="label label-quote" data-original-title="You will work directly with the client" rel="tooltip" data-placement="right">Freedom Quote</span>
+								{if $article.contributors eq '0'}
+									<span data-original-title="Senior level" data-content="I have at least 5 articles approved by Edit-place. I am an approved contributor for Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>S</span>
+								{elseif $article.contributors eq '1'}
+										<span data-original-title="Available to Junior" data-content="At least 1 article accepted on Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>J</span>
+								{elseif $article.contributors eq '3'}
+										<span data-original-title="Available to Beginner" data-content="No articles accepted on Edit-place yet" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>B</span>	
+								{/if}
+								</td>
+								<td class="title"><a href="/contrib/article-details?upcoming=yes&misson_type=poll_nopremium&mission_identifier={$article.pollId}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $article.title|strlen gt 55} rel="tooltip" align="top" data-original-title="{$article.title|stripslashes}"{/if}>{$article.title|truncate:55:"...":true|stripslashes}</span>		
+					{elseif $article.premium_option}
+						<td><span class="label label-premium" data-original-title="Mission guaranteed by Edit-place" rel="tooltip" data-placement="right">Premium Mission</span>
+						{if $article.view_to eq 'sc'}
+									<span data-original-title="Senior level" data-content="I have at least 5 articles approved by Edit-place. I am an approved contributor for Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>S</span>
+								{elseif $article.view_to eq 'jc'}
+										<span data-original-title="Available to Junior" data-content="At least 1 article accepted on Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>J</span>
+								{elseif $article.view_to eq 'jc0'}
+										<span data-original-title="Available to Beginner" data-content="No articles accepted on Edit-place yet" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>B</span>	
+								{/if}
+						</td>
+						<td class="title"><a href="/contrib/article-details?upcoming=yes&misson_type=premium&mission_identifier={$article.articleid}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $article.title|strlen gt 55} rel="tooltip" align="top" data-original-title="{$article.title|stripslashes}"{/if}>{$article.title|truncate:55:"...":true|stripslashes} {$article.picon} {$article.qicon}</span>
+					{elseif !$article.premium_option}
+						<td><span class="label label-quote" data-original-title="You will work directly with the client" rel="tooltip" data-placement="right">Freedom Mission</span>
+						{if $article.view_to eq 'sc'}
+							<span data-original-title="Senior level" data-content="I have at least 5 articles approved by Edit-place. I am an approved contributor for Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>S</span>
+						{elseif $article.view_to eq 'jc'}
+							<span data-original-title="Available to Junior" data-content="At least 1 article accepted on Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>J</span>
+						{elseif $article.view_to eq 'jc0'}
+							<span data-original-title="Available to Beginner" data-content="No articles accepted on Edit-place yet" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>B</span>	
+						{/if}
+						</td>
+						<td class="title"><a href="/contrib/article-details?upcoming=yes&misson_type=nopremium&mission_identifier={$article.articleid}" role="button" data-toggle="modal" data-target="#viewOffer-ajax"><span {if $article.title|strlen gt 55} rel="tooltip" align="top" data-original-title="{$article.title|stripslashes}"{/if}>{$article.title|truncate:55:"...":true|stripslashes} {$article.picon} {$article.qicon}</span>
+					{/if}									
+					<p class="muted">{$article.category}  &bull;  Call to writers  &bull;  {$article.num_min} - {$article.num_max} words / article</p></a></td>
+					<td class="pc"><img src="/FO/images/shim.gif" data-placement="left" rel="tooltip" data-original-title="{$article.language_name}" class="flag flag-{$article.language}"></td>
+					<td class="countdown pc">
+						{$article.publishtime_format}											
+					</td>
+					<td class="">
+						{if $article.deliveryid}
+							<span class="alert_{if $article.ao_type eq 'correction'}correction_{/if}{$article.deliveryid}">
+								{if $article.ao_type eq 'correction'}
+									{if $article.alert_subscribe eq 'no'}
+										<button class="btn" onclick="subscribeAOAlert('{$article.deliveryid}','yes','article-correction');"><i class="icon-bell"></i>Receive an alert</button>
+									{elseif $article.alert_subscribe eq 'yes'}
+										<a class="btn btn-small btn-primary" onclick="subscribeAOAlert('{$article.deliveryid}','no','article-correction');"><i class="icon-remove icon-white"></i> Alert set</a>
+									{/if}
+								{else}
+									{if $article.alert_subscribe eq 'no'}
+										<button class="btn" onclick="subscribeAOAlert('{$article.deliveryid}','yes','article');"><i class="icon-bell"></i> Receive an alert</button>
+									{elseif $article.alert_subscribe eq 'yes'}
+										<a class="btn btn-small btn-primary" onclick="subscribeAOAlert('{$article.deliveryid}','no','article');"><i class="icon-remove icon-white"></i> Alert set</a>
+									{/if}	
+								{/if}	
+							</span>	
+						{elseif $article.pollId}
+							<span class="alert_{$article.pollId}">
+								{if $article.alert_subscribe eq 'no'}
+									<button class="btn" onclick="subscribeAOAlert('{$article.pollId}','yes','poll');"><i class="icon-bell"></i> Receive an alert</button>
+								{elseif $article.alert_subscribe eq 'yes'}
+									<a class="btn btn-small btn-primary" onclick="subscribeAOAlert('{$article.pollId}','no','poll');"><i class="icon-remove icon-white"></i> Alert set</a>
+								{/if}	
+							</span>		
+						{/if}	
+					</td>
+				</tr>								
+			{/foreach}
+		{else}
+			<tr>
+				<td colspan="6">
+					<span class="no-data">No result</span>
+				</td>
+			</tr>
+		{/if}
+	</table>
+</div>

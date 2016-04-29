@@ -1,0 +1,76 @@
+<div class="row-fluid">
+	<div class="span8">
+		<form id="send_quote" class="form-horizontal" method="POST" action="/quote/save-edit-quote-final-step" enctype="multipart/form-data">
+		<input type="hidden" value="{$smarty.get.quote_id}" name="quote_id">
+			<fieldset>					
+				<div class="formSep control-group">
+					<label for="bo_comments" class="control-label">Votre commentaire global sur ce devis</label>
+					<div class="controls">
+						<textarea name="bo_comments" id="bo_comments" rows="8" class="validate[required] span12">{$send_quote.sales_comment|utf8_encode}</textarea>
+					</div>
+				</div>
+				{*<div class="formSep control-group">
+					<label for="client_email" class="control-label">Copiez-collez les &eacute;changes de mails avec le client</label>
+					<div class="controls">
+						<textarea name="client_email" id="client_email" class="validate[required] span12">{$send_quote.client_email_text|utf8_encode}</textarea>
+					</div>
+				</div>*}
+				<div class="formSep control-group">
+					<label for="quote_documents" class="control-label">Fichiers joints <span class="help-block">doc,xls,zip,docx,xlsx,dot,html,<br>pdf,jpg,png,xml,rar,ppt,pptx,csv</span></label>		
+				<div class="controls">	
+					{if $send_quote.documents}
+						<input type="file" name="quote_documents[]"  id="upload" class="multi-file span5" accept="doc|xls|zip|docx|xlsx|dot|html|pdf|jpg|png|xml" />
+						<div class="onsuccessrep">
+							{$send_quote.documents}
+					{else}
+					<input type="file" name="quote_documents[]"  id="upload" class="multi-file span5" accept="doc|xls|zip|docx|xlsx" />
+						<div class="onsuccessrep">
+						{/if}
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="controls">
+						<button class="btn btn-gebo" name="update_quote" type="submit">Valider</button>
+						<button class="btn" data-dismiss="modal" id="cancel">Annuler</button>
+					</div>
+				</div>
+			</fieldset>	
+		</form>	
+	</div>
+</div>
+{literal}
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script>
+ <style>
+	.delete
+	{
+		color:#000;
+		margin: 0 5px;
+		cursor: pointer;
+	}
+ </style>
+<script language="javascript">
+	$(document).ready(function(){
+		$("#send_quote").validationEngine();
+		 $("input[type=file].multi-file").MultiFile();
+		
+		$(document).on("click",".delete",function(){
+		var id_identifier = $(this).attr("rel");
+			if(confirm("Are you sure? Want to delete this File"))
+			{
+				$(this).closest(".topset2").remove();
+				$(".onsuccessrep").html("Please Wait Deleting File.");
+				$.post("/quote/delete-document-quote",{"identifier":id_identifier,"type":"quote","from":"popup"},function(result){
+					
+					$(".onsuccessrep").html(result);
+					if($.trim(result)=="")
+					{
+						$(".MultiFile-applied").addClass("validate[required]");
+					}
+				}); 
+			}	
+		});
+	});
+	
+</script>
+{/literal}

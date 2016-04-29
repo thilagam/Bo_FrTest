@@ -1,0 +1,819 @@
+{literal}
+<style type="text/css">
+.table thead tr.error > th {
+    background-color: #f2dede  !important;
+}
+</style>
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript" >
+
+$(document).ready(function() {
+     $("#refusemail").removeData('modal');
+     $(".pop_over").popover({trigger: 'hover'});
+   // tinyMCE.baseURL='/BO/theme/gebo/lib/tiny_mce/tiny_mce.js';    
+	loadEditors('refusemailcontent');
+	loadEditors('acceptmailcontent');
+});
+///black list the user/////////
+function blackListUser(userid, mode, username, artid)
+{
+    if(mode == 'yes')
+    {
+        var target_page = "/processao/blackcontributor?status=no&user_id="+userid;
+        $.post(target_page, function(data){ //alert(data);
+            var href="/processao/group-profiles?artId="+artid;
+            $("#groupprofile").removeData('modal');
+            $('#groupprofile .modal-body').load(href);
+            $("#groupprofile").modal();
+            $(".modal-backdrop:gt(0)").remove();
+            smoke.alert(username+" Unblacklisted");
+        });
+    }
+    else
+    {
+        var target_page = "/processao/blackcontributor?status=yes&user_id="+userid;
+        $.post(target_page, function(data){ //alert(data);
+           var href="/processao/group-profiles?artId="+artid;
+            $("#groupprofile").removeData('modal');
+            $('#groupprofile .modal-body').load(href);
+            $("#groupprofile").modal();
+            $(".modal-backdrop:gt(0)").remove();
+            smoke.alert(username+" Blacklisted");
+        });
+    }
+
+}
+
+///////////for all contributors details list in popup//////////////////
+function acceptRefuseWriter(button)
+{
+    var userid = $('#userid').val();
+    var partid = $('#partid').val();
+    var artid = $('#artid').val();
+    if(button == 'refuse_pop')
+    {
+       // var comment = CKEDITOR.instances['refusemailcontent'].getData();
+        var comment = tinyMCE.get('refusemailcontent').getContent();
+        var sendtofo;
+        //////////// is it the last participation and refusing it ////////////////////////////////////
+        var target_page = "/processao/getlastarts?artid="+artid;
+        $.post(target_page, function(data){   //alert(data);
+            var data1 = $.trim(data);
+            if(data1 == "yes")
+            {
+                smoke.confirm("L\'article sera remis en ligne",function(e){
+                    if (e)
+                    {
+                        sendtofo = 'yes';
+                        var mailannoucement;
+                        if($(mailannouncement).is(':checked'))
+                            mailannoucement = "sendmail";
+                        else
+                            mailannoucement = "dontsendmail"; //alert(mailannoucement);
+                        var target_page = "/processao/selectcontributor?contrib_id="+userid+"&particip_id="+partid+"&button=refuse_pop&comment="+escape(comment)+"&sendtofo="+sendtofo+"&mailannoucement="+mailannoucement+"&art_id="+artid;
+                        $.post(target_page, function(data){  //alert(data);
+                            //////////to reload the contirbutor list////////////
+                            //window.location.reload();
+                            refreshModel(artid);
+                        });
+                    }
+                    else
+                    {
+                         sendtofo = 'no';
+                        var target_page = "/processao/selectcontributor?contrib_id="+userid+"&particip_id="+partid+"&button=refuse_pop&comment="+escape(comment)+"&sendtofo="+sendtofo+"&art_id="+artid;
+                        $.post(target_page, function(data){  //alert(data);
+                            refreshModel(artid);
+                        });
+                    }
+                });
+            }
+            else
+            {
+                ///////////////////////////////////////////////////////////////
+                var target_page = "/processao/selectcontributor?contrib_id="+userid+"&particip_id="+partid+"&button=refuse_pop&comment="+escape(comment)+"&art_id="+artid;
+                $.post(target_page, function(data){  //alert(data);
+                    refreshModel(artid);
+                });
+            }
+        });
+    }
+    else
+    {
+        //var comment = CKEDITOR.instances['acceptmailcontent'].getData();
+        var comment = tinyMCE.get('acceptmailcontent').getContent();
+        var target_page = "/processao/selectcontributor?contrib_id="+userid+"&particip_id="+partid+"&button=submit_pop&comment="+escape(comment)+"&art_id="+artid;
+        $.post(target_page, function(data){  
+			if($.trim(data)=='selectedcorr')
+				smoke.alert('Ce contributeur a déjà été sélectionné pour la correction de cet article');
+			
+			if($.trim(data)=='selectedwriter')			
+				smoke.alert('Ce rédacteur a déjà été sélectionné pour la rédaction de cet article');
+				
+			refreshModel(artid);
+        });
+    }
+}
+function refreshModel(artid)
+{
+    var href="/processao/group-profiles?artId="+artid;
+    $("#groupprofile").removeData('modal');
+    $('#groupprofile .modal-body').load(href);
+    $("#groupprofile").modal();
+    $(".modal-backdrop:gt(0)").remove();
+}
+
+function getComment(commentid, button, partid, userid, artid, status)
+{
+    $('#refusemail').removeData('modal');
+    ///passing these 3 values for the popup for next post///
+    $('#userid').val(userid);
+    $('#partid').val(partid);
+    $('#artid').val(artid);	
+    if(button=='refuse_pop')
+    {
+       //  callCkeditor('refusemailcontent');
+	   
+		if (tinymce.getInstanceById('refusemailcontent'))
+		{
+			//tinymce.execCommand('mceFocus', true, 'refusemailcontent');                    
+			tinymce.execCommand('mceRemoveControl', true, 'refusemailcontent');
+			//tinymce.triggerSave();
+			loadEditors('refusemailcontent');
+		}
+		else  if (!tinymce.getInstanceById('refusemailcontent'))
+		{
+			//alert('yrd');
+			loadEditors('refusemailcontent');
+		}	
+		
+		
+         var target_page = "/processao/getcommentpopup?mailId=27&contrib_id="+userid+"&particip_id="+partid+"&button="+button+"&artid="+artid;
+         
+		 $.post(target_page, function(data){   //alert(data);             
+             $('#refusemailcontent').html(data);
+         });
+         $('#refusemail').modal('show');
+    }
+    else
+    {
+		//check same participation in writing & correction
+		var target_page = "/processao/checkparticipationincorrection?contrib_id="+userid+"&artid="+artid;
+         $.post(target_page, function(datacorr){     
+             if($.trim(datacorr)=="yes")
+			 {
+			  smoke.confirm("Ce contributeur a également participé pour la correction de cet article. Souhaitez-vous tout de même le sélectionner pour la rédaction?",function(e){
+                   if (e)
+                    {
+			 			//Refuse correction participation
+						/*var target_page = "/processao/refusecorrectionparticipation?contrib_id="+userid+"&artid="+artid;
+						 $.post(target_page, function(datacorr){  
+						 });*/
+						 
+						if (tinymce.getInstanceById('acceptmailcontent'))
+						{
+							//tinymce.execCommand('mceFocus', true, 'acceptmailcontent');                    
+							tinymce.execCommand('mceRemoveControl', true, 'acceptmailcontent');
+							//tinymce.triggerSave();
+							loadEditors('acceptmailcontent');
+						}
+						else if (!tinymce.getInstanceById('acceptmailcontent'))
+						{	
+							loadEditors('acceptmailcontent');
+						}	
+						
+						 var target_page = "/processao/getcommentpopup?mailId=25&contrib_id="+userid+"&particip_id="+partid+"&button="+button+"&artid="+artid;
+						 $.post(target_page, function(data){   //alert(data);           
+							 //tinyMCE.get('acceptmailcontent').setContent(data);
+							
+							 $("#acceptmailcontent").html(data);
+						 });
+						
+						$('#Acceptmail').modal('show');
+					}
+				});
+			 }
+			 else
+			 {
+				if (tinymce.getInstanceById('acceptmailcontent'))
+				{
+					//tinymce.execCommand('mceFocus', true, 'acceptmailcontent');                    
+					tinymce.execCommand('mceRemoveControl', true, 'acceptmailcontent');
+					//tinymce.triggerSave();
+					loadEditors('acceptmailcontent');
+				}
+				else if (!tinymce.getInstanceById('acceptmailcontent'))
+				{	
+					loadEditors('acceptmailcontent');
+				}	
+				
+				 var target_page = "/processao/getcommentpopup?mailId=25&contrib_id="+userid+"&particip_id="+partid+"&button="+button+"&artid="+artid;
+				 $.post(target_page, function(data){   //alert(data);           
+					 //tinyMCE.get('acceptmailcontent').setContent(data);
+					
+					 $("#acceptmailcontent").html(data);
+				 });
+				
+				$('#Acceptmail').modal('show');
+			 }
+         });
+		 
+		
+    }
+}
+
+////get all attributes of the close and republish button to the abve the repulish butto/////
+function shareAttributes()
+{
+    var userId = $("#userId").val();
+    var artId = $("#articleId").val();
+    var partId = $("#partId").val();
+    var status = $("#status").val();
+    getComment('comment_refuse_'+userId, 'refuse_pop', partId, userId, artId, status);
+}
+////show user details/////
+function showUserAddDetails(loop)
+{
+    $('#collapsedetails'+loop).toggle();
+    $('#collapseOne'+loop).height('auto');
+    if ($('#plusimg'+loop).is('.splashy-add_small')) {
+        //$('#collapsedetails'+loop).show();
+        $('#plusimg'+loop).removeClass('splashy-add_small');
+        $('#plusimg'+loop).addClass('splashy-remove_minus_sign_small');
+    } else {
+        //$('#collapsedetails'+loop).hide();
+        $('#plusimg'+loop).removeClass('splashy-remove_minus_sign_small');
+        $('#plusimg'+loop).addClass('splashy-add_small');
+    }
+}
+
+function showLastCycle(artid, mode)
+{
+  /* var mode = $("#lastcyclelable").html();
+   if(mode == 'Show Last Cycles') {
+     jQuery('tr').each(function(obj){
+      $("#lastcycles"+obj).show();
+      });
+    $("#lastcyclelable").text('Hide Last Cycles');
+    $("#lastcyclelable").val('hide');
+
+   }else{
+      jQuery('tr').each(function(obj){
+      $("#lastcycles"+obj).hide();
+      });
+    $("#lastcyclelable").text('Show Last Cycles');
+    $("#lastcyclelable").val('show');
+       var href="/processao/group-profiles?artId="+artid;
+       $("#groupprofile").removeData('modal');
+       $('#groupprofile .modal-body').load(href);
+       $("#groupprofile").modal();
+       $(".modal-backdrop:gt(0)").remove();
+   }*/
+    if(mode == 'show') {
+        jQuery('tr').each(function(obj){
+            $("#lastcycles"+obj).show();
+        });
+        $("#lastcyclelablehide").show();
+        $("#lastcyclelableshow").hide();
+
+    }else{
+        jQuery('tr').each(function(obj){
+            $("#lastcycles"+obj).hide();
+        });
+        $("#lastcyclelablehide").hide();
+        $("#lastcyclelableshow").show();
+        var href="/processao/group-profiles?artId="+artid;
+        $("#groupprofile").removeData('modal');
+        $('#groupprofile .modal-body').load(href);
+        $("#groupprofile").modal();
+        $(".modal-backdrop:gt(0)").remove();
+    }
+
+}
+
+
+</script>
+{/literal}
+
+<form action="/processao/selectallprofiles?submenuId={$submenuId}" method="post" id="selectallprofile" name="selectallprofile" onsubmit="return validate3NewUser(1);">
+<div class="row-fluid">
+  <div class="span12">
+      <a class="alignright btn btn-info hint--bottom hint--info" id="linkidrefresh" data-hint="Reload"  href="/processao/group-profiles?artId={$delDetails[0].articleid}"><img src="/BO/theme/gebo/img/gCons/reload.png" alt="" /></a>
+      <table id="grptabledetails" class="table btn-gebo" >
+
+        <tr>
+            <td><b>Article : </b>{$delDetails[0].artname|stripslashes|utf8_encode}</td>
+            <td><b>Nom Ao : </b>{$delDetails[0].title|stripslashes|utf8_encode}</td>
+            <td><b>Fourchette Prix : </b>{$delDetails[0].price_min}-{$delDetails[0].price_max}&nbsp;&euro;</td>
+            <td><b>Client : </b>{$delDetails[0].company_name}</td>
+            <td><b>Cat&Eacute;gorie : </b>{$delDetails[0].art_category|utf8_encode}</td>
+        </tr>
+        <tr>
+            <td><b>Total Participants : </b>{if $totalusers eq ''}0{else}{$totalusers}{/if}</td>
+            <td><b>Ao Cr&Eacute;e le : </b>{$delDetails[0].created_at|date_format:"%d/%m/%Y"}</td>
+            <td><b>Statut : </b>{if $delDetails[0].status eq 'bid_premium'} New
+                                 {elseif $delDetails[0].status eq 'bid_refused'} Refused
+                                 {elseif $delDetails[0].status eq 'published'} Published
+                                 {elseif $delDetails[0].status eq ''} No Participants
+                                 {else} Ongoing {/if}
+            </td>
+            <td><b>Refus : </b>{if $refused_arts eq ''}0{else}{$refused_arts}{/if}</td>
+            <td>{if $partStatus[0].current_stage == 'stage0' || $partStatus[0].current_stage == 'stage1' || $partStatus[0].current_stage == 'stage2' || $partStatus[0].status == 'published' || $smarty.now < $delDetails[0].participation_expires || $partStatus[0].missiontest eq 'yes'}
+                  &nbsp;
+                {else}
+                    <button type="button" data-toggle="modal" data-target="#republish" href="/republish/republishpopup?artId={$delDetails[0].articleid}" id="closerepublish" name="closerepublish" class="btn btn-danger">Re publier</button>
+                {/if}				
+            </td>
+        </tr>
+    </table>
+
+
+    <table id="dt_gal" class="table table-bordered table-striped table_vam">
+        <thead>
+        <tr>
+            <th>Sl.no</th>
+            <th>Nom</th>
+            <th>Prix Propos&eacute;</th>
+            <th>Round</th>
+            <th>date Participation</th>
+            <th>Profil</th>
+            <!-- <th>Language</th>
+            <th>Profession</th> -->
+            <th>Statut</th>
+            <th>Participations</th>
+           <!--  <th>Refused</th>
+            <th>Validated</th>
+            <th>Disapproved</th
+            <th>Closed</th>
+            <th>Published</th> -->
+            <th>Action</th>
+            <th>Black list</th>
+            <th>Commentaire</th>
+        </tr>
+        </thead>
+        <tbody>
+
+         {foreach from=$contribDetails key=grpprofiles_key item=grpprofiles_item name=grpprofiles_loop}
+			{if $grpprofiles_item[0].within_range eq 'yes'}
+				<tr {if $grpprofiles_item[0].cyclecount neq 0} id="lastcycles{$smarty.foreach.grpprofiles_loop.index+1}" style="color:#F20A58;display:none;" {/if}>
+					<td><a id="elaborate{$smarty.foreach.grpprofiles_loop.index+1}" onclick="showUserAddDetails('{$smarty.foreach.grpprofiles_loop.index+1}');" class="accordion-toggle collapsed" data-toggle="collapse"
+						   data-parent="#accordion{$smarty.foreach.grpprofiles_loop.index+1}" href="#collapseOne{$smarty.foreach.grpprofiles_loop.index+1}">
+						<i id="plusimg{$smarty.foreach.grpprofiles_loop.index+1}" class="splashy-add_small"></i></a>{$smarty.foreach.grpprofiles_loop.index+1}</td>
+
+					<td>{$grpprofiles_item[0].first_name|utf8_encode} {$grpprofiles_item[0].last_name|utf8_encode}</td>
+					<td>{$grpprofiles_item[0].price_user}</td>
+					<td>{if $grpprofiles_item[0].cyclecount eq '0'}
+						 {assign var="iSum" value=$grpprofiles_item[0].cyclecount+$maxcycle+1}enchère {$iSum}
+						{else}enchère {$grpprofiles_item[0].cyclecount} {/if}</td>
+					<td>{$grpprofiles_item[0].created_at|date_format:"%d/%m/%Y %H:%M"}</td>
+					<td>{if $grpprofiles_item[0].profiletype eq 'junior'}<span class="label label-info">JUNIOR</span>
+							{if $grpprofiles_item[0].contribmarks != 0}
+								<span class="label label-inverse hint--bottom hint--info" data-hint="Note moyenne donnée par les correcteurs">{$grpprofiles_item[0].contribmarks}/10</span>
+							{/if}
+							{if $grpprofiles_item[0].epcontribmarks != 0}
+								<span class="label label hint--bottom hint--info" data-hint="Note moyenne donnée par les EP">{$grpprofiles_item[0].epcontribmarks}/10</span>
+							{/if}
+						{elseif $grpprofiles_item[0].profiletype eq 'senior'} <span class="label label-info">SENIOR</span>
+							{if $grpprofiles_item[0].contribmarks != 0}
+								<span class="label label-inverse hint--bottom hint--info" data-hint="Note moyenne donnée par les correcteurs">{$grpprofiles_item[0].contribmarks}/10</span>
+							{/if}
+							{if $grpprofiles_item[0].epcontribmarks != 0}
+								<span class="label label hint--bottom hint--info" data-hint="Note moyenne donnée par les EP">{$grpprofiles_item[0].epcontribmarks}/10</span>
+							{/if}
+						{elseif $grpprofiles_item[0].profiletype eq 'sub-junior'} <span class="label label-info">débuts</span>
+							{if $grpprofiles_item[0].contribmarks != 0}
+								<span class="label label-inverse hint--bottom hint--info" data-hint="Note moyenne donnée par les correcteurs">{$grpprofiles_item[0].contribmarks}/10</span>
+							{/if}
+							{if $grpprofiles_item[0].epcontribmarks != 0}
+								<span class="label label hint--bottom hint--info" data-hint="Note moyenne donnée par les EP">{$grpprofiles_item[0].epcontribmarks}/10</span>
+							{/if}
+						{/if}</td>
+					<!-- <td>{$grpprofiles_item[0].language}</td>
+					<td>{$grpprofiles_item[0].profession}</td> -->
+					<td>
+						{if $grpprofiles_item[0].status == 'bid'}
+						   <span class="label label-warning">Validé</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'bid_refused'}
+						   <span class="label label-important">Refusé</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'bid_premium' || $grpprofiles_item[0].status == 'bid_nonpremium'}
+							<span class="label label-warning">Attente</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'under_study'}
+							<span class="label label-warning">{if $grpprofiles_item[0].current_stage eq 'stage1'}Validé - en étude phase 1 {else}Validé - en étude phase finale{/if}</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'plag_exec'}
+						<span class="label label-warning">Validé - Plagiarism</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'closed'}
+							<span class="label label-important">{if $grpprofiles_item[0].current_stage}refus définitif{else}refus définitif{/if}</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'published'}
+							<span class="label label-warning">Published</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'bid_temp'}
+							<span class="label label-warning">Validation - en attente</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'bid_refused_temp'}
+							<span class="label label-important">Refus - en attente</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'on_hold'}
+							<span class="label label-warning">{if $grpprofiles_item[0].current_stage eq 'stage1'}locké s1{else}locké phase finale{/if}</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'disapproved'}
+							<span class="label label-important">Refus pour resoumission</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'time_out'}
+							<span class="label label-warning">Time out</span>
+						{/if}
+					</td>
+					<td>{$grpprofiles_item[3].no_paritcipations}</td>
+				   <!--  <td>{$grpprofiles_item[2].no_disapproved}</td>
+					<td>{$grpprofiles_item[5].validated}</td>
+					<td>{$grpprofiles_item[2].no_disapproved}</td>
+					<td>{$grpprofiles_item[9].closed}</td>
+					<td>{$grpprofiles_item[1].no_approved}</td> -->
+					<td style="width: 185px;">{if $grpprofiles_item[0].cyclecount neq 0} &nbsp;
+						{elseif  $smarty.now > $grpprofiles_item[0].participation_expires && $grpprofiles_item[0].participation_expires!="0"}
+							{if $grpprofiles_item[0].status == 'bid_premium' || $grpprofiles_item[0].status == 'bid_nonpremium' || $grpprofiles_item[0].status == 'bid_cancel' || $grpprofiles_item[0].status == 'bid' || $grpprofiles_item[0].status == 'under_study' || $grpprofiles_item[0].status == 'bid_temp' || $grpprofiles_item[0].status == 'bid_refused_temp' || $grpprofiles_item[0].status == 'disapproved'}
+							{if $grpprofiles_item[0].blackstatus!='yes'}
+							{if $lastparticipant eq 1}
+							<button class="btn hint--bottom hint--info" data-hint="Refuser et re publier" type="button" name="refuse_pop"  id="Refuser_{$grpprofiles_item[0].identifier}" data-toggle="modal" data-target="#republish" href="/republish/republishpopup?artId={$grpprofiles_item[0].id}" style="background:#F5AA1A"><i class="splashy-thumb_down"></i></button>
+							<input type="hidden" id="userId" name="userId" value="{$grpprofiles_item[0].identifier}">
+							<input type="hidden" id="partId" name="partId" value="{$grpprofiles_item[0].partId}">
+							<input type="hidden" id="articleId" name="articleId" value="{$delDetails[0].articleid}">
+							<input type="hidden" id="status" name="status" value="{$grpprofiles_item[0].status}">
+							{else}
+							<button class="btn hint--bottom hint--info" data-hint="Refuser" type="button" name="refuse_pop" id="Refuser_{$grpprofiles_item[0].identifier}"  onclick="return getComment('comment_refuse_{$grpprofiles_item[0].identifier}', 'refuse_pop', {$grpprofiles_item[0].partId}, {$grpprofiles_item[0].identifier},'{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"><i class="splashy-thumb_down"></i> </button>
+							{/if}
+							{/if}
+							{/if}
+							{if $grpprofiles_item[0].status == 'published' && $grpprofiles_item[0].premium_option=="0"}
+							<button class="btn hint--bottom hint--info" data-hint="Refuser" type="button" name="refuse_pop" id="Refuser_{$grpprofiles_item[0].identifier}"  onclick="return getComment('comment_refuse_{$grpprofiles_item[0].identifier}', 'refuse_pop', {$grpprofiles_item[0].partId}, {$grpprofiles_item[0].identifier},'{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"> <i class="splashy-thumb_down"></i></button>
+							{/if}
+							{if $grpprofiles_item[0].status == 'bid_premium' || $grpprofiles_item[0].status == 'bid_nonpremium' || $grpprofiles_item[0].status == 'bid_temp' || $grpprofiles_item[0].status == 'bid_refused_temp'}
+							{if $anyvalidatedContributor eq 'NO' && $grpprofiles_item[0].blackstatus!='yes' && $grpprofiles_item[0].identifier!=$selectedcorrector}
+								{if $grpprofiles_item[0].within_range eq 'yes'}<!--Added by Arun-->
+									<button class="btn hint--bottom hint--info" data-hint="Valider" type="button" name="submit_pop" id="Accept_{$grpprofiles_item[0].identifier}" onclick="return getComment('comment_accept_{$grpprofiles_item[0].identifier}', 'submit_pop', {$grpprofiles_item[0].partId}, {$grpprofiles_item[0].identifier},'{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"><i class="splashy-thumb_up"></i></button>
+								{/if}
+							{/if}
+							{/if}
+							{if $grpprofiles_item[0].status == 'bid_refused' && $grpprofiles_item[0].identifier!=$selectedcorrector}
+							{if $anyvalidatedContributor eq 'NO'}
+								{if $grpprofiles_item[0].within_range eq 'yes'}<!--Added by Arun-->
+									<button class="btn hint--bottom hint--info" data-hint="Valider" type="button" name="submit_pop_refused" id="Accepter_{$grpprofiles_item[0].identifier}" onclick="return getComment('comment_accept_{$grpprofiles_item[0].identifier}', 'submit_pop', {$grpprofiles_item[0].partId}, {$grpprofiles_item[0].identifier},'{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"><i class="splashy-thumb_up"></i> </button>
+								{/if}	
+							{/if}
+							{/if}
+						{/if}
+						<button class="btn hint--bottom hint--info" data-hint="Contacter" type="button" name="send_mail"  onclick="window.open('/mails/composemail?submenuId=ML4-SL1&user_id={$grpprofiles_item[0].identifier}')"> <i class="splashy-mail_light"></i></button>
+						<a class="btn hint--bottom hint--info" data-hint="Commenter"  data-target="#comments" data-toggle="modal"  name="send_comment"  href="/proofread/getallbousercomments?userId={$grpprofiles_item[0].identifier}&artid={$grpprofiles_item[0].id}" ><i class="splashy-comments_reply"></i></a>
+					</td>
+					<td><!--<div id="text-toggle-button{$smarty.foreach.grpprofiles_loop.index}" class="toggle-button">
+							<input name="blackstatus{$smarty.foreach.grpprofiles_loop.index}" id="blackstatus{$smarty.foreach.grpprofiles_loop.index}" type="checkbox" value="{$grpprofiles_item[0].identifier}" {if $grpprofiles_item[0].blackstatus=='yes'} checked="checked" {/if} >
+						</div>-->
+						{if $grpprofiles_item[0].blackstatus=='yes'}
+						<button type="button"  id="blackstatusyes{$grpprofiles_item[0].identifier}" onclick="blackListUser('{$grpprofiles_item[0].identifier}', 'yes', '{$grpprofiles_item[0].first_name|utf8_encode}', '{$delDetails[0].articleid}') " class="btn btn-danger hint--bottom hint--info" data-hint="click to unblacklist">OUI</button>
+						{else}
+						<button type="button"  id="blackstatusno{$grpprofiles_item[0].identifier}" onclick="blackListUser('{$grpprofiles_item[0].identifier}', 'no', '{$grpprofiles_item[0].first_name|utf8_encode}', '{$delDetails[0].articleid}') " class="btn btn-info hint--bottom hint--info" data-hint="click to blacklist">NON</button>
+						{/if}
+					</td>
+					<td><div id="fl_a">
+					{if $grpprofiles_item[0].contrib_parts_inao neq 0}
+						</div>Profil déjà sélectionné pour <span class="label label-important">{$grpprofiles_item[0].contrib_parts_inao}</span><br> articles sur cette mission
+					{/if}
+					</td>
+
+				</tr>
+				<tr id="collapsedetails{$smarty.foreach.grpprofiles_loop.index+1}" class="collapse" style="display: none;" >
+				<td colspan="11">
+					<div  id="collapseOne{$smarty.foreach.grpprofiles_loop.index+1}" class="accordion-body collapse" >
+						 <table class='table table-bordered tdleftalign'>
+							<tr>
+								<td><b>Nom</b></td>
+								<td>{$grpprofiles_item[0].first_name|utf8_encode} {$grpprofiles_item[0].last_name|utf8_encode}</td>
+								<td><b>Email</b></td>
+								<td><a href="/user/contributor-edit?submenuId=ML3-SL6&tab=viewcontrib&userId={$grpprofiles_item[0].identifier}">{$grpprofiles_item[0].email}</a></td>
+								<td><b>Articles Refus&eacute;s</b></td>
+								<td>{$grpprofiles_item[2].no_disapproved}</td>
+							</tr>
+							<tr>
+								<td><b>langue</b></td>
+								<td><b>{$grpprofiles_item[0].language}</b>&nbsp;{$grpprofiles_item[0].language_more|utf8_encode}</td>
+								<td><b>inscrit depuis</b></td>
+								<td>{$grpprofiles_item[0].doj|date_format:"%d/%m/%Y"}</td>
+								<td><b>Articles Valid&eacute;s</b></td>
+								<td>{$grpprofiles_item[5].validated}</td>
+							</tr>
+							<tr>
+								<td colspan="1"><b>Formation</b></td>
+								<td colspan="3">
+									<b>Formation - </b>{if $grpprofiles_item[0].educationDetails!="NO"}{$grpprofiles_item[0].educationDetails[0].title|utf8_encode}{/if}
+									<b>Ecole, universit&eacute; -</b> {if $grpprofiles_item[0].educationDetails!="NO"}{$grpprofiles_item[0].educationDetails[0].institute|utf8_encode}{/if}
+								</td>
+								<td colspan=""><b>Articles Publi&eacute;s</b></td>
+								<td><!--{$grpprofiles_item[1].no_approved}-->{$grpprofiles_item[0].successrate}</td>
+							</tr>
+							<tr>
+								<td><b>Exp&eacute;riences<br> professionnelles</b></td>
+								<td colspan="3">
+									<b>Intitul&eacute; du poste - </b>{if $grpprofiles_item[0].workDetails!="NO"}{$grpprofiles_item[0].workDetails[0].title|utf8_encode}{/if}
+									 <b>entreprise -</b> {if $grpprofiles_item[0].workDetails!="NO"}{$grpprofiles_item[0].workDetails[0].institute|utf8_encode}{/if}
+
+								</td>
+								<td><b>refus d&eacute;finitifs</b></td>
+								<td>{$grpprofiles_item[9].closed}</td>
+							</tr>
+							<tr>
+								<td colspan="1"><b>Cat&eacute;gories</b></td>
+								<td colspan="5">{$grpprofiles_item[0].categories|utf8_encode}</td>
+							</tr>
+							<tr>
+								<td colspan="1"><b>Ce contributeur a &eacute;t&eacute; test&eacute;</b></td>
+								{if $grpprofiles_item[0].contributortest=="yes"}
+									<td>Oui</td>
+									<td><b>Commentaire</b></td>
+									<td>{$grpprofiles_item[0].contributortestcomment|stripslashes|utf8_encode}</td>
+									<td><b>Note</b></td>
+									<td>{$grpprofiles_item[0].contributortestmarks}</td>
+								{else}
+									<td colspan="5">Non</td>
+								{/if}
+							</tr>
+						</table>
+					</div></td>
+				</tr>		
+			{/if}	
+        {/foreach}
+        </tbody>
+    </table>
+	
+	<table id="dt_gal1" class="table table-bordered table-striped table_vam">
+        <thead>
+        <tr class="error">
+            <th>Sl.no</th>
+            <th>Nom</th>
+            <th>Prix Propos&eacute;</th>
+            <th>Round</th>
+            <th>date Participation</th>
+            <th>Profil</th>
+            <!-- <th>Language</th>
+            <th>Profession</th> -->
+            <th>Statut</th>
+            <th>Participations</th>
+           <!--  <th>Refused</th>
+            <th>Validated</th>
+            <th>Disapproved</th
+            <th>Closed</th>
+            <th>Published</th> -->
+            <th>Action</th>
+            <th>Black list</th>
+            <th>Commentaire</th>
+        </tr>
+        </thead>
+        <tbody>
+
+         {foreach from=$contribDetails key=grpprofiles_key item=grpprofiles_item name=grpprofiles_loop}
+			{if $grpprofiles_item[0].within_range eq 'no'}
+				<tr {if $grpprofiles_item[0].cyclecount neq 0} id="lastcycles{$smarty.foreach.grpprofiles_loop.index+1}" style="color:#F20A58;display:none;" {/if}>
+					<td><a id="elaborate{$smarty.foreach.grpprofiles_loop.index+1}" onclick="showUserAddDetails('{$smarty.foreach.grpprofiles_loop.index+1}');" class="accordion-toggle collapsed" data-toggle="collapse"
+						   data-parent="#accordion{$smarty.foreach.grpprofiles_loop.index+1}" href="#collapseOne{$smarty.foreach.grpprofiles_loop.index+1}">
+						<i id="plusimg{$smarty.foreach.grpprofiles_loop.index+1}" class="splashy-add_small"></i></a>{$smarty.foreach.grpprofiles_loop.index+1}</td>
+
+					<td>{$grpprofiles_item[0].first_name|utf8_encode} {$grpprofiles_item[0].last_name|utf8_encode}</td>
+					<td>{$grpprofiles_item[0].price_user} </td>
+					<td>{if $grpprofiles_item[0].cyclecount eq '0'}
+						 {assign var="iSum" value=$grpprofiles_item[0].cyclecount+$maxcycle+1}enchère {$iSum}
+						{else}enchère {$grpprofiles_item[0].cyclecount} {/if}</td>
+					<td>{$grpprofiles_item[0].created_at|date_format:"%d/%m/%Y %H:%M"}</td>
+					<td>{if $grpprofiles_item[0].profile_type eq 'junior'}<span class="label label-info">JUNIOR</span>
+							{if $grpprofiles_item[0].contribmarks != 0}
+								<span class="label label-inverse hint--bottom hint--info" data-hint="Note moyenne donnée par les correcteurs">{$grpprofiles_item[0].contribmarks}/10</span>
+							{/if}
+							{if $grpprofiles_item[0].epcontribmarks != 0}
+								<span class="label label hint--bottom hint--info" data-hint="Note moyenne donnée par les EP">{$grpprofiles_item[0].epcontribmarks}/10</span>
+							{/if}
+						{elseif $grpprofiles_item[0].profile_type eq 'senior'} <span class="label label-info">SENIOR</span>
+							{if $grpprofiles_item[0].contribmarks != 0}
+								<span class="label label-inverse hint--bottom hint--info" data-hint="Note moyenne donnée par les correcteurs">{$grpprofiles_item[0].contribmarks}/10</span>
+							{/if}
+							{if $grpprofiles_item[0].epcontribmarks != 0}
+								<span class="label label hint--bottom hint--info" data-hint="Note moyenne donnée par les EP">{$grpprofiles_item[0].epcontribmarks}/10</span>
+							{/if}
+						{elseif $grpprofiles_item[0].profile_type eq 'sub-junior'} <span class="label label-info">débuts</span>
+							{if $grpprofiles_item[0].contribmarks != 0}
+								<span class="label label-inverse hint--bottom hint--info" data-hint="Note moyenne donnée par les correcteurs">{$grpprofiles_item[0].contribmarks}/10</span>
+							{/if}
+							{if $grpprofiles_item[0].epcontribmarks != 0}
+								<span class="label label hint--bottom hint--info" data-hint="Note moyenne donnée par les EP">{$grpprofiles_item[0].epcontribmarks}/10</span>
+							{/if}
+						{/if}</td>
+					<!-- <td>{$grpprofiles_item[0].language}</td>
+					<td>{$grpprofiles_item[0].profession}</td> -->
+					<td>
+						{if $grpprofiles_item[0].status == 'bid'}
+						   <span class="label label-warning">Validé</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'bid_refused'}
+						   <span class="label label-important">Refusé</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'bid_premium' || $grpprofiles_item[0].status == 'bid_nonpremium'}
+							<span class="label label-warning">Attente</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'under_study'}
+							<span class="label label-warning">{if $grpprofiles_item[0].current_stage eq 'stage1'}Validé - en étude phase 1 {else}Validé - en étude phase finale{/if}</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'plag_exec'}
+						<span class="label label-warning">Validé - Plagiarism</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'closed'}
+							<span class="label label-important">{if $grpprofiles_item[0].current_stage}refus définitif{else}refus définitif{/if}</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'published'}
+							<span class="label label-warning">Published</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'bid_temp'}
+							<span class="label label-warning">Validation - en attente</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'bid_refused_temp'}
+							<span class="label label-important">Refus - en attente</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'on_hold'}
+							<span class="label label-warning">{if $grpprofiles_item[0].current_stage eq 'stage1'}locké s1{else}locké phase finale{/if}</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'disapproved'}
+							<span class="label label-important">Refus pour resoumission</span>
+						{/if}
+						{if $grpprofiles_item[0].status == 'time_out'}
+							<span class="label label-warning">Time out</span>
+						{/if}
+					</td>
+					<td>{$grpprofiles_item[3].no_paritcipations}</td>
+				   <!--  <td>{$grpprofiles_item[2].no_disapproved}</td>
+					<td>{$grpprofiles_item[5].validated}</td>
+					<td>{$grpprofiles_item[2].no_disapproved}</td>
+					<td>{$grpprofiles_item[9].closed}</td>
+					<td>{$grpprofiles_item[1].no_approved}</td> -->
+					<td style="width: 185px;">{if $grpprofiles_item[0].cyclecount neq 0} &nbsp;
+						{elseif  $smarty.now > $grpprofiles_item[0].participation_expires && $grpprofiles_item[0].participation_expires!="0"}
+							{if $grpprofiles_item[0].status == 'bid_premium' || $grpprofiles_item[0].status == 'bid_nonpremium' || $grpprofiles_item[0].status == 'bid_cancel' || $grpprofiles_item[0].status == 'bid' || $grpprofiles_item[0].status == 'under_study' || $grpprofiles_item[0].status == 'bid_temp' || $grpprofiles_item[0].status == 'bid_refused_temp' || $grpprofiles_item[0].status == 'disapproved'}
+							{if $grpprofiles_item[0].blackstatus!='yes'}
+							{if $lastparticipant eq 1}
+							<button class="btn hint--bottom hint--info" data-hint="Refuser et re publier" type="button" name="refuse_pop"  id="Refuser_{$grpprofiles_item[0].identifier}" data-toggle="modal" data-target="#republish" href="/republish/republishpopup?artId={$grpprofiles_item[0].id}" style="background:#F5AA1A"><i class="splashy-thumb_down"></i></button>
+							<input type="hidden" id="userId" name="userId" value="{$grpprofiles_item[0].identifier}">
+							<input type="hidden" id="partId" name="partId" value="{$grpprofiles_item[0].partId}">
+							<input type="hidden" id="articleId" name="articleId" value="{$delDetails[0].articleid}">
+							<input type="hidden" id="status" name="status" value="{$grpprofiles_item[0].status}">
+							{else}
+							<button class="btn hint--bottom hint--info" data-hint="Refuser" type="button" name="refuse_pop" id="Refuser_{$grpprofiles_item[0].identifier}"  onclick="return getComment('comment_refuse_{$grpprofiles_item[0].identifier}', 'refuse_pop', {$grpprofiles_item[0].partId}, {$grpprofiles_item[0].identifier},'{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"><i class="splashy-thumb_down"></i> </button>
+							{/if}
+							{/if}
+							{/if}
+							{if $grpprofiles_item[0].status == 'published' && $grpprofiles_item[0].premium_option=="0"}
+							<button class="btn hint--bottom hint--info" data-hint="Refuser" type="button" name="refuse_pop" id="Refuser_{$grpprofiles_item[0].identifier}"  onclick="return getComment('comment_refuse_{$grpprofiles_item[0].identifier}', 'refuse_pop', {$grpprofiles_item[0].partId}, {$grpprofiles_item[0].identifier},'{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"> <i class="splashy-thumb_down"></i></button>
+							{/if} 
+							{if $grpprofiles_item[0].status == 'bid_premium' || $grpprofiles_item[0].status == 'bid_nonpremium' || $grpprofiles_item[0].status == 'bid_temp' || $grpprofiles_item[0].status == 'bid_refused_temp'}
+							{if $anyvalidatedContributor eq 'NO' && $grpprofiles_item[0].blackstatus!='yes' && $grpprofiles_item[0].identifier!=$selectedcorrector}
+								{if $grpprofiles_item[0].within_range eq 'yes'}<!--Added by Arun-->
+									<button class="btn hint--bottom hint--info" data-hint="Valider" type="button" name="submit_pop" id="Accept_{$grpprofiles_item[0].identifier}" onclick="return getComment('comment_accept_{$grpprofiles_item[0].identifier}', 'submit_pop', {$grpprofiles_item[0].partId}, {$grpprofiles_item[0].identifier},'{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"><i class="splashy-thumb_up"></i></button>
+								{/if}
+							{/if}
+							{/if}
+							{if $grpprofiles_item[0].status == 'bid_refused' && $grpprofiles_item[0].identifier!=$selectedcorrector}
+							{if $anyvalidatedContributor eq 'NO' }
+								{if $grpprofiles_item[0].within_range eq 'yes'}<!--Added by Arun-->
+									<button class="btn hint--bottom hint--info" data-hint="Valider" type="button" name="submit_pop_refused" id="Accepter_{$grpprofiles_item[0].identifier}" onclick="return getComment('comment_accept_{$grpprofiles_item[0].identifier}', 'submit_pop', {$grpprofiles_item[0].partId}, {$grpprofiles_item[0].identifier},'{$grpprofiles_item[0].id}','{$grpprofiles_item[0].status}')"><i class="splashy-thumb_up"></i> </button>
+								{/if}	
+							{/if}
+							{/if}
+						{/if}
+						<button class="btn hint--bottom hint--info" data-hint="Contacter" type="button" name="send_mail"  onclick="window.open('/mails/composemail?submenuId=ML4-SL1&user_id={$grpprofiles_item[0].identifier}')"> <i class="splashy-mail_light"></i></button>
+						<a class="btn hint--bottom hint--info" data-hint="Commenter"  data-target="#comments" data-toggle="modal"  name="send_comment"  href="/proofread/getallbousercomments?userId={$grpprofiles_item[0].identifier}&artid={$grpprofiles_item[0].id}" ><i class="splashy-comments_reply"></i></a>
+					</td>
+					<td><!--<div id="text-toggle-button{$smarty.foreach.grpprofiles_loop.index}" class="toggle-button">
+							<input name="blackstatus{$smarty.foreach.grpprofiles_loop.index}" id="blackstatus{$smarty.foreach.grpprofiles_loop.index}" type="checkbox" value="{$grpprofiles_item[0].identifier}" {if $grpprofiles_item[0].blackstatus=='yes'} checked="checked" {/if} >
+						</div>-->
+						{if $grpprofiles_item[0].blackstatus=='yes'}
+						<button type="button"  id="blackstatusyes{$grpprofiles_item[0].identifier}" onclick="blackListUser('{$grpprofiles_item[0].identifier}', 'yes', '{$grpprofiles_item[0].first_name|utf8_encode}', '{$delDetails[0].articleid}') " class="btn btn-danger hint--bottom hint--info" data-hint="click to unblacklist">OUI</button>
+						{else}
+						<button type="button"  id="blackstatusno{$grpprofiles_item[0].identifier}" onclick="blackListUser('{$grpprofiles_item[0].identifier}', 'no', '{$grpprofiles_item[0].first_name|utf8_encode}', '{$delDetails[0].articleid}') " class="btn btn-info hint--bottom hint--info" data-hint="click to blacklist">NON</button>
+						{/if}
+					</td>
+					<td><div id="fl_a">
+					{if $grpprofiles_item[0].contrib_parts_inao neq 0}
+						</div>Profil déjà sélectionné pour <span class="label label-important">{$grpprofiles_item[0].contrib_parts_inao}</span><br> articles sur cette mission
+					{/if}
+					</td>
+
+				</tr>
+				<tr id="collapsedetails{$smarty.foreach.grpprofiles_loop.index+1}" class="collapse" style="display: none;" >
+				<td colspan="11">
+					<div  id="collapseOne{$smarty.foreach.grpprofiles_loop.index+1}" class="accordion-body collapse" >
+						 <table class='table table-bordered tdleftalign'>
+							<tr><td><b>Nom</b></td>
+								<td>{$grpprofiles_item[0].first_name|utf8_encode} {$grpprofiles_item[0].last_name|utf8_encode}</td>
+								<td><b>Email</b></td>
+								<td><a href="/user/contributor-edit?submenuId=ML3-SL6&tab=viewcontrib&userId={$grpprofiles_item[0].identifier}">{$grpprofiles_item[0].email}</a></td>
+								<td><b>Articles Refus&eacute;s</b></td>
+								<td>{$grpprofiles_item[2].no_disapproved}</td></tr>
+							<tr><td><b>langue</b></td>
+								<td><b>{$grpprofiles_item[0].language}</b>&nbsp;{$grpprofiles_item[0].language_more|utf8_encode}</td>
+								<td><b>inscrit depuis</b></td>
+								<td>{$grpprofiles_item[0].doj|date_format:"%d/%m/%Y"}</td>
+								<td><b>Articles Valid&eacute;s</b></td>
+								<td>{$grpprofiles_item[5].validated}</td></tr>
+
+							<tr><td colspan="1"><b>Formation</b></td>
+								<td colspan="3">
+									<b>Formation - </b>{if $grpprofiles_item[0].educationDetails!="NO"}{$grpprofiles_item[0].educationDetails[0].title|utf8_encode}{/if}
+									<b>Ecole, universit&eacute; -</b> {if $grpprofiles_item[0].educationDetails!="NO"}{$grpprofiles_item[0].educationDetails[0].institute|utf8_encode}{/if}
+								</td>
+								<td colspan=""><b>Articles Publi&eacute;s</b></td>
+								<td><!--{$grpprofiles_item[1].no_approved}-->{$grpprofiles_item[0].successrate}</td></tr>
+							<tr><td><b>Exp&eacute;riences<br> professionnelles</b></td>
+								<td colspan="3">
+									 <b>Intitul&eacute; du poste - </b>{if $grpprofiles_item[0].workDetails!="NO"}{$grpprofiles_item[0].workDetails[0].title|utf8_encode}{/if}
+									 <b>entreprise -</b> {if $grpprofiles_item[0].workDetails!="NO"}{$grpprofiles_item[0].workDetails[0].institute|utf8_encode}{/if}
+
+								</td>
+								<td><b>refus d&eacute;finitifs</b></td>
+								<td>{$grpprofiles_item[9].closed}</td>
+							</tr>
+							<tr><td colspan="1"><b>Cat&eacute;gories</b></td>
+								<td colspan="5">{$grpprofiles_item[0].categories|utf8_encode}</td>
+							</tr>
+						</table>
+					</div></td>
+				</tr>		
+			{/if}	
+        {/foreach}
+        </tbody>
+    </table>
+	
+      {if $contribDetails eq ''}<div class="span5"></div>No Participants{/if}
+      {if $grpprofiles_item[0].cyclecount neq 0}
+        <span class="label label-info" id="lastcyclelableshow" onclick="showLastCycle('{$delDetails[0].articleid}', 'show');">Montrer enchère(s) pr&eacute;c&eacute;dente(s)</span>
+        <span class="label label-info hide" id="lastcyclelablehide" onclick="showLastCycle('{$delDetails[0].articleid}', 'hide');">Cacher enchère(s) pr&eacute;c&eacute;dente(s)</span>
+      {/if}
+  </div>
+</div>
+</form>
+<!--///for mail content show up for accecpting the profile///-->
+<div class="modal hide fade" id="Acceptmail">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('Acceptmail');">×</button>
+        <h3>SELECTIONNER PARTICIPANT</h3>
+    </div>
+    <div class="modal-body">
+        <textarea name="acceptmailcontent" class="textarea" id="acceptmailcontent"></textarea>
+    </div>
+    <div class="modal-footer">
+         <input type="hidden" id="userid" name="userid" />
+         <input type="hidden" id="partid" name="partid" />
+         <input type="hidden" id="artid" name="artid" />
+        <button type="button" id="accp_comment"  name="accp_comment" class="btn btn-success"  onclick="return acceptRefuseWriter('submit_pop');" >Valider</button>
+    </div>
+</div>
+<!--///for mail content show up for refusing the profile///-->
+<div class="modal hide fade" id="refusemail">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('refusemail');">×</button>
+        <h3>Refuser Participant</h3>
+    </div>
+    <div class="modal-body">
+        <textarea name="refusemailcontent" class="textarea" id="refusemailcontent"></textarea>
+    </div>
+    <div class="modal-footer">
+         <input type="hidden" id="userid" name="userid" />
+         <input type="hidden" id="partid" name="partid" />
+         <input type="hidden" id="artid" name="artid" />
+         <label class="uni-checkbox alignleft">
+         {if $lastparticipant eq 1}
+         <input type="checkbox" name="mailannouncement" id="mailannouncement" class="uni_style" />
+          <b>PREVENIR PAR EMAIL</b></label>{/if}
+        <button type="button" id="ref_comment"  name="ref_comment" class="btn btn-danger" onclick="return acceptRefuseWriter('refuse_pop');" >Refuser</button>
+    </div>
+</div>
+<!--///BO user send comments to for the participant ///-->
+<div class="modal hide fade" id="comments">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('comments');">&times;</button>
+        <h3>Ajouter Un Commentaire</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+
+    </div>
+</div>
+<!--///for the group profiles popup///-->
+<div class="modal4 hide fade" id="groupprofile">
+    <div class="modal-header">
+        <button  class="close" onclick="closePopup('groupprofile');">&times;</button>
+        <h3>D&eacute;tail des participations</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>

@@ -1,0 +1,474 @@
+<form class="form-horizontal" action="/contractmission/save-mission" name="" method="post" id="addmission">
+<div class="w-box" id="quote_mission">
+	<div class="w-box-header"><span id="box_title_1">Mission Details</span>						
+	</div>
+	<div class="w-box-content  cnt_a">
+		<div class="formSep">
+			<div class="row-fluid">							
+				<label class="span3 moveright">Type <span class="f_req">*</span> </label>
+				<div class="span8">
+					<select name="product" id="product_1" onchange="fnCheckProduct(this);" class="span2 validate[required]" data-placeholder="Select type">
+						<option></option>
+						<option value="redaction" {if $mission_res.product eq 'redaction'}selected{/if}>R&eacute;daction</option>
+						<option value="translation"{if $mission_res.product eq 'translation'}selected{/if}>Traduction</option>
+					</select>	
+				</div>										
+			</div>
+		</div>	
+		<div id="other_info_1">
+			<div class="formSep">
+				<div class="row-fluid">							
+					<label class="span3 moveright">Langue <span class="f_req">*</span> </label>
+					<div class="span3">
+						<select name="language" id="language_1" class="span8 validate[required]" data-placeholder="Select language" style="width: 267px;">
+							<option></option>
+							{html_options  options=$ep_language_list selected=$mission_res.language_source}
+						</select>
+					</div>
+					<div class="span3">
+						<select name="languagedest" id="languagedest_1" style="{if $mission_res.product eq 'redaction'}display:none;width: 267px;{/if}" class="span8 checklanguage validate[required]" data-placeholder="Select language" >
+							{html_options  options=$ep_language_list selected=$mission_res.language_dest}
+						</select>
+					</div>									
+				</div>	
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">							
+					<label class="span3 moveright">Produit <span class="f_req">*</span> </label>
+					<div class="span3">
+						<select name="producttype" style="width: 267px;" id="producttype_1" class="span6 validate[required]" data-placeholder="Select Produit" onchange="fnCheckProductType(this);">
+							<option></option>
+							{*<option value="article_de_blog" {if $mission_res.product_type eq 'article_de_blog'}selected{/if}>Article de blog</option>
+							<option value="news" {if $mission_res.product_type eq 'news'}selected{/if}>News</option>
+							<option value="descriptif_produit" {if $mission_res.product_type eq 'descriptif_produit'}selected{/if}>Desc.Produit</option>
+							<option value="article_seo" {if $mission_res.product_type eq 'article_seo'}selected{/if}>Article SEO</option>
+							<option value="guide" {if $mission_res.product_type eq 'guide'}selected{/if}>Guide</option>												
+							<option value="autre" {if $mission_res.product_type eq 'autre'}selected{/if}>Autres</option>
+							*}
+							{foreach from=$producttype_array item=productloop name=productloop key=key}
+								{if $mission_res.product_type eq $key}
+									<option value="{$key}" selected="selected">{$productloop}</option>
+								{else}
+									<option value="{$key}">{$productloop}</option>
+								{/if}
+							{/foreach}
+						</select>
+						<div id="producttypeotherdiv_1"   {if $mission_res.product_type neq 'autre'}style="display: none;"{/if}>
+							<input type="text" class="span10 validate[required]" value="{$mission_res.product_type_other}" id="producttypeother" name="producttypeother">
+						</div>	
+					</div>	
+					<div class="span2">
+						<div class="input-append">
+							<input type="text" name="nb_words" id="nb_words_1" class="span6 validate[required,custom[number]]" value="{$mission_res.nb_words}">
+							<span class="add-on">nb mots</span>
+						</div>
+					</div>	
+				</div>
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">								
+					<label class="span3 moveright">Dur&eacute;e la mission <span class="f_req">*</span> </label>
+					<div class="span3" id="mission_duration_details_1">
+						<div class="span4">
+							<input name="mission_length" id="mission_length_1" class="validate[required,custom[number]] span12" type="text" value="{$mission_res.mission_length}">
+						</div>
+						<div class="span7">											
+							<select name="mission_length_option" id="mission_length_option_1" class="span11">
+								{html_options  options=$duration_array selected=$mission_res.mission_length_option}
+							</select>											
+						</div>
+					</div>	
+					<div class="span4" style="margin-left: 0px">
+						<label class="checkbox inline">
+							<input type="checkbox" class="dont_know" id="duration_dont_know_1" name="duration_dont_know"  value="yes" {if $mission_res.duration_dont_know eq 'yes'}checked{/if}>Je ne sais pas
+						</label>
+					</div>
+				</div>
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">	
+					<label class="span3 moveright">Volume<span class="f_req">*</span> </label>
+					<div class="span2">
+						<input name="volume" id="volume" class="validate[required,custom[number]] span12" type="text" placeholder="Volume" onkeyup="fnCalTotalCosts();" value="{$mission_res.volume}" >
+					</div>
+				</div>
+			</div>	
+			<div class="formSep">
+			<div class="row-fluid">								
+				<label class="span3 moveright">Staffing set up</label>
+				<div class="span3">
+					<div class="span4">
+						<input type="text" id="staff_time" name="staff_time" class="span12 validate[required]" value="{$mission_res.staff_time}" />
+					</div>
+					<div class="span7">
+						<select name="staff_time_option" id="staff_time_option" class="span11">	
+							<option value="days" {if $mission_res.staff_time_option eq 'days'}selected{/if}>Jours</option>
+							<option value="hours" {if $mission_res.staff_time_option eq 'hours'}selected{/if}>Hours</option>									
+						</select>
+					</div>
+				</div>	
+			</div>
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">	
+					<label class="span3 moveright">One shot<span class="f_req">*</span> </label>
+					<div class="span2">
+						<input type="radio" name="oneshot" id="" class="oneshot" checked="checked" {if $mission_res.oneshot eq 'yes'}checked{/if}  value="yes">Oui&nbsp;
+						<input type="radio" name="oneshot" id="" class="oneshot" {if $mission_res.oneshot eq 'no'}checked{/if}  value="no">Non
+					</div>											
+				</div>
+			</div>
+			<div class="formSep"  id="tempo_details" {if $mission_res.oneshot neq 'no'}style="display:none"{/if}>
+				<div class="row-fluid">	
+					<label class="span3 moveright">&nbsp;</label>
+					<div class="span9">
+						<div class="span2">												
+							<input name="volume_max" id="volume_max_1" class="validate[required,custom[number]] span12" type="text" placeholder="Volume" value="{$mission_res.volume_max}">
+						</div>
+						<div class="span2">
+							<select name="tempo" id="tempo_type_1" class="span12">
+								{html_options  options=$tempo_array selected=$mission_res.tempo}
+							</select>
+						</div>
+						<div class="span2">
+							<select name="delivery_volume_option" id="delivery_volume_option_1" class="span12">
+								{html_options  options=$volume_option_array selected=$mission_res.delivery_volume_option}
+							</select>
+						</div>
+						<div class="span2">
+							<input type="text" id="tempo_length_1" name="tempo_length" class="validate[required] span12" value="{$mission_res.tempo_length}" />
+						</div>
+						<div class="span3">
+							<select name="tempo_length_option" id="tempo_length_option_1" class="span12">
+								{html_options  options=$tempo_duration_array selected=$mission_res.tempo_length_option}
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>	
+		<div class="formSep">
+			<div class="row-fluid">								
+				<label class="span3 moveright">Commentaire </label>
+				<div class="span8">
+					<textarea name="comments" id="comments_1" class="span12">{$mission_res.comments|utf8_encode}</textarea>
+				</div>
+			</div>
+		</div>
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright">Demande Client<span class="f_req">*</span> </label>
+				<div class="span2">
+					<input type="radio" class="demand validate[required]" name="demande_client" id="" {if $mission_res.demande_client eq 'yes'}  checked {/if}  value="yes">Oui&nbsp;
+					<input type="radio" class="demand validate[required]" name="demande_client" id="" {if $mission_res.demande_client eq 'no'}  checked {/if}  value="no">Non
+				</div>											
+			</div>
+		</div>
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright">Free Mission<span class="f_req">*</span> </label>
+				<div class="span2">
+					<input type="radio" class="validate[required]" name="free_mission" id="" {if $mission_res.free_mission eq 'yes'}  checked {/if} value="yes">Oui&nbsp;
+					<input type="radio" class="validate[required]" name="free_mission" id="" {if $mission_res.free_mission eq 'no' || $mission_res.free_mission eq ''}  checked {/if}  value="no">Non
+				</div>											
+			</div>
+		</div>
+	</div>
+</div>		
+<div class="w-box" style="margin-top:20px" id="prod_mission">
+	<div class="w-box-header"><span id="box_title_1">Prod Mission Details</span>						
+	</div>
+	<div class="w-box-content  cnt_a">
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright"><span class="box_title"></span> Nb r&eacute;dacteurs<span class="f_req">*</span> </label>
+				<div class="span2">
+					<input name="prod_mission_writing_staff" id="" class="validate[required,custom[number]] span12" type="text" placeholder="" value="{$prod_mission_writing.staff}" >
+				</div>
+			</div>
+		</div>
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright"><span class="box_title"></span> Co&ucirc;t(&{$mission_res.sales_suggested_currency};)<span class="f_req">*</span> </label>
+				<div class="span2">
+					<input name="prod_mission_writing_cost" id="writer_cost" class="validate[required,custom[number]] span12" type="text" placeholder="" value="{$prod_mission_writing.cost}" onkeyup="fnCalTotalCosts();" >
+				</div>
+			</div>
+		</div>
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright">Correction Nb r&eacute;dacteurs<span class="f_req">*</span> </label>
+				<div class="span2">
+					<input name="prod_mission_correction_staff" id="" class="validate[required,custom[number]] span12" type="text" placeholder="" value="{$prod_mission_correction.staff}" >
+				</div>
+			</div>
+		</div>
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright">Correction Co&ucirc;t(&{$mission_res.sales_suggested_currency};)<span class="f_req">*</span> </label>
+				<div class="span2">
+					<input name="prod_mission_correction_cost" id="corrector_cost" class="validate[required,custom[number]] span12" type="text" placeholder="" value="{$prod_mission_correction.cost}" onkeyup="fnCalTotalCosts();" >
+				</div>
+			</div>
+		</div>
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright">Merge<span class="f_req">*</span> </label>
+				<div class="span2">
+						<input id="margin_percentage" class="span5" type="text" value="{if $mission_res.margin_percentage}{$mission_res.margin_percentage}{else}60.00{/if}" onkeyup="fnCalTotalCosts();" name="margin_percentage" size="16">
+						<span class="add-on">%</span>
+				</div>
+			</div>
+		</div>
+		{if $reqaction eq "edit"}
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright">Formule<span class="f_req">*</span> </label>
+				<div class="span2">
+					<select name="package" id="package" class="span12 validate[required]" onchange="changemargin();fnCalTotalCosts()">
+						<option value="lead" {if $mission_res.package=="lead"} selected {/if}>Lead</option>
+						<option value="team" {if $mission_res.package=="team"} selected {/if}>Team</option>
+						<option value="link" {if $mission_res.package=="link"} selected {/if}>Link</option>
+						<option value="user" {if $mission_res.package=="user"} selected {/if}>User</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="formSep fpackuser fpack" style="display:none">
+			<div class="row-fluid">	
+				<label class="span3 moveright">Fees offre user<span class="f_req">*</span> </label>
+				<div class="span2">
+					<div class="input-append">
+						<input type="text" class="span5" id="user_fee" name="user_fee" value="{if $mission_res.user_fee}{$mission_res.user_fee|zero_cut:2}{else}1{/if}"  onkeyup="fnCalTotalCosts()"><span class="add-on">&{$mission_res.sales_suggested_currency};</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="formSep fpackteam fpack" style="display:none">
+			<div class="row-fluid">	
+				<label class="span3 moveright">Team pack and fee<span class="f_req">*</span> </label>
+				<div class="span8">
+					<input id="team_packs" class="span2 validate[required,custom[number]]" type="text" onkeyup="fnCalTotalCosts();calteamca()" value="{if $mission_res.team_packs}{assign var='team_packs' value=$mission_res.team_packs}{$mission_res.team_packs}{else}{assign var='team_packs' value=1}1{/if}" name="team_packs">
+					x 
+					<div class="input-append" style="margin-left:-40px">
+					<input id="team_fee" class="span5 validate[required,custom[number]]" type="text" onkeyup="fnCalTotalCosts();calteamca()" value="{if $mission_res.team_fee}{assign var='team_fee' value=$mission_res.team_fee}{$mission_res.team_fee}{else}{assign var='team_fee' value=1}1{/if}" name="team_fee">
+					<span class="add-on">&{$mission_res.sales_suggested_currency};/pack</span>
+					</div>
+					<input id="" class="" type="hidden" value="" name="team_fee_ca">
+					<b id="team_fee_ca" style="margin-left:-40px;"> {math equation="x * y" x=$team_fee y=$team_packs}</b>&nbsp; &{$mission_res.sales_suggested_currency};
+				</div>
+			</div>
+		</div>
+		{/if}
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright">P VENTE/ARTICLE<span class="f_req">*</span> </label>
+				<div class="span2">
+					<span id="unit_price_text"></span>
+					<input type="hidden" name="unit_price" value="" id="unit_price" />
+				</div>
+			</div>
+		</div>
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright">Mission CA<span class="f_req">*</span> </label>
+				<div class="span2">
+					<span id="mission_turnover_text"></span>
+					<input type="hidden" name="mission_turnover" value="" id="mission_turnover" />
+				</div>
+			</div>
+		</div>
+		<div class="formSep">
+			<div class="row-fluid">	
+				<label class="span3 moveright">Total CA<span class="f_req">*</span> </label>
+				<div class="span2">
+						<span id="total_turnover_text"></span>
+						<input type="hidden" name="total_turnover" value="" id="total_turnover" />
+						<input type="hidden" name="total_turnover_org" value="{$contract_details.turnover}" id="" />
+						<input type="hidden" name="actual_mission_turnover" value="{if $mission_res.cm_turnover !='0.00'  && $mission_res.cm_turnover !='0' && $mission_res.cm_turnover !=''}{$mission_res.cm_turnover}{else}{$mission_res.turnover}{/if}" id="actual_mission_turnover" />
+						<input type="hidden" name="prod_mission_writing" value="{$prod_mission_writing.identifier}" id="" />
+						<input type="hidden" name="prod_mission_correction" value="{$prod_mission_correction.identifier}" id="" />
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{* Setting hidden values to edit or insert mission *}
+<input type="hidden" name="quote_id" value="{$mission_res.quote_id}" id="quote_id" />
+<input type="hidden" name="mid" value="{$mid}" id="mid" />
+<input type="hidden" name="category" value="{$mission_res.category}" id="" />
+<input type="hidden" name="internalcost" value="" id="internalcost" />
+<input type="hidden" name="reqaction" value="{$reqaction}" id="reqaction" />
+<input type="hidden" name="cmid" value="{$cmid}" id="" />
+<input type="hidden" name="sales_suggested_missions" value="{$mission_res.sales_suggested_missions}" id="sales_suggested_missions" />
+<input type="hidden" name="cid" value="{$cid}" id="" />
+<div class="row-fluid topset2" style="padding-bottom: 10px;">
+	<div class="span12 row-centered" style="text-align:center">
+	<button class="btn" value="cancel" name="cancel" type="button" data-dismiss="modal">Cancel</button>
+	<button class="btn btn-primary" value="add" name="add" type="submit"><i	style="margin-right:5px" class="icon-ok icon-white"></i>{if $reqaction eq 'edit'}Update{else}Add{/if} Mission</button>
+	</div>
+</div>
+</form>
+<div class="clearfix"></div>
+{literal}
+<script>
+var volume_error = true;
+var language_error = true;
+
+/* to check is Translation and Source language are different */
+function checklanguage(){
+		if($("#product_1").val()=="translation")
+		{
+			$(this).closest(".span4").find(".alert-danger").remove();
+			if($("#language_1").val()==$("#languagedest_1").val())
+			{
+				$(this).closest(".span4").append("<div class='alert-danger' style='padding:0 5px;'>Merci de s&eacute;lectionner une langue diff&eacute;rente de la langue m&egrave;re</div>");
+				$("#product_"+current_index+"_chzn .chzn-single").focus();
+				language_error = false;	
+			}
+			else
+				language_error = true;
+		}
+		else
+			language_error = true;
+}
+
+function oneshotVolume()
+{
+	
+	if($(".oneshot:checked").val()=="no")
+	{
+	duration_missionval=$('#mission_length').val();
+	totalvolumeval=$('#volume').val();
+	volumeMax=$('#volume_max').val();
+	tempotype=$('#tempo_type').val();
+	deleveryvolumeoption=$('#delivery_volume_option').val();
+	tempoLength=$('#tempo_length').val();
+	tempoLengthoption=$('#tempo_length_option').val();
+	durationknow=$('#duration_dont_know').is(":checked");
+	$(this).find(".alert-danger").remove();
+	if(tempoLengthoption=='days'){
+		 tempo_callenth=tempoLength;
+	}else if(tempoLengthoption=='week')	{
+		tempo_callenth=tempoLength*7;
+	}
+	else if(tempoLengthoption=='month')	{
+		tempo_callenth=tempoLength*30;
+		}
+	else if(tempoLengthoption=='year')	{
+		tempo_callenth=tempoLength*365;
+		}
+		 if(durationknow==false){
+			caltotval=Math.round(duration_missionval/tempo_callenth) * volumeMax;
+			}else{
+				caltotval=  tempo_callenth *volumeMax;
+			}
+		//alert(caltotval+' vol '+totalvolumeval)
+			if(caltotval!=totalvolumeval){
+				$(this).find('.span9').after("<div class='alert-danger span7 offset3' style='padding:0 5px;'>Le tempo indiqu&#233; ne correspond pas au volume et &#224; la  dur&#233;e de la mission</div>");
+					$("#volume_max").focus();
+					volume_error = false;						
+			}else
+				volume_error = true;	
+	}
+	else
+		volume_error = true;
+}
+
+function changemargin()
+{
+	var packval = $("#package").val();
+	if(packval=="team")
+	$("#margin_percentage").val('50.00');
+	else if(packval=="link")
+	$("#margin_percentage").val('30.00');
+	else if(packval=="lead")
+	$("#margin_percentage").val('60.00');
+	else
+	$("#margin_percentage").val('0');
+}
+
+function calteamca()
+{
+	$("#team_fee_ca").text((parseFloat($("#team_packs").val())*parseFloat($("#team_fee").val())).toFixed(2));
+}
+	/* chosen */
+	$("[id^=product_]").chosen({ allow_single_deselect: false,disable_search: true});
+	$("[id^=producttype_]").chosen({ allow_single_deselect: false,disable_search: true});	
+	$("[id^=language_]").chosen({ allow_single_deselect: false,search_contains: true});
+	$("#staff_time_option").chosen({ allow_single_deselect: false,search_contains: true});
+	
+	$("[id^=languagedest_]" ).each(function(u) {
+		if ( $(this).is(":visible") ) {
+			$(this).chosen({ allow_single_deselect: false,search_contains: true});
+		}
+	});
+	/*Added w.r.t tempo*/
+	$("[id^=mission_length_option_]").chosen({ allow_single_deselect: false,disable_search: true});
+	$("[id^=delivery_volume_option_]").chosen({ allow_single_deselect: false,disable_search: true});
+	$("[id^=tempo_length_option_]").chosen({ allow_single_deselect: false,disable_search: true});
+	$("[id^=tempo_type_]").chosen({ allow_single_deselect: false,disable_search: true});
+	
+	$('.oneshot').live('ifClicked', function (event) {	
+		var value=this.value;
+		if(value=='no')
+			$("#tempo_details").show();
+		else	
+			$("#tempo_details").hide();
+	});
+	
+	
+	$('#quote_mission input').iCheck({
+		checkboxClass: 'icheckbox_square-blue',
+		radioClass: 'iradio_square-blue'		
+	});
+
+	$('.dont_know').live('ifChecked', function (event) {
+		var id=this.id.split("_");		
+		var index=id[3];		
+		$("#mission_duration_details_"+index).hide();
+	});
+	
+	$('.dont_know').live('ifUnchecked', function (event) {
+		var id=this.id.split("_");
+		var index=id[3];		
+		$("#mission_duration_details_"+index).show();
+	});
+	
+	$(".box_title").text($("#product_1 option:selected").text());
+	fnCalTotalCosts();
+	
+	$(document).ready(function(){
+		$("#addmission").validationEngine({prettySelect : true,useSuffix: "_chzn",onValidationComplete: function(form, status){
+				if(status == true)
+				{
+					checklanguage();
+					oneshotVolume();
+					if(language_error && volume_error)
+						return true;
+				}
+		}}); 
+		
+		$('[name=free_mission]').live('ifClicked', function (event) {	
+			if(this.value=="yes")
+			{
+				$("#mission_turnover").val('0');
+				$("#mission_turnover_text").html("0");
+			}
+			else
+			{
+				var internalcost=parseFloat($("#writer_cost").val().replace(",","."))+parseFloat($("#corrector_cost").val().replace(",","."));
+				var volume= parseFloat($("#volume").val().replace(",","."));
+				margin_percentage = parseFloat($("#margin_percentage").val().replace(",","."));
+				var unit_price=(internalcost/(1-margin_percentage/100));
+				var turnover =(volume*unit_price).toFixed(2);
+				var turnover_text=turnover.replace(".",",");
+				$("#mission_turnover").val(turnover);
+				$("#mission_turnover_text").html("<b>"+turnover_text+"</b>");
+			}
+		});
+		
+	});
+	
+</script>
+{/literal}

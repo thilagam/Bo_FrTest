@@ -1,0 +1,103 @@
+{literal}
+<script type="text/javascript">
+	
+	$(document).keyup(function(e){
+			if(e.which == 27){
+			    $("#markdetail").removeClass("in");
+				$("#markdetail").css("display","none");
+				$('div').removeClass("modal-backdrop fade in");
+			}
+		});
+		
+	function addroyalties(art)
+	{
+		$.ajax({
+		  type: 'POST',
+		  url: '/ao/addroyalties',
+		  data: 'article=' + art,
+		  
+		  success: function(data1) 
+		  {  	//alert(data1);
+				smoke.alert("Article validated");
+				$("#validate").hide();
+				$("#validtext").html('<b>Validated</b>');
+		  }
+		});
+	}
+	
+</script>
+
+{/literal}	
+
+	<table class="table table-bordered table-striped table_vam" id="markdetailtable">
+		<thead>
+			<tr>
+				<th>User</th>
+				<th>Type</th>
+				<th>Download</th>
+				<th>Price</th>
+				<th>Mark</th>
+				<th>Comment</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!----------------------------- Writer -------------------------------->
+			<tr>
+				<td>{$writerdetail[0].first_name|utf8_encode}&nbsp;{$writerdetail[0].last_name|utf8_encode}</td>
+				<td>Writer</td>
+				<td><a class="label label-warning" href="/ao/downloadarticle?process_id={$writerdetail[0].id}">Download</a></td>
+				<td>{$writerdetail[0].price_user}</td>
+				<td>-</td>
+				<td>{$writerdetail[0].comments}</td>
+			</tr>
+			
+			<!----------------------------- Corrector -------------------------------->
+			{foreach from=$correctiondetail item=corr_item name="correction_loop"}
+			<tr>
+				<td>{$corr_item.first_name|utf8_encode}&nbsp;{$corr_item.last_name|utf8_encode}</td>
+				<td>Corrector</td>
+				<td><a class="label label-warning" href="/ao/downloadarticle?process_id={$corr_item.id}">Download</a></td>
+				<td>{$corr_item.price_corrector}</td>
+				<td>{$corr_item.marks}</td>
+				<td>{$corr_item.comments}</td>
+			</tr>
+			{/foreach}
+		</tbody>
+	</table>
+	
+	<div align="center">
+		<b>Note/10</b>: {$writerdetail[0].min_mark} 
+		<br>
+		<b>Average Marks</b>: {$sum}/{$corrcnt} : <b>{$average}</b>
+		<br><br>	
+		{if $average>=$writerdetail[0].min_mark} 
+			{if $writerdetail[0].profile_type!='senior'}
+				{if $writerdetail[0].profile_type=='sub-junior'}
+					<a href="javascript:void(0);" onClick="updowngrade('{$writerdetail[0].user_id}','junior','{$writerdetail[0].profile_type}');" class="hint--left hint--info" data-hint="Upgrade to Junior"><img src="/BO/theme/gebo/img/up_blue.png"/></a>
+					&nbsp;
+				{/if}
+				<a href="javascript:void(0);" onClick="updowngrade('{$writerdetail[0].user_id}','senior','{$writerdetail[0].profile_type}');" class="hint--left hint--info" data-hint="Upgrade to Senior"><img src="/BO/theme/gebo/img/up_green.png"/></a>
+			{/if}
+		{else}
+			{if $writerdetail[0].profile_type!='sub-junior'}
+				{if $writerdetail[0].profile_type=='senior'}
+					<a href="javascript:void(0);" onClick="updowngrade('{$writerdetail[0].user_id}','junior','{$writerdetail[0].profile_type}');" class="hint--left hint--info" data-hint="Downgrade to Junior"><img src="/BO/theme/gebo/img/down_orange.png"/></a>
+					&nbsp;
+				{/if}
+				<a href="javascript:void(0);" onClick="updowngrade('{$writerdetail[0].user_id}','sub-junior','{$writerdetail[0].profile_type}');" class="hint--left hint--info" data-hint="Downgrade to Sub-junior"><img src="/BO/theme/gebo/img/down_red.png"/></a>
+			{/if}
+		{/if}
+		
+	</div>
+	
+	<div style="float:right">
+		<span id="validtext">
+			{if $writerdetail[0].status!='published'}
+				<input type="button" name="validate" id="validate" value="Validate" class="btn btn-info" onClick="addroyalties('{$writerdetail[0].article_id}');"></input>&nbsp;
+			{else}
+				<b>Validated</b>
+			{/if}	
+		</span>
+	</div>	
+
+

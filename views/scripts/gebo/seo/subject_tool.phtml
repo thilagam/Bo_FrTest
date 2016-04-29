@@ -1,0 +1,168 @@
+{literal}
+<script type="text/javascript">
+    $.validator.addMethod("csvextension", function(value, element, param) {
+        param = typeof param === "string" ? param.replace(/,/g, '|') : "xls|csv";
+        return this.optional(element) || value.match(new RegExp(".(" + param + ")$", "i"));
+    }, $.format("Please use only csv/xls file."));
+
+
+    $(document).ready(function() {
+        $(".uni_style").uniform();
+        gebo_validation.reg();
+    }) ;
+    
+    function addsite(id)
+    {
+        var idx = id+1;
+        $( "#sites" ).append('<div id="site'+idx+'" class="site"><label class="span3">&nbsp;</label><div class="span9 form-inline no-margin-first"><span><input type="text" class="span4" name="site[]">&nbsp;<span class="help-inline" id="label'+idx+'">Site'+idx+'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span><input type="text" class="span2" name="limit[]">&nbsp;<span class="help-inline">Limit</span></span><span class="span3 pull-right" id="adrmv'+idx+'"><a class="btn" id="ad'+idx+'" onclick="addsite('+idx+')"><i class="icon-plus"></i></a>&nbsp;<a class="btn" id="rm'+idx+'" onclick="rmvsite('+idx+')"><i class="icon-minus"></i></a></span></div></div>');
+        $('#adrmv'+id).html('');
+    }
+    
+    function rmvsite(id)
+    {
+        if(id>1)
+        {
+            var idx = id-1;
+            $('#site'+id).remove();
+            if(idx == 1)
+                $('#adrmv'+idx).html('<a class="btn" id="ad'+idx+'" onclick="addsite('+idx+')"><i class="icon-plus"></i></a>');
+            else
+                $('#adrmv'+idx).html('<a class="btn" id="ad'+idx+'" onclick="addsite('+idx+')"><i class="icon-plus"></i></a>&nbsp;<a class="btn" id="rm'+idx+'" onclick="rmvsite('+idx+')"><i class="icon-minus"></i></a>');
+        }
+    }
+    
+    gebo_validation = {
+        reg: function() {
+            reg_validator = $('.form_validation_reg').validate({
+                onkeyup: false,
+                errorClass: 'error',
+                validClass: 'valid',
+                highlight: function(element) {
+                    $(element).closest('div').addClass("f_error");
+                    $(element).closest('div').css("color", "black");
+                },
+                unhighlight: function(element) {
+                    $(element).closest('div').removeClass("f_error");
+                },
+                submitHandler: function(element) {
+                    $('#seotool-notify').show();
+                },
+                errorPlacement: function(error, element) {
+                    $('#seotool-notify').hide();
+                    $(element).closest('div').append(error);
+                    $('.error').css("font-size", "10px");
+                    $('.error').css("padding-top", "5px");
+                },
+                rules: {
+                        'site[]': {required:true},
+                        'limit[]': {required:true},
+                        email: {required:true}
+                },
+                messages: {
+                          'site[]': "Please enter site(s).",
+                          'limit[]': "Please enter limit(s).",
+                          email: "Please enter email."
+                },
+                invalidHandler: function(form, validator) {
+                    $.sticky("There are some errors. Please corect them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
+                }
+            })
+        }
+    };
+</script>
+<style>
+    .site{float:left;text-align:left;width:100%;padding: 5px 0 0;}
+    label.error{clear:both;width:90px;color:#C62626;font-weight:700;}
+    .f_error input, .f_error select, .f_error textarea{border-color:#B94A48;color:#B94A48;}
+    .popover{max-width:750px!important;}
+</style>
+{/literal}
+<form class="form_validation_reg" method="POST" action="/seotool/subject-tool" name="importcsv" id="seo" ENCTYPE="multipart/form-data">
+        <div class="span10">
+
+            <h3 class="heading">SUBJECT TOOL</h3>
+                        
+            <div class="control-group formSep" id="seotool-notify" style="display: none;">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                            <div id="seo-message">{$msg}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline no-margin-first" id="sites">
+                        <div id="site1">
+                            <label class="span3">
+                                Sites<span class="f_req">*</span>
+                            </label>
+                            <div class="span9 form-inline no-margin-first">
+                                    
+                                        <input type="text" class="span4" name="site[]">
+                                        <span class="help-inline" id="label1">Site1</span>
+                                    
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    
+                                        <input type="text" class="span2" name="limit[]">
+                                        <span class="help-inline">Limit</span>
+                                    
+                                    <span class="span3 pull-right" id="adrmv1">
+                                        <a class="btn" id="ad1" onclick="addsite(1)"><i class="icon-plus"></i></a>
+                                    </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline no-margin-first">
+                        <label class="span3">Version<span class="f_req">*</span></label>
+                        <div class="span8 form-inline no-margin-first">
+                            <label class="uni-radio span10"><input type="radio" name="version" class="uni_style" value="1" checked>Version1
+                                <a href="javascript:void(0);" class="pop_over" data-html="true" data-content="<p>- Unlimited URL option: We might be give any website with any number of urls.<br>**Suppose 100 urs there in database(if you want to scrap 200 urls it will fetch remaining 100 urls)</p><br><p>- Proxy Scrappin option: we can scrap web content using tor or without tor.</p><br><p>- Crawl all the urls and saved in the DB in tree structure Capturing Crawling time + processing</p><br><p>- Then process the content from the database<br>  ** Its Scrapping Title, Description, H1,H2,H3 tags, anchor text, and body content, Score for 1,2,3 keywords combinations</p><br><p>Drawback:<br>- we will get common keywords in all the pages(as header, footer things common in all the pages)</p><br><p>- By parsing HTML content its difficult to diffrentiate content page or list page.<br>  * By looking at URL we can't make out.<br>  * One more logic Like Anchor keywords > page keywords, IT will not be true always</p>" data-original-title="Version1 features" data-placement="bottom"><span class="splashy-information"></span></a>
+                            </label>
+                            <label class="uni-radio"><input type="radio" name="version" class="uni_style" value="2" checked>Version2
+                                <a href="javascript:void(0);" class="pop_over" data-html="true" data-content="<p>- Unlimited URL option: We might be give any website with any number of urls.<br>  **Suppose 100 urs there in database(if you want to scrap 200 urls it will fetch remaining 100 urls)</p><br><p>- Proxy Scrappin option: we can scrap web content using tor or without tor.</p><br><p>- Crawl all the urls and saved in the DB in tree structure Capturing Crawling time + processing</p><br><p>- Then process the content from the database<br>  ** REMOVING DUPLICATE CONTENTS(title, Description, H1,H2,H3 tags, anchor text, and body content)<br>  ** Its Scrapping Title, Description, H1,H2,H3 tags, anchor text, and body content, Score for 1,2,3 keywords combinations(As we need to </p><br><p>Drawback:<br>- By parsing HTML content its difficult to diffrentiate content page or list page.<br>  * By looking at URL we can't make out.<br>  * One more logic Like Anchor keywords > page keywords, IT will not be true always</p>" data-original-title="Version2 features" data-placement="bottom"><span class="splashy-information"></span></a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline no-margin-first">
+                        <label class="span3">Proxy<span class="f_req"></span></label>
+                        <div class="span8 no-margin-first">
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="proxy" id="proxy" class="uni_style" value="1">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Email<span class="f_req">*</span></label>
+                        <div class="span8 form-inline no-margin-first">
+                            <input type="text" name="email" class="span5"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <button class="btn btn-gebo" name="submit" type="submit">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+</form>
+
+<div id="data">
+    
+</div>

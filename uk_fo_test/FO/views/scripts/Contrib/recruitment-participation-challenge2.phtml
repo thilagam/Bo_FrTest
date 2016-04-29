@@ -1,0 +1,24 @@
+{if $recruit.link_quiz eq 'yes' && $recruit.quiz_partcipation_id}
+	<h1>Quiz</h1>
+	<div class="about mod" id="quiz_block">
+		
+		{if $recruit.qualified eq 'yes'}
+			<h3 class="text-success" style="text-align: center">Congratulations! You passed the preselection quiz</h3>
+		{elseif $recruit.qualified eq 'no'}
+			<h3 class="text-error">Sorry! We cannot preselect you for this mission</h3>
+		{/if}
+	</div>
+{/if}
+{if ($recruit.link_quiz eq 'yes' && $recruit.qualified eq 'yes') || ($recruit.link_quiz neq 'yes')}
+	{if $recruit.status eq 'bid_pending' &&  ($recruit.contract_signed eq '' ||   $recruit.contract_signed eq 'no')}
+		
+		<br><br><h1>Article test</h1>
+		<p class="lead" style="text-align: center">You have reached the last selection step. We now want to test you on a test article production.</p>
+		<div class="about mod" id="sign-contract">		
+			
+			<!-- contract getting from some other file-->
+			{$recruit.contract}			
+			
+		</div>
+	{/if}
+{/if}

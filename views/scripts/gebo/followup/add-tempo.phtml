@@ -1,0 +1,223 @@
+{literal}
+<style>		
+    #addshot .showshot{	display:block !important;margin-top:10px;}	
+	.errortempo
+	{
+		border: 1px solid #d90501 !important;
+		box-shadow: none !important;
+	}
+</style>
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+{/literal}
+<form action="/followup/save-tempo/" class="form-horizontal" method="post" id="tempo">	
+    <section>		
+        <div class="row-fluid topset2">			
+            <div class="control-group">				
+                <label class="control-label">Dur&eacute;e la mission</label>				
+                <div class="controls">					
+                    <div class="span2">						
+                        <input id="mission_length_1" class="validate[required,custom[number]] span12" type="text" name="mission_length" value="{$mission_details.mission_length}">					
+                    </div>					
+                    <div class="span2">						
+                        <select name="mission_length_option" class="span12 cselect" id="">												
+                            <option value="days">Jours</option>													
+                        </select>					
+                    </div>				
+                </div>			
+            </div>			
+            <div class="control-group">				
+                <label class="control-label">Staffing set up</label>				
+                <div class="controls">					
+                    <div class="span2">						
+                        <input id="" class="validate[required,custom[number]] span12" type="text" name="staff_time" value="{$mission_details.staff_time}">					
+                    </div>					
+                    <div class="span2">									
+                        Jours										
+                    </div>				
+                </div>			
+            </div>			
+            <div class="control-group">				
+                <label class="control-label">Volume</label>				
+                <div class="controls" style="margin-top:7px">				
+                    <span>{$mission_details.volume}</span>				
+                </div>			
+            </div>			
+            <div class="control-group">				
+                <div class="row-fluid">						
+                    <label class="control-label">One shot<span class="f_req">*</span> </label>					
+                    <div class="controls">						
+                        <input type="radio" class="oneshot radio-inline validate[required]" name="oneshot" id="" {if $mission_details.oneshot eq 'yes'} checked {/if}  value="yes">Oui&nbsp;						
+                               <input type="radio" class="oneshot radio-inline validate[required]" name="oneshot" id="" {if $mission_details.oneshot eq 'no'} checked {/if}  value="no">Non					
+                    </div>																
+                </div>			
+            </div>			
+            <div class="control-group" id="oneshot_details" {if $mission_details.oneshot eq 'yes'} style="display:block" {else} style="display:none" {/if}>				
+                <label class="control-label"></label>					
+                <div class="controls">						
+                    <div class="span12">							
+                        <div id="addshot">	
+							{foreach from=$tempo_one_shots name="tempo_one_shots" item="oneshot"}						
+                            <div class="showshot">									
+                                Deliver 									
+                                <input type="text" style="width:10%" id="" name="articles[]" class="validate[required,custom[integer]]" value="{$oneshot.articles}" /> articles after
+                                <input type="text" id="" name="oneshot_length[]" style="width:10%" class="validate[required,custom[integer]]" value="{$oneshot.oneshot_length}" />						
+                                <select name="oneshot_option[]" id="" class="span2">										
+                                    {html_options  options=$tempo_duration_array selected=$oneshot.oneshot_option}									
+                                </select>	
+								{if !$smarty.foreach.tempo_one_shots.first}
+								<a class="btn btn-mini closeshot">		
+									<i class="icon-remove"></i>	
+								</a>
+								{/if}
+                            </div>		
+							{/foreach}
+                        </div>							
+                        <div class="span7">								
+                            <a class="btn btn-small topset2 cloneshot pull-right"><i class="icon-plus"></i> Ajouter</a>							
+                        </div>						
+                    </div>					
+                </div>			
+            </div>			
+            <div class="control-group" id="recurring_details" {if $mission_details.oneshot eq 'no'} style="display:block" {else} style="display:none" {/if}>					
+                <div class="row-fluid">						
+                    <label class="control-label">&nbsp;</label>					
+                    <div class="controls">					
+                        <div class="span8">						
+                            <div class="span2">																			
+                                <input name="volume_max" id="" class="validate[required,custom[number]] span12" type="text" placeholder="Volume" value="{$mission_details.volume_max}">						</div>						
+                            <div class="span2">							
+                                <select name="tempo" id="" class="span12 cselect">								
+                                    {html_options  options=$tempo_array selected=$mission_details.tempo}							
+                                </select>						
+                            </div>						
+                            <div class="span2">							
+                                <select name="delivery_volume_option" id="" class="span12 cselect">								
+                                    {html_options  options=$volume_option_array selected=$mission_details.delivery_volume_option }																					
+                                </select>						
+                            </div>						
+                            <div class="span2">							
+                                <input type="text" id="" name="tempo_length" class="validate[required] span12" value="{$mission_details.tempo_length}" />						
+                            </div>						
+                            <div class="span3">							
+                                <select name="tempo_length_option" id="" class="span12 cselect">								
+                                    {html_options  options=$tempo_duration_array selected=$mission_details.tempo_length_option}							
+                                </select>						
+                            </div>					
+                        </div>					
+                    </div>				
+                </div>			
+            </div>			
+            <input type="hidden" name="mid" value="{$mission_details.identifier}" />			
+            <input type="hidden" name="cmid" value="{$cmid}" />			
+            <input type="hidden" name="cid" value="{$cid}" />			
+            <div class="row-fluid topset2" style="text-align:center">				
+                <button type="submit" name="save" class="btn btn-primary">Submit</button>			
+            </div>		
+        </div>	
+    </section>
+</form>
+{* to clone in tempo one shot *}
+<div id="cloneshots" class="showshot" style="display:none">	
+    Deliver 	
+    <input type="text" style="width:10%" id="" name="articles[]" class="validate[required,custom[integer]]" value="{$mission.tempo_length}" /> 	articles after	<input type="text" id="" name="oneshot_length[]" style="width:10%" class="validate[required,custom[integer]]" value="{$mission.tempo_length}" /> 	
+    <select name="oneshot_option[]" id="" class="span2">		
+        {html_options  options=$tempo_duration_array selected=$mission.tempo_length_option}	
+    </select>	<a class="btn btn-mini closeshot">		
+        <i class="icon-remove"></i>	
+    </a>
+</div>
+{literal}
+<script>	
+var prodsubmit= true;
+    $(document).ready(function(){		
+        $(".cselect").chosen({ allow_single_deselect:false,disable_search: true });
+        $(".cloneshot").click(function(){
+            $("#cloneshots").clone().appendTo("#addshot");
+            $("#addshot").find("#cloneshots").removeAttr("id");
+        });				
+        $(document).on("click",".closeshot",function(){	
+            $(this).closest("div").remove();	
+        });					
+        $('.oneshot').iCheck({		
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-blue'				
+        });					
+        $('.oneshot').live('ifChecked', function (event) {
+            var checked_val = $(".oneshot:checked").val();
+            if(checked_val=="yes")			
+            {				
+                $("#recurring_details").hide();	
+                $("#oneshot_details").show();	
+            }			
+            else		
+            {				
+                $("#recurring_details").show();	
+                $("#oneshot_details").hide();	
+            }		
+        });		
+        $("#tempo").validationEngine({prettySelect : true,useSuffix: "_chzn",onValidationComplete: function(form, status){
+			if(status == true)
+			{
+				if($("[name=oneshot]:checked").val()=="yes")
+				{
+					checkMax();
+					
+					if(prodsubmit)
+						return true; 
+				}
+				else
+					return true;
+			}
+		}});	
+	});
+	
+	function checkMax(){
+			var current_value = prev_value = "";
+			$("#addshot [name=articles\\[\\]]").each(function(index,value){
+				current_value = parseInt($(this).val());
+				if(prev_value !="" && current_value < prev_value)
+				{
+					$(this).addClass("errortempo");
+					//$(this).css("border","1px solid #d90501");
+					prodsubmit = false;
+					$('html, body').animate({ scrollTop: $('#addshot').offset().top }, 'slow');
+					return false;
+				}
+				else
+				{
+					//$(this).css("border","none");
+					$(this).removeClass("errortempo");
+					prodsubmit = true;
+				}
+					
+				prev_value = current_value;
+			});
+			if(prodsubmit == false)
+				return false;
+			current_value = prev_value = "";
+			$("#addshot [name=oneshot_length\\[\\]]").each(function(index,value){
+				current_value = parseInt($(this).val());
+				if(prev_value !="" && current_value < prev_value)
+				{
+					$(this).addClass("errortempo");
+					//$(this).css("border","1px solid #d90501");
+					prodsubmit = false;
+					$('html, body').animate({ scrollTop: $('#addshot').offset().top }, 'slow');
+					return false;
+				}
+				else
+				{
+					//$(this).css("border","none");
+					$(this).removeClass("errortempo");
+					prodsubmit = true;
+				}
+					
+				prev_value = current_value;
+			});
+			
+			return prodsubmit;
+		}
+</script>
+{/literal}

@@ -1,0 +1,403 @@
+{literal}
+<script type="text/javascript" >
+    $(document).ready(function() {		
+		
+//onload getting deliveries linked to client
+			var client_id=$("#clients").val();
+			fnloaddeliveries(client_id,'ao_details');
+       if($('#ao_details').length) {
+                $('#ao_details').dataTable({
+                    "sPaginationType": "bootstrap",
+					"iDisplayLength" : 25,
+                     "sDom": "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+					"aoColumns": [
+						{ "sType": "formatted-num" },
+						{ "sType": "natural" },
+						{ "sType": "string" },
+						{ "sType": "eu_date" },
+						{ "sType": "formatted-num" },
+						{ "sType": "string" },
+						{ "sType": "string" }
+					],
+					"aaSorting": [[ 0, "asc" ]],
+                    "oTableTools": {
+                        "aButtons": [
+                            "copy",
+                            "print",
+                            {
+                                "sExtends":    "collection",
+                                "sButtonText": 'Sauvegarder <span class="caret" />',
+                                "aButtons":    [ "csv", "xls", "pdf" ]
+                            }
+                        ],
+                        "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                    }
+                });
+            }
+    });
+</script>
+{/literal}
+
+<!--Bread Crumbs-->
+<!--<nav>
+	<div id="jCrumbs" class="breadCrumb module">
+		<ul>
+			<li>
+				<a href="/index"><i class="icon-home"></i></a>
+			</li>
+			<li>
+				<a>Ongoing AO</a>
+			</li>			
+		</ul>
+	</div>
+</nav>-->
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">
+			SUIVI DE L'APPEL D'OFFRE
+			<div style="display:inline;float:right"><button name="back" class="btn btn-success" onClick="window.location='/ongoing/list?submenuId=ML2-SL4'">Retour</button></div>  
+		</h3>
+		   
+		<div  id="search_block">
+			<form action={$smarty.server.REQUEST_URI} method="get" id="searchform" name="searchform" >				
+				 <input type="hidden" id="submenuId" name="submenuId"  value="{$submenuId}"/>				  
+				 <table id="searchtable" cellspacing="5" cellpadding="5">
+					<tr>
+						<td>S&eacute;lectionner un client :</td>
+						<td>
+							<select name="client_id" id="clients" onChange="fnloaddeliveries(this.value,'ao_details');">
+								{html_options  options=$client_array  selected=$smarty.get.client_id}	
+							</select>
+						</td>
+						<td>S&eacute;lectionner un appel d'offre :</td>
+						<td id="aolistall">
+							<select name="ao_id" id="deliveries" onChange="this.form.submit();"  data-placeholder="Deliveries">
+								{html_options  options=$delivery_array  selected=$smarty.get.ao_id  selected=$smarty.get.ao_id}				  
+							</select>
+						</td>					
+					</tr>
+				</table>
+			</form>
+		</div>
+		
+		{if $aoDetails |@count gt 0}
+		{foreach item=delivery from=$aoDetails name="aoDetails"} 		
+		<div class="row-fluid">
+			<div class="w-box">
+				<div class="w-box-header">
+					Informations sur l'appel d'offre
+                </div>
+				<div class="w-box-content cnt_a">
+				<table class="table table-striped table-bordered">
+					<tr>
+						<th>Client</th>
+						<td>{$delivery.client}</td>
+						<th>Titre mission</th>
+						<td>{$delivery.title|stripslashes}</td>
+					</tr>
+					<tr>
+						<th>Date de cr&eacute;ation</th>
+						<td>{$delivery.created_at|date_format:"%d/%m/%Y %H:%M"}</td>
+						<th>Prix total Mission</th>
+						<td><span class="label label-inverse">{$delivery.totalAmount|zero_cut:2} &euro;</span></td>
+					</tr>
+					<tr>
+						<th>Cr&eacute;&eacute; par </th>
+						<td>{$delivery.incharge}</td>
+						<th>Montant d&eacute;j&agrave; pay&eacute;</th>
+						<td><span class="label label-success">{$delivery.amount_paid|zero_cut:2} &euro;</span></td>
+						
+					</tr>
+					<tr>
+						<th>Mission</th>
+						<td>{$delivery.AOtype}</td>
+						<th>Articles total</th>
+						<td><span class="label label-inverse">{$delivery.totalArticle}</span></td>
+					</tr>						
+					<tr>						
+						<th>Anonyme</th>
+						<td>{if $delivery.deli_anonymous}Oui{else}Non{/if}</td>
+						<th>Articles trait&eacute;s</th>
+						<td><span class="label label-success">{$delivery.published_articles}</span></td>						
+					</tr>
+					<tr>
+						<th>Brief</th>
+						<td><a class="label label-warning" href="/BO/download_brief.php?ao_id={$delivery.id}">Download</a></td>
+						<th>Articles en attente</th>
+						 {math equation="a - b" a=$delivery.totalArticle b=$delivery.published_articles assign="pending_article"}
+						<td><span class="label label-important">{$pending_article}</span></td>
+						
+						
+					</tr>
+					<input type="hidden" id="ao_id" name="ao_id" value="{$delivery.id}">
+					<tr>
+						<!--<td colspan="2">
+							<a href="/ongoing/ao-history?ao_id={$delivery.id}" role="button" data-toggle="modal" data-target="#ao_history" class="label label-warning">Voir l'historique des actions effectu&eacute;es sur cet AO</a>
+						</td>-->
+						<td colspan="2">
+							<a class="btn btn-info" href="/ongoing/edit-ao?ao_id={$delivery.id}&client_id={$delivery.user_id}" data-toggle="modal" role="button" data-target="#edit_ao_modal" id="edit_ao"><i class="splashy-application_windows_edit"></i><span style="vertical-align: text-bottom;">  &Eacute;diter L'AO</span></a>
+						</td>
+						<td colspan="2">							
+							<button class="btn btn-danger" id="delete_ao" name="delete_ao" type="button"><i class="icon-adt_trash"></i><span>  Supprimer L'AO</span></button>
+						</td>
+					</tr>
+				</table>
+				</div>
+			</div>					
+		</div>
+		{/foreach}
+		{/if}
+		<div class="row-fluid">		
+		   
+			<table class="table table-striped table-bordered dTableR" id="ao_details">
+				<thead>
+					<tr>
+						<th>S.No.</th>
+						<th>Titre de l'article</th>
+						<th>R&eacute;dacteur</th>
+						<th>Correcteur</th>
+						<th>Facturation</th>
+						<!--<th>Refuser d&eacute;finitivement <br> cet article</th>
+						<th>Editeur en charge</th>-->
+						<th>Statut</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+			{if $articleDetails |@count gt 0}
+				{foreach item=article from=$articleDetails name="articleDetails"} 
+					<tr>
+						<td>{$smarty.foreach.articleDetails.index+1}</td>
+						<td><a class="editable editable-click" href="/ongoing/edit-article?article_id={$article.id}" data-toggle="modal" role="button" data-target="#edit_article_modal" id="edit_article">{$article.title|stripslashes}</a></td>
+						<td>
+							{if $article.totalParticipations eq '0'}
+								<span class="label label-important">Aucun participant</span>
+							{elseif $article.writerParticipation}
+								{$article.writerName}
+							{else}
+									<a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning">En attente de s&eacute;lection</span></a>
+							{/if}
+						</td> 
+						<td>
+							{if $article.correction eq 'yes'}  
+								{if $article.totalCorrectionParticipations eq '0'}
+									<span class="label label-important">Aucun participant</span> 
+								{elseif $article.correctorParticipation}
+									{$article.correctorName}
+								{else}
+									<a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning">En attente de s&eacute;lection</span></a>
+								{/if}
+							{else}
+								<span class="label">Correction BO</span>
+							{/if}
+						</td>					  
+						<!--<td>{if $article.paid_status eq 'paid'}<span class="label label-success">pay&eacute;e</span>{else}<span class="label label-important">Non pay&eacute;e</span>{/if}</td>-->
+						<td>
+							{if $article.writer_facturation_details |@count gt 0 OR $article.corrector_facturation_details |@count gt 0 }
+								<span id="ficon_article_{$article.id}" style="cursor:pointer"><i class="splashy-add_outline"></i></span> 
+							{else}
+								N/A
+							{/if}	
+							<div id="fslide_span_{$article.id}" style="display:none">
+								{if $article.writer_facturation_details |@count gt 0}
+								<table class='table table-bordered'>
+									{assign var=price_total value=$article.writer_facturation_details[0].price_user}
+									<tr>
+										<th>Prix r&eacute;dacteur s&eacute;lectionn&eacute;</th>
+										<td>{$article.writer_facturation_details[0].price_user}&euro;</td>
+									</tr>
+									<tr>
+										<th>Prix moyen participants</th>
+										<td>{$article.writer_facturation_details[0].avg_price|zero_cut:2}&euro;</td>
+									</tr>
+									{if $article.corrector_facturation_details |@count gt 0}								
+									{assign var=price_total value=$price_total+$article.corrector_facturation_details[0].price_corrector}
+									<tr>
+										<th>Prix correcteur</th>
+										<td>{$article.corrector_facturation_details[0].price_corrector}&euro;</td>
+									</tr>
+									<tr>
+										<th>Prix total (corrector + r&eacute;dacteur)</th>
+										<td>{$price_total}&euro;</td>
+									</tr>									
+									{/if}									
+									<tr>
+										<th>Statut paiement</th>
+										<td>
+											{if $article.writer_facturation_details[0].status eq 'Not paid'}
+												facture cr&eacute;&eacute;e
+											{elseif $article.writer_facturation_details[0].status eq 'paid'}
+												pay&eacute;e
+											{elseif $article.writer_facturation_details[0].royalty}	
+												en attente
+											{else}
+												N/A
+											{/if}	
+												
+											
+										</td>
+									</tr>
+								</table>
+								{/if}
+								
+							</div>	
+						</td>
+						<!--<td></td>
+						<td>{$article.incharge}</td>-->
+						<td>
+							{if $article.writer_bid_details |@count gt 0 OR $article.corrector_bid_details |@count gt 0 }
+								<span id="icon_article_{$article.id}" style="cursor:pointer"><i class="splashy-add"></i></span>
+							{else}
+								N/A
+							{/if}	
+							<div id="slide_span_{$article.id}" style="display:none">
+								{if $article.writer_bid_details |@count gt 0}
+								<table class='table table-bordered'>
+									<tr>
+										<th>R&eacute;dacteur</th>
+										<td>{$article.writerName} ({$article.writer_bid_details[0].price_user} &euro;)</td>
+									</tr>
+									<tr>
+										<th>Stage</th>
+										<td>{$article.writer_bid_details[0].current_stage}</td>
+									</tr>
+									<tr>
+										<th>Status</th>
+										<td>
+											
+											{if $article.writer_bid_details[0].writer_status eq 'plag_exec'}
+												Plagiat
+											{elseif $article.writer_bid_details[0].writer_status eq 'under_study'}
+												Under review
+											{else}
+												{$article.writer_bid_details[0].writer_status}
+											{/if}
+										</td>
+									</tr>
+									<tr>
+										<th>Article</th>
+										<td><a class="label label-warning" href="/ongoing/download-article?type=process&process_id={$article.writer_bid_details[0].process_id}">Download</a></td>
+									</tr>
+								</table>
+								{/if}
+								{if $article.corrector_bid_details |@count gt 0}
+								<table class='table table-bordered'>
+									<tr>
+										<th>Correcteur</th>
+										<td>{$article.correctorName} ({$article.corrector_bid_details[0].price_corrector} &euro;)</td>
+									</tr>
+									<tr>
+										<th>Stage</th>
+										<td>{$article.corrector_bid_details[0].current_stage}</td>
+									</tr>
+									<tr>
+										<th>Status</th>
+										<td>
+											{if $article.corrector_bid_details[0].corrector_status eq 'plag_exec'}
+												Plagiat
+											{elseif $article.corrector_bid_details[0].corrector_status eq 'under_study'}
+												Under review	
+											{else}
+												{$article.corrector_bid_details[0].corrector_status}
+											{/if}
+										</td>
+									</tr>
+									<tr>
+										<th>Article</th>
+										<td><a class="label label-warning" href="/ongoing/download-article?type=process&process_id={$article.corrector_bid_details[0].process_id}">Download</a></td>
+									</tr>
+								</table>
+								{/if}
+							</div>	
+						</td>
+						<td>
+							{if $article.totalParticipations eq '0'}
+								<button class="btn btn-danger btn hint--left  hint" name="closerepublish" href="/processao/republishpopup?nopart=no&amp;close=no&amp;artId={$article.id}" data-target="#republish" data-toggle="modal" type="button"  data-hint="Re-publier R&eacute;dacteur">Re-publier</button>
+							{elseif $article.totalParticipations gt 0}
+								<button class="btn btn-danger btn hint--left  hint" name="closerepublish" href="/processao/republishpopup?close=yes&amp;artId={$article.id}" data-target="#republish" data-toggle="modal" type="button"  data-hint="Re-publier R&eacute;dacteur">Re-publier</button>	
+							{/if}
+							{if $article.totalCorrectionParticipations eq '0' && $article.correction eq 'yes'}
+								<button class="btn btn-danger btn hint--left  hint" name="closerepublish" id="closerepublish0" href="/correction/republishcorrectorpopup?nopart=no&amp;close=no&amp;artId={$article.id}" data-target="#republish" data-toggle="modal" type="button" data-hint="Re-publier Correcteur">Re-publier</button>
+							{elseif $article.totalCorrectionParticipations gt 0 && $article.correction eq 'yes'}
+								<button class="btn btn-danger btn hint--left  hint" name="closerepublish" id="closerepublish0" href="/correction/republishcorrectorpopup?close=yes&amp;artId={$article.id}" data-target="#republish" data-toggle="modal" type="button" data-hint="Re-publier Correcteur">Re-publier</button>	
+							{/if}
+							
+							{if $article.writerParticipation}
+								{if $article.expiredWriterParticipation }
+									<a href="/ongoing/extend-time?utype=writer&participation_id={$article.expiredWriterParticipation}" role="button" data-toggle="modal" data-target="#extend_time" class="btn hint--left  hint" data-hint="Ajouter temps R&eacute;dacteur"><i class="icon-time"></i><sup>+</sup></a>								
+								{/if}
+							{/if}
+							{if $article.correctorParticipation}
+								{if $article.expiredcorrectorParticipation }
+									<a href="/ongoing/extend-time?utype=corrector&participation_id={$article.expiredcorrectorParticipation}" role="button" data-toggle="modal" data-target="#extend_time" class="btn hint--left  hint" data-hint="Ajouter temps Correcteur"><i class="icon-time"></i><sup>+</sup></a>								
+								{/if}
+							{/if}
+							<a href="/ongoing/ao-history?ao_id={$article.delivery_id}&article_id={$article.id}" role="button" data-toggle="modal" data-target="#ao_history" class="label label-warning">Voir l'historique</a>
+						</td>
+					</tr>
+				{/foreach}
+			{/if}	
+							
+				</tbody>
+			</table>                        
+	  </div>
+	</div>
+</div>
+    <input type="hidden" id="hide_total" name="hide_total"  />
+
+<!--///for the ao edit popup///-->
+<div class="modal container hide fade" id="edit_ao_modal">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>&Eacute;diter L'AO</h3>		
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+
+
+<!--///for the article edit popup///-->
+<div class="modal container hide fade" id="edit_article_modal">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>Edit Article</h3>		
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+<!--///when republish the popup comes for edit details and mail for republish article///-->
+<div class="modal container hide fade" id="republish">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Editer les details la re-publication</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+
+<!--Extend time of writer/corrector ///-->
+<div class="modal container hide fade" id="extend_time">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Extend time</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!--History of AO-->
+<div class="modal container hide fade" id="ao_history">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Historique des actions men&eacute;es sur l'AO</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>

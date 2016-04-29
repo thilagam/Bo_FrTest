@@ -1,0 +1,396 @@
+{* <link rel="stylesheet" type="text/css" href="/BO/theme/gebo/lib/tooltipster/css/tooltipster.css" />
+<link rel="stylesheet" type="text/css" href="/BO/theme/gebo/lib/tooltipster/css/themes/tooltipster-noir.css" />
+<script src="/BO/theme/gebo/lib/tooltipster/js/jquery.tooltipster.min.js" type="text/javascript"></script> *}
+{literal}
+<link rel="stylesheet" type="text/css" href="/BO/theme/gebo/lib/jsgantt/jsgantt.css"/>
+<script language="javascript" src="/BO/theme/gebo/lib/jsgantt/jsgantt-mission.js"></script>
+<style>
+
+	#leftside td, #leftside th
+	{
+		padding:8px;
+	}
+	
+	#rightside th,#rightside td
+	{
+		padding:8px 0;
+	}
+	
+	.tooltips 
+	{
+		cursor:pointer;
+	}
+
+	.form-inline .radio
+	{
+		margin-left:5px;
+	}
+</style>
+
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+    	<h1 class="heading pull-left">Mission List 
+			<select data-placeholder="All Contracts" id="allcontract" class="cselect">
+				<option value="">All Contracts</option>
+				{foreach from=$contractlist item=contract name=contracts}
+				   <option value="{$contract.quotecontractid}" {if $smarty.get.contract_id==$contract.quotecontractid} selected{/if}>{$contract.contractname}</option>
+				{/foreach}
+			</select>
+		</h1>
+		<div class="clearfix"><br><br></div>
+		<ul class="nav nav-tabs topset2">
+			<li class="{if $smarty.get.active eq ''} active {/if} assignopened"><a href="#opened" data-toggle="tab">Ongoing</a></li>
+			{if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+			<li class="{if $smarty.get.active eq 'validate'} active {/if} assigntab"><a href="#validate" data-toggle="tab">To assign&nbsp;<span class="badge badge-warning" id="assigncount"></span></a></li>
+			{/if}
+			<li class="{if $smarty.get.active eq 'finished'} active {/if}"><a href="#finished" data-toggle="tab">Closed</a></li>
+		</ul>	
+		
+		<div class="tab-content allmissions">
+			<div class="tab-pane {if $smarty.get.active eq ''} active {/if}" id="opened">
+			{if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+				<div class="row-fluid">
+				<select data-placeholder="All Sales" id="pm" class="cselect">
+					<option value="">All PM</option>
+					{foreach from=$pms item=user name=users}
+					   <option value="{$user.identifier}" {if $smarty.get.pmid==$user.identifier} selected{/if} >{$user.first_name} {$user.last_name}</option>
+					{/foreach}
+				</select>
+				
+				<select data-placeholder="All Language" id="langauges" class="cselect">
+					<option value="">All Language</option>
+					{foreach from=$languages key=k item=v}
+					   <option value="{$k}" >{$v}</option>
+					{/foreach}
+				</select>
+				{*
+				<select data-placeholder="All Contracts" id="openedcontracts" class="cselect">
+					<option value="">All Contracts</option>
+					{foreach from=$contractlist item=contract name=contracts}
+					   <option value="{$contract.quotecontractid}" {if $smarty.get.contract_id==$contract.quotecontractid} selected{/if}>{$contract.contractname}</option>
+					{/foreach}
+				</select>
+				*}
+				</div>
+			{/if}
+				<div class="row-fluid">
+				<div class="missionsopenreplace" style="min-height:400px">
+				{if $contractmissionsopened|@count eq 0}
+					<center><strong>No Missions Found</strong></center>
+				{else}
+					<div id='missions-opened'></div>
+				{/if}
+				</div>
+				</div>
+			</div>
+			{if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+			<div class="tab-pane {if $smarty.get.active eq 'validate'} active {/if}" id="validate">
+				<div class="row-fluid">
+					<select data-placeholder="All Language" id="assign_lang" class="cselect">
+						<option value="">All Language</option>
+						{foreach from=$languages key=k item=v}
+						   <option value="{$k}" >{$v}</option>
+						{/foreach}
+					</select>
+					{*
+					<select data-placeholder="All Contracts" id="assigncontracts" class="cselect">
+					<option value="">All Contracts</option>
+					{foreach from=$contractlist item=contract name=contracts}
+					   <option value="{$contract.quotecontractid}" {if $smarty.get.contract_id==$contract.quotecontractid} selected{/if}>{$contract.contractname}</option>
+					{/foreach}
+					</select>
+					*}
+				</div>
+				<div class="row-fluid">
+				<div class="missionsassignreplace"  style="min-height:400px">
+				{if $contractmissionstoassign|@count gt 0}
+					<div id='missions-toassign'></div>
+				{else}
+					<center><strong>No Missions Found</strong></center>
+				{/if}
+				</div>
+				</div>
+			</div>
+			{/if}
+			<div class="tab-pane {if $smarty.get.active eq 'finished'} active {/if}" id="finished">
+			{if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+			<div class="row-fluid">
+				<select data-placeholder="All Sales" id="pm1" class="cselect">
+					<option value="">All PM</option>
+					{foreach from=$pms item=user name=users}
+					   <option value="{$user.identifier}" {if $smarty.get.pmid==$user.identifier} selected{/if} >{$user.first_name} {$user.last_name}</option>
+					{/foreach}
+				</select>
+				
+				<select data-placeholder="All Language" id="langauges1" class="cselect">
+					<option value="">All Language</option>
+					{foreach from=$languages key=k item=v}
+					   <option value="{$k}" >{$v}</option>
+					{/foreach}
+				</select>
+				{*
+				<select data-placeholder="All Contracts" id="openedcontracts1" class="cselect">
+					<option value="">All Contracts</option>
+					{foreach from=$contractlist item=contract name=contracts}
+					   <option value="{$contract.quotecontractid}" {if $smarty.get.contract_id==$contract.quotecontractid} selected{/if}>{$contract.contractname}</option>
+					{/foreach}
+				</select> *}
+			</div>
+		{/if}
+
+				<div class="row-fluid">
+				<div class="missionsfinished"  style="min-height:400px">
+				{if $contractmissionsfinished|@count gt 0}
+					<div id='missions-finished'></div>
+				{else}
+					<center><strong>No Missions Found</strong></center>
+				{/if}
+				</div>
+				</div>
+				
+			</div>
+		</div>
+		
+	</div>
+</div>
+
+{literal}
+<script>
+var id1 = "week1";
+var id2 = "week2";
+var assigncount = 0;
+var user_type = {/literal}"{$user_type}"{literal};
+var g = new JSGantt.GanttChart('g',document.getElementById('missions-opened'), 'day');
+
+	g.setShowRes(0); // Show/Hide Responsible (0/1)
+	g.setShowDur(0); // Show/Hide Duration (0/1)
+	g.setShowComp(0); // Show/Hide % Complete(0/1)
+    g.setCaptionType('None');  // Set to Show Caption (None,Caption,Resource,Duration,Complete)
+
+	  if(g) {
+		{/literal}
+		{foreach from=$contractmissionsopened item="missions" name="contractids" }
+		{foreach from=$missions item="mission" name="contracts" }
+		{literal} id = {/literal}{$smarty.foreach.contractids.iteration}{$smarty.foreach.contracts.iteration}{literal};{/literal}
+		{literal} mname = {/literal}"{$mission.title}"{literal};{/literal}
+		{literal} lang = {/literal}"{$mission.lang}"{literal};{/literal}
+		{literal} edate = {/literal}"{$mission.edate}"{literal};{/literal}
+		{literal} ldate = {/literal}"{$mission.ldate}"{literal};{/literal}
+		{literal} pdone = {/literal}"{$mission.percentage}"{literal};{/literal}
+		{literal} pm = {/literal}"{$mission.pmnew}"{literal};{/literal}
+		{literal} cmid = {/literal}"{$mission.cmid}"{literal};{/literal}
+		{literal} cid = {/literal}"{$mission.cid}"{literal};{/literal}
+		{literal} type = {/literal}"{$mission.type}"{literal};{/literal}
+		{literal} index = {/literal}"{$mission.index}"{literal};{/literal}
+		{literal}
+		json = '{"lang":"'+lang+'","pdone":"'+pdone+'","pm":"'+pm+'","cmid":"'+cmid+'","type":"'+type+'","user_type":"'+user_type+'","cid":"'+cid+'","index":"'+index+'"}';
+			g.AddTaskItem(new JSGantt.TaskItem(cmid,mname,ldate,edate,'2B78E4','',0,mname,0,0,0,0,'','Caption 1',json));
+		{/literal}
+		{/foreach}
+		{/foreach}
+		{literal}
+		g.Draw();	
+		g.DrawDependencies();
+	  }
+	  else
+	  {
+		alert("not defined");
+	  }
+ {/literal}
+ {if $user_type=='superadmin' || $user_type=='techmanager' || $user_type=='seomanager' || $user_type=='prodmanager'}
+		{literal}
+	var g1 = new JSGantt1.GanttChart('g1',document.getElementById('missions-toassign'), 'day');
+
+	g1.setShowRes(0); // Show/Hide Responsible (0/1)
+	g1.setShowDur(0); // Show/Hide Duration (0/1)
+	g1.setShowComp(0); // Show/Hide % Complete(0/1)
+    g1.setCaptionType('None');  // Set to Show Caption (None,Caption,Resource,Duration,Complete)
+
+	  if(g1) {
+		{/literal}
+		{foreach from=$contractmissionstoassign item="missions" name="contractids" }
+		{foreach from=$missions item="mission" name="contracts" }
+		{literal} id = {/literal}{$smarty.foreach.contractids.iteration}{$smarty.foreach.contracts.iteration}{literal};{/literal}
+		{literal} mname = {/literal}"{$mission.title}"{literal};{/literal}
+		{literal} lang = {/literal}"{$mission.lang}"{literal};{/literal}
+		{literal} edate = {/literal}"{$mission.edate}"{literal};{/literal}
+		{literal} edispdate = {/literal}"{$mission.edispdate}"{literal};{/literal}
+		{literal} ldate = {/literal}"{$mission.ldate}"{literal};{/literal}
+		{literal} pdone = {/literal}"0%"{literal};{/literal}
+		{literal} pm = {/literal}"{$mission.pm}"{literal};{/literal}
+		{literal} turnover = {/literal}"{$mission.turnover|zero_cut_t:2}"{literal};{/literal}
+		{literal} currency = {/literal}"{$mission.currency}"{literal};{/literal}
+		{literal} type = {/literal}"{$mission.type}"{literal};{/literal}
+		{literal} cid = {/literal}"{$mission.cid}"{literal};{/literal}
+		{literal} cmid = {/literal}"{$mission.cmid}"{literal};{/literal}
+		{literal} index = {/literal}"{$mission.index}"{literal};{/literal}
+		{literal}
+		json = '{"lang":"'+lang+'","turnover":"'+turnover+'","currency":"'+currency+'","edispdate":"'+edispdate+'","type":"'+type+'","index":"'+index+'","cid":"'+cid+'","cmid":"'+cmid+'"}';
+			g1.AddTaskItem(new JSGantt1.TaskItem(id,mname,ldate,edate,'2B78E4','',0,mname,0,0,0,0,'','Caption 1',json));
+			assigncount++;
+		{/literal}
+		{/foreach}
+		{/foreach}
+		{literal}
+		g1.Draw();	
+		g1.DrawDependencies();
+	  }
+	  else
+	  {
+		alert("not defined");
+	  }
+	   {/literal}
+ {/if}
+	{literal}
+	
+	var g2 = new JSGantt2.GanttChart('g2',document.getElementById('missions-finished'), 'day');
+
+	g2.setShowRes(0); // Show/Hide Responsible (0/1)
+	g2.setShowDur(0); // Show/Hide Duration (0/1)
+	g2.setShowComp(0); // Show/Hide % Complete(0/1)
+    g2.setCaptionType('None');  // Set to Show Caption (None,Caption,Resource,Duration,Complete)
+
+	  if(g2) {
+		{/literal}
+		{foreach from=$contractmissionsfinished item="missions" name="contractids" }
+		{foreach from=$missions item="mission" name="contracts" }
+		{literal} id = {/literal}{$smarty.foreach.contractids.iteration}{$smarty.foreach.contracts.iteration}{literal};{/literal}
+		{literal} mname = {/literal}"{$mission.title}"{literal};{/literal}
+		{literal} lang = {/literal}"{$mission.lang}"{literal};{/literal}
+		{literal} edate = {/literal}"{$mission.edate}"{literal};{/literal}
+		{literal} ldate = {/literal}"{$mission.ldate}"{literal};{/literal}
+		{literal} pdone = {/literal}"{$mission.percentage}"{literal};{/literal}
+		{literal} pm = {/literal}"{$mission.pmnew}"{literal};{/literal}
+		{literal} cmid = {/literal}"{$mission.cmid}"{literal};{/literal}
+		{literal} type = {/literal}"{$mission.type}"{literal};{/literal}
+		{literal}
+		json = '{"lang":"'+lang+'","pdone":"'+pdone+'","pm":"'+pm+'","cmid":"'+cmid+'","type":"'+type+'"}';
+			g2.AddTaskItem(new JSGantt.TaskItem(cmid,mname,ldate,edate,'2B78E4','',0,mname,0,0,0,0,'','Caption 1',json));
+		{/literal}
+		{/foreach}
+		{/foreach}
+		{literal}
+		g2.Draw();	
+		g2.DrawDependencies();
+	  }
+	  else
+	  {
+		alert("not defined");
+	  }
+	
+$(document).ready(function() {
+	if(assigncount>0)
+	{
+		$("#assigncount").text(assigncount);
+		$("#assigncount").removeClass('hide');
+	}
+	else
+	$("#assigncount").addClass('hide');
+	$(".uni_style").uniform();
+	$(".uni_style2").uniform();
+	/* $('.tooltips').tooltipster(
+	 {
+		contentAsHTML: true,
+		theme: 'tooltipster-noir',
+		position: 'bottom',
+		positionTracker:true,
+		interactive: true,
+	 });  */
+		
+	$(".cselect").chosen({allow_single_deselect:false,disable_search: true});
+	
+	$(".tooltips").popover({ trigger: "manual" ,placement: 'top', html: true, animation:false})
+	.on("mouseenter", function () {
+		var _this = this;
+		$(this).popover("show");
+		$(".popover").on("mouseleave", function () {
+			$(_this).popover('hide');
+		});
+	}).on("mouseleave", function () {
+		var _this = this;
+		setTimeout(function () {
+			if (!$(".popover:hover").length) {
+				$(_this).popover("hide");
+			}
+		}, 300);
+	});
+	
+	
+	$(document).on("click",".uni_style",function(){
+		 $(".uni_style").uniform();
+			 $(".tooltips").popover({ trigger: "manual" ,placement: 'top', html: true, animation:false})
+			.on("mouseenter", function () {
+				var _this = this;
+				$(this).popover("show");
+				$(".popover").on("mouseleave", function () {
+					$(_this).popover('hide');
+				});
+			}).on("mouseleave", function () {
+				var _this = this;
+				setTimeout(function () {
+					if (!$(".popover:hover").length) {
+						$(_this).popover("hide");
+					}
+				}, 300);
+			});
+	  })
+	  
+	
+});
+
+	  $('#pm').on('change', function(evt, params) {
+		$(".missionsopenreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'opened':1,'lang':$("#langauges").val(),'cid':$("#openedcontracts").val()},function(data){$(".missionsopenreplace").html(data)})
+	  });
+
+	  $('#pm1').on('change', function(evt, params) {
+		$(".missionsfinished").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm1").val(),'opened':2,'lang':$("#langauges1").val(),'cid':$("#openedcontracts1").val()},function(data){$(".missionsfinished").html(data)})
+	  });
+	  
+	  $('#langauges').on('change', function(evt, params) {
+	  $(".missionsopenreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'opened':1,'lang':$("#langauges").val(),'cid':$("#openedcontracts").val()},function(data){$(".missionsopenreplace").html(data)})
+	  });
+	  
+	   $('#langauges1').on('change', function(evt, params) {
+	  $(".missionsfinished").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm1").val(),'opened':2,'lang':$("#langauges1").val(),'cid':$("#openedcontracts1").val()},function(data){$(".missionsfinished").html(data)})
+	  });
+	  
+	  $('#assign_lang').on('change', function(evt, params) {
+	  $(".missionsassignreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':'','opened':0,'lang':$("#assign_lang").val(),'cid':$("#assigncontracts").val()},function(data){$(".missionsassignreplace").html(data)})
+	  });
+	  
+	  $('#assigncontracts').on('change', function(evt, params) {
+	  $(".missionsassignreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':'','opened':0,'lang':$("#assign_lang").val(),'cid':$("#assigncontracts").val()},function(data){$(".missionsassignreplace").html(data)})
+	  });
+	  
+	  $('#openedcontracts').on('change', function(evt, params) {
+	  $(".missionsopenreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm").val(),'opened':1,'lang':$("#langauges").val(),'cid':$("#openedcontracts").val()},function(data){$(".missionsopenreplace").html(data)})
+	  });
+	  
+	  $('#openedcontracts1').on('change', function(evt, params) {
+	  $(".missionsfinished").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadmissions/',{'pmid':$("#pm1").val(),'opened':2,'lang':$("#langauges1").val(),'cid':$("#openedcontracts1").val()},function(data){$(".missionsfinished").html(data)})
+	  });
+	  
+	  $(document).on("click",".uni_style2",function(){
+		$(".uni_style2").uniform();
+	  })
+	  
+	  $(document).on("click",".uni_style",function(){
+		$(".uni_style").uniform();
+	  })
+	  
+	  $("#allcontract").on('change',function(evt, params){
+	  $(".allmissions").html('<center><b>Please wait Loading...</b></center>');
+	  $.post('/contractmission/loadmissions/',{'pmid':'','opened':3,'lang':'','cid':$("#allcontract").val()},function(data){$(".allmissions").html(data)})
+	  })
+</script>
+{/literal}

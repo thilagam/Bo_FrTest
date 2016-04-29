@@ -1,0 +1,462 @@
+{literal}
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/countdown.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/lib/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" >
+    $(document).ready(function() {			
+	
+////////////to show the timer in selection profile page///////
+      var cur_date={/literal}{$smarty.now}{literal};
+      var js_date=(new Date().getTime())/ 1000;
+      var diff_date=Math.floor(js_date-cur_date);
+     //////////show timer//////////
+	$("[id^=time_]").each(function(i) {
+		var article=$(this).attr('id').split("_");
+		var ts=article[2];
+		$("#time_"+article[1]+"_"+article[2]).countdown({
+			timestamp   : ts,
+            diff_date  : diff_date,
+			callback    : function(days, hours, minutes, seconds){
+				var message = "";
+				if(days >0 )message += days + " jours"  +", ";
+				if(hours >0 )message += hours + " h" +",";
+				if(minutes >0 )message += minutes + " mns"+ ", ";
+				message += seconds + " s";
+				$("#text_"+article[1]+"_"+article[2]).html(message);
+				if(days==0 && hours==0 && minutes==0 && seconds==0)
+				{
+					//window.location.reload();
+				}
+			}
+		});
+	});	
+		
+//onload getting deliveries linked to client
+			var client_id=$("#clients").val();
+			//fnloaddeliveries(client_id,'ao_details');
+       if($('#ao_details').length) {
+                $('#ao_details').dataTable({
+                    "sPaginationType": "bootstrap",
+					"iDisplayLength" : 25,
+                    "sDom": "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",					
+                    "oTableTools": {
+                        "aButtons": [
+                            "copy",
+                            "print",
+                            {
+                                "sExtends":    "collection",
+                                "sButtonText": 'Sauvegarder <span class="caret" />',
+                                "aButtons":    [ "csv", "xls", "pdf" ]
+                            }
+                        ],
+                        "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                    }
+                });
+            }
+    }); 
+</script>
+<style type="text/css">
+.alert,.label-warning
+{
+	padding:3px;
+	margin:3px;
+}
+#ao_details_wrapper a label
+{
+cursor:pointer;
+}
+</style>
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">
+			SUIVI D'UN CLIENT : {$aoDetails[0].client}
+			<div style="display:inline;float:right"><button name="back" class="btn btn-success" onClick="window.location='/ongoing/super-client-list?submenuId=ML2-SL26'">Retour</button></div>  
+		</h3>		   
+		<div  id="search_block">
+			<form action={$smarty.server.REQUEST_URI} method="get" id="searchform" name="searchform" >				
+				 <input type="hidden" id="submenuId" name="submenuId"  value="{$submenuId}"/>				  
+				 <table id="searchtable" cellspacing="5" cellpadding="5">
+					<tr>
+						<td>S&eacute;lectionner un client :</td>
+						<td>
+							<select name="ref_id" id="clients" onChange="this.form.submit();" >
+								{html_options  options=$ref_array_list  selected=$smarty.get.ref_id}	
+							</select>
+						</td>											
+					</tr>
+				</table>
+			</form>
+		</div>
+		
+		{if $aoDetails |@count gt 0}
+		{foreach item=delivery from=$aoDetails name="aoDetails"} 		
+		<div class="row-fluid">
+			<div class="w-box">
+				<div class="w-box-header">
+					INFORMATION OF REFERENCE
+                </div>
+				<div class="w-box-content cnt_a">
+				<table class="table table-striped table-bordered">
+					<tr>
+						<th>Title</th>
+						<td>{$delivery.title}</td>
+						<th>PRIX TOTAL DES DEALS</th>
+						<td><span class="label label-inverse">{$delivery.totalDeals|replace:',':''|zero_cut:2} &euro;</td>
+					</tr>
+					<tr>
+						<th>Date de cr&eacute;ation</th>
+						<td>{$delivery.created_at|date_format:"%d/%m/%Y %H:%M"}</td>
+						<th>CO&Ucirc;T DE PRODUCTION TOTAL</th>						
+						<td>
+							{if $delivery.paidDeals eq NULL}
+								/
+							{else}
+								<span class="label label-success">{$delivery.paidDeals|replace:',':''|zero_cut:2} &euro;</span>
+							{/if}	
+						</td>
+					</tr>
+					<input type="hidden" id="ao_id" name="ao_id" value="{$delivery.id}">
+				</table>
+				</div>
+			</div>					
+		</div>
+		{/foreach}
+		{/if}
+		
+		<br>
+		{if $superClientArticleDetails |@count gt 0}
+			{foreach item=client from=$superClientArticleDetails name="clientDetails"}				
+			
+				<h3 class="heading">Client - {$client.client}</h3>
+				<div class="row-fluid">			   
+					<table class="table table-striped table-bordered dTableR" id="ao_details_{$smarty.foreach.clientDetails.index}">
+						<thead>
+							<tr>
+								<th>S.No.</th>
+								<th>Titre de l'article</th>
+								<th>PERSONNE EN CHARGE</th>
+								<th>R&eacute;dacteur</th>
+								<th>Correcteur</th>
+								<th>Facturation</th>
+								<!--<th>Refuser d&eacute;finitivement <br> cet article</th>
+								<th>Editeur en charge</th>-->
+								<th>Statut</th>
+								<th>Action</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>								
+							{foreach item=aoDetails from=$client name="ao_details" key=key}	
+							{if $key neq 'client'}
+								{foreach item=article from=$aoDetails name="articleDetails"}
+										{if $smarty.foreach.articleDetails.index eq 0}
+											<tr>												
+												<td colspan="9" style="text-align:left"><h4>{$article.delivery_title}</h4></td>
+											</tr>
+										{/if}
+										<tr>
+										<td>{$smarty.foreach.articleDetails.index+1}</td>
+										<td><a class="editable editable-click" href="/ongoing/edit-article?article_id={$article.id}" data-toggle="modal" role="button" data-target="#edit_article_modal" id="edit_article">{$article.title|stripslashes}</a></td>
+										<td>{$article.incharge}</td>
+										<td>
+											{if $article.bo_closed_status eq 'closed' && !$article.writerParticipation}
+												<label class="label label-warning">article ferm&eacute;</label>								
+											{elseif $article.totalParticipations eq '0'}
+												<span class="label label-important">Aucun participant</span>
+											{elseif $article.writerParticipation}
+												<a target="_writer" href="/user/contributor-edit?submenuId=ML2-SL7&tab=viewcontrib&userId={$article.writer_bid_details[0].user_id}">{$article.writerName}</a>
+											{else}
+													<a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning">En attente de s&eacute;lection</span></a>
+											{/if}
+										</td> 
+										<td>
+											{if $article.correction eq 'yes'}  
+												{if $article.totalCorrectionParticipations eq '0'}
+													<span class="label label-important">Aucun participant</span> 
+												{elseif $article.correctorParticipation}
+													<a target="_writer" href="/user/contributor-edit?submenuId=ML2-SL7&tab=viewcontrib&userId={$article.corrector_bid_details[0].corrector_id}">{$article.correctorName}</a>
+												{else}
+													<a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning">En attente de s&eacute;lection</span></a>
+												{/if}
+											{else}
+												<span class="label">Correction BO</span>
+											{/if}
+										</td>					  
+										<!--<td>{if $article.paid_status eq 'paid'}<span class="label label-success">pay&eacute;e</span>{else}<span class="label label-important">Non pay&eacute;e</span>{/if}</td>-->
+										<td>
+											{if $article.writer_facturation_details |@count gt 0 OR $article.corrector_facturation_details |@count gt 0 }
+												{if $article.correctorParticipation}
+													<span id="ficon_article_{$article.correctorParticipation}" style="cursor:pointer"><i class="splashy-add_outline"></i></span> 
+												{else}
+													<span id="ficon_article_{$article.id}" style="cursor:pointer"><i class="splashy-add_outline"></i></span> 
+												{/if}	
+											{else}
+												N/A
+											{/if}	
+											{if $article.correctorParticipation}
+												<div id="fslide_span_{$article.correctorParticipation}" style="display:none">
+											{else}
+												<div id="fslide_span_{$article.id}" style="display:none">	
+											{/if}	
+												{if $article.writer_facturation_details |@count gt 0}
+												<table class='table table-bordered'>
+													{assign var=price_total value=$article.writer_facturation_details[0].price_user}
+													<tr>
+														<th>Prix r&eacute;dacteur s&eacute;lectionn&eacute;</th>
+														<td>{$article.writer_facturation_details[0].price_user}&euro;</td>
+													</tr>
+													<tr>
+														<th>Prix moyen participants</th>
+														<td>{$article.writer_facturation_details[0].avg_price|zero_cut:2}&euro;</td>
+													</tr>
+													{if $article.corrector_facturation_details |@count gt 0}								
+													{assign var=price_total value=$price_total+$article.corrector_facturation_details[0].price_corrector}
+													<tr>
+														<th>Prix correcteur</th>
+														<td>{$article.corrector_facturation_details[0].price_corrector}&euro;</td>
+													</tr>
+													<tr>
+														<th>Prix total (corrector + r&eacute;dacteur)</th>
+														<td>{$price_total}&euro;</td>
+													</tr>									
+													{/if}									
+													<tr>
+														<th>Statut paiement</th>
+														<td>
+															{if $article.writer_facturation_details[0].status eq 'Not paid'}
+																facture cr&eacute;&eacute;e
+															{elseif $article.writer_facturation_details[0].status eq 'paid'}
+																pay&eacute;e
+															{elseif $article.writer_facturation_details[0].royalty}	
+																en attente
+															{else}
+																N/A
+															{/if}	
+																
+															
+														</td>
+													</tr>
+												</table>
+												{/if}
+												
+											</div>	
+										</td>
+										<!--<td></td>
+										<td>{$article.incharge}</td>-->
+										<td>							
+											{if $article.writer_bid_details |@count gt 0 OR $article.corrector_bid_details |@count gt 0 }								
+													{if $article.writer_bid_details |@count gt 0}
+														{if $article.writer_bid_details[0].writer_status eq 'bid' OR $article.writer_bid_details[0].writer_status eq 'disapproved' OR $article.writer_bid_details[0].writer_status eq 'time_out'}
+															
+															{if ($article.writer_bid_details[0].writer_status eq 'bid' && $article.writer_bid_details[0].article_submit_expires lt $smarty.now) OR ($article.writer_bid_details[0].writer_status eq 'time_out')}
+																<label class="label label-important">Non envoy&eacute; par le r&eacute;dacteur</label>
+															{else}											
+																<a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><label class="label label-info">
+																{if $article.writer_bid_details[0].writer_status eq 'bid' OR $article.writer_bid_details[0].writer_status eq 'time_out' }
+																	EN COURS DE REDACTION {if $article.writer_bid_details[0].latest_cycle gt 1}({$article.writer_bid_details[0].latest_cycle}) {/if}
+																{else}
+																	reprise en cours
+																{/if}	
+																</label></a><br>
+																<span id="time_{$article.id}_{$article.writer_bid_details[0].article_submit_expires}" class="alert alert-danger">
+																	<i class="icon-time"></i> <span id="text_{$article.id}_{$article.writer_bid_details[0].article_submit_expires}"></span>
+																</span>													
+															{/if}	
+														{elseif $article.writer_bid_details[0].writer_status eq 'plag_exec' OR $article.writer_bid_details[0].current_stage eq 'stage0' }
+															<a href="/proofread/stage-articles?submenuId=ML3-SL11&aoId={$article.delivery_id}"><label class="label label-info">EN PHASE PLAGIAT</label></a>			
+														{elseif $article.writer_bid_details[0].writer_status eq 'under_study' && $article.writer_bid_details[0].current_stage eq 'stage1'}
+															<a href="/proofread/stage-deliveries?submenuId=ML3-SL2"><label class="label label-info">EN RELECTURE PHASE 1</label></a>
+															<br>
+															{$article.writer_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}
+														{elseif $article.writer_bid_details[0].writer_status eq 'under_study' && $article.writer_bid_details[0].current_stage eq 'client'}
+															<label class="label label-info">EN RELECTURE Client</label>
+															<br>
+															{$article.writer_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}	
+														{elseif $article.writer_bid_details[0].writer_status eq 'under_study' && $article.writer_bid_details[0].current_stage eq 'stage2' && $article.corrector_bid_details[0].current_stage neq 'stage2'}
+															<a href="/proofread/stage-deliveries?submenuId=ML3-SL3"><label class="label label-info">EN RELECTURE PHASE 2</label></a>
+															<br>
+															{$article.writer_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}											
+															
+														{elseif $article.writer_bid_details[0].writer_status eq 'published' && $article.corrector_bid_details[0].corrector_status neq 'published'}
+																<label class="label label-warning">VALID&Eacute;</label>
+														{/if}
+													{/if}	
+													{if $article.corrector_bid_details |@count gt 0}
+														{if ($article.corrector_bid_details[0].corrector_status eq 'bid' || $article.corrector_bid_details[0].corrector_status eq 'disapproved') && ($article.writer_bid_details[0].writer_status eq 'under_study')}
+														
+															{if ($article.corrector_bid_details[0].corrector_status eq 'bid' &&  	$article.corrector_bid_details[0].corrector_submit_expires lt $smarty.now) OR ($article.corrector_bid_details[0].corrector_status eq 'time_out')}
+																<label class="label label-important">Non envoy&eacute; par le correcteur</label>
+															{else}											
+																<a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}"><label class="label label-info">												
+																	{if $article.corrector_bid_details[0].corrector_status eq 'bid'}
+																		EN COURS DE CORRECTION {if $article.corrector_bid_details[0].latest_cycle gt 1}({$article.corrector_bid_details[0].latest_cycle}) {/if}
+																	{else}
+																		reprise en cours
+																	{/if}
+																</label></a><br>
+																<span id="time_{$article.id}_{$article.corrector_bid_details[0].corrector_submit_expires}" class="alert alert-danger">
+																	<i class="icon-time"></i> <span id="text_{$article.id}_{$article.corrector_bid_details[0].corrector_submit_expires}"></span>
+																</span>											
+															{/if}	
+														{elseif ($article.corrector_bid_details[0].corrector_status eq 'bid' || $article.corrector_bid_details[0].corrector_status eq 'disapproved') && ($article.writer_bid_details[0].writer_status eq 'disapproved_temp' || $article.writer_bid_details[0].writer_status eq 'closed_temp' )}
+															<a href="/correction/moderation?submenuId=ML3-SL10"><label class="label label-info">EN COURS DE MODERATION</label></a>
+															<br>
+															{$article.writer_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}
+														{elseif ($article.corrector_bid_details[0].corrector_status eq 'under_study' && $article.corrector_bid_details[0].current_stage eq 'stage2') && ($article.writer_bid_details[0].writer_status eq 'under_study' || $article.writer_bid_details[0].current_stage eq 'stage2' )}
+															<a href="/proofread/stage-deliveries?submenuId=ML3-SL3"><label class="label label-info">EN RELECTURE PHASE 2</label></a>
+															<br>
+															{$article.corrector_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}	
+															
+														{elseif ($article.corrector_bid_details[0].corrector_status eq 'under_study' && $article.corrector_bid_details[0].current_stage eq 'mission_test') && ($article.writer_bid_details[0].writer_status eq 'under_study' || $article.writer_bid_details[0].current_stage eq 'mission_test' )}
+															<a href="/ao/markstat?submenuId=ML2-SL3"><label class="label label-info">Statistiques de missions test</label></a>
+															<br>
+															{$article.corrector_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}	
+														{elseif $article.corrector_bid_details[0].corrector_status eq 'published' &&  $article.writer_bid_details[0].writer_status eq 'published'}
+															<label class="label label-warning">VALID&Eacute;</label>
+														{elseif $article.writer_bid_details[0].writer_status eq 'closed' OR $article.bo_closed_status eq 'closed' }
+															<label class="label label-warning">article ferm&eacute;</label>	
+														{/if}
+													{/if}	
+											{/if}	
+
+											{if $article.bo_closed_status eq 'closed' && !$article.writerParticipation}
+												<label class="label label-warning">article ferm&eacute;</label>	
+											{elseif $article.participation_expires gt $smarty.now OR $article.correction_participationexpires gt $smarty.now}
+												{if $article.participation_expires gt $smarty.now && !$article.writerParticipation && $article.publishtime gt $smarty.now }
+													<a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><label class="label label-info hint--left  hint" data-hint="R&eacute;dacteur">PROGRAMM&Eacute;</label></a><br>
+													<span id="time_{$article.id}_{$article.publishtime}" class="alert alert-danger">
+														<i class="icon-time"></i> <span id="text_{$article.id}_{$article.publishtime}"></span>
+													</span>								
+												{elseif $article.participation_expires gt $smarty.now && !$article.writerParticipation}
+													<a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><label class="label label-info hint--left  hint" data-hint="R&eacute;dacteur">PARTICIPATIONS EN COURS</label></a><br>
+													<span id="time_{$article.id}_{$article.participation_expires}" class="alert alert-danger">
+														<i class="icon-time"></i> <span id="text_{$article.id}_{$article.participation_expires}"></span>
+													</span>		
+												{elseif $article.correction_participationexpires gt $smarty.now &&  $article.writer_bid_details[0].writer_status eq 'under_study' && !$article.corrector_bid_details[0].corrector_status && !$article.correctorParticipation}
+													<a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}"><label class="label label-info hint--left  hint" data-hint="Correcteur">PARTICIPATIONS EN COURS</label></a><br>
+													<span id="time_{$article.id}_{$article.correction_participationexpires}" class="alert alert-danger">
+														<i class="icon-time"></i> <span id="text_{$article.id}_{$article.correction_participationexpires}"></span>
+													</span>							
+												{/if}							
+											{elseif $article.participation_expires lt $smarty.now && $article.totalParticipations gt 0 && !$article.writerParticipation}
+													<a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning hint--left  hint" data-hint="R&eacute;dacteur">EN S&Eacute;LECTION DE PROFIL</span></a>	
+											{elseif $article.correction_participationexpires lt $smarty.now && $article.totalCorrectionParticipations gt 0 && !$article.correctorParticipation}
+													<a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning hint--left  hint" data-hint="Correcteur">EN S&Eacute;LECTION DE PROFIL</span></a>
+											{/if}
+																	
+										</td>
+										<td>
+											{if $article.totalParticipations eq '0' &&  $article.participation_expires lt $smarty.now && $article.missiontest neq 'yes'}
+												<button class="btn btn-danger btn hint--left  hint" name="closerepublish" href="/republish/republishpopup?artId={$article.id}" data-target="#republish" data-toggle="modal" type="button"  data-hint="Re publier R&eacute;dacteur"><i class="icon-repeat"></i></button>
+											{elseif $article.totalParticipations gt 0 && $article.writer_bid_details[0].writer_status neq 'published' &&  $article.participation_expires lt $smarty.now && $article.missiontest neq 'yes'}
+												<button class="btn btn-danger btn hint--left  hint" name="closerepublish" href="/republish/republishpopup?artId={$article.id}" data-target="#republish" data-toggle="modal" type="button"  data-hint="Re publier R&eacute;dacteur"><i class="icon-repeat"></i></button>
+											{/if}
+											{if $article.totalCorrectionParticipations eq '0' && $article.correction eq 'yes' && $article.correction_participationexpires lt $smarty.now && $article.correction_participationexpires neq 0 && $article.writerParticipation && $article.missiontest neq 'yes'}
+												<button class="btn btn-danger btn hint--left  hint" name="closerepublish" id="closerepublish0" href="/correction/republishcorrectorpopup?nopart=no&amp;close=no&amp;artId={$article.id}" data-target="#republish" data-toggle="modal" type="button" data-hint="Re publier Correcteur"><i class="icon-repeat"></i></button>
+											{elseif $article.totalCorrectionParticipations gt 0 && $article.correction eq 'yes' && $article.corrector_bid_details[0].corrector_status neq 'published' && $article.correction_participationexpires lt $smarty.now && $article.correction_participationexpires neq 0 && $article.missiontest neq 'yes'}
+												<button class="btn btn-danger btn hint--left  hint" name="closerepublish" id="closerepublish0" href="/correction/republishcorrectorpopup?close=yes&amp;artId={$article.id}" data-target="#republish" data-toggle="modal" type="button" data-hint="Re publier Correcteur"><i class="icon-repeat"></i></button>	
+											{/if}
+											
+											{if $article.writerParticipation}
+												{if $article.expiredWriterParticipation }
+													<a href="/ongoing/extend-time?utype=writer&participation_id={$article.expiredWriterParticipation}" role="button" data-toggle="modal" data-target="#extend_time" class="btn hint--left  hint" data-hint="Ajouter temps R&eacute;dacteur"><i class="icon-time"></i><sup>+</sup></a>								
+												{/if}
+												{if $article.writer_bid_details[0].writer_status neq 'published' && $article.writer_bid_details[0].writer_status neq 'closed' }
+													<a data-toggle="modal" class="btn btn-inverse" onclick="return getCloseComment('{$article.id}',0)">Clore</a>
+												{/if}
+											{/if}
+											{if $article.correctorParticipation}
+												{if $article.expiredcorrectorParticipation }
+													<a href="/ongoing/extend-time?utype=corrector&participation_id={$article.expiredcorrectorParticipation}" role="button" data-toggle="modal" data-target="#extend_time" class="btn hint--left  hint" data-hint="Ajouter temps Correcteur"><i class="icon-time"></i><sup>+</sup></a>								
+												{/if}								
+											{/if}
+											<br/>
+											<a href="/ongoing/ao-history?ao_id={$article.delivery_id}&article_id={$article.id}" role="button" data-toggle="modal" data-target="#ao_history" class="label label-warning">Voir l'historique</a>							
+										</td>
+										<td>
+											{if $article.comment_count gt 0}
+												<a href="/ongoing/article-comments?ao_id={$article.delivery_id}&article_id={$article.id}" data-toggle="modal" data-target="#comments_article" data-hint="Commentaires" class="btn btn-info hint--left hint--info"><i class="splashy-comments_reply"></i></a>
+											{else}
+												<a href="/ongoing/article-comments?ao_id={$article.delivery_id}&article_id={$article.id}" data-toggle="modal" data-target="#comments_article" data-hint="Commentaires" class="btn hint--left hint--info"><i class="splashy-comments_reply"></i></a>
+											{/if}	
+										</td>
+									</tr>
+								{/foreach}
+							{/if}	
+							{/foreach}
+						</tbody>
+					</table>
+				</div>
+			{/foreach}
+		{/if}								
+</div>
+    <input type="hidden" id="hide_total" name="hide_total"  />
+
+<!--///for the ao edit popup///-->
+<div class="modal container hide fade" id="edit_ao_modal">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>&Eacute;diter L'AO</h3>		
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+
+
+<!--///for the article edit popup///-->
+<div class="modal container hide fade" id="edit_article_modal">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>Edit Article</h3>		
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+<!--///when republish the popup comes for edit details and mail for republish article///-->
+<div class="modal container hide fade" id="republish">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Re-publication de l'article</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+
+<!--Extend time of writer/corrector ///-->
+<div class="modal container hide fade" id="extend_time">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Donner plus de temps</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!--History of AO-->
+<div class="modal container hide fade" id="ao_history">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Historique des actions men&eacute;es sur l'AO</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--Comments of AO-->
+<div class="modal container hide fade" id="comments_article">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Commentaires</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>

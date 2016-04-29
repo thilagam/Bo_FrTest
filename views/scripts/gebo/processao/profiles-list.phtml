@@ -1,0 +1,125 @@
+{literal}
+<script type="text/javascript" >
+$(document).ready(function() {
+    $('#profilelistgrid').dataTable({
+        "sPaginationType": "bootstrap",
+        "iDisplayLength" : 25,
+        "sDom": "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "html" },
+            { "sType": "html" },
+            { "sType": "html" },
+            { "sType": "formatted-num" },
+            { "sType": "date-euro" },
+            { "sType": "string" }
+        ],
+        "aaSorting": [[ 0, "asc" ]],
+        "oTableTools": {
+            "aButtons": [
+                "copy",
+                "print",
+                {
+                    "sExtends":    "collection",
+                    "sButtonText": 'Sauvegarder <span class="caret" />',
+                    "aButtons":    [ "csv", "xls", "pdf" ]
+                }
+            ],
+            "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+        }
+    });
+
+});
+
+</script>
+{/literal}
+
+<div class="row-fluid">
+  <div class="span12" style="">
+    <h3 class="heading">Selection profile<a href="#searchblock" onclick="showSearch();"  class="label label-inverse alignright">Creat</a></h3>
+     <div class="hide" id="searchblock">
+      <form action={$smarty.server.REQUEST_URI} method="get" id="searchform" name="searchform" >
+          <input type="hidden" id="submenuId" name="submenuId"  value="{$submenuId}"/>
+        <table id="searchtable" class="table tdleftalign">
+            <tr><td class="span1"><input type="text"  placeholder="From" id="dp1" name="startdate" data-date-format="dd-mm-yyyy" value="{$smarty.get.startdate}"/></td>
+                <td class="span1"><input type="text"  placeholder="To" id="dp2" name="enddate" data-date-format="dd-mm-yyyy" value="{$smarty.get.enddate}"/></td>
+                <td class="span5">
+                    <select id="clientId" name="clientId" onChange=fnloadao(this.value); data-placeholder="clients" class="span12">
+                        {html_options options=$client_array  selected=$smarty.get.clientId }
+                    </select>
+                </td>
+                <td class="span1"><button class="btn btn-info pull-left" id="clear" name="clear" type="button" value="clear" onclick="clearAll();" >Clear</button></td></tr>
+            <tr>
+                <td class="span1">
+                    <select   name=inchargeId id=inchargeId data-placeholder="&Eacute;diteur en charge">
+                    {html_options  options=$incharge_array selected=$smarty.get.inchargeId}
+                    </select>
+                </td>
+                <td class="span1"> <select name="closed" id="closed"  data-placeholder="Type d'AO" >
+                    <option value="0"></option>
+                    <option value="all" {if $smarty.get.closed eq 'all'}selected="selected"{/if}>ALL</option>
+                    <option value="closed" {if $smarty.get.closed eq 'closed'}selected="selected"{/if}>CLOSED</option>
+                    <option value="notclosed" {if $smarty.get.closed eq 'notclosed'}selected="selected"{/if}>NOT CLOSED</option>
+                </select></td>
+                <td  class="span5" id="aolist" style="display:none;"> <span id="ao_load"></span></td>
+                <td  class="span5"id="aolistall" >
+                    <select  name=aoId id=aoId data-placeholder="Appel d'offre" class="span12">
+                        {html_options  options=$delivery_array  selected=$smarty.get.aoId}
+                    </select>
+                </td>
+                <td class="span1"><button class="btn btn-info pull-left" id="search" name="search" type="submit" value="search" onclick="return validateSearch();" >Search</button>&nbsp;&nbsp;</td></tr>
+        </table>
+      </form>
+     </div>
+
+    <table id="profilelistgrid" class="table table-bordered table-striped table_vam">
+        <thead>
+        <tr>
+            <th>SL.NO</th>
+            <th>TITRE AO</th>
+            <th>CLIENT</th>
+            <th>TOTAL ARTICLES</th>
+            <th>ARTICLES AFFECT&Eacute;S</th>
+            <th>REAFFECTER</th>
+            <th>ARTICLES BID EN COURS</th>
+            <th>CR&Eacute;e le</th>
+           <!-- <th>STATUT</th>-->
+            <th>EDITEUR EN CHARGE</th>
+        </tr>
+        </thead>
+        <tbody>
+        {if $nores neq 'true'}
+        {foreach from=$paginator key=profiles_key item=profiles_item name=profiles_loop}
+        <tr>
+            <td>{$smarty.foreach.profiles_loop.index+1}</td>
+            <td>
+                <a data-target="#artprofile" role="button" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$profiles_item.id}">{$profiles_item.deliveryTitle|stripslashes|wordwrap:20:"\n":true|upper}</a></td>
+            <td><a class="hint--bottom hint--info" data-hint="since : {$profiles_item.doj|date_format:'%d/%m/%Y'}">{if $profiles_item.company_name neq ''}{$profiles_item.company_name|upper}{else}{$profiles_item.email|upper}{/if}</a></td>
+            <td><a data-target="#artprofile" role="button" class="num-large" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$profiles_item.id}">{$profiles_item.artCount|upper}</a>&nbsp;<a href="/processao/download-selected-contribxls?mission={$profiles_item.id}"><img src="/BO/theme/gebo/img/excel.png"></a></td>
+            <td>{if $profiles_item.affectedart != 0}
+            <a data-target="#artprofile" role="button" class="num-large" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$profiles_item.id}&status=affect">{$profiles_item.affectedart}</a>{else} 0 {/if} </td>
+            {math equation="a-b-c" a=$profiles_item.artCount b=$profiles_item.affectedart c=$profiles_item.bidencours assign="notaffectedart"}
+			<td>{if $notaffectedart != 0}
+            <a data-target="#artprofile" role="button" class="num-large" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$profiles_item.id}&status=reaffect">{$notaffectedart}</a>{else} 0 {/if}</td>
+            <td>{if $profiles_item.bidencours != 0}
+            <a data-target="#artprofile" role="button" class="num-large" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$profiles_item.id}&status=encours">{$profiles_item.bidencours}</a>{else} 0 {/if}</td>
+            <td>{$profiles_item.created_at|date_format:"%d/%m/%Y %H:%M"|upper}</td>
+           <!-- <td>{if $profiles_item.notclosedprofiles eq 'NO'}NOT CLOSED{else}CLOSED{/if}</td>-->
+            <td>{$profiles_item.incharge|upper}</td>
+        </tr>
+        {/foreach}
+        {else}
+        <samp id="76">{$nodes[76]}</samp>
+        {/if}
+        </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+
+
+

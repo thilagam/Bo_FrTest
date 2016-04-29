@@ -1,0 +1,950 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/css/timeline.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/timeline.js" type="text/javascript" charset="utf-8"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/countdown.js"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+
+<script language="JavaScript" type="text/javascript">
+$(document).ready(function() {
+	////////////to show the timer of tech time line///////
+      var cur_date={/literal}{$smarty.now}{literal};
+      var js_date=(new Date().getTime())/ 1000;
+      var diff_date=Math.floor(js_date-cur_date);
+     //////////show timer//////////
+	$("[id^=time_]").each(function(i) {
+		var article=$(this).attr('id').split("_");
+		var ts=article[2];
+		if($(this).attr('class') !== undefined && $(this).attr('class')=='enretard'){
+		
+			$("#text_"+article[1]+"_"+article[2]).countup({
+				timestamp   : ts,
+				diff_date  : diff_date,
+				callback    : function(days, hours, minutes, seconds){
+					var message = "";
+					if(days >0 )message += days + " jours"  +"  ";
+					if(hours >0 )message += hours + " h ";
+					if(minutes >0 )message += minutes + " min ";
+					message += seconds+" sec ";
+					$("#text_"+article[1]+"_"+article[2]).html(message);
+					if(days==0 && hours==0 && minutes==0 && seconds==0)
+					{
+						//window.location.reload();
+					}
+				}	
+			});			  
+        
+		}else{
+		$("#time_"+article[1]+"_"+article[2]).countdown({
+			timestamp   : ts,
+            diff_date  : diff_date,
+			callback    : function(days, hours, minutes, seconds){
+				var message = "";
+				if(days >1 )message += days + " jours"  +"  ";
+				if(hours >0 )message += hours + ":";
+				if(minutes >0 )message += minutes + ":";
+				message += seconds;
+				$("#text_"+article[1]+"_"+article[2]).html(message);
+				if(days==0 && hours==0 && minutes==0 && seconds==0)
+				{
+					//window.location.reload();
+				}
+			}
+		});
+		}
+	});
+	
+
+	$("#getturndetails").click(function(){
+		$("#turnover-details").toggle();
+	});
+	
+	
+		
+	$("#closequote").validationEngine();
+	$("#signquote").validationEngine();
+		$('textarea').attr('data-prompt-position','topLeft');
+		$('textarea').data('promptPosition','topLeft');
+	$('#few-details').on('click',function(){
+			
+	var sales_final_details='{/literal}{$sales_final_details}{literal}'	;
+	var quote_id='{/literal}{$smarty.get.quote_id}{literal}'	;
+	if(sales_final_details=='yes')
+	{
+		var target_page='/quote/sales-final-validation?ajax=yes&quote_id='+quote_id;
+		$('#sales_final_validate-details').html("");
+		//alert(target_page);
+		$.get(target_page,function(data){
+			//alert(data);
+			$('#sales_final_validate-details').html(data);
+		});
+	}
+	
+	});	
+});	
+</script>
+<style type="text/css">
+.turnover {
+    background: none repeat scroll 0 0 #666666;
+    font-size: 25px;
+    font-weight: bold;
+    padding: 20px;
+	color: white;
+}
+.turnover-more {
+    background: none repeat scroll 0 0 #009E0F;
+    font-size: 25px;
+    font-weight: bold;
+    padding: 19px 35px 9px 19px;
+	color: white;
+}
+.turnover-arrow-right {
+    border-bottom: 28px solid transparent;
+    border-left: 29px solid #009e0f;
+    border-top: 30px solid transparent;    
+    height: 0;
+    width: 0;
+}
+.margin-percentage {
+    color: white;
+    float: right;
+    font-size: 20px;
+    text-align: right;
+	font-weight: 100;
+}
+
+.timeline-status {
+	background-color: #eaecef;
+    border-radius: 10px;
+    padding: 15px 5px;
+    position: relative;
+    top: 0;
+    z-index: 10;
+}
+
+.btn-seo {    
+    background-image: linear-gradient(to bottom, #2e6aa2, #073763);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.btn-seo:hover, .btn-seo:focus, .btn-seo:active, .btn-seo.active, .btn-seo.disabled, .btn-seo[disabled] {
+    background-color: #073763;
+    color: #fff;
+}
+
+
+.btn-tech {   
+    background-image: linear-gradient(to bottom, #7e64b9, #351c75);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.btn-tech:hover, .btn-tech:focus, .btn-tech:active, .btn-tech.active, .btn-tech.disabled, .btn-tech[disabled] {
+    background-color: #351c75;
+    color: #fff;
+}
+
+.btn-prod {   
+    background-image: linear-gradient(to bottom, #e09d39, #e09b31);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.btn-prod:hover, .btn-prod:focus, .btn-prod:active, .btn-prod.active, .btn-prod.disabled, .btn-prod[disabled] {
+    background-color: #e09b31;
+    color: #fff;
+}
+.splashy-documents
+{
+top:3px;
+}
+
+
+.quote-timer {
+    font-size: 20px;
+    padding: 10px;
+}
+.quote-timer .icon-time {    
+    position: relative;
+    top: 6px;
+}
+.enretard {
+    font-size: 14px;
+    font-weight:bold;    
+}
+.enretard .icon-time {    
+    position: relative;
+    top: 3px;
+}
+.challenge
+{
+   font-size: 15px;    
+}
+.challenge .icon-time {    
+    position: relative;
+    top: 2px;
+}
+.timeline-status .icon-time
+{
+	top: 3px;
+}
+.need-more-info{
+background:#F2DEDE;
+}
+</style>
+{/literal}
+<div class="row-fluid">    
+	<div class="span12">	
+	{if $quoteDetailsFinal|@count gt 0}
+		{foreach from=$quoteDetailsFinal item=quote name="quote"}
+			<h1 class="heading topset2">{$quote.title} 	
+			<span class="pull-right">
+				{if $quote.sales_review eq 'validated'}
+				<a href="/quote/close-quote-view?qid={$quote.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#close_quote" class="closequote"><button  class="btn btn-danger" type="button">Fermer</button></a>
+				<a href="/quote/sign-quote-view?qid={$quote.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#sign_quote" class="signquote"><button  class="btn btn-primary" type="button">Signer</button></a>
+				<a  class="btn btn-primary" href="/quote/download-quote-xls?quote_id={$quote.identifier}">T&eacute;l&eacute;charger xls</a>
+				{/if}
+				{if ($user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser') && $quote.sales_review =='signed' && $quote.signed_exist == '0'}
+				<a class="btn btn-primary" href="/contractmission/create-contract?quote_id={$smarty.get.quote_id}">Cr&eacute;er contrat</a>
+				{/if}
+			</span>
+			
+			</h1>
+			<div class="row-fluid">
+				<div class="span12">
+					<ul class="nav nav-tabs">
+						<li class="active"><a class="" href="#overview" data-toggle="tab">Vue g&eacute;n&eacute;rale</a></li>
+						<li><a class="" href="#details" data-toggle="tab" id="few-details">D&eacute;tails</a></li>						
+					</ul>
+				</div>
+			</div>
+			
+			<div class="row-fluid">
+				<div class="span9">	
+					<div class="tab-content">
+						<div class="tab-pane fade in active" id="overview">
+							<div  class="w-box">
+								<div class="w-box-header">CA TOTAL</div>
+								<div class="w-box-content   cnt_a">
+									<div class="row-fluid">
+										<div class="span4 turnover">{$quote.sales_suggested_price|zero_cut_t:2} &{$quote.sales_suggested_currency};</div>
+										<div class="span5 turnover-more" style="margin-left:0px">
+											<span class="span9">{$total_turnover|zero_cut_t:2} &{$quote.sales_suggested_currency};</span>
+											<span class="span3 margin-percentage">({$precentage_change|zero_cut_t:2}%)</span>
+										</div>
+										<div class="span1 turnover-arrow-right" style="margin-left:0px"></div>
+									</div>
+									<div class="row-fluid">
+										<div class="sapn12"><a class="btn btn-small" id="getturndetails">D&eacute;tails</a></div>
+									</div>
+									<div class="row-fluid" id="turnover-details" style="display:none">
+										<div class="span10">
+											<table class="table table-striped">
+												<tr>
+													<td>{$quote.quote_user_name} a cr&eacute;&eacute; le devis :</td>
+													<td>{$quote.sales_suggested_price|zero_cut_t:2} &{$quote.sales_suggested_currency}; ({$quote.sales_margin_percentage|zero_cut_t:2}% de marge)</td>
+												</tr>
+												{if $seo_user}
+												<tr>
+													<td>{$seo_user} &agrave; challeng&eacute; le devis :</td>
+													<td>{$seo_turnover|zero_cut_t:2} &{$quote.sales_suggested_currency}; (60% de marge)</td>
+												</tr>
+												{/if}
+												{if $tech_user}
+												<tr>
+													<td>{$tech_user} &agrave; challeng&eacute; le devis :</td>
+													<td>{$tech_turnover|zero_cut_t:2} &{$quote.sales_suggested_currency}; (60% de marge)</td>
+												</tr>
+												{/if}
+												{if $prod_user}
+												<tr>
+													<td>{$prod_user} &agrave; challeng&eacute; le devis :</td>
+													<td>{$prod_turnover|zero_cut_t:2} &{$quote.sales_suggested_currency}; ({$quote.sales_margin_percentage|zero_cut_t:2}% de marge)</td>
+												</tr>
+												{/if}
+												{if $quote.sales_review eq 'validated'}
+												<tr>
+													<td>{$quote.quote_user_name} a valid&eacute; le deis :</td>
+													<td>{$total_turnover|zero_cut_t:2} &{$quote.sales_suggested_currency}; ({$quote.final_margin|zero_cut_t:2}% de marge)</td>
+												</tr>
+												{/if}
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div  class="w-box">
+								<div class="w-box-header">Timeline</div>
+								<div class="w-box-content   cnt_a">
+									<div class="row-fluid">
+										<div class="span12 alert">
+										{if $quote.sales_review eq 'to_be_approve'}	
+											<div class="span12">
+												<h3>Pour &ecirc;tre valid&eacute; par le gestionnaire</h3>
+											</div>
+										
+										{elseif $quote.tec_review eq 'challenged' || $quote.seo_review eq 'challenged'}
+											<div class="span12">
+												<h3>Seo or tech challenge v{$quote.version} –
+												{if $quote.tech_challenge_time && $quote.tec_review eq 'challenged'}
+												 <span id="time_techchallenge_{$quote.tech_challenge_time}" class="quote-timer challenge">
+														<i class="icon-time"></i> <span id="text_techchallenge_{$quote.tech_challenge_time}"></span>
+													</span>
+													{if $quote.tech_challenge_time < $smarty.now}<label class="label label-important">Retard</label>{/if} tech
+												{/if}
+												{if $quote.tech_challenge_time && $quote.tec_review eq 'challenged' && $quote.seo_challenge_time && $quote.seo_review eq 'challenged' }+ {/if}
+												{if $quote.seo_challenge_time && $quote.seo_review eq 'challenged'}
+													<span id="time_seochallenge_{$quote.seo_challenge_time}" class="quote-timer challenge">
+														<i class="icon-time"></i> <span id="text_seochallenge_{$quote.seo_challenge_time}"></span>
+													</span>
+													{if $quote.seo_challenge_time < $smarty.now}<label class="label label-warning">Retard</label>{/if} seo
+												{/if}
+												</h3>
+											</div>	
+											{if $quote.prod_review eq 'challenged'}
+												<div class="row-fluid">	
+													<div class="span8">
+														<h3>La prod est en train d'&eacute;tudier le devis v{$quote.version}</h3>
+													</div>
+													<div class="span4">	
+														{if $quote.prod_timeline > $smarty.now}
+															<span id="time_prodchallenge{$quote.identifier}_{$quote.prod_timeline}" class="quote-timer">
+																<i class="icon-time"></i> <span id="text_prodchallenge{$quote.identifier}_{$quote.prod_timeline}"></span>
+															</span>
+														{/if}
+													</div>
+												</div>	
+											{/if}
+										{elseif $quote.tec_review eq 'not_done' || $quote.seo_review eq 'not_done'}
+											<div class="span8">
+												<h3>Quote v{$quote.version} - En attente du retour {if $quote.tec_review eq 'not_done'}tech{/if}
+												{if $quote.tec_review eq 'not_done' && $quote.seo_review eq 'not_done'}
+												and 
+												{/if}
+												{if $quote.seo_review eq 'not_done'} seo{/if} answer </h3>
+											</div>
+											<div class="span4">	
+												{if $quote.response_time > $smarty.now}
+													<span id="time_{$quote.identifier}_{$quote.response_time}" class="quote-timer">
+														<i class="icon-time"></i> <span id="text_{$quote.identifier}_{$quote.response_time}"></span>
+													</span>
+												{/if}
+											</div>	
+											
+											{if $quote.prod_review eq 'challenged'}
+												<div class="row-fluid">	
+													<div class="span8">
+														<h3>La prod est en train d'&eacute;tudier le devis v{$quote.version}</h3>
+													</div>
+													<div class="span4">	
+														{if $quote.prod_timeline > $smarty.now}
+															<span id="time_prodchallenge{$quote.identifier}_{$quote.prod_timeline}" class="quote-timer">
+																<i class="icon-time"></i> <span id="text_prodchallenge{$quote.identifier}_{$quote.prod_timeline}"></span>
+															</span>
+														{/if}
+													</div>
+												</div>	
+											{/if}
+										{elseif ($quote.seo_review eq 'skipped' || $quote.seo_review eq 'auto_skipped' || $quote.seo_review eq 'validated') && ($quote.tec_review eq 'skipped' || $quote.tec_review eq 'auto_skipped' || $quote.tec_review eq 'validated') && ($quote.prod_review eq 'not_done' || $quote.prod_review eq 'challenged')}
+											<div class="span8">
+												<h3>La prod est en train d'&eacute;tudier le devis v{$quote.version}</h3>
+											</div>
+											<div class="span4">	
+												{if $quote.prod_timeline > $smarty.now}
+													<span id="time_{$quote.identifier}_{$quote.prod_timeline}" class="quote-timer">
+														<i class="icon-time"></i> <span id="text_{$quote.identifier}_{$quote.prod_timeline}"></span>
+													</span>
+												{/if}
+											</div>											
+										{elseif ($quote.prod_review eq 'auto_skipped'|| $quote.prod_review eq 'skipped' || $quote.prod_review eq 'validated') && ($quote.sales_review neq 'validated' && $quote.sales_review neq 'closed' && $quote.sales_review neq 'signed') }
+											<div class="span5">
+												<h3>Quote is ready to be validated by sales</h3>
+												
+											</div>
+											
+											<div class="span4">
+												{if $smarty.now lt $quote.sales_validation_expires}
+												<span id="time_{$quote.identifier}_{$quote.sales_validation_expires}" class="quote-timer">
+													<i class="icon-time"></i> <span id="text_{$quote.identifier}_{$quote.sales_validation_expires}"></span>
+												</span>
+												{else}
+												
+														<span id="time_{$quote.identifier}_{$quote.sales_validation_expires}" class="enretard">
+															En retard : <i class="icon-time"></i> <span id="text_{$quote.identifier}_{$quote.sales_validation_expires}"></span>
+															</span>
+												
+												{/if}
+											</div>
+											{if $user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser'}
+												<div class="span3">
+													<a class="finish btn btn-primary" href="/quote/sales-final-validation?quote_id={$quote.identifier}">
+													Voir le devis final
+													</a>
+												</div>
+											{/if}	
+										{elseif $quote.sales_review eq 'validated'}
+											<div class="row-fluid">
+												<div class="span8">
+													<h3> <i class="icon-ok icon-black"></i> Devis valid&eacute; par le commercial</h3>
+												</div>
+												<div class="span4">
+													<a class="btn btn-primary pull-right" id="sales_followup" data-target="#sales_final_modal" role="button" data-toggle="modal" href="/quote/sales-final-validation?ajax=yes&quote_id={$quote.identifier}">Voir d&eacute;tails</a>
+												</div>	
+											</div>	
+											<div class="row-fluid">	
+												<div class="span6">
+													<h3>Quote will be considered as relance in</h3>
+												</div>	
+												<div class="span4">
+													<span id="time_{$quote.identifier}_{$quote.sign_expire_timeline}" class="quote-timer">
+														<i class="icon-time"></i> <span id="text_{$quote.identifier}_{$quote.sign_expire_timeline}"></span>
+													</span>
+												</div>
+											</div>	
+										{elseif $quote.sales_review eq 'closed'}
+											<div class="span12">	
+												<h3> <i class="icon-ok icon-black"></i> Devis ferm&eacute; par le commercial</h3>
+											</div>	
+										{elseif $quote.sales_review eq 'signed'}
+											<div class="span12">	
+												<h3> <i class="icon-ok icon-black"></i> Devis Sign&eacute; par le commercial</h3>
+											</div>	
+										{/if}
+										</div>
+									</div>
+									<div class="row-fluid">
+										{if $log_details|@count gt 0}										
+										<div class="timeline animated">
+										{foreach from=$log_details item=log name="log"}
+										<div class="timeline-row">											
+											<div class="timeline-icon">
+											  <div class="bg-primary">
+												<i class="fa fa-pencil"></i>
+											  </div>
+											</div>
+											<div class="panel timeline-content">
+												<div class="panel-body {if $log.action eq 'tech_need_more_info' || $log.action eq 'seo_need_more_info' || $log.action eq 'prod_need_more_info'} need-more-info{/if}" >
+													{if $log.action eq 'seo_validated_delay' || $log.action eq 'tech_validated_delay' || $log.action eq 'prod_validated_delay'}
+														<label class="timeline-delay label label-warning">Retard</label>
+													{/if}	
+													<div class="row-fluid">														
+														<div class="span2">															
+																<img src="{$fo_path}/profiles/bo/{$log.user_id}/logo.jpg" style="width:60px">
+														</div>
+														<div class="span10">	
+															<h2>{$log.action_sentence}</h2>
+															<small>{$log.time_ago}</small>
+														</div>															
+													</div>													
+													<div class="row-fluid">
+														<p>	{if $log.action=="sales_closed" || $log.action=='sales_cron_closed'}
+																{if $closedreason}
+																<a  {if $log.comments} class="pop_over" data-placement="right" data-content="{$log.comments|htmlentities}"
+																{/if}> {$closedreason} </a>
+																{elseif $log.comments}
+																	<i class="splashy-comment"></i> {$log.comments|stripslashes|htmlentities} <br>
+																{/if}
+															{elseif $log.comments}
+																<p> <i class="splashy-comment"></i> {$log.comments|stripslashes|htmlentities} </p>
+																  {$log.sales_file}
+															{/if}
+															{if ($log.action eq 'seo_validated_delay' || $log.action eq 'seo_validated_ontime') && ($user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='seouser' || $user_type =='ceouser' || $user_type =='seomanager')}
+																<a class="btn btn-default pull-right" id="seo_followup" data-target="#seo_followup_modal" role="button" data-toggle="modal" href="/quote/mission-followup-details?type=seo&version={$log.version}&quote_id={$log.quote_id}">Voir d&eacute;tails</a>
+															{elseif ($log.action eq 'tech_validated_delay' || $log.action eq 'tech_validated_ontime') && ($user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='techuser' || $user_type =='ceouser' || $user_type =='techmanager')}
+																<a class="btn btn-default pull-right" id="tech_followup" data-target="#tech_followup_modal" role="button" data-toggle="modal" href="/quote/mission-followup-details?type=tech&version={$log.version}&quote_id={$log.quote_id}">Voir d&eacute;tails</a>	
+															{elseif ($log.action eq 'prod_validated_delay' || $log.action eq 'prod_validated_ontime') && ($user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='produser' || $user_type =='ceouser'|| $user_type =='multilingue' || $user_type =='prodsubmanager')}
+																<a class="btn btn-default pull-right" id="prod_followup" data-target="#prod_followup_modal" role="button" data-toggle="modal" href="/quote/mission-followup-details?type=prod&version={$log.version}&quote_id={$log.quote_id}">Voir d&eacute;tails</a>
+															{/if}
+															
+														</p>
+													</div>
+													
+												</div>
+											</div>
+										 </div>										
+										{/foreach}										
+										</div>
+										{/if}
+									</div>
+								</div>
+							</div>	
+						</div>
+						<div class="tab-pane fade" id="details">							
+							{if $quote.sales_review eq 'validated' OR $quote.sales_review eq 'signed'}
+								<div class="row-fluid" id="sales_final_validate-details"></div>
+							{elseif $quote.prod_review eq 'validated'}
+								{$prod_view_details}
+							{else}
+								{if $quote.quote_type eq 'normal' OR $quote.quote_type eq 'only_seo'}
+									{if $quote.mission_details|@count gt 0}
+									
+									
+										{foreach from=$quote.mission_details item=mission name="misson"}	
+										{assign var=ms_index value=$smarty.foreach.misson.index+1}	
+										
+										
+											<div class="row-fluid" id="mission_details_{$mission.identifier}">
+												
+												
+													
+												<div class="mission-details">																		
+													{if $mission.previousMissionDetails|@count eq 0 && $quote.version gt 1 }
+														<div class="new-mission-product">Mission {$ms_index} : {$mission.product_name} <label class="label label-warning">Mission ajout&eacute;e</label></div>
+													{else}
+														<div class="prod-mission-product"> Mission {$ms_index} : {$mission.product_name} {if $mission.misson_user_type eq 'seo'}<label class="label label-warning">Proposition seo</label>{/if}</div>
+													{/if}	
+													
+													<input name="mission_type_{$mission.identifier}" type="hidden" value="{$mission.product}">
+													<table class="table">
+														<tr>
+															<th>LANGUE</th>
+															<th>PRODUIT</th>
+															<th>VOLUME</th>
+															<th>D&Eacute;LAI LIVRAISON</th>
+															<th>P VENTE</th>
+															{if $quote.quote_type eq 'normal'}
+																<th>NB MOTS</th>
+															{/if}
+														</tr>
+														<tr class="misson-details-text">
+															<td>
+																{if $mission.language_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.language_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+																{/if}	
+																	{if $mission.product eq 'translation'}															
+																		{$mission.language_source_name} > 	{$mission.language_dest_name} 
+																	{else}
+																		{$mission.language_source_name}
+																	{/if}
+																{if $mission.language_difference eq 'yes'}
+																	</span>
+																{/if}	
+																</td>
+															<td>
+																{if $mission.product_type_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.product_type_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+																{/if}														
+																	{if $mission.product_type_name} 
+																		{$mission.product_type_name} {if $mission.product_type eq 'autre'}<br/>({$mission.product_type_other}){/if}
+																	{else}
+																		{$mission.product_name}
+																	{/if}
+																{if $mission.product_type_difference eq 'yes'}
+																	</span>
+																{/if}	
+															</td>
+															<td>
+																{if $mission.volume_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.volume_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i>
+																{/if}
+																	{$mission.volume}
+																{if $mission.volume_difference eq 'yes'}
+																	</span>
+																{/if}	
+																	
+															</td>
+															<td>
+															
+																{if $mission.mission_length_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.mission_length_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+																{/if}
+																	{$mission.mission_length} {$mission.mission_length_option|upper}
+																{if $mission.mission_length_difference eq 'yes'}
+																	</span>
+																{/if}
+															</td>
+															<td>
+																{if $mission.unit_price_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.price_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+																{/if}
+																	{$mission.unit_price|zero_cut_t:2} &{$quote.sales_suggested_currency};
+																{if $mission.unit_price_difference eq 'yes'}
+																	</span>
+																{/if}	
+															</td>
+															{if $quote.quote_type eq 'normal'}
+																<td>
+																	{if $mission.nb_words_difference eq 'yes'}
+																		<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.nb_words_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+																	{/if}
+																		{$mission.nb_words}
+																	{if $mission.nb_words_difference eq 'yes'}
+																		</span>
+																	{/if}
+																</td>
+															{/if}
+														</tr>	
+													</table>
+												</div>	
+											</div>
+										{/foreach}
+									{/if}
+								{elseif $quote.quote_type eq 'only_tech'}
+									{if $quote.techMissionDetails|@count gt 0}
+										{foreach from=$quote.techMissionDetails item=tmission name="tmission"}
+											<div class="row-fluid">	
+												<div class="mission-details">										
+													<div class="mission-tech-product">
+														<span>{$tmission.title}</span>
+													</div>
+													<table class="table mission-table">
+														<tr>
+															<th style="width:33%">Mission</th>
+															<th style="width:33%">D&eacute;lai de livraison</th>
+															<th style="width:33">Co&ucirc;t (&{$quote.sales_suggested_currency};)</th>
+														</tr>
+														<tr class="misson-details-text">
+															<td>
+																{if $tmission.title_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$tmission.title_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span>
+																{/if}
+																{$tmission.title}
+															</td>
+															<td>
+																{if $tmission.mission_length_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$tmission.mission_length_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> </span>
+																{/if}
+																{$tmission.delivery_time}
+																{if $tmission.delivery_option eq 'days'}Jours{/if}
+																{if $tmission.delivery_option eq 'hours'}Hours{/if}
+															</td>
+															<td>
+																{if $tmission.cost_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$tmission.price_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span>
+																{/if}
+																{$tmission.cost|zero_cut_t:2}
+															</td>
+														</tr>	
+													</table>			
+												</div>
+											</div>
+										{/foreach}
+									{/if}
+								{/if}
+								<!--Deleted Quote missions-->
+								{if $quote.deletedMissionVersions|@count gt 0}
+								{foreach from=$quote.deletedMissionVersions item=dmission name="dmisson"}
+									{assign var=gn_index value=$smarty.foreach.dmission.index}
+									{assign var=ms_index value=$smarty.foreach.dmission.index+1}	
+									<div class="row-fluid">	
+										<div class="mission-details">
+											<div class="delete-mission-product">{$dmission.product_name} <label class="label">Mission supprim&eacute;e</label></div>
+											
+											<table class="table">
+												<tr>
+													<th>LANGUE</th>
+													<th>PRODUIT</th>
+													<th>VOLUME</th>
+													<th>D&Eacute;LAI LIVRAISON</th>
+													<th>P VENTE</th>
+													<th>NB MOTS</th>
+												</tr>
+												<tr class="misson-details-text">
+													<td>
+														{if $dmission.product eq 'translation'}
+															{$dmission.language_source_name} > 	{$dmission.language_dest_name} 
+														{else}
+															{$dmission.language_source_name}
+														{/if}											
+													</td>
+												<td>
+													{if $dmission.product_type_name} 
+														{$dmission.product_type_name} {if $dmission.product_type eq 'autre'}<br/>({$dmission.product_type_other}){/if}
+													{else}
+														{$dmission.product_name}
+													{/if}												
+												</td>
+												<td>{$dmission.volume}</td>		
+												<td>{$dmission.mission_length} {$dmission.mission_length_option|upper}</td>
+												<td>{$dmission.unit_price|zero_cut_t:2} &{$quote.sales_suggested_currency};</td>
+												<td>{$dmission.nb_words}</td>
+												</tr>	
+											</table>
+											{if $dmission.comments}
+											<div class="media mission-comment">
+												<a class="pull-left imgframe">
+													<img width="60px" src="{$fo_path}/profiles/bo/{$quote.quote_by}/logo.jpg" class="media-object">
+												</a>
+												<div class="media-body">
+													<h4 class="media-heading">								
+														<a>{$quote.quote_user_name}</a> {$dmission.comment_time}
+													</h4>								
+													<span>{$dmission.comments|stripslashes|htmlentities|nl2br}</span>
+												</div>
+											</div>
+											{/if}
+										</div>
+									</div>	
+								{/foreach}
+								{/if}
+								<div class="row-fluid">
+									<div class="w-box">
+										<div class="w-box-header">Commentaire g&eacute;n&eacute;ral</div>
+										<div class="w-box-content  cnt_a">
+											<div class="media">
+												<a class="pull-left imgframe">
+													<img width="60px" src="{$fo_path}/profiles/bo/{$quote.quote_by}/logo.jpg" class="media-object">
+												</a>
+												<div class="media-body">
+													<h4 class="media-heading">								
+														<a>{$quote.quote_user_name}</a> {$quote.comment_time}
+													</h4>								
+													<span>{$quote.sales_comment|htmlentities|nl2br}</span>
+												</div>
+											</div>
+											<hr>
+											<h3 class="heading">&Eacute;changes de mails avec le client</h3>
+											<textarea rows="10" disabled class="span12">{$quote.client_email_text}</textarea>
+											<div class="row-fluid">
+												<div class="span3">Documents &agrave; t&eacute;l&eacute;charger :</div>
+											</div>
+											<div class="row-fluid">
+												<div class="">{$quote.related_files}</div>
+											</div>
+											{if $quote.client_aims_text}
+												<div class="row-fluid">
+													<br>
+													<h4>Besoin(s) du client :</h4>
+													{$quote.client_aims_text}
+													{if $quote.client_aims_comments}
+														<b>Commentaire :</b> {$quote.client_aims_comments} <br><br>
+													{/if}
+													<b>Projet urgent :</b> 
+													{if $quote.urgent eq 'yes'}	
+															OUI
+														{else}
+															NON
+														{/if}
+													<br>
+													{if $quote.content_ordered_agency}
+														<b>Le client a-t-il command&eacute; du contenu dans une  autre agence ?</b>
+														{if $quote.content_ordered_agency eq 'yes'}	
+															OUI
+														{else}
+															NON
+														{/if}	
+														<br>	
+														{if $quote.content_ordered_agency eq 'yes'}
+															<b>Nom de l'agence ? </b>
+															{if  $quote.agency_name}
+																{$quote.agency_name}
+															{else}
+																Je ne sais pas
+															{/if}
+															<br><br>
+														{/if}
+													{/if}							
+													<b>Le client souhaite-t-il conna&icirc;tre les r&eacute;dacteurs  qui vont travailler pour lui ?</b> 
+														{if $quote.client_know_writers eq 'yes'}	
+															OUI
+														{else}
+															NON
+														{/if}
+													<br><br>
+													
+													{* <b>Fr&eacute;quence de livraison :</b> 
+													{if $quote.volume_option eq 'one'}
+														One shot
+													{elseif $quote.volume_option eq 'per'}
+														Per {$quote.volume_option_multi}
+													{elseif $quote.volume_option eq 'every'}
+														Every {$quote.volume_every} {$quote.volume_option_multi}(s)
+													{/if} <br><br> *}
+													
+													<b>Son budget 2015 pour le contenu marketing :</b>
+													{if !$quote.budget_marketing}
+														{$quote.budget|zero_cut_t:2} {$quote.budget_currency|ucfirst}
+													{else}
+														Je ne sais pas
+													{/if}<br>
+												</div>
+											{/if}
+										</div>	
+									</div>
+								</div>	
+							{/if}
+						</div>
+					</div>	
+				</div>
+				<div class="span3">
+					<aside>
+						<div class="aside-bg">	
+							<div class="aside-block" id="selected-missions">
+								<div class="editor-container">
+									<h2 class="heading">Date de fin de devis</h2>
+									<div class="row-fluid">
+										<span id="time_delivery{$quote.identifier}_{$delivery_count_down}" class="quote-timer">
+											<i class="icon-time"></i> <span id="text_delivery{$quote.identifier}_{$delivery_count_down}"></span>
+										</span>
+									</div>
+								</div>	
+							</div>		
+							<div class="aside-block" id="selected-missions">
+								<div class="editor-container">
+									<h2 class="heading">Elements du devis</h2>
+									{if $quote.quote_type eq 'normal' OR $quote.quote_type eq 'only_seo'}
+										{if $quote.mission_details|@count gt 0}
+											{foreach from=$quote.mission_details item=mission name="misson"}
+											{assign var=gn_index value=$smarty.foreach.misson.index}
+											{assign var=ms_index value=$smarty.foreach.misson.index+1}	
+												<div class="row-fluid">
+													<div class="span3"><i class="splashy-document_letter"></i></div>
+													<div class="span8">
+														<p class="editor-info" style="text-align:left;margin-top:0px">
+															MISSION {$ms_index} {if $mission.misson_user_type eq 'seo'}<label class="label label-warning">SEO</label>{/if} <br>
+															{if $mission.product eq 'translation'}
+																{$mission.product_name} {$mission.product_type_name} {$mission.language_source_name} > {$mission.language_dest_name}
+															{else}
+																{$mission.product_name} {$mission.product_type_name} en {$mission.language_source_name}
+															{/if}
+														</p>
+													</div>
+												</div>
+											{/foreach}
+										{/if}
+									{elseif $quote.quote_type eq 'only_tech'}
+										{if $quote.techMissionDetails|@count gt 0}
+											{foreach from=$quote.techMissionDetails item=tmission name="tmisson"}
+												<div class="row-fluid">
+													<div class="span3"><i class="splashy-document_letter"></i></div>
+													<div class="span8">
+														<p class="editor-info" style="text-align:left;margin-top:0px">
+															{$tmission.title} <label class="label label-warning">TECH</label>
+														</p>	
+													</div>
+												</div>	
+											{/foreach}
+										{/if}
+									{/if}	
+								</div>
+							</div>
+							<div class="aside-block" id="selected-client">
+								<div class="editor-container">
+									<h2 class="heading">Info client</h2>
+									<img title="{$quote.company_name}" src="{$fo_path}/profiles/clients/logos/{$quote.client_id}/{$quote.client_id}_global.png?12345">
+									<p class="editor-name"><a href="/quote/create-client?uaction=view&client_id={$quote.client_id}&submenuId=ML13-SL1" target="_blank">{$quote.company_name}</a></p>
+									<p class="editor-info">
+									CA info : {$quote.ca_number|zero_cut_t:2} euros<br>
+									Cat&eacute;gorie : {$quote.category_name}<br><br>
+									<label class="label label-info">Sites internet</label><br>
+									{foreach from=$quote.websites item=site}
+										<a href="{$site}">{$site|domain_url}</a> <br/>
+									{/foreach}
+									</p>
+								</div>
+							</div>
+							<div class="aside-block" id="selected-bouser">
+								<div class="editor-container">
+									<h2 class="heading">Devis r&eacute;alis&eacute; par</h2>
+									<img title="{$quote.quote_user_name}" src="{$fo_path}/profiles/bo/{$quote.quote_by}/{$quote.quote_by}_p.jpg">
+									<p class="editor-name">{$quote.quote_user_name}</p>
+									<p class="editor-info">
+									T&eacute;l : {$quote.phone_number}<br>
+									Email : <a href="mailto:{$quote.email}">{$quote.email}</a><br><br>
+									</p>									
+								</div>
+							</div>								
+						</div>	
+					</aside>
+				</div>
+			</div>	
+		{/foreach}
+		{/if}
+	</div>
+</div>	
+
+<!--popup to show seo mission details-->
+<div class="modal fullscreen hide fade" id="seo_followup_modal">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Challenge seo</h3>
+    </div>
+    <div class="modal-body">
+	
+	</div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--popup to show tech mission details-->
+<div class="modal fullscreen hide fade" id="tech_followup_modal">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Challenge tech</h3>
+    </div>
+    <div class="modal-body">
+	
+	</div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!--popup to show prod mission details-->
+<div class="modal fullscreen hide fade" id="prod_followup_modal">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Challenge &eacute;dito</h3>
+    </div>
+    <div class="modal-body">
+	
+	</div>
+    <div class="modal-footer">
+    </div>
+</div>	
+
+<!--popup to show sales final mission details-->
+<div class="modal fullscreen hide fade" id="sales_final_modal">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Final quote</h3>
+    </div>
+    <div class="modal-body">
+	
+	</div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+
+{literal}
+<script>
+	$(document).on("click",".closequote",function(){
+	
+		$("#close_quote").modal('show');
+		$("#close_quote").removeClass( "hide" ).addClass("in");
+	})
+	
+	$(document).on("click",".signquote",function(){
+		$("#sign_quote").modal('show');
+		$("#sign_quote").removeClass( "hide" ).addClass("in");
+	})
+</script>
+{/literal}
+<div class="modal hide fade" id="close_quote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Fermer devis</h3>
+    </div>
+    <div class="modal-body">
+		
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!-- To Sign Quote -->
+<div class="modal hide fade" id="sign_quote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Signer devis</h3>
+    </div>
+    <div class="modal-body">
+		
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>

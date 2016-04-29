@@ -1,0 +1,25 @@
+
+
+{if $userclient_data}
+{foreach from=$userclient_data key=userclient_key item=userclient_item name=userclient_loop}
+<div class="row-fluid">
+             <div class="span12">
+                           <table class="table table-bordered table-striped table_vam">
+						   <tr><td><strong>Full Name</strong>:</td>
+						   <td><span class="span8"><h3>'.$userclient_item.first_name.' '.$userclient_item.['last_name'].'</h3></span><span class="span4"><img class="img-circle" src="http://ep-test.edit-place.com/FO/profiles/clients/logos/{$userclient_data.identifier}/{$userclient_item.identifier}_global.png" />
+						   </span></td></tr>
+						   <tr><td> <strong>Address</strong>:</td><td><p>{$userclient_item.address}<p></td></tr>
+						      <tr>   <td> <strong>City</strong>:</td><td>  <p>{$userclient_item.city}<p></td></tr>
+						      <tr>   <td> <strong>State</strong>:</td><td>  <p>{$userclient_item.state'}<p></td></tr>
+						      <tr>   <td> <strong>Country</strong>:</td><td>  <p>{$country}<p></td></tr>
+						      <tr>   <td> <strong>ZipCode</strong>:</td><td>  <p>{$userclient_item.zipcode}<p></td></tr>
+						      <tr>   <td> <strong>TelePhone</strong>:</td><td>  <p>{$userclient_item.contact_phone}<p></td></tr>
+							  
+							  
+						    <tr> <td> <strong>Website</strong>:</td><td>  <p>{$websitename}</span><p></td> </tr>
+							<tr> <td> <strong>Client Code</strong>:</td><td>  <p>{$userclient_item.client_code}<p></td> </tr>
+						 
+						   </table>
+					           </div>
+ </div>
+ {/if}

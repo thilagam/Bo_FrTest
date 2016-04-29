@@ -1,0 +1,46 @@
+{literal}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#stagearts2grid').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[3, "desc"]],
+            "aoColumns": [
+
+                {"sType": "formatted-num"},
+                {"sType": "formatted-num"},
+                {"sType": "string"},
+                {"sType": "string"}
+                {"sType": "string"}
+
+            ]
+        });
+    });
+</script>
+{/literal}
+<table id="stagearts2grid" class="table table-bordered table-striped table_vam">
+    <thead>
+    <tr>
+        <th>SL NO</th>
+        <th>EMAIL</th>
+        <th>LOGIN Name</th>
+        <th>TYPE OF USER</th>
+        <th>STATUS</th>
+        <th>JOINING DATE</th>
+        
+    </tr>
+    </thead>
+    <tbody>
+    {foreach from=$userlist_data key=stagearts_key item=stagearts_item name=stagearts_loop}
+    <tr>
+        <td>{$smarty.foreach.stagearts_loop.index+1}</td>
+        <td>{$stagearts_item.email}</td>
+        <td>{$stagearts_item.login}</td>
+        <td>{$stagearts_item.type}</td>
+        <td>{$stagearts_item.status}</td>
+        <td>{$stagearts_item.created_at}</td>
+    </tr>
+    {/foreach}
+    </tbody>
+</table>
+{literal}

@@ -1,0 +1,177 @@
+.profilehead-mod {
+    border: 1px solid #ccc;
+    border-radius: 4px 4px 4px 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.085);
+    margin: 25px 0;
+    padding: 0 20px;
+	overflow: hidden;
+	border-color: #CCCCCC #CCCCCC #AAAAAA;	
+}
+
+.profilehead-mod .stat {
+    border-left: 1px solid #ccc;
+	height: auto;
+}
+
+.profilehead-mod .progress {
+    height: 12px;
+	margin-bottom: 10px;
+}
+
+.profilehead-mod .stat .num-large a  {
+	color: #333;
+	transition: color 0.3s ease 0s;
+}
+
+.profilehead-mod .stat .num-large a:hover, .profilehead-mod .profile-name h3 a:hover {
+	color: #0070cc;
+	text-decoration: none;
+}
+
+
+.profilehead-mod .profile-name  {
+padding-top: 15px;
+}
+
+.profilehead-mod .profile-name h3 {
+	font-family: 'Merriweather', georgia, serif;
+	font-weight:300;
+}
+
+
+.profilehead-mod .profile-name h3 a {
+	color: #000;
+}
+
+.profilehead-mod .profile-name a.imgframe {
+margin-right: 10px;	
+}
+
+.editor-container {
+	padding: 15px 5px;
+	text-align: center;
+	font-size: 11px;
+	transition: background 0.3s ease 0s;
+	-webkit-transition:background 0.3s ease 0s;
+}
+
+.editor-container .price {
+	font-weight: 700;
+	font-size: 27px;
+	margin: 10px 0 5px 0;
+}
+
+
+.editor-container .editor-name {
+	font-weight: 300;
+	font-size: 17px;
+	font-family: "Merriweather", Helvetica neue, helvetica, arial, sans-serif;
+	margin-top: 10px;
+}
+
+
+.editor-container img {
+	border: 12px solid #FFFFFF;
+    box-shadow: 0 6px 16px -10px rgba(0, 0, 0, 0.4);
+    margin-top: 6px;
+	width: 90px;
+	height: 90px;	
+}
+
+.editor-container .imgframe-large {
+width: 122px; display: inline-block; background: url("/FO/images/imgframe-large.png") no-repeat scroll 0px 3px transparent; margin-bottom: 15px; height: 124px;
+}
+
+.editor-container:hover {
+	background-color: #ededed;
+	box-shadow: inset 0 3px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.editor-container.disable {
+	opacity: 0.5;
+}
+
+.profile-name blockquote{
+	border-left-width: 0;
+	border-top: 1px dotted #bbb;
+	padding: 10px 45px 0 0;
+	font-family: "Merriweather", Georgia, "Times New Roman", Times, serif;
+	font-size: 12px;
+}
+
+.profile .profilehead-mod .stat {
+height: auto;
+border-left-color: #eee;	
+}
+
+.profile dt{
+	border-top: 1px solid #eee;
+	margin-top: 10px;
+	padding-top: 10px;
+}
+
+.profile dt:first-child {
+	border-top-width: 0;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+
+.profile .company{
+	text-transform: uppercase;		
+}
+
+.skillstat {
+		margin-top: 15px;
+}
+
+  }
+  .row-fluid .span12 {
+    width: 100%;
+    *width: 99.94680851063829%;
+  }
+  .row-fluid .span11 {
+    width: 91.45299145299145%;
+    *width: 91.39979996362975%;
+  }
+  .row-fluid .span10 {
+    width: 82.90598290598291%;
+    *width: 82.8527914166212%;
+  }
+  .row-fluid .span9 {
+    width: 74.35897435897436%;
+    *width: 74.30578286961266%;
+  }
+  .row-fluid .span8 {
+    width: 65.81196581196582%;
+    *width: 65.75877432260411%;
+  }
+  .row-fluid .span7 {
+    width: 57.26495726495726%;
+    *width: 57.21176577559556%;
+  }
+  .row-fluid .span6 {
+    width: 48.717948717948715%;
+    *width: 48.664757228587014%;
+  }
+  .row-fluid .span5 {
+    width: 40.17094017094017%;
+    *width: 40.11774868157847%;
+  }
+  .row-fluid .span4 {
+    width: 31.623931623931625%;
+    *width: 31.570740134569924%;
+  }
+  .row-fluid .span3 {
+    width: 23.076923076923077%;
+    *width: 23.023731587561375%;
+  }
+  .row-fluid .span2 {
+    width: 14.52991452991453%;
+    *width: 14.476723040552828%;
+  }
+  .row-fluid .span1 {
+    width: 5.982905982905983%;
+    *width: 5.929714493544281%;
+  }

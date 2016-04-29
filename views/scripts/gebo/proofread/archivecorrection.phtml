@@ -1,0 +1,179 @@
+{literal}
+     <script type="text/javascript" >
+		
+        $(document).ready(function(){
+			$("input:text").focus(function () {
+				$(this).blur();
+			});
+           $('#archieve_table').dataTable({
+				"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 0, "asc" ]],
+				"aoColumns": [
+					{ "sType": "formatted-num" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" }
+				]
+			});
+		});
+        
+        function getSendComments(partId, artId, userId)
+        {
+            if(userId == 0)
+            {
+                var target_page = "/proofread/getcorrectorcomments?partId="+partId+"&stage=s2&artId="+artId;
+            }
+            else if(partId == 0)
+            {
+                var target_page = "/proofread/getallbousercomments?userId="+userId+"&artid="+artId;
+            }
+            $.post(target_page, function(data){ 
+                $("#comment").addClass("in")
+				$("#comment").css("display","block");
+				$("#fadeblock").addClass("modal-backdrop fade in");
+				$("#fadeblock").show();
+				$("#commentlist").html(data);  
+            });
+        }
+		
+		function closeModal()
+		{
+			$("#comment").hide();
+			$("#fadeblock").hide();
+		}
+    </script>
+ {/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">Article Process :: Archive Details </h3>
+		<div align="right" style="padding:10px">
+			<input type="submit" class="btn btn-info" value="Retour" name="archive_retour" onClick="window.location='/proofread/validrefusedarts?submenuId={$submenuId}&articleId={$articledetails[0].id}';">
+		</div>
+		<table class="table table-bordered table-striped">
+			<tr>
+				<td><b>Arile Title</b></td>
+				<td>{$articledetails[0].title|escape:'htmlall'}</td>
+				<td><b>Delivery Title</b></td>
+				<td>{$articledetails[0].deliveryTitle|escape:'htmlall'}</td>
+			</tr>
+			<tr>
+				<td><b>Article Type</b></td>
+				<td>{$articledetails[0].type}</td>
+				<td><b>Sign Type</b></td>
+				<td>{$articledetails[0].sign_type}</td>
+			</tr>	
+			<tr>
+				<td><b>Min {$articledetails[0].sign_type}</b></td>
+				<td>{$articledetails[0].num_min}</td>
+				<td><b>Max {$articledetails[0].sign_type}</b></td>
+				<td>{$articledetails[0].num_max}</td>
+			</tr>
+			<tr>
+				<td><b>Spec File</b></td>
+				{if $articledetails[0].filepath neq NULL}
+					<td><a href="/proofread/downloadarticle?spec={$articledetails[0].id}" >Download</a></td>
+				{else}
+				  <td>Aucun fichier disponible</td>
+				{/if}
+				<td></td>
+				<td></td>
+			</tr>
+	   </table>
+	   
+	   <div class="w-box" style="padding: 20px 0px; box-shadow: none;">
+			<div class="w-box-header">Options choisies par le client</div>
+			<div class='w-box-content'>
+			   {if $res_seltdopts|@count neq 0}
+				   {foreach from=$options key=options_key item=options_item name=options_loop}
+					    {if $options_item.id|in_array:$res_seltdopts}
+							<div>
+								<input type="checkbox" name="option_{$options_item.id}" id="option_{$options_item.id}" {$options_item.id}/>
+								{$options_item.option_name|escape:'htmlall'}
+						   </div>
+						{/if}
+					{/foreach}
+				{else}
+					* No Options are choosen<br>
+				{/if}	
+			<input type="hidden" name="hid_options" id="hid_options" value={if $res_seltdopts|@count neq 0}{$res_seltdopts|@count}{else}{0}{/if} />
+			</div>
+		</div>
+		<br>
+		<table class="table table-bordered table-striped" id="archieve_table">
+			<thead>
+				<tr>
+					<th>Version</th>
+					<th>Nom du fichier</th>
+					<th>User Name</th>
+					<th>Stage</th>
+					<th>Statut</th>
+					<th>Date & Time</th>
+					<th>Article</th>
+				</tr>
+			</thead>
+			<tbody>
+			{foreach from=$partsOfArt item=article_item name=archieve_loop}
+				<tr>
+					<td>{$article_item.version}</td>
+					<td>{$article_item.article_name}</td>
+					<td>
+						{if $article_item.type=="contributor"}
+							{if $article_item.first_name!=""}
+								{$article_item.first_name}
+							{else}
+								{$article_item.email}
+							{/if}
+						{else}
+							{$article_item.login}
+						{/if}	
+					</td>
+					<td>
+						{if $article_item.stage=="s1"}
+							Stage 1
+						{else}
+							Stage 2
+						{/if}	
+					</td>
+					<td>
+						{if $article_item.status==""}
+							New
+						{elseif $article_item.status=="process"}	
+							Revised
+						{else}
+							{$article_item.status}
+						{/if}
+					</td>
+					<td>{$article_item.article_sent_at|date_format:"%d/%m/%Y %H:%M"}</td>
+					<td>
+						<a class="hint--left hint--info" data-hint="Download Article" href="/proofread/downloadarticle?path={$article_item.id}" ><i class="splashy-document_small_download"></i></a>
+					</td>
+				</tr>
+			{/foreach}
+			</tbody>
+		</table>
+		<div>
+            {if $articledetails[0].correction=="yes"}
+				<input type="button" class="btn btn-info" value="Commentaire correcteur" name="s2art_comment"  onclick="getSendComments('{$partsOfArt[0].participate_id }', '{$smarty.get.articleId}', 0);">
+            {/if}
+			<input type="button" class="btn btn-info" name="send_comment" id="send_comment" value="Comment" onclick="getSendComments(0, '{$smarty.get.articleId}', '{$partsOfArt[0].user_id}')" />
+        </div>
+	</div>
+</div>	  
+
+<!--- Comment ---->
+<div class="modal hide fade" id="comment">  
+		<div class="modal-header">
+			<button class="close" data-dismiss="modal" onClick="closeModal();">&times;</button>
+			<h3>Comments</h3>
+		</div>
+		<div class="modal-body" id="commentlist">
+		</div>
+		<div class="modal-footer">
+		</div>
+	</div>
+<div id="fadeblock"></div>

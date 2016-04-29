@@ -1,0 +1,71 @@
+html, body {margin:0;padding:0;font-size:100%;height:100%}
+ol, ul, h1, h2,h3, p form {margin:0;padding:0}
+body {color:#000000;font:normal 13px Verdana, Sans-Serif;text-align: center;}
+
+h1 {font-size:14px}
+h2 {font-size:28px;color:#484749}
+h3 {font-size:21px;color:#484749}
+
+img {border:0}
+.Clear {clear:both;display:block;height: 0;font-size: 1px;line-height: 0px;}
+.Debug {border: solid 1px red}
+.MargeBot{margin-bottom:20px}
+
+
+#Global-top {text-align:left;margin: 0 auto;background: url(images/bg-header.png) repeat-x top;min-height:100%;}
+#Global-bot {text-align:left;margin: 0 auto;background: url(images/bg-footer.png) repeat-x bottom;min-height:100%;}
+#Page-top {background: url(images/bg-main-top.png) center top no-repeat;width:998px;margin: 0 auto;min-height: 100%;}
+#Page-bot {background: url(images/bg-main-bot.png) center bottom no-repeat;width:998px;margin: 0 auto;min-height: 100%;}
+
+#Content {width:945px;margin: 0px 10px 20px 33px;min-height:500px}
+ 
+#Header {text-align:left;width:960px;margin-left:33px}
+#Logo {float:left;width:295px;margin:17px 5px 0 0}
+#BaseL {margin:25px 0 0 10px}
+#Bouton-R {float:left;width:130px;margin:0 5px 0 5px}
+#Bouton-C {float:left;width:130px;margin:0 5px 0 5px}
+
+#Search {float:left;text-align:center;background:url(images/bg-login-home.png) no-repeat;width:365px;height:91px;margin-top:35px}
+#Search .keywords {text-transform:uppercase;font-size:11px;color:#c0bfc0;padding:5px;margin:0 5px 0 0;float:left;width:100px}
+#Search .btn {}
+
+
+.Holder1Col {float:left;width:315px;}	
+.Block1Col {width:300px;text-align:left;margin-bottom:20px;}
+
+.Holder2Col {float:left;width:630px;}	
+.Block2Col {width:615px;text-align:left;margin-bottom:20px;}
+
+.Holder3Col {float:left;width:945px;}	
+.Block3Col {width:930px;text-align:left;margin-bottom:20px;}
+
+#box-blue {height:300px;border-top: solid 4px #113ddd;border-bottom: solid 2px #113ddd;margin-top:5px}
+#box-green {height:300px;border-top: solid 4px #8dcc45;border-bottom: solid 2px #8dcc45;margin-top:5px}
+#box-orange {height:300px;border-top: solid 4px #e66831;border-bottom: solid 2px #e66831;margin-top:5px}
+
+#account-box-C {background:url(images/bg-account-C.gif) no-repeat;font-size:14px;height:475px;padding-left:105px;margin-top:5px}
+#account-box-C .fields {font-size:11px;color:#c0bfc0;padding:5px;margin:0 5px 0 0;float:left;width:100px;height:10px}
+
+#premium-list {padding: 10px 0 10px 0;border-top: solid 4px #113ddd;border-bottom: solid 2px #113ddd;margin-top:10px}
+#premium-list ul {list-style: none;padding: 0;}
+#premium-list ul li {	font-size:14px;	color:#424143;background-image: url(images/tick.gif);	background-position: 0 center;	background-repeat: no-repeat;		padding: 5px 0 5px 20px;	display: inline-block;}
+
+#assistance-list {padding: 10px 0 0 0;border-top: solid 4px #113ddd;border-bottom: solid 2px #113ddd;margin-top:10px;font-size:12px}
+#assistance-list ul {list-style: none;padding: 0;}
+#assistance-list ul li{padding: 8px 0 8px 0;}
+#assistance-list ul li.phone {font-size:11px;	color:#676767;background-position: 0 center;	background-repeat: no-repeat;		padding: 20px 0 20px 70px;	display: inline-block;background-image: url(images/icon-phone.gif);}
+#assistance-list a {font-size:11px;	color:#676767;	font-weight:bold;	text-decoration:none;	background-position: 0 center;	background-repeat: no-repeat;		padding: 25px 0 25px 70px;	display: inline-block;}
+#assistance-list a:hover {text-decoration:underline;}
+#assistance-list a.mail {background-image: url(images/icon-mail.gif);}
+
+
+#FooterHolder {margin: 0 auto;height:50px;width:600px;}
+#PageFooter {margin-bottom:50px}
+ul#Foot {list-style: none;height:20px; float:left;}	
+ul#Foot li {float:left;}
+ul#Foot li a{color:#424143;text-decoration:none;font-size:11px;}
+ul#Foot li a:hover{color:#000;text-decoration:underline;font-size:11px;}
+ul#Foot .first {margin:0 15px 0 0}
+ul#Foot .sep {margin:0 10px 0 10px;}
+ul#Foot .sep2 {margin:20px 10px 0 30px;font-weight:bold}
+

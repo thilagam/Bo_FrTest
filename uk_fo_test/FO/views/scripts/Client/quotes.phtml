@@ -1,0 +1,402 @@
+{literal}
+<script type="text/javascript" charset="utf-8" src="/FO/script/client/countdown.js"></script>
+<script type="text/javascript" charset="utf-8" src="/FO/script/client/jcookie.js"></script>
+
+<script>
+	$(document).ready(function(){
+		var working = false;
+		
+		$('#addCommentForm').submit(function(e){
+			e.preventDefault();
+			if(working) return false;
+			
+			if($('#commentuser').val()=="")
+			{
+				$('#commentuser').css("border-color","#FF0000");
+			}
+			else
+			{
+				$.post('/client/submitaocomment?quotes=1',$(this).serialize(),function(msg){
+					$('#submit').val('Submit');
+					if(msg.status){
+						$(msg.html).hide().insertBefore('#addCommentContainer').slideDown();
+						$('#commentuser').val('');
+						$('#commentcountdisp').html(msg.count);
+						$('#commentcount').val('');
+						$('#commentcount').val(msg.count);
+						$('#commentuser').css("border-color","#CCCCCC");
+					}
+				},'json'); 
+			}
+		});
+
+		//////////show timer article_submit_expires//////////
+
+			$("#participation_time").countdown({
+				timestamp	: $("#participationtime").val(), 
+				callback	: function(days, hours, minutes, seconds){
+					var message = "";
+
+					//add days to hours
+					if(days!="0")
+						message += days + "d" +"&nbsp;";
+						//hours=hours+(days*24);
+						
+					if(hours!="0")
+						message += hours + "h" +"&nbsp;";
+					
+					if(minutes!="0")
+						message += minutes + "mn"; 
+					
+					$("#participation_time").html(message);
+					if(days==0 && hours==0 && minutes==0 && seconds==0)
+					{
+						$("#participation_time").html("Deadline expired");
+					}
+				}
+			});
+	});
+
+		var cur_date=$("#now").val();
+		var js_date=(new Date().getTime())/ 1000;
+		var diff_date=Math.floor(js_date-cur_date);
+		
+	
+	$(window).load(function(){		
+		var articleid=$("#article").val();
+		var clcount=$("#clientcount").val();
+		var sortby=$("#sort").val();
+		var showpop=$("#showpop").val();
+		var cookieValue = $.cookie("poponce_"+articleid);
+		
+		if(clcount>0 && sortby=="" && showpop!="no" && cookieValue!=1)
+		{
+			$.cookie("poponce_"+articleid, 1, { expires : 1 });
+			$('#preBidding').modal({
+				show: true,
+				remote: '/client/prebidding?id='+articleid
+			});
+		}
+    });	
+	
+	function CloseArticlequotes(art)
+	{
+		if(confirm("Would you like to close this mission ?")) 
+		{	
+		 $.ajax({
+			type : 'post', 
+			url : '/client/closearticle', 
+			data :  'article='+art, 
+			   
+			success : function(r)
+		   {
+				alert("Mission closed !"); 
+				window.location.href="/client/quotes?id="+art+"&showpop=no";
+		   }
+		});
+		}
+		else
+			return false;
+	}
+
+</script>
+{/literal}
+
+
+<div class="container">
+
+	<!-- start, status -->
+
+	<div class="row-fluid">
+
+		<div id="state2" class="span12">
+
+			<ul class="unstyled">
+
+				<li class="hightlight span3" rel="tooltip" data-original-title="Select the writer who will work on your project"><span class="writer_select"> Choice of writer</span></li>
+
+				<li class="span3" rel="tooltip" data-original-title="The writer selected is working on your project"><span class="ongoing">Ongoing work</span></li>
+
+				<li class="span3" rel="tooltip" data-original-title="You pay the amount of the order as a deposit"><span class="cb">Deposit</span></li>
+
+				<li class="span3" rel="tooltip" data-original-title="Download your delivered projects"><span class="dld">Download</span></li>
+
+			</ul>
+
+		</div>
+
+	</div>
+
+	<!-- end, status -->
+
+ 
+
+	<!-- start, Summary -->
+
+	<section id="summary">
+
+		<div class="row-fluid">
+
+			<div class="span7">
+				<h1><p>Your quotes</p> {$aodetails[0].title}</h1>
+			</div>
+
+		 
+
+			<div class="span2 stat">
+
+				<p>Quotes received</p>
+
+				<p class="num-large">{$aodetails[0].partcount}</p>
+
+			</div>
+
+		 
+
+			<div class="span3 stat">
+				{if $aodetails[0].articlestatus=="closed_client"}
+					Closed
+				{else}	
+					<p>End of quote period</p>
+					{if $aodetails[0].delivery_timediff==0}
+						<p class="num-large less24" style="font-size:24px">Waiting for validation</p>
+					{else}	
+						{if $aodetails[0].delivery_timediff<24}
+							<p class="num-large less24" id="participation_time"></p>
+						{else}	
+							<p class="num-large" id="participation_time"></p> 
+						{/if}
+					{/if}
+
+				{/if}
+
+			</div>
+
+			<input type="hidden" name="participationtime" id="participationtime" value="{$aodetails[0].participation_expires}" />
+
+			<input type="hidden" name="now" id="now" value="{$now}" />
+
+		 </div>
+
+	</section>
+
+	<!-- end, summary -->
+	
+	{if $aodetails[0].premium_option=="0"}
+		<div class="row-fluid">
+			<div class="statusbar clearfix">  
+				<div class="span8">
+					<div class="btn-toolbar">
+						<div class="btn-group">
+							{if $aodetails[0].articlestatus!="closed_client"}
+								<a class="btn btn-small" data-target="#extendparticipationtime" data-toggle="modal" role="button"><i class="icon-time"></i> Give more time</a>
+							{/if}
+							{if $aodetails[0].created_by=="FO"}
+								<a class="btn btn-small" href="/client/quotes-1?article={$smarty.get.id}"><i class="icon-pencil"></i> Duplicate quote</a>
+							{/if}
+							{if $aodetails[0].articlestatus!="closed_client"}
+								<a class="btn btn-small" href="/client/compose-mail?serviceid=111201092609847&object={$aodetails[0].title}" target="_blank"><i class="icon-envelope"></i> Contact Edit-place</a>
+								<a class="btn btn-small" href="javascript:void(0);" onClick="CloseArticlequotes('{$smarty.get.id}');" ><i class="icon-remove"></i> Close quote</a>
+							{/if}
+						</div>
+					</div>
+				</div>
+				
+				<div class="pull-right" style="margin-top: 10px"> 
+					Sort by : 
+						<a href="/client/quotes?id={$smarty.get.id}&sort=date" class="btn btn-small {if $smarty.get.sort=='date'}disabled{/if}">Date</a> 
+						<a href="/client/quotes?id={$smarty.get.id}&sort=price" class="btn btn-small {if $smarty.get.sort=='price'}disabled{/if}">Price</a>
+				</div>
+			</div> 
+		</div>
+		<div class="alert alert-warning">
+			<strong>Select a writer to this mission or restart a mission privately by clicking on the profile page</strong>
+		</div> 
+	{/if} 
+	
+	{if $quoteslist|@count gt 0}
+		
+	
+		<section id="quote-listing">
+			 <div class="row-fluid">
+				<ul class="unstyled">
+
+					{foreach from=$quoteslist item=quote key=key name=quotesloop}
+
+					{if ($smarty.foreach.quotesloop.index)%3==0}
+						<li class="span3 marginleft0">
+					{else}
+						<li class="span3">
+					{/if}	
+
+						
+
+						{if $quote.cycle!="0"}
+
+							<div class="editor-container disable" data-original-title="Work sent during the previous phase receiving quotes" rel="tooltip">
+
+						{elseif $quote.valid_expired=="yes"}
+
+							<div class="editor-container disable" data-original-title="Proposed date has expired!" rel="tooltip">
+
+						{else}
+
+							<div class="editor-container">
+
+						{/if}
+
+							<a class="imgframe-large" onclick="loadprofile('{$quote.user_id}','{$quote.artid}','{$smarty.foreach.quotesloop.index}');" style="cursor:pointer;" role="button" data-toggle="modal" data-target="#viewQuoteProfile-ajax">
+
+								<img src="{$quote.profilepic}" alt="{$quote.name|ucfirst}">
+
+							</a>
+
+							<div class="price">{$quote.price_user|ceil} {if $aodetails[0].currency=='pound'}&pound;{else}&euro;{/if}</div>
+
+							{if $quote.valid_until!="no"}
+
+								Price available until {$quote.valid_until}.
+
+							{/if}	
+
+							<p class="editor-name"><a onclick="loadprofile('{$quote.user_id}','{$quote.artid}','{$smarty.foreach.quotesloop.index}');" role="button" style="cursor:pointer;" data-toggle="modal" data-target="#viewQuoteProfile-ajax">{$quote.name}</a></p>
+
+						</div>
+
+					</li>
+							
+							
+					{/foreach}
+					
+					{foreach from=$quotesidlist item=quoteid }
+						<input type="hidden" name="previous_{$quoteid.user_id}" id="previous_{$quoteid.user_id}" value="{$quoteid.previous}" />
+						<input type="hidden" name="next_{$quoteid.user_id}" id="next_{$quoteid.user_id}" value="{$quoteid.next}" /> 
+					{/foreach}
+
+				</ul>
+
+				<div class="span12">
+
+					<!---Pagination start-->
+
+						<div class="pagination pull-right">
+
+							{include file="Client/pagination.phtml"}
+
+						</div>	
+
+				</div>
+			</div>
+		</section>
+	{else}
+			{if $aodetails[0].delivery_timediff<=0}
+				<h4 style="padding-bottom:120px">YOU HAVE NOT RECEIVED ANY QUOTES FOR YOUR PROJECT</h4>
+			{else}
+				<h4 style="padding-bottom:120px">YOU HAVE NOT RECEIVED ANY QUOTES FOR YOUR PROJECT</h4>
+			{/if}
+	{/if}
+
+	{if $quoteslist|@count gt 0} 
+	<section id="prebidding" class="clearfix">
+		<div class="span9 offset1">
+			<h3 class="sectiondivider pull-center"><span>
+			{if $quoteslist|@count gt 1}
+				They have written for...
+			{else}
+				He has written for...
+			{/if}
+			</span></h3>
+			<br />
+			{foreach from=$customerstrust item=clogo key=ckey}
+				<img src="{$clogo}" rel="tooltip" data-original-title="{$ckey|utf8_decode}" data-placement="top"/>
+			{/foreach}
+		</div>
+	</section>
+	{/if} 
+	<input type="hidden" name="clientcount" id="clientcount" value="{$customerstrust|@count}" /> 
+	<input type="hidden" name="article" id="article" value="{$smarty.get.id}" /> 
+	<input type="hidden" name="sort" id="sort" value="{$smarty.get.sort}" /> 
+	<input type="hidden" name="showpop" id="showpop" value="{$smarty.get.showpop}" /> 
+	
+	<section id="next">		
+		<div class="well span7" >
+			<h3>What happens next ?</h3>
+			<ol>
+				{if $aodetails[0].premium_option=="0"}
+					<li> I get the contact details of the selected writer. This person commits to sending me the work by the agreed deadline</li>
+				{else}
+					<li> Edit-place selects the best journalist and is committed to deliver the order on time</li>
+				{/if}
+					<li> I pay Edit-place 100% of the amount of the order as a deposit so I can download the work produced.</li>
+					<li> If I am satisfied, Edit-place sends the money to the writer</li>
+					<li> If I am not satisfied, I can ask for a free rewrite/amendment or a refund if the articles have been rejected for objective reasons</li>
+			</ol>
+		</div>
+		<div id="garantee" class="span4">
+		  <h4>YOUR GUARANTEES</h4>
+			<dl>
+				<dt><span class="umbrella"></span>Edit-place is your mediator</dt>
+				<dd>In the event of a dispute/issue (delay in delivery, article rewrites, refund...)</dd>
+				<dt><span class="locked"></span>Secure payment</dt>
+				<dd>Our online payment solution guarantees you a hassle-free transaction</dd>
+			</dl>
+		</div>
+	</section>
+</div>
+
+
+
+
+
+<!-- ajax use start --> 
+
+<div id="viewQuoteProfile-ajax" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+	{if $quoteslistcnt gt 1}
+		<a class="lft" onclick="loadprofile('{$quote.user_id}','{$smarty.get.id}','previous');" role="button" style="cursor:pointer;">&lsaquo;</a>
+		<a class="rgt" onclick="loadprofile('{$quote.user_id}','{$smarty.get.id}','next');" role="button" style="cursor:pointer;">&rsaquo;</a>  
+	{/if}
+	
+	<div class="modal-header"> 
+
+		<button type="button" class="close" data-dismiss="modal" onclick="$('.modal-backdrop').hide();" aria-hidden="true">&times;</button>
+
+		<h3 id="myModalLabel">Writer quote and profile</h3> 
+
+	</div>
+
+	<div class="modal-body">
+
+		<div id="profilecontent">
+
+	
+
+		</div>
+
+	</div>
+
+</div>
+
+<!-- ajax use end -->
+
+<div id="preBidding" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3 id="myModalLabel">{$aodetails[0].title}</h3>
+	</div>
+	<div class="modal-body">
+	</div>
+</div>
+
+<!-- Extend participation time -->
+<div id="extendparticipationtime" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3 id="myModalLabel">Give more time</h3>
+	</div>
+	<div class="modal-body">
+		<form method="POST" name="extendform" id="extendform" action="/client/quotes?id={$smarty.get.id}">
+		{include file="Client/extendparticipationtime.phtml"}
+		</form>
+	</div>
+</div>

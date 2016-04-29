@@ -1,0 +1,150 @@
+{literal}
+
+<script type="text/javascript" >
+$(document).ready(function() {
+
+    $('#ongoingmissionsgrid').dataTable({
+        "bProcessing": true,
+        "bServerSide": true,
+        "sAjaxSource": "/processao/loadliberteallaos?type=active",
+        "aaSorting": [[ 3, "desc" ]],
+        "oTableTools": {
+            "aButtons": [
+                "copy",
+                "print",
+                {
+                    "sExtends":    "collection",
+                    "sButtonText": 'Sauvegarder <span class="caret" />',
+                    "aButtons":    [ "csv", "xls", "pdf" ]
+                }
+            ],
+            "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+        }
+    } );
+    $("#newmissionsgrid_length").css("float","left");
+
+});
+function refreshPop(aoid)
+{
+    var href = "/processao/contrib-detials?ao_id="+aoid;
+    $("#contributor_detials").removeData('modal');
+    $('#contributor_detials .modal-body').load(href);
+    $("#contributor_detials").modal();
+    $(".modal-backdrop:gt(0)").remove();
+}
+</script>
+{/literal}
+<div class="row-fluid">
+  <div class="span12" style="">
+<!--    <h3 class="heading">Mod&eacute;ration mission libert&eacute;<a href="#searchblock" onclick="showSearch();"  class="label label-inverse alignright">Search</a></h3>
+-->     <div class="hide" id="searchblock">
+
+     </div>
+     <div class="tabbable">
+         <ul class="nav nav-tabs">
+             <li {if $smarty.get.tab == 'newaos'} class="active" {/if}><a href="/processao/liberte-newaos?tab=newaos&submenuId=ML2-SL1" class="lable-danger"><strong>Nouvelles missions libert&eacute;</strong></a></li>
+             <li {if $smarty.get.tab == 'ongoingaos'} class="active" {/if}><a href="/processao/liberte-ongoingaos?tab=ongoingaos&submenuId=ML2-SL1"  class="lable-info"><strong>Missions libert&eacute; en cours</strong></a></li>
+             <li {if $smarty.get.tab == 'validaos'} class="active" {/if}><a href="/processao/liberte-validaos?tab=validaos&submenuId=ML2-SL1"  class="lable-info"><strong>Missions libert&eacute; termin&eacute;es</strong></a></li>
+             <li {if $smarty.get.tab == 'refusedaos'} class="active" {/if}><a href="/processao/liberte-refusedaos?tab=refusedaos&submenuId=ML2-SL1"  class="lable-info"><strong>Missions libert&eacute; refus&eacute;es</strong></a></li>
+             <li {if $smarty.get.tab == 'cancelledaos'} class="active" {/if}><a href="/processao/liberte-cancelledaos?tab=cancelledaos&submenuId=ML2-SL1"  class="lable-info"><strong>Missions libert&eacute; annul&eacute;es</strong></a></li>
+         </ul>
+         <div id="ongoingtab" class="tab-pane">
+              <table id="ongoingmissionsgrid" class="table table-bordered table-striped table_vam" >
+                  <thead>
+                  <tr>
+                      <th>SL.NO</th>
+                      <th>Titre</th>
+                      <th>Client</th>
+                      <th>Cr&eacute;&eacute;e le</th>
+                      <th>Type de contenu</th>
+                      <th>Langue</th>
+                      <th>R&eacute;daction/ Traduction</th>
+                      <th>Historique</th>
+                      <th>Statut</th>
+                      <th>Nombre de Participants</th>
+                      <th>Facturation</th>
+                      <th>Action</th>
+                      <th>CA G&eacute;n&eacute;r&eacute;</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+
+                  </tbody>
+              </table>
+             <div class="span2 btn btn-warning"><a href="/processao/download-liberte-mission?download=yes&type=active">Download the xls</a></div>
+         </div>
+
+     </div>
+ </div>
+</div>
+
+<!--///for the edit ao detials popup///-->
+<div class="modal container hide fade" id="editao">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('editao');">&times;</button>
+        <h3>Edit AO Details</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--///for the publish ao  popup///-->
+<div class="modal2 hide fade" style="overflow: hidden" id="publishao">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('publishao');">&times;</button>
+        <h3>Publish AO</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!--History of AO-->
+<div class="modal container hide fade" id="ao_history">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Historique des actions men&eacute;es sur l'AO</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--Comments of AO-->
+<div class="modal hide fade" id="refusal_reasons">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Message to client</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!-- contributor details -->
+<div class="modal container hide fade" id="contributor_detials">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Participation Detials</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--///extend the liberte mission participation time///-->
+<div class="modal hide fade" id="extendlibertemission">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Extend the Participation time</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+
+

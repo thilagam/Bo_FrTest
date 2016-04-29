@@ -1,0 +1,222 @@
+{literal}
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/lib/flot/jquery.flot.curvedLines.min.js"></script>
+
+<script type="text/javascript">
+
+
+$(document).ready(function() {
+
+//    gebo_charts.fl_crtm();
+//    gebo_charts.fl_m();
+
+});
+
+
+</script>
+{/literal}
+
+    <div class="row-fluid">
+        <div class="span6" style="width: 700px;">
+            <h3 class="heading pull-center">Mark</h3>
+            {if $type eq 'writer'}
+                <div id="monthlyGraph" style="height:270px;width:100%;margin:15px auto 0"></div>
+            {else}
+                <div id="crtmonthlyGraph" style="height:270px;width:100%;margin:15px auto 0"></div>
+            {/if}<!-- <div id="fl_m" style="height:270px;width:100%;margin:15px auto 0"></div>-->
+        </div>
+    </div>
+
+
+{literal}
+<script type="text/javascript" >
+    //* charts
+    gebo_charts = {
+        fl_m : function() {
+            // Setup the placeholder reference
+
+            var elem = $('#monthlyGraph');
+            {/literal}{$dates}{literal}
+            for (var i = 0; i < d2.length; ++i) {d2[i][0] += 60 * 120 * 1000};
+            var options = {
+                lines: { show: true },
+                points: { show: true },
+                yaxes: [
+                    {min: 0},
+                    {max: 10},
+                    {position: "left"}
+                ],
+                xaxis: {
+                    mode: "time",
+                    timeformat: "%b %y",
+                    minTickSize: [1, "month"],
+                    autoscaleMargin: 0.10
+
+                },
+                grid: { hoverable: true },
+                legend: { position: 'nw' },
+                colors: [ "#3ca0ca" ]
+            };
+
+            // Setup the flot chart using our data
+            fl_d_plot = $.plot(elem,
+                [
+                    {   data: d2,
+                        label: "Users marks",
+                        yaxis: 2,
+                        points: { show: true },
+                        stack: null
+                    }
+                ], options);
+
+            // Create a tooltip on our chart
+            elem.qtip({
+                prerender: true,
+                content: 'Loading...', // Use a loading message primarily
+                position: {
+                    viewport: $(window), // Keep it visible within the window if possible
+                    target: 'mouse', // Position it in relation to the mouse
+                    adjust: { x: 11 } // ...but adjust it a bit so it doesn't overlap it.
+                },
+                show: false, // We'll show it programatically, so no show event is needed
+                style: {
+                    classes: 'ui-tooltip-shadow ui-tooltip-tipsy',
+                    tip: false // Remove the default tip.
+                }
+            });
+
+            // Bind the plot hover
+            elem.on('plothover', function(event, coords, item) {
+                // Grab the API reference
+                var self = $(this),
+                    api = $(this).qtip(),
+                    previousPoint, content,
+
+                // Setup a visually pleasing rounding function
+                    round = function(x) { return Math.round(x * 1000) / 1000; };
+
+                // If we weren't passed the item object, hide the tooltip and remove cached point data
+                if(!item) {
+                    api.cache.point = false;
+                    return api.hide(event);
+                }
+
+                // Proceed only if the data point has changed
+                previousPoint = api.cache.point;
+                if(previousPoint !== item.seriesIndex)
+                {
+                    // Update the cached point data
+                    api.cache.point = item.seriesIndex;
+
+                    // Setup new content
+                    content = item.series.label +': '+ round(item.datapoint[1]);
+
+                    // Update the tooltip content
+                    api.set('content.text', content);
+
+                    // Make sure we don't get problems with animations
+                    api.elements.tooltip.stop(1, 1);
+
+                    // Show the tooltip, passing the coordinates
+                    api.show(coords);
+                }
+            });
+        },
+        fl_crtm : function() {
+            // Setup the placeholder reference
+            var elem = $('#crtmonthlyGraph');
+            {/literal}{$crtdates}{literal}
+            for (var i = 0; i < d2.length; ++i) {d2[i][0] += 60 * 120 * 1000};
+            var options = {
+                lines: { show: true },
+                points: { show: true },
+                yaxes: [
+                    {min: 0},
+                    {max: 10},
+                    {position: "left"}
+                ],
+                xaxis: {
+                    mode: "time",
+                    timeformat: "%b %y",
+                    minTickSize: [1, "month"],
+                    autoscaleMargin: 0.10
+
+                },
+                grid: { hoverable: true },
+                legend: { position: 'nw' },
+                colors: [ "#3ca0ca" ]
+            };
+            // Setup the flot chart using our data
+            fl_d_plot = $.plot(elem,
+                [
+                    {   data: d2,
+                        label: "Users marks",
+                        yaxis: 2,
+                        points: { show: true },
+                        stack: null
+                    }
+                ], options);
+
+            // Create a tooltip on our chart
+            elem.qtip({
+                prerender: true,
+                content: 'Loading...', // Use a loading message primarily
+                position: {
+                    viewport: $(window), // Keep it visible within the window if possible
+                    target: 'mouse', // Position it in relation to the mouse
+                    adjust: { x: 11 } // ...but adjust it a bit so it doesn't overlap it.
+                },
+                show: false, // We'll show it programatically, so no show event is needed
+                style: {
+                    classes: 'ui-tooltip-shadow ui-tooltip-tipsy',
+                    tip: false // Remove the default tip.
+                }
+            });
+            // Bind the plot hover
+            elem.on('plothover', function(event, coords, item) {
+                // Grab the API reference
+                var self = $(this),
+                    api = $(this).qtip(),
+                    previousPoint, content,
+
+                // Setup a visually pleasing rounding function
+                    round = function(x) { return Math.round(x * 1000) / 1000; };
+
+                // If we weren't passed the item object, hide the tooltip and remove cached point data
+                if(!item) {
+                    api.cache.point = false;
+                    return api.hide(event);
+                }
+
+                // Proceed only if the data point has changed
+                previousPoint = api.cache.point;
+                if(previousPoint !== item.seriesIndex)
+                {
+                    // Update the cached point data
+                    api.cache.point = item.seriesIndex;
+
+                    // Setup new content
+                    content = item.series.label +': '+ round(item.datapoint[1]);
+
+                    // Update the tooltip content
+                    api.set('content.text', content);
+
+                    // Make sure we don't get problems with animations
+                    api.elements.tooltip.stop(1, 1);
+
+                    // Show the tooltip, passing the coordinates
+                    api.show(coords);
+                }
+            });
+        }
+    }
+
+
+</script>
+<style>
+    #dailyGraph, #weeklyGraph, #monthlyGraph, #cdailyGraph, #cweeklyGraph, #cmonthlyGraph {width: 90%; margin: 15px auto 0px; padding: 0px; }
+    #cstmm{float: left;display: block; position: relative;}
+    .dailyChart, .weeklyChart, .monthlyChart, .cdailyChart, .cweeklyChart, .cmonthlyChart{cursor: pointer;}
+</style>
+{/literal}
+
+

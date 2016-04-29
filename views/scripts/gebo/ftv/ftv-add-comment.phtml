@@ -1,0 +1,558 @@
+{literal}
+<style type="text/css">
+    .media {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+        border-image: none;
+        border-radius: 4px;
+        border-style: solid;
+        border-width: 1px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+        margin-bottom: 15px;
+        overflow: hidden;
+        padding: 12px;
+    }
+    .close
+    {
+        padding: 3px;
+    }
+    .error{ color: red; !important;}
+</style>
+
+<script type="text/javascript">
+    //Comments submission
+    $(document).ready(function() {
+
+        var identifier=$("#identifier").val();
+    });
+    $("#demandformedit").validate({
+        rules:{
+
+            //   othercontacts:"required",
+            "modifycontains[]":"required",
+            broadcasts:"required",
+            quand :"required",
+            request_object:"required"
+        },
+        messages:{
+            //  othercontacts:"S&eacute;lectionner le contact &agrave; mettre en copie de votre demande",
+            request_object:"Merci d'indiquer l'objet de votre demande",
+            "modifycontains[]":"S&eacute;lectionner le type de contenu &agrave; modifier",
+            quand:"Select Quand",
+            broadcasts:"S&eacute;lectionner les &eacute;missions &agrave; modifier"
+        },
+        errorClass: "error",
+        errorElement: "label",
+        errorPlacement: function (error, element) {
+            element.after(error);
+            if(element.attr("id") == 'modifycontainsedit') {
+                $("#contains_err").html(error);
+            }
+        },
+        highlight: function(label) {
+            $(label).addClass('error');
+            $(label).removeClass('success');
+        },
+        success: function(label) {
+            //label.addClass('success');
+            //label.removeClass('error');
+        },
+        submitHandler: function(form) {
+            var errcount=0;
+            /* if(!$("#othercontactsedit").val())
+             {
+             errcount++;
+             $("#othercontacts_err").html('s&eacute;lectionner Contact');
+             }*/
+            if(!$("#broadcastsedit").val())
+            {
+                errcount++;
+                $("#broadcasts_err").html('s&eacute;lectionner Emissions');
+            }
+            if(errcount==0)
+                form.submit();
+            else
+            {
+                return false;
+            }
+        }
+
+    });
+    $("#demandformchaineedit").validate({
+        rules:{
+
+            //   othercontacts:"required",
+            "modifycontains[]":"required",
+            "broadcasts[]":"required",
+            quand :"required",
+            request_object:"required"
+        },
+        messages:{
+            //  othercontacts:"S&eacute;lectionner le contact &agrave; mettre en copie de votre demande",
+            request_object:"Merci d'indiquer l'objet de votre demande",
+            "modifycontains[]":"S&eacute;lectionner le type de contenu &agrave; modifier",
+            quand:"Select Quand",
+            "broadcasts[]":"S&eacute;lectionner les &eacute;missions &agrave; modifier"
+        },
+        errorClass: "error",
+        errorElement: "label",
+        errorPlacement: function (error, element) {
+            element.after(error);
+            if(element.attr("id") == 'modifycontainsedit') {
+                $("#contains_err").html(error);
+            }
+            if(element.attr("id") == 'broadcasts') {
+                $("#broadcasts_err").html(error);
+            }
+        },
+        highlight: function(label) {
+            $(label).addClass('error');
+            $(label).removeClass('success');
+        },
+        success: function(label) {
+            //label.addClass('success');
+            //label.removeClass('error');
+        },
+        submitHandler: function(form) {
+            var errcount=0;
+            /* if(!$("#othercontactsedit").val())
+             {
+             errcount++;
+             $("#othercontacts_err").html('s&eacute;lectionner Contact');
+             }*/
+            /*if(!$("#broadcastsedit").val())
+            {
+                errcount++;
+                $("#broadcasts_err").html('s&eacute;lectionner Emissions');
+            }*/
+            if(errcount==0)
+                form.submit();
+            else
+            {
+                return false;
+            }
+        }
+
+    });
+    $("#comment_submit_ch").click(function(){
+        $.post("/ftvchaine/savecomments", $("#comment_form").serialize(),
+                function(data) {
+                    refreshCommentsChaineModel();
+                    var obj = $.parseJSON(data);
+                    //$("#ajaxdata").html(obj.comments);
+                    $("#ajaxdata").html(data);
+                    $("#comments_list").hide();
+                }
+        );
+       // refreshCommentsModel();
+    });
+    $("#comment_submit").click(function(){
+        $.post("/ftv/savecomments", $("#comment_form").serialize(),
+            function(data) {
+                refreshCommentsModel();
+                var obj = $.parseJSON(data);
+                //$("#ajaxdata").html(obj.comments);
+                $("#ajaxdata").html(data);
+                $("#comments_list").hide();
+            }
+        );
+        // refreshCommentsModel();
+    });
+    function refreshCommentsChaineModel()
+    {
+        var requestId = $("#request_id").val();
+        var href="/ftvchaine/showcomments?request_id="+requestId;
+        $("#addcomment").removeData('modal');
+        $('#addcomment .modal-body').load(href);
+        $("#addcomment").modal();
+        $(".modal-backdrop:gt(0)").remove();
+    }
+    function refreshCommentsModel()
+    {
+        var requestId = $("#request_id").val();
+        var href="/ftvchaine/showcomments?request_id="+requestId;
+        $("#addcomment").removeData('modal');
+        $('#addcomment .modal-body').load(href);
+        $("#addcomment").modal();
+        $(".modal-backdrop:gt(0)").remove();
+    }
+
+</script>
+{/literal}
+{if $ftveditoeditrequest eq 'yes'}
+<form name="demandformedit" class="form-horizontal"  id="demandformedit" method="POST" action="/ftv/editrequest"  enctype="multipart/form-data" >
+    <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+                <label for="" class="span4 pull-left"><strong>En copie de votre demande</strong></label>
+
+                <select multiple="multiple" name="othercontacts[]" id="othercontactsedit" data-placeholder="s&eacute;lectionnez" class="form-control">
+                    {foreach from=$ftvcontacts item=contactitem key=contactkey}
+                    {if $contactkey != $ftvId}
+                    {if in_array($contactkey,$othercontacts_array)}
+                    <option value="{$contactkey}" selected>{$contactitem}</option>
+                    {else}
+                    <option value="{$contactkey}">{$contactitem}</option>
+                    {/if}
+                    {/if}
+                    {/foreach}
+                </select>
+                <div id="othercontacts_err" style="color:red;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+            <label for="" class="span4"><strong>objet de la demande<span class="error">*</span></strong></label>
+                <textarea type="text" rows="5" cols="25" placeholder="Objet de la demande" name="request_object" id="request_object" class="form-control">{$requestsdetail[0].request_object}</textarea>
+                <div id="object_err" style="color:red;"></div>
+            </div>
+        </div>
+    </div>
+   <!-- <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+            <label for="" class="span4"><strong>Ajouter un ficiher</strong></label>
+                <!-- <input type="file" class="span9" name="ftv_doc" id="ftv_doc">-->
+               <!-- <div class="mail_uploader">
+                    <input type="file" name="attachment[]" id="attachments" class="multi">
+                </div>
+            </div>
+        </div>
+    </div>-->
+    <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+            <label for="" class="span4"><strong>Quand<span class="error">*</span></strong></label>
+                    <label class="radio">
+                        <input type="radio"  value="h" id="quandedit" name="quand[]"  {if in_array(h,$quand_array)} checked="checked"  {/if} class="uni_style"  />
+                        Dans l'heure
+                    </label>
+                    <label class="radio">
+                        <input type="radio"  value="d" id="quandedit" name="quand[]" {if in_array(d,$quand_array)} checked="checked"  {/if} class="uni_style"  />
+                        Dans la journ&eacute;e
+                    </label>
+                    <label class="radio">
+                        <input type="radio"  value="nd" id="quandedit" name="quand[]" {if in_array(nd,$quand_array)} checked="checked"  {/if} class="uni_style"  />
+                        Le lendemain
+                    </label>
+                    <label class="radio">
+                        <input type="radio"  value="w" id="quandedit" name="quand[]" {if in_array(w,$quand_array)} checked="checked"  {/if} class="uni_style"  />
+                        Dnas le semaine
+                    </label>
+                    <label class="radio">
+                        <input type="radio"  value="nw" id="quandedit" name="quand[]" {if in_array(nw,$quand_array)} checked="checked"  {/if} class="uni_style"  />
+                        La semaine prochaine
+                    </label>
+            </div>
+        </div>
+    </div>
+    <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+            <label for="" class="span4"><strong>Emissions &agrave; modifier<span class="error">*</span></strong></label>
+                <select multiple="multiple" name="broadcasts[]" id="broadcastsedit" data-placeholder="s&eacute;lectionnez">
+                    {foreach from=$broadcast_array item=emissionitem key=emissionkey}
+                    {if in_array($emissionkey,$broadcasts_array)}
+                    <option value="{$emissionkey}" selected>{$emissionitem}</option>
+                    {else}
+                    <option value="{$emissionkey}">{$emissionitem}</option>
+                    {/if}
+                    {/foreach}
+                </select>
+                <div id="broadcasts_err" style="color:red;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+            <label for="" class="span4"><strong>Contenus &agrave;  modifier</strong><span class="error">*</span></label>
+            <div class="span7">
+                    <label class="checkbox">
+                        <input type="checkbox"  value="1" id="modifycontainsedit" name="modifycontains[]" {if in_array('1',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                        UNE Tournante
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox"  value="2" id="modifycontainsedit" name="modifycontains[]" {if in_array('2',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                        Diffusion
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox"  value="3" id="modifycontainsedit" name="modifycontains[]" {if in_array('3',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                        Article
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox"  value="4" id="modifycontainsedit" name="modifycontains[]" {if in_array('4',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                        Ressource Livres
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox"  value="5" id="modifycontainsedit" name="modifycontains[]" {if in_array('5',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                        Ressource Voir/Ecouter
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox"  value="6" id="modifycontainsedit" name="modifycontains[]" {if in_array('6',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                        Ressource Liens et Adresses utiles
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox"  value="7" id="modifycontainsedit" name="modifycontains[]" {if in_array('7',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                        Galerie photo
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox"  value="8" id="modifycontainsedit" name="modifycontains[]" {if in_array('8',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                        Musique
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox"  value="9" id="modifycontainsedit" name="modifycontains[]" {if in_array('9',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                        Autres
+                    </label>
+                    <div id="contains_err" style="color:red;"></div>
+            </div>
+        </div>
+    </div>
+
+        <div class="form-group">
+            <label for="" class="col-xs-4">&nbsp;</label>
+            <div class="col-xs-4">
+                <input type="hidden" id="request_id" name="request_id" value="{$request_id}">
+                <input type="hidden" id="edit_demand" name="edit_demand" value="{$edit_demand}">
+                <button class="btn inline"  data-dismiss="modal" aria-hidden="true">Annuler</button>
+                <button type="submit" name="update_editorequest" value="update" class="btn btn-primary inline"><i class="icon-refresh icon-white"></i> valider</button>
+            </div>
+        </div>
+</form>
+{elseif $ftvchaineeditrequest eq 'yes'}
+<form name="demandformchaineedit" class="form-horizontal"  id="demandformchaineedit" method="POST" action="/ftvchaine/editrequest"  enctype="multipart/form-data" >
+
+    <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+                <label for="" class="span4"><strong>En copie de votre demande</strong></label>
+                <div class="span6">
+                    <select multiple="multiple" name="othercontacts[]" id="othercontactsedit" data-placeholder="s&eacute;lectionnez" class="form-control">
+                        {foreach from=$ftvcontacts item=contactitem key=contactkey}
+                        {if $contactkey != $ftvId}
+                        {if in_array($contactkey,$othercontacts_array)}
+                        <option value="{$contactkey}" selected>{$contactitem}</option>
+                        {else}
+                        <option value="{$contactkey}">{$contactitem}</option>
+                        {/if}
+                        {/if}
+                        {/foreach}
+                    </select>
+                    <div id="othercontacts_err" style="color:red;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+                <label for="" class="span4"><strong>objet de la demande<span class="error">*</span></strong></label>
+                <div class="span6">
+                    <textarea type="text" rows="5" cols="25" placeholder="Objet de la demande" name="request_object" id="request_object" class="span6">{$requestsdetail[0].request_object}</textarea>
+                    <div id="object_err" style="color:red;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+                <label  class="span4"><strong>Ajouter un ficiher</strong></label>
+                <div class="span6">
+                    <!-- <input type="file" class="span9" name="ftv_doc" id="ftv_doc">-->
+                    <!--<div class="mail_uploader">
+                        <input type="file" name="attachment[]" id="attachments" class="multi">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+    <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+                <label  class="span4"><strong>Quand<span class="error">*</span></strong></label>
+                <div class="span6">
+                    <div class="col-xs-12">
+                        <label class="radio">
+                            <input type="radio"  value="h" id="quandedit" name="quand[]"  {if in_array(h,$quand_array)} checked="checked"  {/if} class="uni_style"  />
+                            Dans l'heure
+                        </label>
+                        <label class="radio">
+                            <input type="radio"  value="d" id="quandedit" name="quand[]" {if in_array(d,$quand_array)} checked="checked"  {/if} class="uni_style"  />
+                            Dans la journ&eacute;e
+                        </label>
+                        <label class="radio">
+                            <input type="radio"  value="nd" id="quandedit" name="quand[]" {if in_array(nd,$quand_array)} checked="checked"  {/if} class="uni_style"  />
+                            Le lendemain
+                        </label>
+                        <label class="radio">
+                            <input type="radio"  value="w" id="quandedit" name="quand[]" {if in_array(w,$quand_array)} checked="checked"  {/if} class="uni_style"  />
+                            Dnas le semaine
+                        </label>
+                        <label class="radio">
+                            <input type="radio"  value="nw" id="quandedit" name="quand[]" {if in_array(nw,$quand_array)} checked="checked"  {/if} class="uni_style"  />
+                            La semaine prochaine
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+                <label for="" class="span4"><strong>chaine(s) &agrave; modifier<span class="error">*</span></strong></label>
+                <div class="span6">
+                    <!-- <select multiple="multiple" name="broadcasts[]" id="broadcastsedit">
+                         {foreach from=$broadcast_array item=emissionitem key=emissionkey}
+                         {if in_array($emissionkey,$broadcasts_array)}
+                         <option value="{$emissionkey}" selected>{$emissionitem}</option>
+                         {else}
+                         <option value="{$emissionkey}">{$emissionitem}</option>
+                         {/if}
+                         {/foreach}
+                     </select>
+                     <div id="broadcasts_err" style="color:red;"></div>-->
+                    <div class="span8">
+                        <label class="checkbox">
+                            <input type="checkbox"  value="1" id="broadcasts" name="broadcasts[]" {if in_array('1',$broadcasts_array)}checked="checked"  {/if} class="uni_style"  />
+                            France 2
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="2" id="broadcasts" name="broadcasts[]" {if in_array('2',$broadcasts_array)} checked="checked"  {/if}class="uni_style"  />
+                            France 3
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="3" id="broadcasts" name="broadcasts[]" {if in_array('3',$broadcasts_array)} checked="checked"  {/if}class="uni_style"  />
+                            France 4
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="4" id="broadcasts" name="broadcasts[]" {if in_array('4',$broadcasts_array)} checked="checked"  {/if}class="uni_style"  />
+                            France 5
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="5" id="broadcasts" name="broadcasts[]" {if in_array('5',$broadcasts_array)} checked="checked"  {/if}class="uni_style"  />
+                            France &Ocirc;
+                        </label>
+                        <div id="broadcasts_err" style="color:red;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="formSep">
+        <div class="row-fluid">
+            <div class="span9 form-inline">
+                <label for="" class="span4"><strong>Contenus &agrave;  modifier</strong></label>
+                <div class="span6">
+                    <div class="col-xs-12">
+                        <b>PAGE D'ACCUEIL</b><br/>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="1" id="modifycontainsedit" name="modifycontains[]" {if in_array('1',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            Unes tournantes
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="2" id="modifycontainsedit" name="modifycontains[]" {if in_array('2',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            Voir et Revoir
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="3" id="modifycontainsedit" name="modifycontains[]" {if in_array('3',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            Les &eacute;missions
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="4" id="modifycontainsedit" name="modifycontains[]" {if in_array('4',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            A d&eacute;couvrir
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="5" id="modifycontainsedit" name="modifycontains[]" {if in_array('5',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            Les jeux
+                        </label>
+                        <br><b>PAGE EMISSIONS</b><br/>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="6" id="modifycontainsedit" name="modifycontains[]" {if in_array('6',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            Une
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="7" id="modifycontainsedit" name="modifycontains[]" {if in_array('7',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            Top 3
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="8" id="modifycontainsedit" name="modifycontains[]" {if in_array('8',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            Forums
+                        </label><br/>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="9" id="modifycontainsedit" name="modifycontains[]" {if in_array('9',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            <b> PAGE VIDEOS</b>
+                        </label><br/>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="9" id="modifycontainsedit" name="modifycontains[]" {if in_array('9',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            <b>  PAGES DOCUMENTAIRES</b>
+                        </label><br/>
+                        <label class="checkbox">
+                            <input type="checkbox"  value="9" id="modifycontainsedit" name="modifycontains[]" {if in_array('9',$contains_array)} checked="checked"  {/if} class="uni_style"  />
+                            <b>  PAGES FRANCE 5 & VOUS</b>
+                        </label>
+                        <div id="contains_err" style="color:red;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="form-group">
+            <label for="" class="col-xs-4">&nbsp;</label>
+            <div class="col-xs-4">
+                <input type="hidden" id="request_id" name="request_id" value="{$request_id}">
+                <input type="hidden" id="edit_demand" name="edit_demand" value="{$edit_demand}">
+                <button class="btn inline"  data-dismiss="modal" aria-hidden="true">Annuler</button>
+                <button type="submit" name="update_ftvchaine" value="update" class="btn btn-primary inline"><i class="icon-refresh icon-white"></i> valider</button>
+            </div>
+        </div>
+</form>
+{else}
+<div class="mod">
+    <h4 id="comment"><i class="icon-comment"></i> Commentaires</h4>
+    <div id="ajaxdata"></div>
+    <ul class="media-list" id="comments_list">
+        {if $commentDetails |@count gt 0}
+        {foreach from=$commentDetails item=comment}
+        <li class="media" id="comment_{$comment.identifier}">
+            <div class="media-body">
+                <h4 class="media-heading">
+                    <a  role="button" data-toggle="modal" data-target="#viewProfile-ajax">{if $comment.user_type eq "BO"}{$comment.bo_user|utf8_encode}{else}{$comment.first_name|utf8_encode}{/if}</a></h4>
+                <span id="user_comment_{$comment.identifier}">{$comment.comments|utf8_encode|stripslashes}</span>
+							<span id="edit_user_comment_{$comment.identifier}" style="display:none">
+								<textarea class="span10" name="article_comments_{$comment.identifier}" id="article_comments_{$comment.identifier}">{$comment.comments|utf8_encode|stripslashes}</textarea>
+								<button type="button" id="update_submit_{$comment.identifier}" name="update_submit_{$comment.identifier}" class="btn">Mettre &agrave; jour</button>
+							</span>
+                <p class="muted">{$comment.created_at|date_format:"%d/%m/%Y %H:%M"|upper}</p>
+            </div>
+        </li>
+        {/foreach}
+        {/if}
+    </ul>
+    <div class="row-fluid">
+        <div class=" well">
+            <form action="" method="POST" id="comment_form">
+                <h4>Commenter / poser une question</h4>
+                <fieldset>
+                    <textarea class="span12" placeholder="Ecrire un commentaire" name="comments" id="comments"></textarea>
+                    {if $ftvtype eq 'chaine'}
+                    <button type="button" id="comment_submit_ch" name="comment_submit" class="btn">Envoyer</button>
+                    {else}
+                    <button type="button" id="comment_submit" name="comment_submit" class="btn">Envoyer</button>
+                    {/if}
+                    <input type="hidden" name="comment_type" value="{$comment_type}" id="comment_type">
+                    <input type="hidden" name="request_id" value="{$request_id}" id="request_id">
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+{/if}

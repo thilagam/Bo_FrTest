@@ -1,0 +1,175 @@
+{literal}
+    <script type="text/javascript" >
+	$(function(){
+			//<![CDATA[
+		// Replace the <textarea id="editor1"> with an CKEditor instance.
+		var type="{/literal}{$type}";
+		{literal}
+
+		var div;
+		if(type=="approve")
+			div="mailaccept_message";
+        else if(type=="contactusmailreply")
+			div="contactusreplymsg";
+		else if(type!="approve")
+			div="mail_message";
+
+		var editor = CKEDITOR.replace( div,
+			{
+				language: 'de',
+				uiColor: '#D9DDDC',
+				enterMode : CKEDITOR.ENTER_BR,
+				removePlugins : 'resize',
+				toolbar :
+				[
+					['Undo','Redo'],
+					['Find','Replace','-','SelectAll','RemoveFormat'],
+					['Link', 'Unlink', 'Image'],
+					'/',
+					['FontSize', 'Bold', 'Italic','Underline'],
+					['NumberedList','BulletedList','-','Blockquote'],
+					['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize']
+				],
+			}
+		);
+	//]]>
+
+	});
+
+	function GetContents()
+	{
+		// Get the editor instance that you want to interact with.
+		var oEditor= CKEDITOR.instances.mailaccept_message;
+	    var data=oEditor.getData();
+		return  data;
+	}
+	function GetContents1()
+	{
+		// Get the editor instance that you want to interact with.
+		var oEditor= CKEDITOR.instances.mail_message;
+		var data=oEditor.getData();
+		return  data;
+	}
+    function GetContents2()
+	{
+		// Get the editor instance that you want to interact with.
+		var oEditor= CKEDITOR.instances.contactusreplymsg;
+		var data=oEditor.getData();
+		return  data;
+	}
+     function valMessageApprove()
+     {
+        //var message=$("#mailaccept_message").val();
+		var message=GetContents();
+		message = message.replace(/(<([^>]+)>)/ig,"");
+		message = message.replace(/&nbsp;/gi,"");
+
+        if($.trim(message).length <1 || message=="")
+        {
+            smoke.alert('Please Enter Message');
+            return false;
+        }
+        else
+             return true;
+     }
+     function valMessage()
+     {
+        //var message=$("#mail_message").val();
+		var message=GetContents1();
+		message = message.replace(/(<([^>]+)>)/ig,"");
+		message = message.replace(/&nbsp;/gi,"");
+        if($.trim(message).length <1 || message=="")
+        {
+            smoke.alert('Please Enter Message');
+            return false;
+        }
+        else
+             return true;
+     }
+     function valMessageContactus()
+     {
+        //var message=$("#mail_message").val();
+		var message=GetContents2();
+		message = message.replace(/(<([^>]+)>)/ig,"");
+		message = message.replace(/&nbsp;/gi,"");
+        if($.trim(message).length <1 || message=="")
+        {
+            smoke.alert('Please Enter Message');
+            return false;
+        }
+        else
+             return true;
+     }
+	
+    </script>
+{/literal}
+
+{if $type eq 'approve'}
+	<form name="" action="/mails/mailapprove?submenuId=submenuId=ML4-SL5&messageId={$msgId}&page={$pageId}" method="post">
+		<table cellpadding="4" cellspacing="4" align="center">
+			<tr>
+				<td valign="top"> Message : </td>
+				<td><textarea id="mailaccept_message" name="mailaccept_message" value="" class="span5" rows="10">{$msgContent}</textarea></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<input type="submit" id="mailaccept_submit" name="mailaccept_submit" value="Valider" class="btn btn-info" onclick="return valMessageApprove();"/>
+					<input type="button" id="close_pop" name="close_pop" value="Close" class="btn btn-info" data-dismiss="modal"/>
+				</td>
+			</tr>
+		</table>
+	</form>	
+{elseif $type eq 'contactusmailreply'}
+	<form name="" action="/mails/replymailcontactus?submenuId=submenuId=ML4-SL9" method="post">
+		<table cellpadding="4" cellspacing="4" align="center">
+			<tr>
+				<td>To</td>
+				<td>{$recipient} - ({$email})</td>
+			</tr>
+			<tr>
+				<td>Object</td>
+				<td><input id="contactusmsg_object" name="contactusmsg_object" value="Re:{$msgSubject}" type="text" class="span5"/></td>
+			</tr>
+			<tr>
+				<td valign="top">Message</td>
+				<td><textarea id="contactusreplymsg" name="contactusreplymsg" value="" class="span5" rows="10"></textarea></td>
+			</tr>
+			<tr>	
+				<td></td>
+				<td>
+					<input type="submit" id="contactusmailreply" name="contactusmailreply" value="Reply" class="btn btn-info" onclick="return valMessageContactus();"/>
+					<input type="button" id="close_pop" name="close_pop" value="Close" class="btn btn-info" data-dismiss="modal"/>
+					<input type="hidden" id="replyemail" name="replyemail" value="{$email}" />
+					<input type="hidden" id="messageId" name="messageId" value="{$msgId}" />
+				</td>
+			</tr>
+		</table>		
+	</form>	
+{else}
+    <form name="" action="/mails/sendcomposemail?submenuId=submenuId=ML4-SL5&messageId={$msgId}&page={$pageId}&recipient={$recipientId}" method="post">
+		<table cellpadding="4" cellspacing="4" align="center">
+			<tr>
+				<td>To</td>
+				<td>{$recipient} - ({$email})</td>
+			</tr>	
+			<tr>
+				<td>Object</td>
+				<td><input id="msg_object" name="msg_object" value="Re:{$msgSubject}" class="span5"/></td>
+			</tr>
+			<tr>	
+				<td valign="top">Message</td>
+				<td><textarea id="mail_message" name="mail_message" value="" class="span5" rows="10"></textarea></td>
+			</tr>	
+			<tr>
+				<td></td>
+				<td>
+					<input type="submit" id="mailreject_submit" name="mailreject_submit" value="Submit" class="btn btn-info" onclick="return valMessage();"/>
+					<input type="button" id="close_pop" name="close_pop" value="Close" class="btn btn-info" data-dismiss="modal"/>
+				</td>
+			</tr>	
+		</table>
+	</form>	
+{/if}
+
+

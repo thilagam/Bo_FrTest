@@ -1,0 +1,62 @@
+{literal}
+	<script>
+		$(document).ready(function() { 
+			$(".uni_style").uniform(); 
+		});
+		function updatesmicall()
+		{
+			if($("#smiccheck").attr('checked'))
+			{
+				var value = $("#smicapply").val();
+				var count = $("#smiccount").val();
+				for(var i = 0; i < count; i++)
+				{
+					$("#SMIC_"+i).val(value);
+				}
+			}	
+		}
+		
+		
+	</script>
+{/literal}
+
+<div class="row-fluid">
+  	<div class="span12">
+		<h3 class="heading">CONFIGURATION DU SMIC / PAYS</h3>
+
+	<div align="right" style="padding-right:120px">
+		<input type="button" class="btn btn-info" onClick="window.location='/ao/pollconfiguration?submenuId=ML2-SL23';" value="RETOUR" />
+	</div>	
+	<form action="/ao/smicconfigure?submenuId=ML2-SL23" method="POST">
+		<table align="center" width="55%" cellpadding="2" cellspacing="2" style="margin-top:15px; padding:10px;clear:both;" >
+				<tr>
+					<td>
+						<label class="uni-checkbox">
+							<input type="checkbox" name="smiccheck" id="smiccheck" onClick="updatesmicall();" class="uni_style"/> Appliquer ce montant &agrave; tous les pays
+						</label>
+					</td>	
+					<td colspan="2">
+						<input type="text" name="smicapply" id="smicapply" value=""/>
+					</td>
+				</tr>
+				<tr><td>&nbsp;</td></tr>
+			{foreach from=$smiclist item=smic name=smicloop} 
+				<tr>
+					<td>{$language_array[$smic.id]}</td>
+					<td>
+						<input type="text" name="SMIC[]" id="SMIC_{$smarty.foreach.smicloop.index}" value="{$smic.SMIC}"/>
+						<input type="hidden" name="id[]" value="{$smic.id}"/>
+					</td>
+				</tr>
+			{/foreach}
+			<tr>
+				<td colspan="2">
+					<input type="button" class="btn btn-info" onClick="window.location='/ao/pollconfiguration?submenuId=ML2-SL23';" value="RETOUR" />
+					<input type="submit" name="smic_submit" id="smic_submit" value="TOUT SAUVEGARDER" class="btn btn-info"/>
+				</td>
+			</tr>
+		</table>
+		<input type="hidden" name="smiccount" id="smiccount" value="{$smiclist|@count}" />
+	</form>		
+	</div>
+</div>

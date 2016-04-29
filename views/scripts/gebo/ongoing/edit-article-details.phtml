@@ -1,0 +1,372 @@
+{literal}
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jquery.validate.min.js"></script>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/redmond/jquery-ui.css" />    
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+		
+		<link rel="stylesheet" href="/BO/theme/gebo/lib/select-master/pqselect.dev.css" />    
+        <script src = "/BO/theme/gebo/lib/select-master/pqselect.dev.js"></script>
+<!--<link rel="stylesheet" href="/BO/theme/gebo/lib/bootstrap-multiselect-master/css/bootstrap-3.3.2.min.css" type="text/css"/>
+<script type="text/javascript" src="/BO/theme/gebo/lib/bootstrap-multiselect-master/js/bootstrap-3.3.2.min.js"></script>
+
+<script type="text/javascript" src="/BO/theme/gebo/lib/bootstrap-multiselect-master/js/bootstrap-multiselect-search.js"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/lib/bootstrap-multiselect-master/css/bootstrap-multiselect.css" type="text/css"/>-->
+
+<!--/BO/theme/gebo/lib/validation/jquery.validate.min.js-->
+<script type="text/javascript" >
+	 $(function() {
+                
+                //initialize the pqSelect widget.
+                $("#favcorrectorcheck").pqSelect({
+                    multiplePlaceholder: 'Select Regions',
+                    checkbox: true //adds checkbox to options    
+               
+                }).pqSelect('open');
+            });
+			
+   $(document).ready(function() { 
+		$("#language").chosen({ allow_single_deselect: true,search_contains: true });
+		$("#language_filter").chosen();
+		$("#clanguage_filter").chosen();
+		
+		$("#category").chosen({ allow_single_deselect: true,search_contains: true });
+		$("#type").chosen({disable_search: true });
+		$("#signtype").chosen({disable_search: true });
+		//$("#favcontribcheck").chosen();
+		/*$('#favcontribcheck').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+			enableCaseInsensitiveFiltering:true
+        });
+		
+		//$("#favcorrectorcheck").chosen();
+		$('#favcorrectorcheck').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+			enableCaseInsensitiveFiltering:true
+        });*/
+		
+		$(".uni_style").uniform();	
+		
+		$('#correctioncheck').toggleButtons({
+			label:{enabled: "Oui",disabled: "Non"},
+			onChange: function () {
+				var type=$("input[name='correction']:checked").val();
+				if(type=="on")
+				{
+					$("#correction_details").show();
+				}
+				else
+				{
+					$("#correction_details").hide();
+				}
+			}
+		}); 
+		
+		$("#edit_articleform").validate({
+				onkeyup: false,
+				message:false,
+				errorClass: 'error',
+				validClass: 'valid',
+				highlight: function(element) {
+					$(element).closest('span').addClass("f_error");
+				},
+				unhighlight: function(element) {
+					$(element).closest('span').removeClass("f_error");
+				},
+				rules: {
+					title: {
+							required: true,
+							minlength: 6
+							},
+					num_min:"required",	
+					num_max:"required",	
+					price_min:"required",	
+					price_max:"required",
+					correction_pricemin:"required",
+					correction_pricemax:"required",
+					participation_time:"required",
+					contrib_percentage:"required"
+				},
+				submitHandler: function(form) { 
+						var errorcnt=0;
+						/*var max_limit=$('#refusal_reasons_max').val();
+						if($('input:radio[name=product]:checked').val()=="redaction")
+						{
+							var contenttype = $('input:checkbox:checked.redactionrefusal').map(function () {return this.value;}).get(); 
+							if(contenttype.length==0 || contenttype.length>max_limit)
+							{
+								$("#refusal_err").html("Merci de s&eacute;lectionner de 1 &agrave; "+max_limit+" crit&egrave;res");
+								errorcnt++;
+							}
+							else
+								$("#refusal_err").html("");
+						}
+						else
+						{
+							var contenttype = $('input:checkbox:checked.translationrefusal').map(function () {return this.value;}).get(); 
+							if(contenttype.length==0 || contenttype.length>max_limit)
+							{
+								$("#refusal_err").html("Merci de s&eacute;lectionner de 1 &agrave; "+max_limit+" crit&egrave;res");
+								errorcnt++;
+							}
+							else
+								$("#refusal_err").html("");
+						}*/
+					   
+						if(errorcnt==0)
+							form.submit();
+						else
+							return false;
+					}	
+			});
+	});
+
+	function loadvalidationtemplate(vtype,mode)
+	{ 
+		$.ajax({
+			type: 'GET',
+			url: '/ao/loadvalidationtemplates',
+			data: 'validationtype=' + vtype+'&mode='+mode,
+			success: function(data)
+			{ 
+				$("#validationtemplateblock").html(data);
+			}
+		});
+	}	
+</script>	
+
+<style type="text/css">
+.form-horizontal .control-label {
+    float: left;
+    padding-top: 5px;
+    text-align: right;
+    width: 42%;
+	font-weight:bold;
+	cursor:default;
+}
+.form-horizontal .controls {
+    margin-left: 47%;
+}
+.popover-title{
+	padding: 8px 14px;
+}
+.popover-content
+{
+    padding: 9px 14px;
+}
+.error {  display: none !important;}
+
+@font-face{font-family:'Glyphicons Halflings';src:url(/BO/bootstrap/img/glyphicons-halflings-regular.eot);src:url(/BO/bootstrap/img/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),url(/BO/bootstrap/img/glyphicons-halflings-regular.woff2) format('woff2'),url(/BO/bootstrap/img/glyphicons-halflings-regular.woff) format('woff'),url(/BO/bootstrap/img/glyphicons-halflings-regular.ttf) format('truetype'),url(/BO/bootstrap/img/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')}.glyphicon{position:relative;top:1px;display:inline-block;font-family:'Glyphicons Halflings';font-style:normal;font-weight:400;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.glyphicon-remove-circle:before{content:"\e088"}.
+</style>
+{/literal}
+
+{if $ArticleDetails |@count gt 0}
+{foreach item=article from=$ArticleDetails name="ArticleDetails"}
+	<div class="row-fluid">
+		<div class="span12">		
+			<form class="form-horizontal form_validation_ttip" autocomplete="off" enctype="multipart/form-data" method="POST" name="edit_articleform" id="edit_articleform" action="/ongoing/save-article">
+				<fieldset>
+					<div class="control-group formSep">
+						<label class="control-label">Titre<span class="f_req">*</span></label>
+						<div class="controls">
+							<span><input type="text" name="title" style="text-transform: none;" id="title" class="input-xlarge" value="{$article.title|escape|utf8_encode|stripslashes}" /></span>
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label class="control-label">Langue<span class="f_req">*</span></label>
+						<div class="controls">
+							{html_options name=language id=language options=$language_array|utf8_encode selected=$article.language}
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label class="control-label">Type<span class="f_req">*</span></label>
+						<div class="controls">
+							{html_options name=type id=type options=$type_array|utf8_encode selected=$article.type}
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label class="control-label">Cat&eacute;gorie<span class="f_req">*</span></label>
+						<div class="controls">
+							{html_options name=category id=category options=$category_array|utf8_encode selected=$article.category}
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label class="control-label">Nombre de<span class="f_req">*</span></label>
+						<div class="controls">
+							{html_options name=signtype id=signtype selected=$article.sign_type options=$signtype_array|utf8_encode }
+							<span style="vertical-align:top"><input type="text" value="{$article.num_min}" id="num_min" name="num_min" class="span1"/></span>
+							<span style="vertical-align:top"><input type="text" value="{$article.num_max}" id="num_max" name="num_max" class="span1"/></span>
+						</div>
+					</div>
+					
+					<div class="control-group formSep">
+						<label for="fileinput" class="control-label">Type de mission / Crit&egrave;res de notation vs refus <span class="f_req">*</span></label>
+						<div class="controls">
+							<input type="radio" name="product" id="product" value="redaction" onClick="loadvalidationtemplate('redaction',0);" {if $article.product=="redaction"}checked{/if}/> R&eacute;daction&nbsp;
+							<input type="radio" name="product" id="product" value="translation" onClick="loadvalidationtemplate('translation',0);" {if $article.product=="translation"}checked{/if}/> Traduction					
+						
+							<div id="validationtemplateblock" style="border: 1px solid;padding:15px;">
+								<table cellpadding="5" cellspacing="5" >
+									<tr><td colspan="2">Merci de s&eacute;lectionner entre 1 et {$refusal_reasons_max} crit&egrave;res de notation parmi les suivants : </td></tr>
+									{foreach item=template from=$templatelist name="templatesloop"}
+										{if $smarty.foreach.templatesloop.index%2==0}
+											<tr>
+										{/if}
+											<td width="50%">
+												<input type="checkbox" name="{$variable}[]" value="{$template.identifier}"  class="{$variable}" {if in_array($template.identifier,$templatearray)} checked {/if}/> {$template.title|utf8_encode}
+											</td>
+										{if $smarty.foreach.templatesloop.index%2!=0}
+											</tr>
+										{/if}
+									{/foreach}
+								</table>	
+							</div>
+							<div id="refusal_err" style="color:red;"></div>	
+						</div>
+					</div>
+					
+					{if $article.AOtype eq "private"}
+					<div class="control-group formSep">
+						<label class="control-label">Langue(s) des r&eacute;dacteurs / traducteurs</label>
+						<div class="controls">
+							<select multiple="multiple" name="language_filter[]" data-placeholder="Select Language..." id="language_filter" style="width:400px" onchange="loadPrivateWriters('{$article.id}')">
+								{html_options options=$language_array|utf8_encode}
+							</select>
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label class="control-label">R&eacute;dacteur(s) / traducteur(s)<span class="f_req">*</span></label>
+						<div class="controls" id="writers_filter">
+							<select multiple="multiple" name="favcontribcheck[]" data-placeholder="Select Writer..." id="favcontribcheck" style="width:400px">
+							{foreach from=$contriblistall item=contrib}
+								{if in_array($contrib.identifier,$contrib_array)}
+								<option value="{$contrib.identifier}" selected>{$contrib.name|utf8_encode}</option>
+								{else}
+								<option value="{$contrib.identifier}">{$contrib.name|utf8_encode}</option>
+								{/if}
+							{/foreach}
+							</select>
+							
+						</div>
+					</div>
+					{/if}	
+					<div class="control-group formSep">
+						<label class="control-label">Fourchette de prix pour la r&eacute;daction
+<span class="f_req">*</span></label>
+						<div class="controls">
+							<span style="vertical-align:top"><input type="text" placeholder="Min" value="{$article.price_min}" id="price_min" name="price_min" class="span2"/></span>
+							<span style="vertical-align:top"><input type="text" placeholder="Max" value="{$article.price_max}" id="price_max" name="price_max" class="span2"/></span>
+						</div>
+					</div>
+                    {if $artuserprice neq 'NO' && $groupId == 1}
+                    <div class="control-group formSep">
+                        <label class="control-label">Prix du r&eacute;dacteur s&eacute;lectionn&eacute; <span class="f_req">*</span></label>
+                        <div class="controls">
+                            <div class="input-append span2">
+								<input type="text" placeholder="Writer price" value="{$artuserprice[0].price_user}" id="price_writer" name="price_writer" class="span6"/>
+								<span class="add-on">&euro;</span> 
+							</div>
+							<span style="display: block; height: 30px; float: left; margin-top: 5px;">( {$artuserprice[0].first_name|utf8_encode} {$artuserprice[0].last_name|utf8_encode} )</span>
+                            <input type="hidden" value="{$artuserprice[0].id}" id="part_id" name="part_id" />
+                        </div>
+                    </div>
+                    {/if}
+
+					<div class="control-group formSep">
+						<label  class="control-label">D&eacute;lai du timing de participation <span class="f_req">*</span></label>
+						<div class="controls">
+							<span><input type="text" name="participation_time" id="participation_time" class="span2" value="{$article.participation_time}"  /></span> mins 					
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label class="control-label">Reversement contributeur par article<span class="f_req">*</span></label>
+						<div class="controls">
+							
+							<div class="input-append">
+								<input type="text" value="{$article.contrib_percentage}" id="contrib_percentage" name="contrib_percentage" class="span3"/>
+								<span class="add-on">%</span>
+							</div>
+						</div>
+					</div>
+					
+					
+					<div class="control-group formSep">
+						<label class="control-label">Correction <span class="f_req">*</span></label>
+						<div class="controls">
+							<div class="toggle-check" id="correctioncheck">
+								<input type="checkbox" id="correction" name="correction" {if $stage2 eq 'yes'} disabled {/if} {if $article.correction eq 'yes'}checked{/if}>
+							</div>
+						</div>
+                        {if $stage2 eq 'yes'}
+                            <input type="hidden"  value="{$article.correction}" id="correctiontype" name="correctiontype" />
+                        {/if}
+					</div>
+					
+					<div id="correction_details" {if $article.correction neq 'yes'} style="display:none" {/if}>
+                        
+						{if $article.correction_type eq "private"}
+						<div class="control-group formSep">
+							<label class="control-label">Langue(s) des Correcteurs</label>
+							<div class="controls">
+								<select multiple="multiple" {if $stage2 eq 'yes'} disabled {/if} name="clanguage_filter[]" data-placeholder="Select Language..." id="clanguage_filter" style="width:400px" onchange="loadPrivatecorrectors('{$article.id}')">
+									{html_options options=$language_array|utf8_encode}
+								</select>
+							</div>
+						</div>
+						<div class="control-group formSep">
+							<label class="control-label">Correcteur(s)<span class="f_req">*</span></label>
+							<div class="controls" id="correctors_filter">
+								<select multiple="multiple" {if $stage2 eq 'yes'} disabled {/if} name="favcorrectorcheck[]" data-placeholder="Select corrector..." id="favcorrectorcheck" style="width:400px">
+								{foreach from=$correctorlistall item=contrib}
+									{if in_array($contrib.identifier,$correctors_array)}
+									<option value="{$contrib.identifier}" selected>{$contrib.name|utf8_encode}</option>
+									{else}
+									<option value="{$contrib.identifier}">{$contrib.name|utf8_encode}</option>
+									{/if}
+								{/foreach}
+								</select>
+								
+							</div>
+						</div>
+						{/if}
+						<div class="control-group formSep">
+							<label class="control-label">Fourchette de prix pour la correction<span class="f_req">*</span></label>
+							<div class="controls">
+								<span style="vertical-align:top"><input type="text" placeholder="Min" value="{$article.correction_pricemin}" id="correction_pricemin" name="correction_pricemin" class="span2"/></span>
+								<span style="vertical-align:top"><input type="text" placeholder="Max" value="{$article.correction_pricemax}" id="correction_pricemax" name="correction_pricemax" class="span2"/></span>
+							</div>
+						</div>
+						
+						{if $artcrtprice neq 'NO' && $groupId eq 1}
+                        <div class="control-group formSep">
+                            <label class="control-label">Prix du correcteur s&eacute;lectionn&eacute;<span class="f_req">*</span></label>
+                            <div class="controls">
+								<div class="input-append span2">
+									<input type="text" placeholder="Corrector price" value="{$artcrtprice[0].price_corrector}" id="price_corrector" name="price_corrector" class="span6"/>
+									<span class="add-on">&euro;</span>									
+								</div>
+							<span style="display: block; height: 30px; float: left; margin-top: 5px;">( {$artcrtprice[0].first_name|utf8_encode} {$artcrtprice[0].last_name|utf8_encode} )</span>
+							<input type="hidden" value="{$artcrtprice[0].id}" id="crtpart_id" name="crtpart_id" />	
+							</div>	
+                        </div>
+                        {/if}
+					</div>
+					
+					<input type="hidden" name="ao_id" value="{$article.delivery_id}">
+					<input type="hidden" name="article_id" value="{$article.id}">
+					<input type="hidden" name="client_id" value="{$article.user_id}">
+					<input type="hidden" name="refusal_reasons_max" id="refusal_reasons_max" value="{$refusal_reasons_max}"/>
+					<div class="control-group">
+						<div class="controls">
+							<button class="btn btn-gebo" type="submit">Mettre &agrave; jour</button>
+							<button class="btn" data-dismiss="modal">Annuler</button>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+{/foreach}
+{/if}

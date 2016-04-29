@@ -1,0 +1,652 @@
+{literal}
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript" >
+var lang = {/literal}"{$article.language}"{literal};
+var writing_cost = {/literal}"{$article.writing}"{literal};
+$(document).ready(function() {
+    $("#parttime_option").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#sub_opt_time").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#sub_opt_resub").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#privcontrib").chosen();
+    $(".uni_style").uniform();
+    $("#favcontribcheck").chosen();
+    //$("#contrib_cat").chosen();
+   // $("#contrib_lang").chosen();
+    $('.table textarea').tinymce({
+        // Location of TinyMCE script
+        script_url 							: '/BO/theme/gebo/lib/tiny_mce/tiny_mce.js?' + new Date().getTime(),
+        // General options
+        theme 								: "advanced",
+        plugins 							: "autoresize,style,table,advhr,advimage,advlink,emotions,inlinepopups,preview,media,contextmenu,paste,fullscreen,noneditable,xhtmlxtras,template,advlist",
+        // Theme options
+        theme_advanced_buttons1 			: "undo,redo,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,fontsizeselect",
+        theme_advanced_buttons2 			: "forecolor,backcolor,|,cut,copy,paste,pastetext,|,bullist,numlist,link,image,media,|,code,preview,fullscreen",
+        theme_advanced_buttons3 			: "",
+        theme_advanced_toolbar_location 	: "top",
+        theme_advanced_toolbar_align 		: "left",
+        theme_advanced_statusbar_location 	: "bottom",
+        theme_advanced_resizing 			: false,
+        height                              : 300,
+        content_css                         : "/BO/theme/gebo/css/tinymce_styles.css?" + new Date().getTime(),
+        theme_advanced_font_sizes           : "8px,10px,12px,13px,14px,16px,18px,20px",
+        font_size_style_values              : "8px,10px,12px,13px,14px,16px,18px,20px",
+        init_instance_callback				: function(){
+
+            function resizeWidth() {
+                document.getElementById(tinyMCE.activeEditor.id+'_tbl').style.width='100%';
+            }
+            resizeWidth();
+            $(window).resize(function() {
+                resizeWidth();
+            })
+        }
+    });
+    updatedContribList($("#artId").val());
+	
+	if($("#aotype").val()=='private')
+	{
+		var checked = "";
+		$("input[name='contribtype[]']:checked").each(function ()
+		{
+			if(checked)
+			checked += ","+$(this).val();
+			else
+			checked = $(this).val();
+		});
+		
+		//$.post('/article-republish/loaduserslist',{'artId':$("#artId").val(),'type':checked,'language':lang,'category':''},function(data){alert(data);$("#contribs").html(data);});
+	}
+	
+	// Change Price based on Files per pack
+	$("#files_pack").keyup(function(){
+		var files_pack = $(this).val();
+		var max_writer_price = files_pack*parseFloat(writing_cost);	
+		$("#price_max").val(max_writer_price.toFixed(2));
+		if(parseFloat($("#price_min").val())>max_writer_price)
+			$("#price_min").val('0');
+	})
+	
+});
+///when republish popup will come to upate values
+function saveRepublishPop() ///when directly republish
+{
+    var artId = $("#artId").val();
+    var aotype = $("#aotype").val();
+    var selectedcontribs = $("#favcontribcheck").val();
+    var sendmailtoonlysc = $('#sendmailtoonlysc').is(":checked") ;
+    var fbpost = $("#fbpost").val();
+    var price_min = $("#price_min").val();
+    var price_max = $("#price_max").val();
+    var checked = [];
+    var checked2 = "";
+    $("input[name='contribtype[]']:checked").each(function ()
+    {
+        checked.push($(this).val());
+		if(checked2)
+			checked2 += ","+$(this).val();
+		else
+			checked2 = $(this).val();
+    });
+    var stage = $("#stage").val();
+    var parttime_option = $("#parttime_option").val();
+    var parttime = $("#participation_time").val();
+    var suboptparttime = $("#sub_opt_parttime").val();
+    var jc0time = $("#subjunior_time").val();
+    var jctime =  $("#junior_time").val();
+    var sctime = $("#senior_time").val();
+    var subopttime = $("#sub_opt_time").val();
+    var jc0resub = $("#jc0_resubmission").val();
+    var jcresub = $("#jc_resubmission").val();
+    var scresub = $("#sc_resubmission").val();
+    var suboptresub = $("#sub_opt_resub").val();
+    var fbcomments = $("#fbcomments").val();
+    var scobject = $("#scobject").val();
+    var pubselectedlang = $("#contrib_lang").val();
+    if(aotype == "private"){
+        var allobject = $("#allobject").val();
+        var allmessage = tinyMCE.get('allmailbody').getContent();  }
+    var scmessage = tinyMCE.get('scmailbody').getContent();
+    var anouncebymail = $('#anouncebymail').is(":checked") ;
+    var sendfrom = $('#sendfrom').val();
+    var contrib_lang = $('#contrib_lang').val();
+	
+    if($("#refusemail2").val() == 'yes')
+    {
+        var refusalmessage = tinyMCE.get('refusemessage').getContent();
+        var sendrefusalmail = "yes";
+    }
+    ///validation////
+    if(aotype == "private")
+    {
+        if(($("#maillimit").val()>6000)||(parttime == '')||(selectedcontribs == null)||(jc0time == '')||(jctime == '')||(sctime == '')||(jc0resub == '')||(jcresub == '')||(scresub == ''))
+        {
+            smoke.alert("please check limit of 60 exceed OR other inputs");
+            return false;
+        }
+    }
+    else
+    {
+        if((parttime == '')||(jc0time == '')||(jctime == '')||(sctime == '')||(jc0resub == '')||(jcresub == '')||(scresub == '') || (contrib_lang==null))
+        {
+            smoke.alert("please check inputs given");
+            return false;
+        }
+    }
+    //alert(checked);
+    var params = {artId:artId, save:'save',parttime_option:parttime_option,aotype:aotype,view_to:checked,viewto:checked2,pubselectedlang:pubselectedlang,selectedcontribs:selectedcontribs,price_min:price_min,price_max:price_max,fbcomments:fbcomments, parttime:parttime, suboptparttime:suboptparttime, jc0time:jc0time, sendmailtoonlysc:sendmailtoonlysc,jctime:jctime,sctime:sctime, subopttime:subopttime,jc0resub:jc0resub,jcresub:jcresub, scresub:scresub, suboptresub:suboptresub,scobject:scobject, allobject:allobject, scmessage:scmessage,allmessage:allmessage,'selection_time':$("#selection_time").val(),'title':$("#title").val(),'files_pack':$("#files_pack").val()}
+    $.post('/article-republish/republishpopup',params, function(data){ 
+        if($("#nopartsforrepublish").val() == 'yes')
+        {
+            alert("Plus personne ne peut participer.");
+        }
+        if(stage != '')   /////////when republish pop up generated in any of stages
+        {
+            smoke.confirm("L\'article sera remis en ligne",function(e){
+                if(e)
+                {
+                    $("#sendtofo").val('yes');
+                    $("#crtsendtofo").val('yes');
+                    $("#disapprove"+stage+"form").submit();
+                    return true;
+                }
+                else
+                {
+                    $("#sendtofo").val('no');
+                    $("#crtsendtofo").val('no');
+                    $("#disapprove"+stage+"form").submit();
+                    return true;
+                }
+            });
+        }
+        else      /////////when republish pop up generated in selection profile related pages
+        {
+            smoke.confirm("L\'article sera remis en ligne",function(e){
+                if (e)
+                {
+                    var params2 = {artId:artId,aoType:aotype,sendtofo:'yes',sendrefusalmail:sendrefusalmail,scobject:scobject,
+                                 fbpost:fbpost,pubselectedlang:pubselectedlang,sendmailtousertype:checked,sendmailtoonlysc:sendmailtoonlysc,
+                                 selectedcontribs:selectedcontribs,allobject:allobject,anouncebymail:anouncebymail,scmessage:scmessage,
+                                 allmessage:allmessage,refusalmailcontent:refusalmessage,sendfrom:sendfrom}
+                    $.post('/article-republish/publisharticlefo',params2, function(data){ //alert(data);
+                        data1 = $.trim(data);
+                        if(data1 == 'ok')
+                            window.location.reload();
+                    });
+                }
+                else
+                {
+                    window.location.href = "/article-republish/publisharticlefo?artId="+artId+"&aoType="+aotype+"&sendtofo=no&sendrefusalmail="+sendrefusalmail+"&refusalmailcontent="+escape(refusalmessage);
+                }
+            });
+        }
+    });
+}
+
+if (tinymce.getInstanceById('scmailbody'))
+{
+    tinymce.execCommand('mceRemoveControl', true, 'scmailbody');
+    loadEditors('scmailbody');
+}
+else  if (!tinymce.getInstanceById('scmailbody'))
+    loadEditors('scmailbody');
+
+
+if(tinymce.getInstanceById('allmailbody'))
+{
+    tinymce.execCommand('mceRemoveControl', true, 'allmailbody');
+    loadEditors('allmailbody');
+}
+else  if(!tinymce.getInstanceById('allmailbody'))
+    loadEditors('allmailbody');
+
+if(tinymce.getInstanceById('refusemessage'))
+{
+    tinymce.execCommand('mceRemoveControl', true, 'refusemessage');
+    loadEditors('refusemessage');
+}
+else  if(!tinymce.getInstanceById('refusemessage'))
+    loadEditors('refusemessage');
+
+function changeMailByContribType()
+{
+    $('#scmailbody').html(data);
+    var artid = $("#artId").val();
+    var checkedcontribs = [];
+    $("input[name='contribtype[]']:checked").each(function ()
+    {
+        checkedcontribs.push($(this).val());
+    });
+    var res = $.trim(checkedcontribs);
+    if(res == "senior")
+        var result =  "onlysc";
+    else
+        var result =  "all";
+    if (tinymce.getInstanceById('scmailbody'))
+    {
+        tinymce.execCommand('mceRemoveControl', true, 'scmailbody');
+        loadEditors('scmailbody');
+    }
+    else  if (!tinymce.getInstanceById('scmailbody'))
+        loadEditors('scmailbody');
+    var parttime_option = $("#parttime_option").val();
+    var extend_time = $("#participation_time").val();
+    var target_page = "/republish/changepublicmail?part_time="+extend_time+"&parttime_option="+parttime_option+"&artId="+artid+"&contribtype="+result;
+    $.get(target_page, function(data){  
+        var mailcontent = data.split("*");
+        $("#scmailbody").html(mailcontent[0]);
+        $("#scobject").val(mailcontent[1]);
+    });
+}
+function fngetmailcontent()
+{
+    var artname = $("#artId").val();
+    var aotype = $("#aotype").val();
+    var onlyscmail = $('#sendmailtoonlysc').is(":checked") ;
+    var scCount = $("#sc_count").val();
+    if(aotype == 'private')
+    {
+        if(tinymce.getInstanceById('allmailbody'))
+        {
+            tinymce.execCommand('mceRemoveControl', true, 'allmailbody');
+            loadEditors('allmailbody');
+        }
+        else  if(!tinymce.getInstanceById('allmailbody'))
+            loadEditors('allmailbody');
+    }
+    if (tinymce.getInstanceById('scmailbody'))
+    {
+        tinymce.execCommand('mceRemoveControl', true, 'scmailbody');
+        loadEditors('scmailbody');
+    }
+    else  if (!tinymce.getInstanceById('scmailbody'))
+        loadEditors('scmailbody');
+    var checkedcontribs = [];
+    $("input[name='contribtype[]']:checked").each(function ()
+    {
+        checkedcontribs.push($(this).val());
+    });
+    var selectedcontribs = $("#favcontribcheck").val();
+    var parttime_option = $("#parttime_option").val();
+    var extend_time = $("#participation_time").val();
+    var target_page = "/article-republish/getdynamicselectedcontribs?part_time="+extend_time+"&parttime_option="+parttime_option+"&selectedcontribs="+selectedcontribs+"&artname="+artname+"&onlyscmail="+onlyscmail+"&checkedcontribs="+checkedcontribs+"&scCount="+scCount;
+    $.post(target_page, function(data){  
+        if(aotype == "private"){
+            var mailcontent = data.split("*");
+            $('#scmailbody').html(mailcontent[0]);
+			$('#allmailbody').html(mailcontent[1]);
+            $('#mailsenduserscount').html("("+mailcontent[2]+" contributeurs pourront participer)");
+        }
+        else
+        {
+            $('#scmailbody').html(data);
+        }
+    });
+}
+function showFbPost()
+{
+    if($('#fbpost').is(':checked'))  {
+        $('#fbpostcomments').show();   }
+    else {
+        $('#fbpostcomments').hide();   }
+}
+//get all contributor based on the type, lang, cat//////
+function publicAoContribList(artId)
+{
+    var contribtype = $("input[name='contribtype[]']:checked").map(function () {return this.value;}).get().join("','");
+    var cat="";
+    var lang="";
+    lang= $.trim(lang);
+    $.ajax({
+        type: 'GET',
+        url: '/republish/loadpublicaouserslist',
+        data: 'type=' + contribtype+'&category='+cat+'&language='+lang+"&artId="+artId,
+        success: function(data)
+        {         //alert(data);
+            var content = data.split("*");
+            if($("#aotype").val() == "private" && content[1] > 6000)
+                smoke.alert("The limit of 60 is exceeded");
+            $('#pubcontribslist').val(content[0]);
+            $('#mailsenduserscount').html("("+content[1]+" contributeurs pourront participer)");
+            $('#maillimit').val(content[1]);
+        }
+    });
+}
+
+function privateAoContribList()
+{
+    var selectedcontribs = $("#favcontribcheck").val();
+    if(selectedcontribs)
+    {
+        $('#mailsenduserscount').html("("+selectedcontribs.length+" contributeurs pourront participer)");
+        $('#maillimit').val(selectedcontribs.length);
+    }
+    else
+    {
+        $('#mailsenduserscount').html("(0 contributeurs pourront participer)");
+        $('#maillimit').val(0);
+    }
+
+}
+//get all contributor based on the type, lang, cat//////
+function changeContribCount($artid)
+{
+    var langselected = [];
+    $('#contrib_lang option:selected').each(function(){
+        langselected.push($(this).val());
+    });
+    var target_page = "/republish/changecontribcount?langs="+langselected+"&artId="+$artid;
+    $.post(target_page, function(data){ //alert(data);
+        var obj = $.parseJSON(data);
+        if(obj[0] == 0) $("#contribtype1").prop('checked',false); else $("#contribtype1").prop('checked',true);
+        if(obj[1] == 0) $("#contribtype2").prop('checked',false); else $("#contribtype2").prop('checked',true);
+        if(obj[2] == 0) $("#contribtype3").prop('checked',false); else $("#contribtype3").prop('checked',true);
+
+        $("#sclcount").text(obj[0]);
+        $("#jclcount").text(obj[1]);
+        $("#jc0lcount").text(obj[2]);
+    });
+}
+
+</script>
+<style type="text/css">
+    .form-horizontal .control-label {
+        float: left;
+        padding-top: 5px;
+        text-align: right;
+        width: 42%;
+        font-weight:bold;
+        cursor:default;
+    }
+    .form-horizontal .controls {
+        margin-left: 47%;
+    }
+
+	.pointer a label
+	{
+		cursor:pointer;
+	}
+
+</style>
+{/literal}
+
+{* <div class="alert alert-warning" ><strong>Configuration de republication - {$missiontitle}</strong></div> *}
+{* <div class="alert alert-success"><strong>Renvoyer l'article aux personnes ayant déjà participé sans être sélectionnées</strong> <span id="mailsenduserscount"> ({$createmailtobesentcount} contributeurs pourront participer)</span> </div> *}
+<h3 class="pull-center pointer topset2">
+	{if $article.writer_bid_details |@count gt 0 OR $article.corrector_bid_details |@count gt 0 }
+		{if $article.writer_bid_details |@count gt 0}
+		{if $article.writer_bid_details[0].writer_status eq 'bid' OR $article.writer_bid_details[0].writer_status eq 'disapproved' OR $article.writer_bid_details[0].writer_status eq 'time_out'}
+			{if ($article.writer_bid_details[0].writer_status eq 'bid' && $article.writer_bid_details[0].article_submit_expires lt $smarty.now) OR ($article.writer_bid_details[0].writer_status eq 'time_out')}
+				<label class="label label-important">Cet article n&rsquo;a pas &eacute;t&eacute; envoy&eacute; par le r&eacute;dacteur s&eacute;lectionn&eacute;</label>
+			{elseif $article.writer_bid_details[0].writer_status eq 'disapproved'}
+			Cet article est actuellement en <a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}">
+				<label class="label label-info">reprise r&eacute;dacteur</label>
+				</a>
+			{else}
+			Cet article est actuellement en 
+				<a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}">
+				<label class="label label-info">
+						{if $article.writer_bid_details[0].writer_status eq 'bid' OR $article.writer_bid_details[0].writer_status eq 'time_out' }
+						r&eacute;daction {if $article.writer_bid_details[0].latest_cycle gt 1}({$article.writer_bid_details[0].latest_cycle}) {/if}
+							{* {else}
+						non1 envoy&eacute; *}
+						{/if}
+				</label>
+				</a>
+			{/if}
+		{elseif $article.writer_bid_details[0].writer_status eq 'plag_exec' OR $article.writer_bid_details[0].current_stage eq 'stage0' }
+		Cet article est actuellement en 
+		<a href="/proofread/stage-articles?submenuId=ML3-SL11&aoId={$article.delivery_id}"><label class="label label-info">phase plagiat</label></a>
+		{elseif $article.writer_bid_details[0].writer_status eq 'under_study' && $article.writer_bid_details[0].current_stage eq 'stage1'}
+		Cet article est actuellement en
+		<a href="/proofread/stage-deliveries?submenuId=ML3-SL2"><label class="label label-info">correction interne (S1)</label></a>
+		<br>
+		{elseif $article.correction eq 'yes' && $article.correction_type eq 'extern' && $article.totalCorrectionParticipations}
+			Cet article est actuellement en <a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning hint--left  hint" data-hint="Correcteur">phase de s&eacute;lection</span></a>
+		{elseif $article.writer_bid_details[0].writer_status eq 'under_study' && $article.writer_bid_details[0].current_stage eq 'stage2' && $article.corrector_bid_details[0].current_stage neq 'stage2'}
+		Cet article est actuellement en
+		<a href="/proofread/stage-deliveries?submenuId=ML3-SL3"><label class="label label-info">phase finale (S2)</label></a>
+		<br>
+		{/if}
+		{/if}
+		
+		{if $article.corrector_bid_details |@count gt 0}
+		{if ($article.corrector_bid_details[0].corrector_status eq 'bid' || $article.corrector_bid_details[0].corrector_status eq 'disapproved') && ($article.writer_bid_details[0].writer_status eq 'under_study')}
+
+		{if ($article.corrector_bid_details[0].corrector_status eq 'bid' &&  	$article.corrector_bid_details[0].corrector_submit_expires lt $smarty.now) OR ($article.corrector_bid_details[0].corrector_status eq 'time_out')}
+			{* <label class="label label-important">Non envoy&eacute; par le correcteur</label> *}
+		{else}
+		Cet article est actuellement en
+			<a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}">
+				<label class="label label-info">
+					{if $article.corrector_bid_details[0].corrector_status eq 'bid'}
+					cours de Correction externe {if $article.corrector_bid_details[0].latest_cycle gt 1}({$article.corrector_bid_details[0].latest_cycle}) {/if}
+					{else}
+					non envoy&eacute;
+					{/if}
+				</label>
+			</a>
+			<br>
+		{/if}
+		{elseif ($article.corrector_bid_details[0].corrector_status eq 'disapproved') && ($article.writer_bid_details[0].writer_status eq 'disapproved_temp' || $article.writer_bid_details[0].writer_status eq 'closed_temp' )}
+		Cet article est actuellement en
+		<a href="/correction/moderation?submenuId=ML3-SL10"><label class="label label-info">cours de reprise de correction externe</label></a>
+		<br>
+		{* {elseif ($article.corrector_bid_details[0].corrector_status eq 'under_study' && $article.corrector_bid_details[0].current_stage eq 'stage2') && ($article.writer_bid_details[0].writer_status eq 'under_study' || $article.writer_bid_details[0].current_stage eq 'stage2' )}
+		<a href="/proofread/stage-deliveries?submenuId=ML3-SL3"><label class="label label-info">EN RELECTURE PHASE 2</label></a>
+		<br>
+		<!--{$article.corrector_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}-->
+
+		{elseif ($article.corrector_bid_details[0].corrector_status eq 'under_study' && $article.corrector_bid_details[0].current_stage eq 'mission_test') && ($article.writer_bid_details[0].writer_status eq 'under_study' || $article.writer_bid_details[0].current_stage eq 'mission_test' )}
+		<a href="/ao/markstat?submenuId=ML2-SL3"><label class="label label-info">Statistiques de missions test</label></a>
+		<br>
+		<!--{$article.corrector_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}-->
+		{elseif $article.corrector_bid_details[0].corrector_status eq 'published' &&  $article.writer_bid_details[0].writer_status eq 'published'}
+		<label class="label label-warning">VALID&Eacute;</label>
+		{elseif $article.writer_bid_details[0].writer_status eq 'closed' OR $article.bo_closed_status eq 'closed' }
+		<label class="label label-warning">article ferm&eacute;</label> *}
+		{/if}
+		{/if}
+	{/if}
+
+	{if $article.participation_expires lt $smarty.now && $article.totalParticipations gt 0 && !$article.writerParticipation}
+		Cet article est actuellement en<a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning hint--left  hint" data-hint="R&eacute;dacteur">phase de s&eacute;lection</span></a>
+	{elseif $article.correction_participationexpires lt $smarty.now && $article.totalCorrectionParticipations gt 0 && !$article.correctorParticipation}
+		Cet article est actuellement en <a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning hint--left  hint" data-hint="Correcteur">phase de s&eacute;lection</span></a>
+    {/if}
+</h3>		
+<br>			
+
+<form class="form-horizontal form_validation_ttip topset2" method="post" action="/article-republish/saverepublish" >
+	<input type="hidden" id="nopartsforrepublish" name="nopartsforrepublish" value="{$nopartsforrepublish}" >
+	<input id="stage" name="stage" value="{$stage}" type="hidden">
+    <fieldset>
+		<div class="control-group formSep">
+			<label class="control-label">Titre de l&rsquo;article<span class="f_req">*</span></label>
+			<div class="controls">
+				<span><input type="text" name="title" style="text-transform: none;" id="title" class="input-xlarge" value="{$article.title|escape|utf8_encode|stripslashes}" /></span>
+			</div>
+		</div>
+		
+		<div class="control-group formSep">
+			<label class="control-label">Fourchette de prix pour la r&eacute;daction
+			<span class="f_req">*</span></label>
+			<div class="controls">
+				<span style="vertical-align:top"><input type="text" placeholder="Min" value="{$article.price_min}" id="price_min" name="price_min" class="span2 number" 
+				{if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) || $article.writer_selection} disabled {/if} 
+				/></span>
+				<span style="vertical-align:middle"><input type="text" placeholder="Max" value="{$article.price_max}" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) || $article.writer_selection} disabled {/if} id="price_max" name="price_max" class="span2 number"/></span>
+				<span style="vertical-align:middle">&euro;</span>
+			</div>
+		</div>
+	
+		<div class="control-group formSep">
+            <label class="control-label">Temps de bidding :</label>
+            <div class="controls form-inline">
+                <span style="vertical-align:top;"><input id="participation_time" name="participation_time" type="text" value="{$artdeldetails[0].participation_time}" onkeyup="fngetmailcontent();"/></span>
+                <select name="parttime_option" id="parttime_option" onchange="fngetmailcontent();">
+                    <option value="min" selected="">Minute(s)</option>
+                    <option value="hour">Heure(s)</option>
+                    <option value="day">Jour(s)</option>
+                </select>
+            </div>
+        </div>
+		<div class="control-group formSep">
+			<label  class="control-label">D&eacute;lai du timing de s&eacute;lection<span class="f_req">*</span></label>
+			<div class="controls">
+				<span><input type="text" name="selection_time" id="selection_time" class="span2" value="{$article.selection_time}" {if $article.participation_expires gt $smarty.now || $article.writer_selection}disabled{/if}  /></span> mins 					
+			</div>
+		</div>
+		<div class="control-group formSep">		
+			<label class="control-label">#Fichiers / Pack<span class="f_req">*</span></label>
+			<div class="controls">
+				<input type="text" name="files_pack" id="files_pack" class="span2 integer" value="{$article.files_pack}" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) || $article.writer_selection} readonly {/if}  />
+			</div>
+		</div>
+        <div class="control-group formSep">
+            <label class="control-label">Temps de rédaction :</label>
+            <div class="controls form-inline">
+                {if $article.product neq 'translation'}
+				<span style="vertical-align:top;">JC0 <input id="subjunior_time" name="subjunior_time" type="text" value="{$artdeldetails[0].subjunior_time}" class="span1"/></span>
+				{/if}
+                <span style="vertical-align:top;">JC <input id="junior_time" name="junior_time" type="text" value="{$artdeldetails[0].junior_time}" class="span1"/></span>&nbsp;
+                <span style="vertical-align:top;">SC <input id="senior_time" name="senior_time" type="text"  value="{$artdeldetails[0].senior_time}" class="span1"/></span>&nbsp;
+                <select name="sub_opt_time" id="sub_opt_time" class="span2">
+                    <option value="min" {if $artdeldetails[0].submit_option eq 'mim'}selected="selected"{/if}>Minute(s)</option>
+                    <option value="hour" {if $artdeldetails[0].submit_option eq 'hour'}selected="selected"{/if}>Heure(s)</option>
+                    <option value="day" {if $artdeldetails[0].submit_option eq 'day'}selected="selected"{/if}>Jour(s)</option>
+                </select>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <label class="control-label">Temps de rédaction après refus d'un article :</label>
+            <div class="controls form-inline">
+				{if $article.product neq 'translation'}
+                <span style="vertical-align:top;">JC0 <input id="jc0_resubmission" name="jc0_resubmission" type="text" class="span1" value="{$artdeldetails[0].jc0_resubmission}"/></span>
+				{/if}
+                <span style="vertical-align:top;">JC <input id="jc_resubmission" name="jc_resubmission" type="text" class="span1" value="{$artdeldetails[0].jc_resubmission}"/></span>&nbsp;
+                <span style="vertical-align:top;">SC <input id="sc_resubmission" name="sc_resubmission" type="text" class="span1" value="{$artdeldetails[0].sc_resubmission}"/></span>&nbsp;
+                <select name="sub_opt_resub" id="sub_opt_resub" class="span2">
+                    <option value="min" {if $artdeldetails[0].resubmit_option eq 'mim'}selected="selected"{/if}>Minute(s)</option>
+                    <option value="hour" {if $artdeldetails[0].resubmit_option eq 'hour'}selected="selected"{/if}>Heure(s)</option>
+                    <option value="day" {if $artdeldetails[0].resubmit_option eq 'day'}selected="selected"{/if}>Jour(s)</option>
+                </select>
+            </div>
+        </div>
+        {if $aotype eq "private"}
+        <input id="sc_count" name="sc_count" value="{$sc_count}" type="hidden"/>
+        <div class="control-group formSep" id="privateaoset">
+           <label class="control-label">Type de contributeurs:</label>
+            <div class="controls form-inline">
+                <label class="uni-checkbox">
+                    <input type="checkbox" id="contribtype1" name="contribtype[]"  value="senior" {if $sc eq 'yes'} checked {/if} class="uni_style" onClick="updatedContribList('{$article.id}');" />SC <b>({$sc_count})</b> </label>
+                <label class="uni-checkbox">
+                    <input type="checkbox" id="contribtype2" name="contribtype[]"  value="junior" {if $jc eq 'yes'} checked {/if} class="uni_style" onClick="updatedContribList('{$article.id}');" />JC  <b>({$jc_count})</b></label>
+                {if $article.product neq 'translation'}
+				<label class="uni-checkbox">
+                    <input type="checkbox"  id="contribtype3" name="contribtype[]"  value="sub-junior" {if $jc0 eq 'yes'} checked {/if} class="uni_style" onClick="updatedContribList('{$article.id}');" />SUB JUNIOR <b>({$jc0_count})</b>
+				</label>
+				{/if}
+            </div>
+			<div class="controls form-inline">
+                <select name="contrib_lang[]" id="contrib_lang" style="display:none" onChange="updatedContribList('{$article.id}');" data-placeholder="select language" multiple="multiple" style="width:250px;">
+                    {foreach from=$Contrib_langs item=langitem key=langkey}
+                    <option value="{$langkey}" {if $langkey eq $article.language} selected {/if}>{$langitem|utf8_encode}</option>
+                    {/foreach}
+                </select>
+                <select name="contrib_cat" id="contrib_cat" style="width:250px;display:none" onChange="updatedContribList('{$article.id}')">
+                    {html_options options=$Contrib_cats|utf8_encode selected=$contrib_cat}
+                </select>
+            </div> 
+            <div class="controls form-inline" id="contribs">
+                <select name="favcontribcheck[]" id="favcontribcheck" multiple="multiple" onchange="fngetmailcontent();">
+                    {foreach from=$contriblistall1 item=contrib}
+                    {if in_array($contrib.identifier,$contrib_array)}
+                    <option value="{$contrib.identifier}" selected>{$contrib.name}</option>
+                    {else}
+                    <option value="{$contrib.identifier}">{$contrib.name}</option>
+                    {/if}
+                    {/foreach}
+                </select>
+                <div id="favcontrib_err" style="color:red;"></div>
+            </div>
+        </div>
+        {else}
+        <div class="control-group formSep" id="publicaoset">
+            <label class="control-label">Type de contributeurs:</label>
+            <div class="controls form-inline">
+                <label class="uni-checkbox2">
+                    <input type="checkbox" id="contribtype1" name="contribtype[]" onclick="changeMailByContribType();publicAoContribList('{$artdeldetails[0].artId}');" value="senior" {if $sc eq 'yes'} checked {/if} class="uni_style"   />SC {* <b>(<span id="sclcount">{$sc_count}</span>)</b> *}
+				</label>
+                <label class="uni-checkbox2">
+                    <input type="checkbox" id="contribtype2" name="contribtype[]" onclick="changeMailByContribType();publicAoContribList('{$artdeldetails[0].artId}');" value="junior" {if $jc eq 'yes'} checked {/if} class="uni_style"  />JC {* <b>(<span id="jclcount">{$jc_count}</span>)</b> *}
+				</label>
+				{if $article.product neq 'translation'}
+                <label class="uni-checkbox2">
+                    <input type="checkbox"  id="contribtype3" name="contribtype[]" onclick="changeMailByContribType();publicAoContribList('{$artdeldetails[0].artId}');" value="sub-junior" {if $jc0 eq 'yes'} checked {/if} class="uni_style"  />SUB JUNIOR {* <b>(<span id="jc0lcount">{$jc0_count}</span>)</b> *}
+				</label>
+				{/if}
+				<div>  
+				<select name="contrib_lang[]" id="contrib_lang" data-placeholder="select language"  onchange="changeContribCount('{$artdeldetails[0].artId}');" multiple="multiple" style="width:250px;padding-left: 50px;top:50px;position: relative;display:none">
+                    {foreach from=$language_array item=langitem key=langkey}
+						  <option value="{$langkey}" {if $langkey eq $article.language} selected {/if}>{$langitem|utf8_encode}</option>
+                    {/foreach}
+                </select>  
+				</div> 
+            </div>
+        </div>
+        {/if}
+    </fieldset>
+<table class="table table-bordered">
+    <tr>
+		<td><b>From</b></td>
+		<td style="float:left;">
+			<select name="sendfrom" id="sendfrom">
+				<option value="editorial">Editorial</option>
+				<option value="me">Me</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+        {if $refusemail == 'yes'}
+        <td colspan=3><div class="alert alert-danger">Email de refus envoy&eacute; aux participants de cette ench&egrave;re<strong>({$toberefusedcontribs})</strong></div><textarea rows="4" cols="50" name="refusemessage" id="refusemessage">{$refusemessage}</textarea></td>
+        {/if}
+    </tr>
+    <tr>
+        <td colspan=2>
+            {if $aotype eq "private"}
+            <div class="alert alert-danger"><label class="uni-checkbox"><input id="sendmailtoonlysc" name="sendmailtoonlysc" type="checkbox" class="uni_style" value="yes" onclick="fngetmailcontent();"/></label>sc mail</div>
+            {/if}
+            <div class="alert alert-success">Objet de l'email : <input id="scobject" name="scobject" type="text" class="span5" value="{$scobject|utf8_encode}"/></div>
+            <textarea rows="4" cols="50" name="scmailbody" id="scmailbody">{$scmessage}</textarea></td>
+        {if $aotype eq "private"}
+        <td colspan=2><div class="alert alert-danger">all contributor mail</div><div class="alert alert-success">Objet de l'email : <input id="allobject" name="allobject" type="text" class="span5" value="{$allobject|utf8_encode}"/></div><textarea rows="4" cols="50" name="allmailbody" id="allmailbody">{$allmessage}</textarea></td>
+        {/if}
+    </tr>
+    <tr>
+        <input id="artId" name="artId" value="{$article.id}" type="hidden"/>
+        <input id="aoId" name="aoId" value="{$article.delivery_id}" type="hidden"/>
+        <input id="" name="clientid" value="{$article.clientid}" type="hidden"/>
+        <input id="aotype" name="aotype" value="{$aotype}" type="hidden"/>
+        <input id="refusemail2" name="refusemail2" value="{$refusemail}" type="hidden"/>
+        <input id="pubcontribslist" name="pubcontribslist" value="" type="hidden"/>
+        <input id="maillimit" name="maillimit" value="{$createmailtobesentcount}" type="hidden"/>
+        <td colspan="5" class="alert alert-danger">
+            <div class="span4 pull-right">
+			<table align="right">
+			<tr><td>
+                <label class="uni-checkbox" style="float: left;"><input id="anouncebymail" name="anouncebymail" type="checkbox" class="uni_style " />Pr&eacute;venir par email</label><br/>
+                {if $aotype eq "public"}
+                <label class="uni-checkbox" style="float: left;"><input id="fbpost" name="fbpost" type="checkbox" class="uni_style " value="yes" onclick="showFbPost();"/>Poster sur FB et Twitter
+                </label>
+                {/if}
+				</td>
+				<td>
+                <button type="button" id="republish" name="republish" class="btn btn-danger" onclick="saveRepublishPop()" >Re-publier</button>
+				</td></tr></table>
+            </div>
+        </td>
+    </tr>
+    <tr id="fbpostcomments" style="display: none"><td colspan="5" class="alert alert-success">  <strong>Enter commemts for FB and Twiter Posts</strong>
+        <textarea rows="4" cols="150" name="fbcomments" id="fbcomments" style="width: 1000px;"> </textarea></td></tr>
+</table>
+</form>

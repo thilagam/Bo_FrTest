@@ -1,0 +1,250 @@
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+{literal}
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+    $("#newusertab").addClass('active');
+
+    //////////////////////////////////////////////////////////////
+    $("#sel_type").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#sel_status").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#type").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#status").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#user_permissions").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#manager_incharge").chosen({ allow_single_deselect: false,search_contains: true  });
+    $(".uni_style").uniform();
+   // gebo_validation.reg();
+    $("#user").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+
+
+    //Automatic suggestion of super client agency name
+    $( "#email" ).on('input',function(e){
+        var email=$(this).val();
+        var agency=email.split("@");
+        $("#company_name").val(agency[0]);
+    });
+
+
+});
+function checkEmailExist()
+{
+    var email = $("#email").val();
+    var target_page = "/user/email-exits?email="+email;
+    $.post(target_page, function(data){ //alert(data);
+        var data1 = data.trim();
+        if(data1 == "yes")
+        {
+            smoke.alert("email id is already exist");
+            $("#emai").val('');
+            return false;
+        }
+        else
+        {
+
+            return true;
+        }
+    });
+}
+
+/*/*//* validation
+gebo_validation = {
+    reg: function() {
+        reg_validator = $('.form_validation_reg').validate({
+            onkeyup: false,
+            errorClass: 'error',
+            validClass: 'valid',
+            highlight: function(element) {
+                $(element).closest('div').addClass("f_error");
+            },
+            unhighlight: function(element) {
+                $(element).closest('div').removeClass("f_error");
+            },
+            errorPlacement: function(error, element) {
+                $(element).closest('div').append(error);
+                $('.error').css("font-size", "10px");
+                $('.error').css("padding-top", "5px");
+            },
+            rules: {
+                job_title: { required: true, minlength: 5 },
+                login: { required: true, minlength: 2 },
+                password: { required: true, minlength: 2 },
+                phone_number: { required: true },
+                address2: { required: true, minlength: 5 },
+                country: { required: true, minlength: 2 },
+                email: { required: true, minlength: 6 },
+                type: { valueNotEquals: "default" } ,
+                status: { valueNotEquals: "default" }
+            },
+            invalidHandler: function(form, validator) {
+                $.sticky("There are some errors. Please correct them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
+            }
+        })
+    }
+};*/
+function getPermissions(userid)
+{
+    var selval = $( "#user_permissions option:selected" ).text();
+    smoke.confirm("Souhaitez-vous appliquer les m\352mes permissions que '"+selval+"' droplist?",function(e){
+        if (e)
+        {
+            var href="/user/menu-permissionspopup?sel_user="+userid;
+            $('#userpermission .modal-body').load(href);
+            $("#userpermission").modal();
+        }
+        else
+        {
+            var href="/user/menu-permissionspopup?sel_user=no";
+            $('#userpermission .modal-body').load(href);
+            $("#userpermission").modal();
+        }
+    });
+
+
+}
+
+</script>
+{/literal}
+<div class="row-fluid">
+  <div class="span12" >
+      <div class="tabbable">
+          <div class="tab-content" style="overflow:hidden;">
+              <div class="tab-pane " id="newusertab">
+                  <div class="alert alert-warning"><b> Cr&eacute;ation d'un nouveau BO user</b></div>
+                  <form class="form_validation_reg" autocomplete="off"  action="/user/new-bo-user?submenuId={$submenuId}"  style="padding-left: 50px;" method="post" id="user" name="user" enctype="multipart/form-data">
+                      <div class="formSep">
+                          <div class="row-fluid">
+                              <div class="span5 form-inline">
+                                  <label class="span4">Proffesional Email<span class="f_req">*</span></label>
+                                  <input type="text" name="prof_email" id="prof_email" value="" class="validate[required,custom[email],ajax[ajaxEmailValidate]]"/>
+                              </div>
+                              <div class="span5 form-inline">
+                                  <label class="span4">Password<span class="f_req">*</span></label>
+                                  <input type="password" name="prof_password" id="prof_password" value="" class="validate[required]"/>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="formSep">
+                          <div class="row-fluid">
+
+                              <div class="span5 form-inline">
+                                  <label class="span4">Personal Email<span class="f_req">*</span></label>
+                                  <input type="text" name="email" id="email" value="" class="validate[required]"/>
+                              </div>
+                              <div class="span5 form-inline">
+                                  <label class="span4"> Active </label>
+                                  <select name="status" id="status" class="text-field-big" placeholder="active">
+                                      <option value=" "></option>
+                                      <option value="Active" selected="selected">Active</option>
+                                      <option value="Inactive">Inactive</option>
+                                  </select>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="formSep">
+                          <div class="row-fluid">
+                              <div class="span5 form-inline">
+                                  <label class="span4"> Login Name <span class="f_req">*</span></label>
+                                  <input type="text" name="login" id="login" value="" class="validate[required]"/>
+                              </div>
+                              <div class="span5 form-inline">
+                                  <label class="span4">Password<span class="f_req">*</span></label>
+                                  <input type="password" name="password" id="password" value="" class="validate[required]"/>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="formSep">
+                          <div class="row-fluid">
+                              <div class="span5 form-inline">
+                                  <label class="span4"> Managers <span class="f_req">*</span></label>
+                                  <select name="manager_incharge" id="manager_incharge"  placeholder="type" class="validate[required]">
+                                      <option value=""></option>
+                                      {html_options  options=$manager selected='editor'}
+                                  </select>
+                              </div>
+                              <div class="span5 form-inline">
+                                  <label class="span4"> Permissions <span class="f_req">*</span></label>
+                                  <select name="user_permissions" id="user_permissions"  placeholder="type" onchange="getPermissions(this.value);" class="validate[required]">
+                                      <option value=""></option>
+                                      {html_options  options=$users }
+                                  </select>
+<!--                                  <a data-toggle="modal" data-target="#userpermission" href="/user/menu-permissionspopup" class="span2 pull-right" data-hint="create new permissions" ><i class="splashy-group_blue_add"></i></a>
+-->
+                              </div>
+
+
+                          </div>
+                      </div>
+
+
+                      <div class="formSep">
+                          <div class="row-fluid">
+                              <div class="span5 form-inline">
+                                  <label class="span4"> Computer Code </label>
+                                  <input type="text" name="computer_code" rows="3" id="computer_code" value="" />
+                              </div>
+                              <div class="span5 form-inline">
+                                  <label class="span4"> Job title  <span class="f_req">*</span> </label>
+                                  <input type="text" name="job_title" id="job_title" value="" class="validate[required]"/>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="formSep">
+                          <div class="row-fluid">
+                              <div class="span5 form-inline">
+                                  <label class="span4"> Job Description </label>
+                                  <textarea name="job_desc" rows="3" id="job_desc" value=""></textarea>
+                              </div>
+
+                          </div>
+                      </div>
+                      <div class="formSep">
+                          <div class="row-fluid">
+                              <div class="span5 form-inline">
+                                  <button type="submit" name="usersubmit"  class="btn btn-success pull-right">Create New User</button>
+                              </div>
+                          </div>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div style="visibility:hidden" >
+    <form id="user_login_form" name="user_login_form" method="post" action="" target="_blank">
+        <input type="text" id="login_name" name="login_name" value="">
+        <input type="password" id="login_password" name="login_password" value="{$user_detail[0].password}" >
+        <input type="submit" value="Login" />
+    </form>
+</div>
+<!--///when user created by the manager decides permission for the user///-->
+<div class="modal4 hide fade" id="userpermission">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Create new Menu Permissions</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+{literal}
+<script type="text/javascript" >
+    function connect_fo(user,email,pwd)
+    {
+        document.forms["user_login_form"].action="http://mmm-new.edit-place.com/index/userfologin";
+        $('#login_name').val(email);
+        $('#login_password').val(pwd);
+        document.forms["user_login_form"].submit();
+    }
+</script>
+{/literal}
+alright
+

@@ -1,0 +1,40 @@
+<aside>
+	<div class="aside-bg">							
+		<div class="aside-block" id="selected-client">
+			<div class="editor-container">
+				<h2 class="heading">Info client</h2>
+				<img title="{$quoteMission.company_name}" src="{$fo_path}profiles/clients/logos/{$quoteMission.client_id}/{$quoteMission.client_id}_global.png?12345">
+				<p class="editor-name">{$quoteMission.company_name}</p>
+				<p class="editor-info">
+				CA info : {$quoteMission.ca_number}<br>
+				Category : {$quoteMission.quote_category}<br><br>				
+				</p>
+			</div>
+		</div>	
+		<div class="aside-block" id="selected-bouser">
+			<div class="editor-container">
+				<h2 class="heading">Sales Owner</h2>
+				<img title="{$quote_details.sales_owner}" src="{$fo_path}profiles/bo/{$quoteMission.quote_by}/logo.jpg">
+				<p class="editor-name"><a>{$quoteMission.sales_owner}</a></p>
+				<p class="editor-info">
+				{if $quoteMission.sales_phone_number}
+				Tel: {$quoteMission.sales_phone_number}<br/>
+				{/if}
+				{$quoteMission.sales_city}
+				</p>
+			</div>
+		</div>	
+		<div class="aside-block" id="selected-bouser">
+			<div class="editor-container">
+				<h2 class="heading">Related Contract</h2>
+				<p class="editor-name">
+				{if $quoteMission.contract_id}
+					<a target="_blank" href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$quoteMission.contract_id}&action=view">{$quoteMission.contractname}</a>
+				{else}
+					<a>{$quoteMission.contractname}</a>
+				{/if}	
+				</p>
+			</div>
+		</div>	
+	</div>
+</aside>

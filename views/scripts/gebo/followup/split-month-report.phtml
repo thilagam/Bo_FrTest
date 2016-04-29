@@ -1,0 +1,90 @@
+{literal}
+<!-- custom scrollbar plugin -->
+
+
+<style>
+	.wrapper .table thead th {
+    background-color: inherit !important;
+	}
+	.image {
+     height: 50px;
+    text-align: center;
+    width: 50px;
+	}
+  #search-filter,input#start_date,input#end_date,#back-button{
+	  margin-bottom: 23px;
+  }
+  
+  input.turnover{
+	  margin-bottom: 23px;
+  }
+  
+.fullscreen {
+    left: 0% !important;
+    margin-left: 10% !important;
+     width: 80%;
+}
+img.image{
+	margin:5px;
+	}
+.modal-backdrop.fade.in{
+	opacity: 0.8 !important;
+	}
+ p.entered_val{
+	color:#FF0000 !important;
+	}
+.wrapper table {
+   width: 100% !important;
+  }
+ 
+td.mission-val{ 
+white-space: nowrap;
+text-align:center;
+}
+.wrapper table thead th:last-child {
+    background-color: #1fbba6 !important;
+}
+.wrapper table tr td{
+white-space: nowrap;
+	}
+	
+</style>
+
+
+{/literal}
+<section id="WrapSection">
+
+	<h1>Annual turnover Report</h1>
+		
+		
+	<div class="row-fluid wrapper">	
+			<table class="table table-hover table-striped" id="contract-invoice">
+						<thead>
+							<tr class="displayDatas">
+							    <th >Client Code</th>
+							    <th>Client Name</th>
+							    <th >Sales in Charge</th>
+							   <th>JAN</th>
+							   <th>FEB</th>
+							   <th>MAR</th>
+							   <th>APR</th>
+							   <th>MAY</th>
+							   <th>JUN</th>
+							   <th>JUIL</th>
+							   <th>AUG</th>
+							   <th>SEP</th>
+							   <th>OCT</th>
+							   <th>NOV</th>
+							   <th>DEC</th>
+							   <th class="total-row">TOTAL <span class="yearTotal">{$default_year}</span></th>
+							  
+							</tr>
+						</thead>
+						
+					{$tablehtml}
+				
+					</table>
+				</div>
+				
+				
+

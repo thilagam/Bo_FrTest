@@ -1,0 +1,205 @@
+		<div class="followup-header">
+			<h3>{$viewarray.title|utf8_encode} <span class="headerdim">{$viewarray.from_date} - {$viewarray.to_date}</span></h3>
+			{if $viewarray.tempo_text}
+				{$viewarray.tempo_text}
+			{/if}
+			 <div class="row-fluid">    
+				<div class="header-info">
+					<div class="span3">
+						<span class="upper">Priority</span>
+						<span class="bottom">{$viewarray.priority}</span>
+					</div>
+					<div class="span3">
+						<span class="upper">Volume</span>
+						<span class="bottom">{$viewarray.volume}</span>
+					</div>
+					<div class="span3">
+						<span class="upper">Production Cost</span>
+						<span class="bottom">{$viewarray.production_cost|zero_cut_t:2} &{$viewarray.currency};</span>
+					</div>
+					<div class="span3">
+						<span class="upper">Turnover</span>
+						<span class="bottom">{if $viewarray.turnover eq 'Gratuit'}Gratuit{else}{$viewarray.turnover|zero_cut_t:2} &{$viewarray.currency};{/if}</span>
+					</div>
+				</div>
+			</div> 
+		</div>
+		
+		{if $viewarray.tech_action == 'new' || $viewarray.tech_action=='edit'}
+		<div class="row-fluid topset2">
+			<form class="form-horizontal" enctype="multipart/form-data" action="/followup/submit-techtask" id="taskadd" method="POST">
+			
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label">Title of the Task<span class="f_req">*</span></label>
+						<div class="controls">
+							<input type="text" name="title" class="span10 validate[required]" id="title" value="{$viewarray.task_title|utf8_encode}" />
+						</div>
+					</div>
+				</div>
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label">Volume of the Task<span class="f_req">*</span></label>
+						<div class="controls">
+							<input type="text" name="volume" class="span1 validate[required,custom[number],maxVol[{$viewarray.calculateVol}]]" value="{$viewarray.task_volume}" />
+						</div>
+					</div>
+				</div>
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label">Add a Comment<span class="f_req">*</span></label>
+						<div class="controls" style="margin-top:0">
+							<div class="media mission-comment span10">
+							<a class="pull-left imgframe">
+							<img class="media-object" width="60px" src="{$fo_path}profiles/bo/{$viewarray.updated_by}/logo.jpg">
+							</a>
+							<div class="media-body">
+								<textarea name="comment" class="span12 validate[required]">{$viewarray.comments|utf8_encode}</textarea>
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label">Attach a file</label>
+						<div class="controls">
+							<input type="file" name="mulitupload[]" accept="doc|xls|zip|docx|xlsx" class="multi" id=""/>
+						<div class="onsuccessrep">
+							{$task_files|utf8_encode}
+						</div>
+						</div>
+					</div>
+				</div>
+					<div class="control-group">
+						<div class="controls topset2 pull-center" style="margin-left:0">
+							<button  class="btn" data-dismiss="modal" type="reset">Cancel</button>
+							<button class="btn btn-primary" type="button" id="tasksubmit">Submit</button>
+							
+						</div>
+					</div>
+					{if $viewarray.tech_action == 'new' && $smarty.get.tcount}
+					<input type="hidden" name="taskcount" value="{$smarty.get.tcount}" />
+					<input type="hidden" name="tempo_length" value="{$smarty.get.tempo_length}" />
+					{/if}
+					<input type="hidden" name="cmid" value="{$viewarray.cmid}" />
+					<input type="hidden" name="contract_id" value="{$viewarray.contract_id}" />
+					<input type="hidden" name="mission_id" value="{$viewarray.mission_id}" />
+					<input type="hidden" name="task_id" value="{$viewarray.task_id}" />
+					<input type="hidden" name="quote_id" value="{$viewarray.quote_id}" />
+			</form>
+		</div>
+		{else}
+		<div class="row-fluid topset2">
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label"><strong>Title of the Task</strong></label>
+						<div class="controls">
+							{$viewarray.task_title|utf8_encode}
+						</div>
+					</div>
+				</div>
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label"><strong>Volume of the Task</strong></label>
+						<div class="controls">
+							{$viewarray.task_volume}
+						</div>
+					</div>
+				</div>
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label"><strong>Comment</strong></label>
+						<div class="controls" style="margin-top:0">
+							<div class="media mission-comment span10">
+							<a class="pull-left imgframe">
+							<img class="media-object" width="60px" src="{$fo_path}profiles/bo/{$viewarray.updated_by}/logo.jpg">
+							</a>
+							<div class="media-body">
+								{$viewarray.comments|stripslashes|htmlentities|nl2br|utf8_encode}
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label"><strong>Files</strong>
+						{if $task_files}
+						<div class="pull-right" style="margin-bottom:5px">
+							<a href="/followup/download-document?type=task&index=-1&task_id={$viewarray.task_id}" class="btn btn-small">Download Zip</a>
+						</div>
+						{/if}
+						</label>
+						
+						<div class="controls">
+						<table class="onsuccessrep table">
+						{if $task_files}
+							{$task_files|utf8_encode}
+						{else}
+							<tr><td align="center">No files found</td></tr>
+						{/if}
+						</table>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="controls topset2 pull-center" style="margin-left:0">
+					<a href="/followup/techtask?tid={$viewarray.task_id}&tech_action=edit" data-toggle="modal" role="button" data-target="#edit_task">
+					<button  class="btn btn-primary btn-large" id="trig_edit" type="button">Edit</button>	</a>
+						{if $viewarray.m_status neq 'validated' }<!-- && $smarty.get.state neq 'incoming'-->
+							<button class="btn btn-large btn-success {$viewarray.m_status}" type="button" id="validatedtask" style="margin-left:10px;">Done</button>
+							<input type="hidden" name="task_id" id='task_id' value="{$viewarray.task_id}" />
+						{/if}
+
+					</div>
+				</div>		
+		</div>
+		{/if}
+		{literal}
+		<script type="text/javascript">
+			 $("input[type=file].multi").MultiFile();
+			  $('textarea').data('promptPosition','topLeft');
+			 $("#taskadd").validationEngine();
+			
+			$(document).ready(function(){
+				$('#validatedtask').on('click',function(event){
+
+					event.preventDefault();
+					
+					var msg = "Are you sure this task is definitely over ?";
+					
+					smoke.confirm(msg,function(e){
+						if (e){
+								taskid=$('#task_id').val();
+								if(taskid)
+								{
+									
+								$.ajax(
+								{
+									type: 'get',
+									url: '/followup/submit-tech-done?task_id='+taskid,
+									success: function(data)
+									{
+									
+										location.reload();
+									}
+								});
+								}
+							}					
+					},{"ok":"Yes it's done","cancel":"Not completely done"});
+	
+				$("[id^=confirm-cancel-]").addClass('btn-danger');
+				$("[id^=confirm-ok-]").removeClass('btn-primary').addClass('btn-success');
+
+				});
+
+				$('#tasksubmit').on('click',function(){
+					$('#m_status').remove();
+					$('#taskadd').submit();
+				});
+
+
+			});
+		</script>
+		{/literal}

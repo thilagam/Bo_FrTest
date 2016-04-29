@@ -1,0 +1,91 @@
+		<div class="btn-group">
+		{if $close}
+			{if !$bulk}
+				{if $totalParticipations > 0}
+					<a data-toggle="modal" class="btn btn-inverse"  onclick="return getCloseComment('{$article_id}', '{$totalParticipations}')">Clore</a>
+				{else}
+					<a data-toggle="modal" onclick="closeArtprofile('{$article_id}', 'no');"><button type="button" class="btn btn-inverse">Clore</button></a>
+				{/if}
+			{/if}
+		{/if}
+		
+		{if $writer_republish || $corrector_republish}
+		<div class="btn-group">
+			<a class="dropdown-toggle btn btn-danger" data-toggle="dropdown" href="#" oldtitle="Options" title="" aria-describedby="ui-tooltip-3">
+			Republish
+			<b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu">
+			{if $writer_republish}
+			<li>
+			{if $bulk}
+				<a class="bulk_art_republish" id="" name="closerepublish" href="/article-republish/bulkrepublishpopup?nopart=no&close=no&aoId={$ao_id}&artlist={$artids}" data-target="#bulkrepublish" data-toggle="modal">Writer Republish</a>
+			{else}
+				<a class="single_art_republish" id="" name="closerepublish" href="/article-republish/republishpopup?artId={$article_id}" data-target="#republish" data-toggle="modal">Writer Republish</a>
+			{/if}
+			</li>
+			{/if}
+			{if $corrector_republish}
+			<li>
+			{if $bulk}
+				<a class="" name="closerepublish" href="/article-republish/bulkrepublishcorrectorpopup?nopart=no&close=no&aoId={$ao_id}&artlist={$artids}" data-target="#bulkrepublish" data-toggle="modal">Corrector Republish</a>
+			{else}
+				<a class="" name="closerepublish" href="/article-republish/republishcorrectorpopup?close=yes&amp;artId={$article_id}" data-target="#republish" data-toggle="modal">Corrector Republish</a>
+			{/if}
+			</li>	
+			{/if}
+		</div>
+		{/if}
+		
+		{if $edit}
+		<a class="btn btn-info editable editable-click" href="/deliveryongoing/edit-article?article_id={$article_id}" data-toggle="modal" role="button" data-target="#edit_article_modal" id="edit_article">
+			<span style="vertical-align: text-bottom;">Edit</span>
+		</a>
+		{/if}
+		
+		{if $download_art || $download_corrector_art}
+		<div class="btn-group">
+			<a class="dropdown-toggle btn btn-success" data-toggle="dropdown" href="#" oldtitle="Options" title="" aria-describedby="ui-tooltip-3">
+			Download Article
+			<b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu">
+			{if $download_art}
+			<li>
+				<a class="" href="/BO/download_article_latestversion.php?article_id={$article_id}&type=writer" >
+					R&eacute;dacteur 
+				</a>
+			<li>
+			{/if}
+			{if $download_corrector_art}
+			<li>
+				<a class="" href="/BO/download_article_latestversion.php?article_id={$article_id}&type=corrector" >
+					Correcteur 
+				</a>
+			</li>
+			{/if}
+			</ul>
+		</div>
+		{/if}
+		
+		{if $writer_moretime || $corrector_moretime}
+		<div class="btn-group">
+			<a class="dropdown-toggle btn" data-toggle="dropdown" href="#" oldtitle="Options" title="" aria-describedby="ui-tooltip-3">
+			Give more time
+			<b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu">
+			{if $writer_moretime}
+			<li>
+				<a href="/deliveryongoing/extend-time?utype=writer&participation_id={$expiredWriterParticipation}" role="button" data-toggle="modal" data-target="#extend_time" class="">Writer</a>
+			</li>
+			{/if}
+			{if $corrector_moretime}
+			<li>
+				<a href="/deliveryongoing/extend-time?utype=corrector&participation_id={$expiredcorrectorParticipation}" role="button" data-toggle="modal" data-target="#extend_time" class="">Corrector</a>
+			</li>
+			{/if}
+			</ul>
+		</div>
+		{/if}				<!---------------------------------------------------- stop participation ---------------------------------------------->		{if $participation_ongoing}			<div class="btn-group">				<a class="dropdown-toggle btn btn-inverse" data-toggle="dropdown" href="#" oldtitle="Options" title="" aria-describedby="ui-tooltip-3">					Stop					<b class="caret"></b>				</a>				<ul class="dropdown-menu">								{if $writer_stopparticipation}				<li>					{if $bulk}						<a href="javascript:void(0);" onclick="return stopparticipation('{$artids}', 'writing')">Writer participation</a>					{else}						<a href="javascript:void(0);" onclick="return stopparticipation('{$article_id}', 'writing')">Writer participation</a>					{/if}				</li>				{/if}				{if $corrector_stopparticipation}				<li>					{if $bulk}						<a href="javascript:void(0);" onclick="return stopparticipation('{$artids}', 'correction')">Corrector participation</a>					{else}						<a href="javascript:void(0);" onclick="return stopparticipation('{$article_id}', 'correction')">Corrector participation</a>					{/if}				</li>				{/if}				</ul>			</div>		{/if}		
+		</div>

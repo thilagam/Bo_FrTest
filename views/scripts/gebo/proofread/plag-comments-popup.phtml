@@ -1,0 +1,82 @@
+{literal}
+<script type="text/javascript" >
+
+    ///////////write the comment in popup//////////////////
+    function writeBoUserComment(userid, artprocId)
+    {
+        var $comment =$('#editor_comment').val();
+        if($('#errorphp').is(':checked'))
+            var errorphp = 1;
+        else
+            var errorphp = 0;
+        if($('#errorruby').is(':checked'))
+            var errorruby = 1;
+        else
+            var errorruby = 0;
+        if($('#errorwriter').is(':checked'))
+            var errorwriter = 1;
+        else
+            var errorwriter = 0;
+
+        if((errorphp == 1 || errorruby == 1 || errorwriter == 1) && $comment != ''){
+            var target_page = "/proofread/writeplagstuckcomments?userid="+userid+"&artprocId="+artprocId+"&errorphp="+errorphp+"&errorruby="+errorruby+"&errorwriter="+errorwriter+"&comment="+escape($comment);
+            $.post(target_page, function(data){  // alert(data);
+                $("#ajaxdata").html(data);
+                $("#loaddata").hide();
+                $('#editor_comment').html('');
+                refreshModel(userid, artprocId);
+            });
+        }else{
+            smoke.alert("please enter valid inputs");
+            return false;
+        }
+
+    }
+    function refreshModel(userid, artprocId)
+    {
+        var href="/proofread/plagstuckcomments?userId="+userid+"&artprocid="+artprocId;
+        $("#comments").removeData('modal');
+        $('#comments .modal-body').load(href);
+        $("#comments").modal();
+        $(".modal-backdrop:gt(0)").remove();
+    }
+    $(document).ready(function() {
+        $("#errortype").chosen({ allow_single_deselect: false,search_contains: true  });
+        $(".uni_style").uniform();
+
+    });
+</script>
+{/literal}
+
+<div class="alert alert-error pull-center form-inline">
+    Comment here and choose the problem
+    <label class="uni-radio"><input type="checkbox" name="errorphp" id="errorphp" value="" class="uni_style" />PHP </label>
+    <label class="uni-radio"><input type="checkbox" name="errorruby" id="errorruby" value="" class="uni_style" />RUBY </label>
+    <label class="uni-radio"><input type="checkbox" name="errorwriter" id="errorwriter" value="" class="uni_style" />PM </label>
+</div>
+
+
+<textarea id="editor_comment" name="editor_comment" class="textarea"></textarea>
+<button type="button" id="sub_usercomment" name="sub_usercomment"  class="btn btn-danger" onClick="writeBoUserComment('{$userid}', '{$artprocid}');" >Ajouter</button>
+<div></div>
+<div class="alert pull-center" ><h4>Commentaire(s) Pr&eacute;c&eacute;dent(s)</h4></div>
+
+<div id="loaddata">
+    {if $plagcomments neq 'NO'}
+    {foreach from=$plagcomments key=comments_key item=comments_item name=comments_loop}
+    <div class="alignleft">Commented by <b>{if $comments_item.first_name neq '' || $comments_item.last_name neq ''}
+        {$comments_item.first_name} {$comments_item.last_name} {else}{$comments_item.email}{/if}</b>
+        <label class="label label-info">at {$comments_item.created_at|date_format:"%d/%m/%Y %H:%I"}</label>
+         problem identified in <strong>{if $comments_item.php == '1'}PHP{/if}{if $comments_item.ruby == '1'}{if $comments_item.php == '1'} and {/if} RUBY{/if}</strong>
+    </div><br>
+    <table class="table table-bordered">
+        <tr>
+            <td class="alert alert-error ">{$comments_item.comments|replace:"<br />":"###"|strip_tags:true|escape:'htmlall'|replace:"###":""}</td>
+        </tr>
+    </table>
+    {/foreach}
+    {else}
+    Aucun Commentaire
+    {/if}
+</div>
+<div id="ajaxdata"></div>

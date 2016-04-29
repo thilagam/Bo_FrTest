@@ -1,0 +1,488 @@
+<form  id="article_create_form">
+	<input name="article_id" type="hidden" value="{$smarty.get.article_id}">
+	<div class="row-fluid" style="margin-top:0px;">
+		<div class="span12">
+			<div class="row-fluid">
+				<input type="text" class="span12 validate[required]" name="article_title" id="article_title" value="{$article_details.title}">	
+			</div>
+		</div>
+	</div>	
+	<div class="row-fluid">
+		<div class="{if $prod_step1.correction eq 'external'}span6{else}span12{/if}">
+			<div class="row-fluid">
+				<div class="span4">
+					<label><h4>Writing Costs</h4></label>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span4">
+					<label><h4>Min</h4></label>
+				</div>
+				<div class="span4">
+					<label><h4>Max</h4></label>
+				</div>
+			</div>			
+			<div class="row-fluid">
+				<div class="span4">					
+					<input type="text" class="span12 validate[required,max[{$prod_step1.price_max_packs}],priceRange[#price_max]]" placeholder="Price min" name="price_min" id="price_min"  value="{$article_details.price_min}">
+				</div>
+				<div class="span4">					
+					<input type="text" class="span12 validate[required,max[{$prod_step1.price_max_packs}]]" placeholder="Price max" name="price_max" id="price_max" value="{$article_details.price_max}">
+				</div>
+			</div>
+			{if $prod_step1.AOtype eq 'public'}
+			<div class="row-fluid">
+				<div class="span8">
+					<label><h4>Contributeur type</h4></label>
+				</div>
+			</div>
+			{else}
+				<div class="row-fluid">
+				<div class="span8">
+					<label><h4>Contributeurs</h4></label>
+					{if $prod_step1.AOtype eq 'private'}	
+						<label class="checkbox inline">
+							<input id="writer_type_1" type="checkbox" {if in_array("sc",$article_details.view_to)}checked {/if} name="view_to[]" value="sc" class="icheck validate[minCheckbox[1]]" />SC ({$profileCountWriter.sc_count})
+						</label>
+						<label class="checkbox inline">
+							<input id="writer_type_2" type="checkbox" {if in_array("jc",$article_details.view_to)}checked {/if} name="view_to[]" value="jc" class="icheck validate[minCheckbox[1]]" />JC ({$profileCountWriter.jc_count})
+						</label>
+						{if $prod_step1.product!="translation"}
+						<label class="checkbox inline">
+							<input id="writer_type_3" type="checkbox" {if in_array("jc0",$article_details.view_to)}checked {/if} name="view_to[]" value="jc0" class="icheck validate[minCheckbox[1]]" />JC0 ({$profileCountWriter.jc0_count})
+						</label>
+						{/if}
+					{/if}
+				</div>
+			</div>
+			{/if}
+			<div class="row-fluid">
+				<div class="span8">
+					{if $prod_step1.AOtype eq 'private'}
+						<select id="contribs_list" class="span8 validate[required]" multiple data-placeholder="Select contributors" name="contribs_list[]">
+							{html_options  options=$writersList selected=$article_details.contribs_list}
+						</select>
+					{else}					
+						<label class="checkbox inline">
+							<input id="writer_type_1" type="checkbox" {if in_array("sc",$article_details.view_to)}checked {/if} name="view_to[]" value="sc" class="icheck validate[minCheckbox[1]]" />SC ({$profileCountWriter.sc_count})
+						</label>
+						<label class="checkbox inline">
+							<input id="writer_type_2" type="checkbox" {if in_array("jc",$article_details.view_to)}checked {/if} name="view_to[]" value="jc" class="icheck validate[minCheckbox[1]]" />JC ({$profileCountWriter.jc_count})
+						</label>
+						{if $prod_step1.product!="translation"}
+						<label class="checkbox inline">
+							<input id="writer_type_3" type="checkbox" {if in_array("jc0",$article_details.view_to)}checked {/if} name="view_to[]" value="jc0" class="icheck validate[minCheckbox[1]]" />JC0 ({$profileCountWriter.jc0_count})
+						</label>
+						{/if}
+					{/if}					
+				</div>
+			</div>
+		
+			{*<div class="row-fluid">
+				<div class="span12">
+					<div class="span5">
+						<div class="input-append date">
+							<input class="span12 validate[required]" readonly value="{$article_details.writing_start}" type="text" name="writing_start" id="writing_start"/><span class="add-on"><i class="splashy-calendar_day_up"></i></span>
+						</div>					
+					</div>
+				</div>				
+			</div>*}			
+			<div class="row-fluid">
+				<div class="span4">
+					<label><h4>Submission Time</h4></label>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="control-group">					
+					<div class="controls">
+						{if $prod_step1.product!="translation"}
+						<div class="span3">
+							JC0&nbsp;&nbsp;<input type="text" value="{$article_details.subjunior_time}" class="span7 validate[required]" id="subjunior_time" name="subjunior_time"> 
+						</div>
+						{/if}
+						<div style="margin-left:0" class="span3">
+							&nbsp;JC&nbsp;&nbsp;&nbsp;<input type="text" value="{$article_details.junior_time}" class="span7 validate[required]" id="junior_time" name="junior_time"> 
+						</div>
+						<div style="margin-left:0" class="span3">
+							SC&nbsp;&nbsp;<input type="text" value="{$article_details.senior_time}" class="span7 validate[required]" id="senior_time" name="senior_time"> 
+						</div>
+						<select name="submit_option" class="span3 customselect" id="submit_option">
+								<option value="min" {if $article_details.submit_option eq 'min'} selected{/if}>Min(s)</option>
+								<option value="hour" {if $article_details.submit_option eq 'hour'} selected{/if}>Heure(s)</option>
+								<option value="day" {if $article_details.submit_option eq 'day'} selected{/if}>Jour(s)</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span8">
+					<label><h4>Additional time if refused</h4></label>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="control-group">					
+					<div class="controls">
+						{if $prod_step1.product!="translation"}
+						<div class="span3">
+							JCO&nbsp;&nbsp;<input type="text" value="{$article_details.jc0_resubmission}" class="span7 validate[required]" id="jc0_resubmission" name="jc0_resubmission"> 
+						</div>
+						{/if}
+						<div style="margin-left:0" class="span3">
+							&nbsp;JC&nbsp;&nbsp;&nbsp;<input type="text" value="{$article_details.jc_resubmission}" class="span7 validate[required]" id="jc_resubmission" name="jc_resubmission"> 
+						</div>
+						<div style="margin-left:0" class="span3">
+							SC&nbsp;&nbsp;<input type="text" value="{$article_details.sc_resubmission}" class="span7 validate[required]" id="sc_resubmission" name="sc_resubmission"> 
+						</div>
+						<select name="resubmit_option" class="span3 customselect" id="resubmit_option">
+								<option value="min" {if $article_details.resubmit_option eq 'min'} selected{/if}>Min(s)</option>
+								<option value="hour" {if $article_details.resubmit_option eq 'hour'} selected{/if}>Heure(s)</option>
+								<option value="day" {if $article_details.resubmit_option eq 'day'} selected{/if}>Jour(s)</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span8">
+					<label><h4>End date</h4></label>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span8">				
+					<div class="input-append date">
+						<input class="span12 validate[required]" disabled value="{$article_details.writing_end}" type="text" name="writing_end" id="writing_end" placeholder="End date" /><span class="add-on"><i class="splashy-calendar_day_up"></i></span>
+					</div>
+				</div>				
+			</div>				
+		</div>
+		{if $prod_step1.correction eq 'external'}		
+		<div class="span6">
+			<div class="row-fluid">
+				<div class="span8">
+					<label><h4>Proofreading Costs</h4></label>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span4">
+					<label><h4>Min</h4></label>
+				</div>
+				<div class="span4">
+					<label><h4>Max</h4></label>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span4">					
+					<input type="text" class="span12 validate[required,max[{$prod_step1.correction_pricemax_packs}],priceRange[#correction_pricemax]]" placeholder="Price min" name="correction_pricemin" id="correction_pricemin"  value="{$article_details.correction_pricemin}">
+				</div>
+				<div class="span4">					
+					<input type="text" class="span12 validate[required,max[{$prod_step1.correction_pricemax_packs}]]" placeholder="Price max" name="correction_pricemax" id="correction_pricemax" value="{$article_details.correction_pricemax}">
+				</div>
+			</div>
+			{if $prod_step1.correction_type eq 'public'}
+			<div class="row-fluid">
+				<div class="span8">
+					<label><h4>Correcteurs type</h4></label>
+				</div>
+			</div>
+			{else}
+				<div class="row-fluid">
+				<div class="span8">
+					<label><h4>Correcteurs</h4></label>
+					{if $prod_step1.correction_type eq 'private'}
+						<label class="checkbox inline">
+							<input id="corrector_check_1" type="checkbox" {if in_array("sc",$article_details.corrector_list)}checked {/if} name="corrector_list[]" value="sc" class="icheck validate[minCheckbox[1]]" />SC ({$profileCountCorrectors.sc_count})
+						</label>
+						<label class="checkbox inline">
+							<input id="corrector_check_2" type="checkbox" {if in_array("jc",$article_details.corrector_list)}checked {/if} name="corrector_list[]" value="jc" class="icheck validate[minCheckbox[1]]" />JC ({$profileCountCorrectors.jc_count})
+						</label>						
+					{/if}
+				</div>
+			</div>
+			{/if}
+			<div class="row-fluid">
+				<div class="span8">
+					{if $prod_step1.correction_type eq 'private'}
+						<select id="corrector_privatelist" multiple class="span12 validate[required]" data-placeholder="Select proofreaders" name="corrector_privatelist[]">
+							{html_options  options=$correctorsList selected=$article_details.corrector_privatelist}
+						</select>
+					{else}					
+						<label class="checkbox inline">
+							<input id="corrector_check_1" type="checkbox" {if in_array("sc",$article_details.corrector_list)}checked {/if} name="corrector_list[]" value="sc" class="icheck validate[minCheckbox[1]]" />SC ({$profileCountCorrectors.sc_count})
+						</label>
+						<label class="checkbox inline">
+							<input id="corrector_check_2" type="checkbox" {if in_array("jc",$article_details.corrector_list)}checked {/if} name="corrector_list[]" value="jc" class="icheck validate[minCheckbox[1]]" />JC ({$profileCountCorrectors.jc_count})
+						</label>						
+					{/if}	
+				</div>
+			</div>						
+			<div class="row-fluid">
+				<div class="span4">
+					<label><h4>Submission Time</h4></label>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="control-group">					
+					<div class="controls">								
+						<div style="margin-left:0" class="span3">
+							&nbsp;JC&nbsp;&nbsp;&nbsp;<input type="text" value="{$article_details.correction_jc_submission}" class="span7 validate[required]" id="correction_jc_submission" name="correction_jc_submission"> 
+						</div>
+						<div style="margin-left:0" class="span3">
+							SC&nbsp;&nbsp;<input type="text" value="{$article_details.correction_sc_submission}" class="span7 validate[required]" id="correction_sc_submission" name="correction_sc_submission"> 
+						</div>
+						
+						<select name="correction_submit_option" class="span3 customselect" id="correction_submit_option">
+								<option value="min" {if $article_details.correction_submit_option eq 'min'} selected{/if}>Min(s)</option>
+								<option value="hour" {if $article_details.correction_submit_option eq 'hour'} selected{/if}>Heure(s)</option>
+								<option value="day" {if $article_details.correction_submit_option eq 'day'} selected{/if}>Jour(s)</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span8">
+					<label><h4>Additional time if refused</h4></label>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="control-group">					
+					<div class="controls">						
+						<div style="margin-left:0" class="span3">
+							&nbsp;JC&nbsp;&nbsp;&nbsp;<input type="text" value="{$article_details.correction_jc_resubmission}" class="span7 validate[required]" id="correction_jc_resubmission" name="correction_jc_resubmission"> 
+						</div>
+						<div style="margin-left:0" class="span3">
+							SC&nbsp;&nbsp;<input type="text" value="{$article_details.correction_sc_resubmission}" class="span7 validate[required]" id="correction_sc_resubmission" name="correction_sc_resubmission"> 
+						</div>
+						<select name="correction_resubmit_option" class="span3 customselect" id="correction_resubmit_option">
+								<option value="min" {if $article_details.correction_resubmit_option eq 'min'} selected{/if}>Min(s)</option>
+								<option value="hour" {if $article_details.correction_resubmit_option eq 'hour'} selected{/if}>Heure(s)</option>
+								<option value="day" {if $article_details.correction_resubmit_option eq 'day'} selected{/if}>Jour(s)</option>
+						</select>
+					</div>
+				</div>
+			</div>	
+			<div class="row-fluid">				
+				<div class="span4">
+					<label><h4>End date</h4></label>
+				</div>
+			</div>
+			<div class="row-fluid">					
+				<div class="span4">			
+					<div class="input-append date">
+						<input class="span10 validate[required]" disabled value="{$article_details.proofread_end}" type="text" name="proofread_end" id="proofread_end" placeholder="End date" /><span class="add-on"><i class="splashy-calendar_day_up"></i></span>
+					</div>
+				</div>				
+			</div>			
+		</div>
+		{/if}
+	</div>
+	<div class="row-fluid">
+		<div class="span4" style="margin-top:30px">
+			<a onclick="removeArticle('{$smarty.get.article_id}');"><i class="icon-adt_trash"></i> Remove</a>
+		</div>
+		<div class="span8" style="margin-top:30px">
+			<input type="hidden" id="articles_save_action" name="articles_save_action" value="">			
+			{if $prod_step1.total_article >1}
+				<input type="button" class="btn btn-default" id="save_all_articles" name="save_repeat" value="Save and apply to all packs">
+			{/if}
+			<input type="button" class="btn btn-primary" id="save_article" name="save" value="Save">
+		</div>
+	</div>
+</form>
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+
+<link href="/BO/theme/gebo/css/jquery.datetimepicker.css" rel="stylesheet">
+<script src="/BO/theme/gebo/js/jquery.datetimepicker.js" type="text/javascript" charset="utf-8"></script>
+
+<link rel="stylesheet" href="/BO/theme/gebo/lib/iCheck/skins/square/blue.css" type="text/css"/>
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script>
+
+<link rel="stylesheet" href="/BO/theme/gebo/lib/bootstrap-multiselect/bootstrap-multiselect.css" type="text/css"/>
+<script src="/BO/theme/gebo/lib/bootstrap-multiselect/bootstrap-multiselect.js" type="text/javascript" charset="utf-8"></script>
+
+<style type="text/css">
+.input-group {
+    margin: 10px;
+    width: 80%;
+}
+</style>
+
+
+<script>
+$(function(){
+
+	//form validation
+	$("#article_create_form").validationEngine({autoHidePrompt: true,promptPosition: "topLeft",prettySelect : true,useSuffix: "_chzn"}); 
+	//$("#article_create_form").validationEngine('attach', {promptPosition:"topLeft"});
+	
+	//icheck radio/checkbox
+		$(".icheck").iCheck({
+			checkboxClass: 'icheckbox_square-blue',
+			radioClass: 'iradio_square-blue'
+		});
+	
+	$("#resubmit_option").chosen({ allow_single_deselect:false,disable_search: true });
+	$("#submit_option").chosen({ allow_single_deselect:false,disable_search: true });
+	$("#correction_submit_option").chosen({ allow_single_deselect:false,disable_search: true });
+	$("#correction_resubmit_option").chosen({ allow_single_deselect:false,disable_search: true });
+	
+	
+	$("#contribs_list").multiselect({
+		includeSelectAllOption: true,
+		nonSelectedText:'Select contributors',
+		numberDisplayed: 1,
+		buttonWidth:'360px',
+		maxHeight: 200,
+		enableCaseInsensitiveFiltering: true
+	});
+	
+	$("#corrector_privatelist").multiselect({
+		includeSelectAllOption: true,
+		nonSelectedText:'Select proof readers',
+		numberDisplayed: 1,
+		buttonWidth:'360px',
+		maxHeight: 200,
+		enableCaseInsensitiveFiltering: true
+	});
+    
+	
+	
+	$('#proofread_start').datetimepicker({
+		format:'Y-m-d H:i',
+		lang:'fr',
+		minDate:new Date()
+	});	
+	$('#writing_end').datetimepicker({
+		format:'Y-m-d H:i'
+	});	
+	$('#proofread_end').datetimepicker({
+		format:'Y-m-d H:i'
+	});	
+	
+	//save article info into session
+		$("#save_article,#save_all_articles").click(function(){
+			var click_id=$(this).attr('id');			
+			
+			$("#articles_save_action").val(click_id);
+			if ($("#article_create_form").validationEngine('validate')) {
+				
+				if(click_id=='save_all_articles')//change text of left side when all save button is clicked
+				{
+					$("#drag-events").html('<div class="no-items">No items to schedule</div>');
+				}	
+				
+					var post_data = $("#article_create_form").serialize();	
+					//alert(post_data);
+					var url='/quotedelivery/ajax-save-article?session_id={/literal}{$smarty.get.session_id}{literal}'
+					$.ajax({
+						url:url,
+						data:post_data,
+						dataType :"json",
+						type : "POST",
+						success:function(result){
+							//alert(result.status);
+							//result=$.trim(result);
+							if(result.status=='success')
+							{
+								destroyCalendar();
+								displayArticleEventCalendar();
+								$("#create_article").modal('hide');															
+								$("#tempo_respected").val(result.tempo_respect);
+							}	
+							
+					  }});
+			}
+			else {
+					// The form didn't validate
+			}
+			return false;
+		
+		});
+		
+		
+		//writer profile type filters
+		$('input[name="view_to[]"]').on('ifChanged', function(event){
+		
+			var value = "";
+			$('input[name="view_to[]"]:checked').each(function(){
+				value += $(this).val()+",";			
+			});		
+			$.get("/quotedelivery/ajax-get-user-profiles?session_id={/literal}{$smarty.get.session_id}{literal}",{"view_to":value,"user_type":"writer"},function(result){
+				
+				if($("#" + name).length == 0) 
+				{
+					$("#contribs_list").multiselect('destroy');
+					$("#contribs_list").html(result);
+					$("#contribs_list").multiselect({
+						includeSelectAllOption: true,
+						nonSelectedText:'Select contributors',
+						numberDisplayed: 1,
+						buttonWidth:'360px',
+						maxHeight: 200,
+						enableCaseInsensitiveFiltering: true
+					});				
+				}	
+			});
+			
+		});
+		
+		
+		//corrector profile type filters
+		$('input[name="corrector_list[]"]').on('ifChanged', function(event){
+		
+			var value = "";
+			$('input[name="corrector_list[]"]:checked').each(function(){
+				value += $(this).val()+",";			
+			});		
+			$.get("/quotedelivery/ajax-get-user-profiles",{"corrector_list":value,"user_type":"corrector"},function(result){//alert(result);
+				
+				if($("#" + name).length == 0) 
+				{
+					$("#corrector_privatelist").multiselect('destroy');
+					$("#corrector_privatelist").html(result);
+					$("#corrector_privatelist").multiselect({
+						includeSelectAllOption: true,
+						nonSelectedText:'Select proof readers',
+						numberDisplayed: 1,
+						buttonWidth:'360px',
+						maxHeight: 200,
+						enableCaseInsensitiveFiltering: true
+					});				
+				}	
+			});
+			
+		});
+		
+		
+		
+		
+		
+});
+
+//remove session article and update packages and calendar
+function removeArticle(article_id)
+{
+
+	smoke.confirm("Souhaitez-vous vraiment supprimer cette article?",function(e){
+		if (e)
+		{
+			var target_page="/quotedelivery/remove-session-article?session_id={/literal}{$smarty.get.session_id}{literal}&article_id="+article_id;
+			//alert(target_page);
+			$.post(target_page,function(result){
+				//alert(result);
+				destroyCalendar();
+				displayArticleEventCalendar();
+				$("#create_article").modal('hide');
+			});
+		}
+		else
+		{
+			return false;
+		}
+	});
+	
+
+}	 
+</script>
+{/literal}

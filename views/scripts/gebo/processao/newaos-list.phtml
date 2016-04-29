@@ -1,0 +1,450 @@
+{literal}
+
+<script type="text/javascript" >
+$(document).ready(function() {
+    $("#newmissionsgrid").addClass('active');
+    var tab = getParameterByName('tab', $(location).attr('href'));
+    if(!tab)
+        window.location.href = "http://admin-ep-test.edit-place.com/processao/newaos-list?submenuId=ML2-SL1&tab=newmissiontab";
+    else
+        $("#"+tab).addClass('active');
+    $('#newmissionsgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "sScrollXInner" : '200px',
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string", "sWidth": "15%" },
+            { "sType": "string" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" }
+        ]
+
+    });
+    $('#ongoingmissionsgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" , "sWidth": "15%" },
+            { "sType": "string" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" }
+        ]
+
+    });
+    $('#refusemissionsgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" , "sWidth": "15%"},
+            { "sType": "string" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" }
+        ]
+
+    });
+    $('#validmissionsgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" , "sWidth": "15%"},
+            { "sType": "string" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" }
+        ]
+
+    });
+    $('#closemissionsgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" , "sWidth": "15%"
+            },
+            { "sType": "string" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" }
+        ]
+
+    });
+
+});
+/*$("#editaopop").live('click',function(e) { //alert("hello");
+    e.preventDefault();
+    var href = $(this).attr('href');
+    $("#editao").removeData('modal');
+    $('#editao .modal-body').load(href);
+    $("#editao").modal();
+    $(".modal-backdrop:gt(0)").remove();
+    //$('.modal-backdrop').css('opacity','0.0');
+
+});
+$("#publishaopop").live('click',function(e) { //alert("hello");
+    e.preventDefault();
+    var href = $(this).attr('href');
+    $("#publishao").removeData('modal');
+    $('#publishao .modal-body').load(href);
+    $("#publishao").modal();
+    $(".modal-backdrop:gt(0)").remove();
+
+});*/
+</script>
+{/literal}
+<div class="row-fluid">
+  <div class="span12" style="">
+<!--    <h3 class="heading">Mod&eacute;ration mission libert&eacute;<a href="#searchblock" onclick="showSearch();"  class="label label-inverse alignright">Search</a></h3>
+-->     <div class="hide" id="searchblock">
+      <form action={$smarty.server.REQUEST_URI} method="get" id="searchform" name="searchform" >
+          <input type="hidden" id="submenuId" name="submenuId"  value="{$submenuId}"/>
+        <table id="searchtable" class="table tdleftalign">
+            <tr><td class="span1"><input type="text"  placeholder="From" id="dp1" name="startdate" data-date-format="dd-mm-yyyy" value="{$smarty.get.startdate}"/></td>
+                <td class="span5">
+                    <select id="clientId" name="clientId" onChange=fnloadao(this.value); data-placeholder="clients" class="span8">
+                        {html_options options=$client_array  selected=$smarty.get.clientId }
+                    </select>
+                </td>
+                <td class="span1"><button class="btn btn-info pull-left" id="clear" name="clear" type="button" value="clear" onclick="clearAll();" >Clear</button></td>
+            </tr>
+            <tr>
+                <td class="span1"><input type="text"  placeholder="To" id="dp2" name="enddate" data-date-format="dd-mm-yyyy" value="{$smarty.get.enddate}"/></td>
+                <td  class="span5" id="aolist" style="display:none;"> <span id="ao_load"></span></td>
+                <td  class="span"id="aolistall" >
+                    <select  name=aoId id=aoId data-placeholder="deliveries" class="span8">
+                        {html_options  options=$delivery_array  selected=$smarty.get.aoId}
+                    </select>
+                </td>
+                <td class="span1"><button class="btn btn-info pull-left" id="search" name="search" type="submit" value="search" onclick="return validateSearch();" >Search</button>&nbsp;&nbsp;</td>
+            </tr>
+        </table>
+      </form>
+     </div>
+     <div class="tabbable">
+          <ul class="nav nav-tabs">
+              <li {if $smarty.get.tab == 'newmissiontab' || $smarty.get.tab == ''} class="active" {/if}><a href="#newmissiontab" data-toggle="tab" class="lable-danger"><strong>Nouvelles missions libert&eacute;</strong></a></li>
+              <li {if $smarty.get.tab == 'ongoingtab'} class="active" {/if}><a href="#ongoingtab" data-toggle="tab" class="lable-info"><strong>Missions libert&eacute; en cours</strong></a></li>
+              <li {if $smarty.get.tab == 'validtab'} class="active" {/if}><a href="#validtab" data-toggle="tab" class="lable-info"><strong>Missions libert&eacute; termin&eacute;es</strong></a></li>
+              <li {if $smarty.get.tab == 'refusetab'} class="active" {/if}><a href="#refusetab" data-toggle="tab" class="lable-info"><strong>Missions libert&eacute; refus&eacute;es</strong></a></li>
+              <li {if $smarty.get.tab == 'closetab'} class="active" {/if}><a href="#closetab" data-toggle="tab" class="lable-info"><strong>Missions libert&eacute; annul&eacute;es</strong></a></li>
+          </ul>
+          <div class="tab-content">
+          <div id="newmissiontab" class="tab-pane" style="overflow-x: scroll;">
+             <table id="newmissionsgrid" class="table table-bordered table-striped table_vam"  style="overflow-x: scroll;">
+                <thead>
+                <tr>
+                    <th>SL.NO</th>
+                    <th>Titre</th>
+                    <th>Client</th>
+                    <th>Cr&eacute;&eacute;e le</th>
+                    <th>Type de contenu</th>
+                    <th>Langue</th>
+                    <th>R&eacute;daction/ Traduction</th>
+                    <th>Historique</th>
+                    <th>Statut</th>
+                    <th>Nombre de Participants</th>
+                    <th>Facturation</th>
+                    <th>Action</th>
+                    <th>CA G&eacute;n&eacute;r&eacute;</th>
+                </tr>
+                </thead>
+                <tbody>
+                {foreach from=$paginator key=newaos_key item=newaos_item name=newaos_loop}
+                <tr>
+                    <td>{$smarty.foreach.newaos_loop.index+1}</td>
+                    <td><a data-target="#artprofile" role="button" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$newaos_item.id}">{$newaos_item.title|stripslashes|wordwrap:20:"\n":true|upper}</a></td>
+                    <td><a href="/user/client-edit?submenuId=ML10-SL2&tab=viewclient&userId={$newaos_item.user_id}" class="hint--bottom hint--info" data-hint="since : {$newaos_item.doj|date_format:'%d/%m/%Y'}">{if $newaos_item.company_name neq ''}{$newaos_item.company_name|upper}{else}{$newaos_item.email}{/if}</a></td>
+                    <td>{$newaos_item.created_at|date_format:"%d/%m/%Y &agrave; %H:%M"}</td>
+                    <td>{$newaos_item.deltype}</td>
+                    <td>{$newaos_item.language}</td>
+                    <td>{if $newaos_item.content_type == 'writing'}R&eacute;daction{else}Traduction{/if}</td>
+                    <td><a href="/ongoing/ao-history?ao_id={$newaos_item.id}"  data-toggle="modal" data-hint="history" data-target="#ao_history" ><i class="splashy-information"></i></a></td>
+                    <td>{if $newaos_item.status_bo == ''}NEW{else}{$newaos_item.status_bo}{/if}</td>
+                    <td>{$newaos_item.contributors}</td>
+                    <td>{if $newaos_item.paid_status == 'notpaid'}Non pay&eacute;{else}pay&eacute;{/if}</td>
+                    <td><!--<a data-toggle="modal" data-target="#publishao" id="publishaopop" href="/processao/showpraoinfo?aoid={$newaos_item.id}&function=publish"><i class="splashy-check"></i></a>-->
+                        <a data-toggle="modal" data-target="#editao" id="editaopop" href="/processao/showpraoinfo?aoid={$newaos_item.id}&function=edit"><i class="splashy-pencil"></i></a>
+                        <a href="/processao/mission-split?submenuId=ML2-SL1&aoid={$newaos_item.id}" data-hint="split mission" class="hint--left hint--danger"><i class="splashy-diamonds_4"></i></a>
+                        <a href="/BO/downloadpremiumquote.php?id={$newaos_item.quoteid}"><i class="splashy-download"></i></a>
+                    </td>
+                    <td>{$newaos_item.cost|string_format:"%.2f"}<b> &euro;</b></td>
+                </tr>
+                {/foreach}
+                </tbody>
+             </table>
+          </div>
+          <div id="ongoingtab" class="tab-pane" style="overflow-x: scroll;">
+              <table id="ongoingmissionsgrid" class="table table-bordered table-striped table_vam"  style="overflow-x: scroll;">
+                  <thead>
+                  <tr>
+                      <th>SL.NO</th>
+                      <th>Titre</th>
+                      <th>Client</th>
+                      <th>Cr&eacute;&eacute;e le</th>
+                      <th>Type de contenu</th>
+                      <th>Langue</th>
+                      <th>R&eacute;daction/ Traduction</th>
+                      <th>Historique</th>
+                      <th>Statut</th>
+                      <th>Nombre de Participants</th>
+                      <th>Facturation</th>
+                      <th>Action</th>
+                      <th>CA G&eacute;n&eacute;r&eacute;</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {foreach from=$ongoinglist key=ongoingaos_key item=ongoingaos_item name=ongoingaos_loop}
+                  <tr>
+                      <td>{$smarty.foreach.ongoingaos_loop.index+1}</td>
+                      <td><a data-target="#artprofile" role="button" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$ongoingaos_item.id}">{$ongoingaos_item.title|stripslashes|wordwrap:20:"\n":true|upper}</a></td>
+                      <td><a href="/user/client-edit?submenuId=ML10-SL2&tab=viewclient&userId={$ongoingaos_item.user_id}" class="hint--bottom hint--info" data-hint="since : {$ongoingaos_item.doj|date_format:'%d/%m/%Y'}">{if $ongoingaos_item.company_name neq ''}{$ongoingaos_item.company_name|upper}{else}{$ongoingaos_item.email}{/if}</a></td>
+                      <td>{$ongoingaos_item.created_at|date_format:"%d/%m/%Y &agrave; %H:%M"}</td>
+                      <td>{$ongoingaos_item.deltype}</td>
+                      <td>{$ongoingaos_item.language}</td>
+                      <td>{if $ongoingaos_item.content_type == 'writing'}R&eacute;daction{else}Traduction{/if}</td>
+                      <td><a href="/ongoing/ao-history?ao_id={$ongoingaos_item.id}"  data-toggle="modal" data-hint="history" data-target="#ao_history" ><i class="splashy-information"></i></a></td>
+                      <td>{$ongoingaos_item.latestStatus}</td>
+                      <td>{$ongoingaos_item.contributors}</td>
+                      <td>{if $ongoingaos_item.paid_status == 'notpaid'}Non pay&eacute;{else}pay&eacute;{/if}</td>
+                      <td><!--<a data-toggle="modal" data-target="#publishao" id="publishaopop" href="/processao/showpraoinfo?aoid={$ongoingaos_item.id}&function=publish"><i class="splashy-check"></i></a>
+-->                          <a data-toggle="modal" data-target="#editao" id="editaopop" href="/processao/showpraoinfo?aoid={$ongoingaos_item.id}&function=edit"><i class="splashy-pencil"></i></a>
+                          <a href="/processao/mission-split?submenuId=ML2-SL1&aoid={$ongoingaos_item.id}" data-hint="split mission" class="hint--left hint--danger"><i class="splashy-diamonds_4"></i></a>
+                          <a href="/BO/downloadpremiumquote.php?id={$newaos_item.quoteid}"><i class="splashy-download"></i></a>
+                      </td>
+                      <td>{$newaos_item.cost|string_format:"%.2f"}<b> &euro;</b></td>
+                  </tr>
+                  {/foreach}
+                  </tbody>
+              </table>
+          </div>
+          <div id="validtab" class="tab-pane" style="overflow-x: scroll;">
+              <table id="validmissionsgrid" class="table table-bordered table-striped table_vam" style="overflow-x: scroll;">
+                  <thead>
+                  <tr>
+                      <th>SL.NO</th>
+                      <th>Titre</th>
+                      <th>Client</th>
+                      <th>Cr&eacute;&eacute;e le</th>
+                      <th>Type de contenu</th>
+                      <th>Langue</th>
+                      <th>R&eacute;daction/ Traduction</th>
+                      <th>Historique</th>
+                      <th>Statut</th>
+                      <th>Nombre de Participants</th>
+                      <th>Facturation</th>
+                      <th>Action</th>
+                      <th>CA G&eacute;n&eacute;r&eacute;</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {foreach from=$validatedlist key=validaos_key item=validaos_item name=validaos_loop}
+                  <tr>
+                      <td>{$smarty.foreach.validaos_loop.index+1}</td>
+                      <td><a data-target="#artprofile" role="button" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$validaos_item.id}">{$validaos_item.title|stripslashes|wordwrap:20:"\n":true|upper}</a></td>
+                      <td><a  href="/user/client-edit?submenuId=ML10-SL2&tab=viewclient&userId={$validaos_item.user_id}" class="hint--bottom hint--info" data-hint="since : {$validaos_item.doj|date_format:'%d/%m/%Y'}">{if $validaos_item.company_name neq ''}{$validaos_item.company_name|upper}{else}{$validaos_item.email}{/if}</a></td>
+                      <td>{$validaos_item.created_at|date_format:"%d/%m/%Y &agrave; %H:%M"}</td>
+                      <td>{$validaos_item.deltype}</td>
+                      <td>{$validaos_item.language}</td>
+                      <td>{if $validaos_item.content_type == 'writing'}R&eacute;daction{else}Traduction{/if}</td>
+                      <td><a href="/ongoing/ao-history?ao_id={$validaos_item.id}"  data-toggle="modal" data-hint="history" data-target="#ao_history" ><i class="splashy-information"></i></a></td>
+                      <td>{$validaos_item.latestStatus}</td>
+                      <td>{$validaos_item.contributors}</td>
+                      <td>{if $validaos_item.paid_status == 'notpaid'}Non pay&eacute;{else}pay&eacute;{/if}</td>
+                      <td><!--<a data-toggle="modal" data-target="#publishao" id="publishaopop" href="/processao/showpraoinfo?aoid={$validaos_item.id}&function=publish"><i class="splashy-check"></i></a>
+-->                          <a data-toggle="modal" data-target="#editao" id="editaopop" href="/processao/showpraoinfo?aoid={$validaos_item.id}&function=edit"><i class="splashy-pencil"></i></a>
+                          <a href="/processao/mission-split?submenuId=ML2-SL1&aoid={$validaos_item.id}" data-hint="split mission" class="hint--left hint--danger"><i class="splashy-diamonds_4"></i></a>
+                          <a href="/BO/downloadpremiumquote.php?id={$newaos_item.quoteid}"><i class="splashy-download"></i></a>
+                      </td>
+                      <td>{$validaos_item.cost|string_format:"%.2f"}<b> &euro;</b></td>
+                  </tr>
+                  {/foreach}
+                  </tbody>
+              </table>
+          </div>
+          <div id="refusetab" class="tab-pane" style="overflow-x: scroll;">
+              <table id="refusemissionsgrid" class="table table-bordered table-striped table_vam" style="overflow-x: scroll;">
+                  <thead>
+                  <tr>
+                      <th>SL.NO</th>
+                      <th>Titre</th>
+                      <th>Client</th>
+                      <th>Cr&eacute;&eacute;e le</th>
+                      <th>Type de contenu</th>
+                      <th>Langue</th>
+                      <th>R&eacute;daction/ Traduction</th>
+                      <th>Historique</th>
+                      <th>Statut</th>
+                      <th>Nombre de Participants</th>
+                      <th>Facturation</th>
+                      <th>Action</th>
+                      <th>CA G&eacute;n&eacute;r&eacute;</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {foreach from=$refusedlist key=refusedaos_key item=refusedaos_item name=refusedaos_loop}
+                  <tr>
+                      <td>{$smarty.foreach.refusedaos_loop.index+1}</td>
+                      <td><a data-target="#artprofile" role="button" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$refusedaos_item.id}">{$refusedaos_item.title|stripslashes|wordwrap:20:"\n":true|upper}</a></td>
+                      <td><a href="/user/client-edit?submenuId=ML10-SL2&tab=viewclient&userId={$refusedaos_item.user_id}" class="hint--bottom hint--info" data-hint="since : {$refusedaos_item.doj|date_format:'%d/%m/%Y'}">{if $refusedaos_item.company_name neq ''}{$refusedaos_item.company_name|upper}{else}{$refusedaos_item.email}{/if}</a></td>
+                      <td>{$refusedaos_item.created_at|date_format:"%d/%m/%Y &agrave; %H:%M"}</td>
+                      <td>{$refusedaos_item.deltype}</td>
+                      <td>{$refusedaos_item.language}</td>
+                      <td>{if $refusedaos_item.content_type == 'writing'}R&eacute;daction{else}Traduction{/if}</td>
+                      <td><a href="/ongoing/ao-history?ao_id={$refusedaos_item.id}"  data-toggle="modal" data-hint="history" data-target="#ao_history"><i class="splashy-information"></i></a></td>
+                      <td>{$refusedaos_item.latestStatus}</td>
+                      <td>{$refusedaos_item.contributors}</td>
+                      <td>{if $refusedaos_item.paid_status == 'notpaid'}Non pay&eacute;{else}pay&eacute;{/if}</td>
+                      <td><!--<a data-toggle="modal" data-target="#publishao" id="publishaopop" href="/processao/showpraoinfo?aoid={$refusedaos_item.id}&function=publish"><i class="splashy-check"></i></a>-->
+                          <a data-toggle="modal" data-target="#editao" id="editaopop" href="/processao/showpraoinfo?aoid={$refusedaos_item.id}&function=edit"><i class="splashy-pencil"></i></a>
+                          <a href="/processao/mission-split?submenuId=ML2-SL1&aoid={$refusedaos_item.id}" data-hint="split mission" class="hint--left hint--danger"><i class="splashy-diamonds_4"></i></a>
+                          <a href="/BO/downloadpremiumquote.php?id={$newaos_item.quoteid}"><i class="splashy-download"></i></a>
+                      </td>
+                      <td>{$refusedaos_item.cost|string_format:"%.2f"}<b> &euro;</b></td>
+                  </tr>
+                  {/foreach}
+                  </tbody>
+              </table>
+          </div>
+          <div id="closetab" class="tab-pane" style="overflow-x: scroll;">
+              <table id="closemissionsgrid" class="table table-bordered table-striped table_vam" style="overflow-x: scroll;">
+                  <thead>
+                  <tr>
+                      <th>SL.NO</th>
+                      <th>Titre</th>
+                      <th>Client</th>
+                      <th>Cr&eacute;&eacute;e le</th>
+                      <th>Type de contenu</th>
+                      <th>Langue</th>
+                      <th>R&eacute;daction/ Traduction</th>
+                      <th>Historique</th>
+                      <th>Statut</th>
+                      <th>Nombre de Participants</th>
+                      <th>Facturation</th>
+                      <th>Action</th>
+                      <th>CA G&eacute;n&eacute;r&eacute;</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {foreach from=$cancelledlist key=closedaos_key item=closedaos_item name=closedaos_loop}
+                  <tr>
+                      <td>{$smarty.foreach.closedaos_loop.index+1}</td>
+                      <td><a data-target="#artprofile" role="button" href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$closedaos_item.id}">{$closedaos_item.title|stripslashes|wordwrap:20:"\n":true|upper}</a></td>
+                      <td><a href="/user/client-edit?submenuId=ML10-SL2&tab=viewclient&userId={$closedaos_item.user_id}" class="hint--bottom hint--info" data-hint="since : {$closedaos_item.doj|date_format:'%d/%m/%Y'}">{if $closedaos_item.company_name neq ''}{$closedaos_item.company_name|upper}{else}{$closedaos_item.email}{/if}</a></td>
+                      <td>{$closedaos_item.created_at|date_format:"%d/%m/%Y &agrave; %H:%M"}</td>
+                      <td>{$closedaos_item.deltype}</td>
+                      <td>{$closedaos_item.language}</td>
+                      <td>{if $closedaos_item.content_type == 'writing'}R&eacute;daction{else}Traduction{/if}</td>
+                      <td><a href="/ongoing/ao-history?ao_id={$closedaos_item.id}"  data-toggle="modal" data-hint="history" data-target="#ao_history" ><i class="splashy-information"></i></a></td>
+                      <td>{$closedaos_item.latestStatus}</td>
+                      <td>{$closedaos_item.contributors}</td>
+                      <td>{if $closedaos_item.paid_status == 'notpaid'}Non pay&eacute;{else}pay&eacute;{/if}</td>
+                      <td><!--<a data-toggle="modal" data-target="#publishao" id="publishaopop" href="/processao/showpraoinfo?aoid={$closedaos_item.id}&function=publish"><i class="splashy-check"></i></a>-->
+                          <a data-toggle="modal" data-target="#editao" id="editaopop" href="/processao/showpraoinfo?aoid={$closedaos_item.id}&function=edit"><i class="splashy-pencil"></i></a>
+                          <a href="/processao/mission-split?submenuId=ML2-SL1&aoid={$closedaos_item.id}" data-hint="split mission" class="hint--left hint--danger"><i class="splashy-diamonds_4"></i></a>
+                          <a href="/BO/downloadpremiumquote.php?id={$newaos_item.quoteid}"><i class="splashy-download"></i></a>
+                      </td>
+                      <td>{$closedaos_item.cost|string_format:"%.2f"}<b> &euro;</b></td>
+                  </tr>
+                  {/foreach}
+                  </tbody>
+              </table>
+          </div>
+          </div>
+     </div>
+ </div>
+</div>
+
+<!--///for the edit ao detials popup///-->
+<div class="modal container hide fade" id="editao">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('editao');">&times;</button>
+        <h3>Edit AO Details</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--///for the publish ao  popup///-->
+<div class="modal2 hide fade" style="overflow: hidden" id="publishao">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('publishao');">&times;</button>
+        <h3>Publish AO</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!--History of AO-->
+<div class="modal container hide fade" id="ao_history">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Historique des actions men&eacute;es sur l'AO</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--Comments of AO-->
+<div class="modal hide fade" id="refusal_reasons">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Message to client</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+
+

@@ -1,0 +1,90 @@
+{literal}
+<script type="text/javascript" >
+
+    $(document).ready(function() {	
+	
+       if($('#contract_list_form').length) {
+                $('#contract_list_form').dataTable({
+                    "sPaginationType": "bootstrap",
+					"iDisplayLength" : {/literal}{$paginationlimit}{literal},
+                     "sDom": "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+					"aoColumns": [
+						{ "sType": "formatted-num" },
+						{ "sType": "string" },
+						{ "sType": "string" },
+						{ "sType": "eu_date" },
+						{ "sType": "string" }
+					],
+					"aaSorting": [[ 0, "asc" ]],
+                    "oTableTools": {
+                        "aButtons": [
+                            "copy",
+                            "print",
+                            {
+                                "sExtends":    "collection",
+                                "sButtonText": 'Save <span class="caret" />',
+                                "aButtons":    [ "csv", "xls", "pdf" ]
+                            }
+                        ],
+                        "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+                    }
+                });
+            }
+    });
+</script>
+{/literal}
+
+<!--Bread Crumbs-->
+<nav>
+	<div id="jCrumbs" class="breadCrumb module">
+		<ul>
+			<li>
+				<a href="/index"><i class="icon-home"></i></a>
+			</li>
+			<li>
+				<a>Boursorama</a>
+			</li>
+			<li>
+				Contract list
+			</li>			
+		</ul>
+	</div>
+</nav>
+
+<div class="row-fluid">
+  <div class="span12">
+    <h3 class="heading">Contract Management
+		<a class="btn btn-gebo1 pull-right" href="/contract/create-contract?submenuId=ML7-SL1">
+			<i class="splashy-application_windows_add"></i>
+			<span style="vertical-align: text-bottom;"> Cr&eacute;er un nouveau</span>
+		</a>
+	</h3>	    
+       
+	<table class="table table-striped table-bordered dTableR" id="contract_list_form">
+		<thead>
+			<tr>
+				<th>S.No.</th>
+				<th>Titre du contrat</th>
+				<th>Client</th>
+				<th>Date de signature</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+		{if $paginator|@count gt 0}
+			{foreach from=$paginator item=contract name=contract_loop}
+				<tr>
+				   <td>{$smarty.foreach.contract_loop.index+1} </td>
+				   <td>{$contract.title|stripslashes}</td>
+				   <td id="email">{if $contract.company_name neq ''}{$contract.company_name} {else} <a href="javascript:void(0);" title="{$contract.email}">{$contract.email|truncate:16:"...":true}</a>{/if}</td>
+				   <td>{$contract.contract_date|date_format:$dateformat}</td>
+				   <td><a href="/contract/create-contract?submenuId=ML7-SL1&action=edit&cid={$contract.id}"><i class="icon-pencil hint--left  hint--info" data-hint="Edit"></i></a></td>			   
+				</tr>
+			{/foreach}		 
+		{/if}	
+					
+		</tbody>
+	</table>
+                        
+  </div>
+</div>    

@@ -1,0 +1,117 @@
+/* iCheck plugin Square skin, blue
+----------------------------------- */
+.icheckbox_square-blue,
+.iradio_square-blue, .quoteform .wanted-product .icheckbox_square-blue {
+    display: inline-block;
+    *display: inline;
+    vertical-align: middle;
+    margin: 0 7px 0 0;
+    padding: 0;
+    width: 23px;
+    height: 23px;
+    background: url(blue-2.png) no-repeat;
+    border: none;
+    cursor: pointer;
+}
+
+.quoteform .wanted-product .icheckbox_square-blue, .quoteform .wanted-product .iradio_square-blue {
+	width: 64px;
+    height: 64px;
+}
+
+.icheckbox_square-blue {
+    background-position: 0 0;
+}
+
+.quoteform .wanted-product .icheckbox_square-blue {
+    background-position: 0 -37px;
+}
+    .icheckbox_square-blue.hover {
+        background-position: -24px 0;
+    }
+	
+	.quoteform .wanted-product .icheckbox_square-blue.hover {
+        background-position: -66px -37px;
+    }
+    .icheckbox_square-blue.checked {
+        background-position: -48px 0;
+    }
+	.quoteform .wanted-product .icheckbox_square-blue.checked {
+        background-position: -132px -37px;
+    }
+    .icheckbox_square-blue.disabled {
+        background-position: -72px 0;
+        cursor: default;
+    }
+	.quoteform .wanted-product .icheckbox_square-blue.disabled {
+        background-position: -198px -37px;
+        cursor: default;
+    }
+	
+    .icheckbox_square-blue.checked.disabled {
+        background-position: -96px 0;
+    }
+	
+	.quoteform .wanted-product .icheckbox_square-blue.checked.disabled {
+        background-position: -264px -37px;
+    }
+
+.iradio_square-blue {
+    background-position: -120px 0;
+}
+
+ .quoteform .wanted-product .iradio_square-blue {
+	 background-position: 0 -109px;
+ }
+    .iradio_square-blue.hover {
+        background-position: -144px 0;
+    }
+	
+	 .quoteform .wanted-product .iradio_square-blue.hover {
+		 background-position: -66px -109px;
+	 }
+	 
+    .iradio_square-blue.checked {
+        background-position: -168px 0;
+    }
+	 .quoteform .wanted-product .iradio_square-blue.checked {
+		 background-position: -132px -109px; 
+	 }
+	 
+    .iradio_square-blue.disabled {
+        background-position: -192px 0;
+        cursor: default;
+    }
+	
+	 .quoteform .wanted-product .iradio_square-blue.disabled {
+		  background-position: -198px -109px;
+	 }
+	 
+    .iradio_square-blue.checked.disabled {
+        background-position: -216px 0;
+    }
+	
+ .quoteform .wanted-product .iradio_square-blue.checked.disabled {
+	 background-position: -264px -109px;
+ }
+
+	
+
+/* HiDPI support */
+/*
+@media (-o-min-device-pixel-ratio: 5/4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+    .icheckbox_square-blue,
+    .iradio_square-blue {
+        background-image: url(blue@2x.png);
+        -webkit-background-size: 240px 24px;
+        background-size: 240px 24px;
+    }
+}
+*/
+
+@media not all, not all, (min-resolution: 120dpi) {
+.icheckbox_square-blue, .iradio_square-blue {
+    background-image: url("blue@2x.png");
+    background-size: 240px 24px;
+}
+}

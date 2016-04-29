@@ -1,0 +1,165 @@
+<section id="quote-selection">
+	<div class="row-fluid">
+		<!-- col 1 -->
+		<div class="span8">
+			<div class="profilehead-mod">
+				<div class="span3">
+					<div class="editor-container">
+						<a class="imgframe-large" href="#">
+							<img src="{$contribprofile[0].profilepic}" alt="{$contribprofile[0].first_name|ucfirst} {$contribprofile[0].last_name|ucfirst}">
+						</a>
+					</div>
+				</div>
+				<div class="span9 profile-name">
+					<h3>{$contribprofile[0].name}</h3>
+					<p class="" style="">{$contribprofile[0].age} <span class="muted">&bull;</span>  {$contribprofile[0].catstr}  <span class="muted">&bull;</span>  {$contribprofile[0].langstr}</p>
+					<table class="table table-condensed table-hover">
+						<tr>
+							<td class="muted">{$contribprofile[0].participations} participations</td>
+							<td class="muted">{$contribprofile[0].selectedcount} selected times</td>
+						</tr>
+						<tr>
+							<td class="muted">Clients : {$contribprofile[0].clientlist}</td>
+							<td><a href="#skills">Profile details</a></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<br>
+			<div class="comment well well-large">
+				<p><strong><i class="icon-comment"></i>About your ad : "{$contribprofile[0].title}"</strong></p>
+			</div><br><br>
+			<h3>Profile</h3>
+		</div>
+		
+		<!-- col 2 -->
+		<div class="span4">
+			<div class="quote-cta" style="padding-bottom:10px">
+				<p class="quote-price">{$contribprofile[0].price_user_total|zero_cut:2} {if $contribprofile[0].currency=='pound'}&pound;{else}&euro;{/if}<sup>*</sup></p>
+				
+				<div id="garantee">
+					<h4>YOUR GUARANTEES</h4>
+
+					<dl>
+						<dt><span class="umbrella"></span>Edit-place is your mediator</dt>
+						<dd>In the event of a dispute/issue (delay in delivery, article rewrites, refund…)</dd>
+						<dt><span class="locked"></span>Secure payment</dt>
+						<dd>Our online payment solution guarantees you a hassle-free transaction</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- end, contributor status --> 
+
+<div class="row-fluid"> 
+	<div class="span8">
+		<section id="skills">
+			<div class="mod">
+				<h4>Languages</h4>
+				{assign var="language" value=$contribprofile[0].language}
+				<strong>{$language_array.$language}</strong> (mother tongue)
+				{foreach from=$langpercent item=more key=lang}
+					<div class="skillstat row-fluid">	
+						<div class="span6">
+							<p><strong>{$language_array.$lang}</strong>  {$more}%</p>
+							<div class="progress">
+								<div class="bar" style="width: {$more}%"></div>
+							</div>
+							<span class="pull-left legend muted">Beginner</span> <span class="pull-right legend muted">Bilingual</span>
+						</div>
+					</div>
+				{/foreach}	
+			</div>
+
+			<div class="mod">
+				<h4>Areas of Expertise</h4>
+				{foreach from=$contribprofile[0].cats item=cat}
+					<div class="skillstat row-fluid">
+						<div class="span6">
+							<p><strong data-original-title="Seo / marketing internet" rel="tooltip">{$category_array.$cat}</strong>  {$catpercent.$cat}%</p>
+							<div class="progress">
+							<div class="bar" style="width: {$catpercent.$cat}%"></div>
+							</div>
+							<span class="pull-left legend muted">Beginner</span> <span class="pull-right legend muted">Expert</span>
+						</div>
+					</div>
+				{/foreach}	
+			</div>
+			{if $exp_details|@count>0}
+			<div class="mod">
+				<h4>Professional Experience</h4>
+				<dl>
+					{foreach from=$exp_details item=exp}
+						<dt>{$exp.title}</dt>
+						<dd class="company">{$exp.institute}</dd>
+						<dd class="muted">
+							Type of contract : {$exp.contract}
+						</dd>
+						<dd class="muted">
+							<time> {$exp.from_month|ucfirst} {$exp.from_year}</time> - <time>{if $exp.to_year!="0"}{$exp.to_month|ucfirst} {$exp.to_year}{else}Current{/if}</time>
+						</dd>
+					{/foreach}
+				</dl>
+			</div>
+			{/if}
+			
+			{if $education_details|@count>0}
+			<div class="mod">
+				<h4>Training</h4>
+				<dl>
+					{foreach from=$education_details item=edu}
+						<dt>{$edu.title}</dt>
+						<dd class="company">{$edu.institute}</dd>
+						<dd class="muted">
+							<time> {$edu.from_month|ucfirst} {$edu.from_year}</time> - <time>{if $edu.to_year!="0"}{$edu.to_month|ucfirst} {$edu.to_year}{else}Current{/if}</time>
+						</dd>
+					{/foreach}
+				</dl>
+			</div>
+			{/if}
+		</section>
+	</div>
+
+	{if $contribprofile[0].clientlogo|@count>0}
+		<div class="span4">
+			<!--  right column  -->
+			<aside>
+				<div class="aside-bg">
+					<div class="aside-block" id="we-trust">
+						<h4>Publications</h4>
+						<ul class="unstyled">
+							{foreach from=$contribprofile[0].clientlogo item=clogo key=keylogo}
+								<li><img src="{$clogo}" rel="tooltip" data-original-title="{$keylogo|utf8_decode}" data-placement="left"></li>
+							{/foreach}
+						</ul>
+					</div>
+				</div>
+			</aside>  
+		</div>
+	{/if}
+</div>
+<input type="hidden" name="polluser" id="polluser" value="{$contribprofile[0].user_id}" />
+<a class="pull-right btn btn-small disabled anchor-top scroll" href="#brand"><i class="icon-arrow-up"></i></a>
+{literal}
+
+<script>
+
+	$(".scroll").click(function(event){		
+
+		event.preventDefault();
+
+		$('html,body').animate({scrollTop:$(this.hash).offset().top}, 500);
+
+		return false;		
+
+	}); 
+	$("[rel=tooltip]").tooltip();
+	$("[rel=popover]").popover();
+
+</script>
+
+{/literal}
+    
+

@@ -1,0 +1,930 @@
+{literal}
+<style type="text/css">
+.editor-container{
+	padding:0px;
+}
+.editor-container img{
+margin:6px;
+}
+.highQuote
+{
+    border: 0 none;
+    box-shadow: none;
+    display: inline-block;    
+	font-family: pt sans;
+    font-size: 18px;
+    text-align: right;
+	color: #000;
+	margin-top: -5px;
+}
+.splashy-documents
+{
+top:3px;
+}
+a.overview-tab {
+    background: none repeat scroll 0 0 #95bcf2 !important;
+    font-weight: 600;
+}
+a.details-tab {
+    background: none repeat scroll 0 0 #d9a6a6 !important;
+    font-weight: 600;
+}
+</style>
+<script language="javascript">
+//user turnover for a mission
+function fnCalUserTurnover(mission_id,offer_price,number_writers)
+{
+	offer_price=offer_price.replace(",",".");
+	var userOffer=offer_price*number_writers;
+	
+	$("#user_ca_"+mission_id).val(userOffer);	
+	
+	fncalculateAutoTotal(); //calculate cost automatically
+}
+
+//package selection for a mission
+function updatepackage(mission_id,package_name)
+{
+	var margin_percentage=0;
+	if(package_name=='lead')
+			margin_percentage=60;
+	else if(package_name=='link')
+			margin_percentage=30;
+	else if(package_name=='team')
+			margin_percentage=50;	
+			
+	if(package_name=='team')
+	{
+		$("#other_details_team_"+mission_id).show();
+		$("#other_details_user_"+mission_id).hide();
+		$("#ca_thead_user_"+mission_id).hide();		
+		$("#turnover_"+mission_id).css("text-decoration","none");
+		$("#margin_percentage_"+mission_id).prop("readonly",false);	
+	}
+	else if(package_name=='user')
+	{
+		$("#other_details_team_"+mission_id).hide();
+		$("#other_details_user_"+mission_id).show();
+		$("#ca_thead_user_"+mission_id).show();
+		$("#turnover_"+mission_id).css("text-decoration","line-through");
+		$("#margin_percentage_"+mission_id).prop("readonly",true);
+	}
+	else
+	{
+		$("#other_details_team_"+mission_id).hide();
+		$("#other_details_user_"+mission_id).hide();
+		$("#ca_thead_user_"+mission_id).hide();
+		$("#turnover_"+mission_id).css("text-decoration","none");
+		$("#margin_percentage_"+mission_id).prop("readonly",false);	
+	}
+	
+	
+	margin_percentage=margin_percentage.toFixed(2);
+	
+	$("#margin_percentage_"+mission_id).val(margin_percentage);
+	
+	fncalculateAutoTotal();//calculate cost automatically
+	
+	if(package_name=='team')
+	{
+		var mission_turnover=parseFloat($("#turnover_"+mission_id).val().replace(",","."));
+		var team_fee=parseFloat($("#team_fee_"+mission_id).val().replace(",","."));
+		var team_ca=(mission_turnover+team_fee).toFixed(2);		
+		$("#team_ca_"+mission_id).val(team_ca);
+		
+		fncalculateAutoTotal();//calculate cost automatically
+	}	
+}
+
+//Apply global package to a quote
+function quoteupdatepackage(package_name)
+{
+	$("[id^=package_]" ).each(function(z) {
+		var divDetails=$(this).attr('id');
+		divDetails=divDetails.split("_");
+		var mission_id=divDetails[1];
+		$("#package_"+mission_id).val(package_name);
+		
+		//Updating all mission packages
+		updatepackage(mission_id,package_name);		
+		
+	});
+}
+
+$(document).ready(function(){
+	
+	//select chosen
+	$("#quote_package").chosen({ allow_single_deselect: false,search_contains: true});
+	//$("[id^=package_]").chosen({ allow_single_deselect: false,search_contains: true});
+	
+	
+	fncalculateAutoTotal();//calculate cost automatically
+	
+	//exclude seo missions from the final margin
+	$("[id^=smission_close_]").live('click', function() {
+		var DivId = $(this).attr('id');			
+		var parentDiv=$(this).parents("div:eq(3)").attr('id');
+		//alert(parentDiv);
+		var mission_identifier=$(this).attr('rel');		
+		var	quote_id=$("#quote_id").val();		
+		
+		if(!mission_identifier)
+		{
+			//if($("[id^=seo_mission_]").size()>1)					
+				$("#"+parentDiv).remove();
+				fncalculateAutoTotal();//calculate cost automatically
+		}	
+		else
+		{	
+			smoke.confirm("Souhaitez-vous vraiment supprimer cette mission seo du devis?",function(e){
+				if (e)
+				{
+					$("#"+parentDiv).html('<center><img alt="" src="/BO/theme/gebo/img/ajax_loader.gif"> Suppression de cette mission seo devis... </center>');
+					ajaxSEOMissionUpdate(quote_id,mission_identifier,parentDiv,'');
+					fncalculateAutoTotal();//calculate cost automatically
+				}
+				else
+				{
+					return false;
+				}
+			});				
+		}	
+			
+	});	
+	
+	//exclude Tech missions from the final margin
+	
+	$("[id^=tmission_close_]").live('click', function() {
+		var DivId = $(this).attr('id');			
+		var parentDiv=$(this).parents("div:eq(3)").attr('id');
+		//alert(parentDiv);
+		var mission_identifier=$(this).attr('rel');		
+		var	quote_id=$("#quote_id").val();				
+		if(!mission_identifier)
+		{
+			//if($("[id^=seo_mission_]").size()>1)					
+				$("#"+parentDiv).remove();
+				fncalculateAutoTotal();//calculate cost automatically
+		}	
+		else
+		{	
+			smoke.confirm("Souhaitez-vous vraiment supprimer cette mission tech du devis?",function(e){
+				if (e)
+				{
+					$("#"+parentDiv).html('<center><img alt="" src="/BO/theme/gebo/img/ajax_loader.gif"> Suppression de cette mission tech devis... </center>');
+					ajaxTECHMissionUpdate(quote_id,mission_identifier,parentDiv,'');
+					fncalculateAutoTotal();//calculate cost automatically
+				}
+				else
+				{
+					return false;
+				}
+			});				
+		}	
+			
+	});
+	
+	$("#delivery_time_calc_modal").on('hidden', function() {
+		//alert('test');
+		$(this).removeData("modal");
+		$("#delivery_time_calc_modal .modal-body").html('');
+	});
+
+
+});
+
+//calculate total staff,total internal cost and total delivery
+function fnCalculateMissionTime()
+{
+		
+	var total_delivery_time=0;		
+	
+	//calculating total delivery time
+	total_delivery_time=0;
+	$("[id^=mission_length_]" ).each(function(z) {
+		var deliveryTime=parseFloat($(this).val());
+		
+		var time_id = $(this).attr('id');
+		var time_split=time_id.split("_");
+		var time_option='mission_length_option_'+time_split[2];
+		var delivery_option=$("#"+time_option).val();
+		if(isNaN(deliveryTime))
+			deliveryTime=0;
+		if(delivery_option=='hours')
+		{
+			deliveryTime=deliveryTime/24;
+			deliveryTime=deliveryTime.toFixed(2);
+		}	
+		if(deliveryTime>total_delivery_time)	
+		total_delivery_time=deliveryTime;
+	});	
+	$("#total_mission_length").val(total_delivery_time);
+	
+	
+}
+
+
+//calculate unit price and margin with diminish percentage
+function fnCalUnitPriceAndMargin(obj,mission_id,percentage)
+{
+	//var unit_price=parseFloat($("#unit_price_"+mission_id).val().replace(",","."));
+	var unit_price=parseFloat(obj.attr('data-price').replace(",","."));
+	alert(unit_price);
+	
+	var internalcost=parseFloat($("#internal_cost_"+mission_id).val().replace(",","."));
+	var margin=parseFloat($("#margin_percentage_"+mission_id).val().replace(",","."));
+	
+	var new_unit_price= (unit_price*(1-(percentage/100))).toFixed(2);
+	if(new_unit_price>0)
+	{
+		var new_margin=(100-(internalcost/new_unit_price)).toFixed(2);	
+		var new_unit_price_text=new_unit_price.replace(".",",");
+		$("#unit_price_"+mission_id).val(new_unit_price_text);
+		$("#margin_percentage_"+mission_id).val(new_margin);
+	}	
+	
+	
+	//alert(new_unit_price);
+
+}
+
+
+//calculate total internal cost and total delivery
+function fnCalTotalCosts(mission_id,margin_percentage)
+{
+	var total_price=0;
+	var total_internalcost=0;
+	var total_unitprice=0;
+	
+	var volume=parseFloat($("#volume_"+mission_id).text().replace(",","."));
+	var internalcost=parseFloat($("#internal_cost_"+mission_id).val().replace(",","."));
+	
+	var unit_price=(internalcost/(1-margin_percentage/100));
+	unit_price=unit_price.toFixed(2);	
+	
+	var turnover=(volume*unit_price).toFixed(2);
+		
+	var turnover_text=turnover.replace(".",",");
+	var unit_price_text=unit_price.replace(".",",");
+	
+	//alert(internalcost+'--'+volume+'--'+margin_percentage+'--'+unit_price);
+	$("#unit_price_"+mission_id).val(unit_price_text);
+	$("#turnover_"+mission_id).val(turnover_text);
+	
+	//total price
+	$("[id^=turnover_]" ).each(function(z) {
+		//Added w.r.t package
+		var tid = $(this).attr('id');
+		var tids=tid.split("_");
+		
+		var tmission_id=tids[1];
+		var tpackage=$("#package_"+tmission_id).val();
+		if(tpackage=='user') 
+		{
+			var missionPrice=parseFloat($("#user_ca_"+tmission_id).val().replace(",","."));
+		}
+		else if(tpackage=='team') 
+		{
+			var mission_turnover=parseFloat($("#turnover_"+tmission_id).val().replace(",","."));
+			var team_fee=parseFloat($("#team_fee_"+tmission_id).val().replace(",","."));
+			var missionPrice=(mission_turnover+team_fee);
+			$("#team_ca_"+tmission_id).val(missionPrice.toFixed(2));
+		}
+		else
+		{//END
+			var missionPrice=parseFloat($(this).val().replace(",","."));
+		}
+		
+		
+		if(isNaN(missionPrice))
+			missionPrice=0;
+		total_price=total_price+missionPrice;
+		
+	});
+	var total_price_text=total_price.toFixed(2);	
+	total_price_text=total_price_text.replace(".",",");
+	$("#total_price").text(total_price_text);
+	
+	//over all margin calculations
+	
+	$("[id^=unit_price_]" ).each(function(z) {     //unit price total
+		var unitPrice=parseFloat($(this).val().replace(",","."));
+		if(isNaN(unitPrice))
+			unitPrice=0;
+		total_unitprice=total_unitprice+unitPrice;
+		
+	});
+	
+	$("[id^=internal_cost_]" ).each(function(z) { //internal cost total
+		var internalPrice=parseFloat($(this).val().replace(",","."));
+		if(isNaN(internalPrice))
+			internalPrice=0;
+		total_internalcost=total_internalcost+internalPrice;
+		
+	});
+	//alert(total_internalcost+'--'+total_unitprice);
+	var total_margin=(100-(total_internalcost/total_unitprice)*100).toFixed(2);
+	$("#total_margin").val(total_margin);
+
+}
+
+function fnChangeAllMargins(margin_percentage)
+{	
+	margin_percentage=margin_percentage.replace(",",".");
+	if(isNaN(margin_percentage))
+			margin_percentage=0;
+	//chage prices of all missions w.r.t total margin
+	$("[id^=margin_percentage_]" ).each(function(z) {
+		var divDetails=$(this).attr('id');
+		divDetails=divDetails.split("_");
+		var mission_id=divDetails[2];			
+		var percentage=margin_percentage;
+		percentage=parseFloat(percentage);
+		$(this).val(percentage);
+		fnCalTotalCosts(mission_id,percentage);		
+	});
+	$("#total_margin").val(margin_percentage);
+
+}
+
+function fncalculateAutoTotal()
+{
+	$("[id^=margin_percentage_]" ).each(function(z) {
+		var divDetails=$(this).attr('id');
+		divDetails=divDetails.split("_");
+		var mission_id=divDetails[2];			
+		var percentage=parseFloat($(this).val().replace(",","."));
+		fnCalTotalCosts(mission_id,percentage);		
+	});
+}
+
+/** ajax function to update seo mission include_final status**/
+function ajaxSEOMissionUpdate(quote_id,mission_identifier,divid,last)
+{
+        var target_page = "/quote/delete-quote-mission?type=includes_update&quote_id="+quote_id+"&mission_identifier="+mission_identifier;
+		//alert(target_page);	
+		$.post(target_page, function(data){					
+				//alert(data);
+				sleep(2000);
+				$("#"+divid).remove();
+				if(last=='final')
+					location.reload();
+			});
+}
+
+
+/** ajax function to update tech mission include_final status**/
+function ajaxTECHMissionUpdate(quote_id,mission_identifier,divid,last)
+{
+        var target_page = "/quote/delete-quote-mission?mission_type=tech&type=includes_update&quote_id="+quote_id+"&mission_identifier="+mission_identifier;
+		//alert(target_page);	
+		$.post(target_page, function(data){					
+				//alert(data);
+				sleep(2000);
+				$("#"+divid).remove();
+				if(last=='final')
+					location.reload();
+			});
+}
+
+
+
+</script>
+
+{/literal}
+
+<div class="row-fluid">    
+	<div class="span12">
+		<div class="row-fluid">
+			<ul id="validate_wizard-titles" class="stepy-titles clearfix">
+				<li id="validate_wizard-title-0"><div>Creation</div><span class="stepNb">1</span></li>
+				<li id="validate_wizard-title-1"><div>TECH review</div><span class="stepNb">2</span></li>
+				<li id="validate_wizard-title-2"><div>SEO review</div><span class="stepNb">3</span></li>
+				<li id="validate_wizard-title-3"><div>Prod review</div><span class="stepNb">4</span></li>
+				<li id="validate_wizard-title-4" class="current-step"><div>Validation</div><span class="stepNb">5</span></li>
+			</ul>
+		</div>
+		{if $quoteDetails|@count gt 0}
+			{foreach from=$quoteDetails item=quote name="quote"}
+				<h1 class="heading topset2">{$quote.title}
+					{*<select name="quote_package" id="quote_package" class="span3" onchange="quoteupdatepackage(this.value);" data-placeholder="Choisissez votre formule">
+						<option></option>
+						<option value="lead" {if $quote.package eq 'lead'} selected{/if} >Lead</option>
+						<option value="team" {if $quote.package eq 'team'} selected{/if}>Team</option>
+						<option value="link" {if $quote.package eq 'link'} selected{/if}>Link</option>
+						<option value="user" {if $quote.package eq 'user'} selected{/if}>User</option>
+					</select>*}
+				</h1>
+				<div class="row-fluid">
+					<div class="span3">
+						<aside>
+							<div class="aside-bg">							
+								<div class="aside-block" id="selected-client">
+									<div class="editor-container">
+										<h2 class="heading">Info client</h2>
+										<div class="row-fluid">
+											<div class="span12">
+												<img title="{$quote.company_name}" style="height: 54px;" src="{$fo_path}/profiles/clients/logos/{$quote.client_id}/{$quote.client_id}_global.png?12345">
+											</div>
+										</div>		
+									</div>
+								</div>													
+							</div>	
+						</aside>
+					</div>
+					<div class="span4"></div>
+					<div class="span4">
+						<aside>
+							<div class="aside-bg">
+								<div class="aside-block" id="selected-bouser">
+									<div class="editor-container">
+										<h2 class="heading">Devis r&eacute;alis&eacute; par</h2>
+										<div class="row-fluid">
+											<div class="span4">
+												<img title="{$quote.quote_user_name}" src="{$fo_path}/profiles/bo/{$quote.quote_by}/{$quote.quote_by}_p.jpg" style="height: 54px;">
+											</div>
+											<div class="span8" style="text-align:left">
+												<p class="editor-name">{$quote.quote_user_name}</p>
+												<p class="editor-info">
+												T&eacute;l : {$quote.phone_number}<br>
+												Email : {$quote.email}
+												</p>									
+											</div>
+										</div>	
+									</div>
+								</div>							
+							</div>	
+						</aside>
+					</div>
+				</div>	
+				{if $quote.prod_review eq 'validated'}
+				<div class="row-fluid">
+					<div class="span12">
+						<ul class="nav nav-tabs">
+							<li class="active"><a class="overview-tab" href="#overview" data-toggle="tab">Final Quote</a></li>
+							<li><a class="details-tab" href="#details" data-toggle="tab">D&eacute;tails</a></li>							
+						</ul>
+					</div>
+				</div>
+				{/if}
+				<div class="row-fluid">
+					<div class="tab-content">
+						<div class="tab-pane active" id="overview">
+							<form action="/quote/save-final-validation" method="POST" name="save_final_validation">	
+								<input type="hidden" id="quote_id" name="quote_id" value="{$quote.identifier}">
+							<div class="row-fluid">
+								{if $quote.mission_details|@count gt 0}
+									{foreach from=$quote.mission_details item=mission name="misson"}							
+										{assign var=ms_index value=$smarty.foreach.misson.index+1}	
+										<div class="row-fluid" id="mission_details_{$mission.identifier}">	
+											<div class="mission-details">								
+												{if $mission.product eq 'translation'}
+													{if $mission.previousMissionDetails|@count eq 0 && $quote.version gt 1 }
+														<div class="new-mission-product">
+													{else}
+														<div class="prod-mission-product">										
+													{/if}
+													{$mission.product_name} {$mission.product_type_name} 					{$mission.language_source_name} au {$mission.language_dest_name}
+													{if $mission.previousMissionDetails|@count eq 0 && $quote.version gt 1 }
+														<label class="label label-warning">Mission ajout&eacute;e</label>	
+													{/if}	
+														{if $mission.misson_user_type eq 'seo'}
+															<label class="label label-warning">Proposition seo</label>
+														{/if}	
+														{if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' || $quote.version gt 1}
+															<div class="pull-right">												
+																<a class="btn close-seo" rel="{$mission.identifier}" id="smission_close_{$mission.identifier}_{$ms_index}">&times;</a>
+															</div>
+														{/if}										
+													</div>	
+												{else}
+													{if $mission.previousMissionDetails|@count eq 0 && $quote.version gt 1 }
+														<div class="new-mission-product">
+													{else}	
+														<div class="prod-mission-product">
+													{/if}	
+													{$mission.product_name} {$mission.product_type_name}  in
+													{$mission.language_source_name}
+													{if $mission.previousMissionDetails|@count eq 0 && $quote.version gt 1 }
+														<label class="label label-warning">Mission ajout&eacute;e</label>	
+													{/if}
+														{if $mission.misson_user_type eq 'seo'}
+															<label class="label label-warning">Proposition seo</label>
+														{/if}	
+														{if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' || $quote.version gt 1}
+															<div class="pull-right">												
+																<a class="btn close-seo" rel="{$mission.identifier}" id="smission_close_{$mission.identifier}_{$ms_index}">&times;</a>
+															</div>
+														{/if}
+													</div>	
+												{/if}
+												<input name="mission_type_{$mission.identifier}" type="hidden" value="{$mission.product}">
+												<table class="table">										
+													<tr>
+														<th style="width:7%">VOLUME</th>
+														<th style="width:12%">D&Eacute;LAI LIVRAISON</th>
+														<th style="width:21%">P VENTE/ARTICLE</th>
+														<th style="width:22%">CA <span {if $mission.package neq 'user'}style="display:none"{/if} id="ca_thead_user_{$mission.identifier}">th&eacute;orique</span></th>
+														<th style="width:15%">CO&Ucirc;T INTERNE</th>
+														<th style="width:15%">MARGE</th>
+														<th style="width:11%">FORMULE</th>											
+													</tr>
+													<tr class="misson-details-text">
+														<td>
+															{if $mission.volume_difference eq 'yes'}
+																<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.volume_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i>
+															{/if}
+																<span id="volume_{$mission.identifier}">{$mission.volume}</span>
+															{if $mission.volume_difference eq 'yes'}
+																</span>
+															{/if}	
+														</td>
+														<td>
+															{if $quote.prod_review eq 'auto_skipped'}
+																<a id="delivery_time_calc" data-target="#delivery_time_calc_modal" role="button" data-toggle="modal" href="/quote/ajax-calculate-delivery-time?mission_id={$mission.identifier}&mission_type={$mission.product}&nbwriters={$mission.required_writes}">
+															{/if}
+																{if $mission.mission_length_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.mission_length_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i>
+																{/if}
+																<input  id="mission_length_{$mission.identifier}" name="mission_length_{$mission.identifier}" value="{$mission.mission_length}" class="span4 {if $mission.mission_length_difference eq 'yes'}version-change{/if} highQuote" readonly="readonly" style="background:#fff;cursor:text;{if $mission.mission_length_difference eq 'yes'}color:#b45f00;{/if}">
+																{if $mission.mission_length_option eq 'days'} JOURS{else}  {$mission.mission_length_option|upper} {/if}
+																{if $mission.mission_length_difference eq 'yes'}
+																	</span>
+																{/if}
+															{if $quote.prod_review eq 'auto_skipped'}	
+																</a>	
+															{/if}	
+														</td>
+														<td>
+															{if $mission.unit_price_difference eq 'yes'}
+																<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.price_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+															{/if}	
+																<input  id="unit_price_{$mission.identifier}" name="unit_price_{$mission.identifier}" value="{$mission.unit_price|zero_cut:2}" class="span4 {if $mission.unit_price_difference eq 'yes'}version-change{/if} highQuote" readonly="readonly" style="background:#fff;cursor:text;{if $mission.unit_price_difference eq 'yes'}color:#b45f00;{/if}"> &{$quote.sales_suggested_currency};
+															{if $mission.unit_price_difference eq 'yes'}
+																</span>
+															{/if}
+															<br>
+															<div class="span4">
+																<div class="input-prepend input-append">
+																	<span class="add-on">-</span><input data-price="{$mission.unit_price|zero_cut:2}" class="span7" type="text" id="cost_diminish_{$mission.identifier}" name="cost_diminish_{$mission.identifier}" onkeyup="fnCalUnitPriceAndMargin(this,'{$mission.identifier}',this.value);" value="0"><span class="add-on">%</span>
+																</div>
+															</div>
+														</td>
+														<td>
+															{if $mission.turnover_difference eq 'yes'}
+																<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.turnover_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+															{/if}
+																<input  id="turnover_{$mission.identifier}" name="turnover_{$mission.identifier}" value="{$mission.turnover|zero_cut:2}" class="span5 {if $mission.turnover_difference eq 'yes'}version-change{/if} highQuote" readonly="readonly" style="background:#fff;cursor:text;{if $mission.turnover_difference eq 'yes'}color:#b45f00;{/if}{if $mission.package eq 'user'}text-decoration: line-through;{/if}"> &{$quote.sales_suggested_currency};
+															{if $mission.turnover_difference eq 'yes'}
+																</span>
+															{/if}
+														</td>
+														<td>
+															{if $mission.internal_cost_difference eq 'yes'}
+																<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.internal_cost_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+															{/if}
+															<input  id="internal_cost_{$mission.identifier}" name="internal_cost_{$mission.identifier}" value="{$mission.internal_cost|zero_cut:2}" class="span4 {if $mission.internal_cost_difference eq 'yes'}version-change{/if}  highQuote" readonly="readonly" style="background:#fff;cursor:text;{if $mission.internal_cost_difference eq 'yes'}color:#b45f00;{/if}"> &{$quote.sales_suggested_currency}; <br>												
+															{if $mission.internal_cost_difference eq 'yes'}
+																</span>
+															{/if}
+															<a data-placement="top" data-html="true" data-original-title="Co&ucirc;t interne" data-content="{$mission.internalcost_details}" class="pop_over" href="#">D&eacute;tails</a>
+														</td>
+														<td>
+															{if $mission.margin_difference eq 'yes'}
+																<div class="span2">
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.margin_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span>
+																</div>	
+															{/if}
+															<div {if $mission.margin_difference eq 'yes'}class="span10"{else}class="span12"{/if}>
+																<div class="input-append" {if $mission.margin_difference eq 'yes'} style="color:#b45f00;"{/if}>
+																	<input type="text" class="span5" size="16" id="margin_percentage_{$mission.identifier}" name="margin_percentage_{$mission.identifier}" onkeyup="fnCalTotalCosts('{$mission.identifier}',this.value);" value="{$mission.margin_percentage}" {if $mission.margin_difference eq 'yes'} style="color:#b45f00;"{/if}><span class="add-on">%</span>
+																</div>													
+															</div>
+														</td>
+														<td>
+															<select name="package_{$mission.identifier}" id="package_{$mission.identifier}" class="span12 validate[required]" onchange="updatepackage('{$mission.identifier}',this.value);">
+																<option value="lead" {if $mission.package eq 'lead'} selected{/if} >Lead</option>
+																<option value="team" {if $mission.package eq 'team'} selected{/if}>Team</option>
+																<option value="link" {if $mission.package eq 'link'} selected{/if}>Link</option>
+																<option value="user" {if $mission.package eq 'user'} selected{/if}>User</option>
+															</select>
+														</td>
+													</tr>
+													<tr class="misson-details-text" {if $mission.package neq 'team'}style="display:none"{/if} id="other_details_team_{$mission.identifier}">
+														<td colspan="2">
+															<span style=" display: block;padding-top: 0px;">Nombre de profils : {$mission.required_writes}</span>
+														</td>
+														<td colspan="2">
+															soit <input type="text" class="span2" id="team_packs_{$mission.identifier}" name="team_packs_{$mission.identifier}" value="{$mission.team_packs}"> packs :		
+															<div class="input-append">
+																<input type="text" class="span5" id="team_fee_{$mission.identifier}" name="team_fee_{$mission.identifier}" value="{$mission.team_fee|zero_cut:2}" onkeyup="fncalculateAutoTotal();"><span class="add-on">&{$quote.sales_suggested_currency};</span>
+															</div>
+														</td>
+														<td colspan="2">
+															<span style=" display: block;padding-top: 0px;">
+																CA Total : 
+																<input  id="team_ca_{$mission.identifier}" name="team_ca_{$mission.identifier}" value="{$mission.team_package_turnover|zero_cut:2}" class="span5  highQuote" style="background:#fff;cursor:text;"> &{$quote.sales_suggested_currency};
+															</span>	
+														</td>
+													</tr>
+													<tr class="misson-details-text" {if $mission.package neq 'user'}style="display:none"{/if} id="other_details_user_{$mission.identifier}">
+														<td colspan="2">
+															<span style=" display: block;padding-top: 0px;">Nombre de profils : {$mission.required_writes}</span>
+														</td>
+														<td colspan="2">Fees offre user : 
+															<div class="input-append">
+																<input type="text" class="span5" id="user_fee_{$mission.identifier}" name="user_fee_{$mission.identifier}" value="{$mission.user_fee|zero_cut:2}"  onkeyup="fnCalUserTurnover('{$mission.identifier}',this.value,{$mission.required_writes});"><span class="add-on">&{$quote.sales_suggested_currency};</span>
+															</div>	
+														</td>
+														<td colspan="2">
+															<span style=" display: block;padding-top: 0px;">
+																CA : 
+																<input  id="user_ca_{$mission.identifier}" name="user_ca_{$mission.identifier}" value="{$mission.user_package_turnover|zero_cut:2}" class="span5  highQuote" style="background:#fff;cursor:text;"> &{$quote.sales_suggested_currency};
+															</span>	
+														</td>											
+													</tr>
+												</table>
+											</div>	
+										</div>	
+									{/foreach}
+									
+									<!--Tech mission Details-->
+									{if $quote.tech_mission_details|@count gt 0}
+										{foreach from=$quote.tech_mission_details item=tmission name="tmission"}							
+											{assign var=ms_index value=$smarty.foreach.tmission.index+1}	
+											<div class="row-fluid" id="mission_details_{$tmission.identifier}">	
+												<input type="hidden" name="tech_mission_{$tmission.identifier}" value="1">
+												<div class="mission-details">
+														{if $tmission.previousMissionDetails|@count eq 0 && $quote.version gt 1 }
+															<div class="new-mission-product">
+														{else}	
+															<div class="prod-mission-product">
+														{/if}	
+														{$tmission.title}
+														{if $tmission.previousMissionDetails|@count eq 0 && $quote.version gt 1 }
+															<label class="label label-warning">Mission ajout&eacute;e</label>	
+														{/if}
+														
+														<label class="label label-warning">Proposition tech</label>
+														<div class="pull-right">												
+															<a class="btn close-tech" rel="{$tmission.identifier}" id="tmission_close_{$tmission.identifier}_{$ms_index}">&times;</a>
+														</div>
+														
+														</div>	
+																							
+													<table class="table">										
+														<tr>
+															<th style="width:7%">VOLUME</th>
+															<th style="width:12%">D&Eacute;LAI LIVRAISON</th>
+															<th style="width:21%">P VENTE/ARTICLE</th>
+															<th style="width:22%">CA <span {if $mission.package neq 'user'}style="display:none"{/if} id="ca_thead_user_{$mission.identifier}">th&eacute;orique</span></th>
+															<th style="width:15%">CO&Ucirc;T INTERNE</th>
+															<th style="width:15%">MARGE</th>
+															<th style="width:11%">FORMULE</th>											
+														</tr>
+														<tr class="misson-details-text">
+															<td>
+																{if $tmission.volume_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$tmission.volume_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i>
+																{/if}
+																	<span id="volume_{$tmission.identifier}">{$tmission.volume}</span>
+																{if $tmission.volume_difference eq 'yes'}
+																	</span>
+																{/if}	
+															</td>
+															<td>
+																{if $tmission.mission_length_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$tmission.mission_length_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i>
+																{/if}
+																{$tmission.delivery_time} {if $tmission.delivery_option eq 'days'}JOURS{else}  {$tmission.delivery_option|upper} {/if}
+																{if $tmission.mission_length_difference eq 'yes'}
+																	</span>
+																{/if}
+															</td>
+															<td>
+																{if $tmission.unit_price_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$tmission.price_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+																{/if}	
+																	<input  id="unit_price_{$tmission.identifier}" name="unit_price_{$tmission.identifier}" value="{$tmission.unit_price|zero_cut:2}" class="span4 {if $tmission.unit_price_difference eq 'yes'}version-change{/if} highQuote" readonly="readonly" style="background:#fff;cursor:text;{if $tmission.unit_price_difference eq 'yes'}color:#b45f00;{/if}"> &{$quote.sales_suggested_currency};
+																{if $tmission.unit_price_difference eq 'yes'}
+																	</span>
+																{/if}
+															</td>
+															<td>
+																{if $tmission.turnover_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$tmission.turnover_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+																{/if}
+																	<input  id="turnover_{$tmission.identifier}" name="turnover_{$tmission.identifier}" value="{$tmission.turnover|zero_cut:2}" class="span5 {if $tmission.turnover_difference eq 'yes'}version-change{/if} highQuote" readonly="readonly" style="background:#fff;cursor:text;{if $tmission.turnover_difference eq 'yes'}color:#b45f00;{/if}{if $tmission.package eq 'user'}text-decoration: line-through;{/if}"> &{$quote.sales_suggested_currency};
+																{if $tmission.turnover_difference eq 'yes'}
+																	</span>
+																{/if}
+															</td>
+															<td>
+																{if $tmission.internal_cost_difference eq 'yes'}
+																	<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$tmission.internal_cost_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+																{/if}
+																<input  id="internal_cost_{$tmission.identifier}" name="internal_cost_{$tmission.identifier}" value="{$tmission.internal_cost|zero_cut:2}" class="span4 {if $tmission.internal_cost_difference eq 'yes'}version-change{/if}  highQuote" readonly="readonly" style="background:#fff;cursor:text;{if $tmission.internal_cost_difference eq 'yes'}color:#b45f00;{/if}"> &{$quote.sales_suggested_currency}; <br>												
+																{if $tmission.internal_cost_difference eq 'yes'}
+																	</span>
+																{/if}
+															</td>
+															<td>
+																{if $tmission.margin_difference eq 'yes'}
+																	<div class="span2">
+																		<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$tmission.margin_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span>
+																	</div>	
+																{/if}
+																<div {if $tmission.margin_difference eq 'yes'}class="span10"{else}class="span12"{/if}>
+																	<div class="input-append" {if $tmission.margin_difference eq 'yes'} style="color:#b45f00;"{/if}>
+																		<input type="text" class="span5" size="16" id="margin_percentage_{$tmission.identifier}" name="margin_percentage_{$tmission.identifier}" onkeyup="fnCalTotalCosts('{$tmission.identifier}',this.value);" value="{$tmission.margin_percentage}" {if $tmission.margin_difference eq 'yes'} style="color:#b45f00;"{/if}><span class="add-on">%</span>
+																	</div>													
+																</div>
+															</td>
+															<td>
+																<select name="package_{$tmission.identifier}" id="package_{$tmission.identifier}" class="span12 validate[required]" onchange="updatepackage('{$tmission.identifier}',this.value);">
+																	<option value="lead" {if $tmission.package eq 'lead'} selected{/if} >Lead</option>
+																	<option value="team" {if $tmission.package eq 'team'} selected{/if}>Team</option>
+																	<option value="link" {if $tmission.package eq 'link'} selected{/if}>Link</option>
+																	<option value="user" {if $tmission.package eq 'user'} selected{/if}>User</option>
+																</select>
+															</td>
+														</tr>
+														<tr class="misson-details-text" {if $tmission.package neq 'team'}style="display:none"{/if} id="other_details_team_{$tmission.identifier}">
+															<td colspan="2">
+																<span style=" display: block;padding-top: 0px;">Nombre de profils : {$tmission.required_writes}</span>
+															</td>
+															<td colspan="2">
+																soit <input type="text" class="span2" id="team_packs_{$tmission.identifier}" name="team_packs_{$tmission.identifier}" value="{$tmission.team_packs}"> packs:
+																<div class="input-append">
+																	<input type="text" class="span5" id="team_fee_{$tmission.identifier}" name="team_fee_{$tmission.identifier}" value="{$tmission.team_fee|zero_cut:2}" onkeyup="fncalculateAutoTotal();"><span class="add-on">&{$quote.sales_suggested_currency};</span>
+																</div>
+															</td>
+															<td colspan="2">
+																<span style=" display: block;padding-top: 0px;">
+																	CA Total : 
+																	<input  id="team_ca_{$tmission.identifier}" name="team_ca_{$tmission.identifier}" value="{$tmission.team_package_turnover|zero_cut:2}" class="span5  highQuote" style="background:#fff;cursor:text;"> &{$quote.sales_suggested_currency};
+																</span>	
+															</td>
+														</tr>
+														<tr class="misson-details-text" {if $tmission.package neq 'user'}style="display:none"{/if} id="other_details_user_{$tmission.identifier}">
+															<td colspan="2">
+																<span style=" display: block;padding-top: 0px;">Nombre de profils : {$tmission.required_writes}</span>
+															</td>
+															<td colspan="2">Fees offre user : 
+																<div class="input-append">
+																	<input type="text" class="span5" id="user_fee_{$tmission.identifier}" name="user_fee_{$tmission.identifier}" value="{$tmission.user_fee|zero_cut:2}"  onkeyup="fnCalUserTurnover('{$tmission.identifier}',this.value,{$tmission.required_writes});"><span class="add-on">&{$quote.sales_suggested_currency};</span>
+																</div>	
+															</td>
+															<td colspan="2">
+																<span style=" display: block;padding-top: 0px;">
+																	CA : 
+																	<input  id="user_ca_{$tmission.identifier}" name="user_ca_{$tmission.identifier}" value="{$tmission.user_package_turnover|zero_cut:2}" class="span5  highQuote" style="background:#fff;cursor:text;"> &{$quote.sales_suggested_currency};
+																</span>	
+															</td>											
+														</tr>
+													</table>
+												</div>	
+											</div>	
+										{/foreach}
+									{/if}
+									<!--Deleted Missions-->
+									{if $quote.deletedMissionVersions|@count gt 0}						
+										{foreach from=$quote.deletedMissionVersions item=dmission name="dmisson"}							
+											{assign var=ms_index value=$smarty.foreach.misson.index+1}	
+											<div class="row-fluid" id="mission_details_{$dmission.identifier}">	
+												<div class="mission-details">								
+													{if $dmission.product eq 'translation'}
+														<div class="delete-mission-product">
+														{$dmission.product_name} {$dmission.product_type_name} 					{$dmission.language_source_name} to {$dmission.language_dest_name}
+														 
+														 <label class="label">Mission supprim&eacute;e</label>	
+														 
+														{if $dmission.misson_user_type eq 'seo'}
+															<label class="label label-warning">Proposition seo</label>
+														{/if}
+														</div>	
+													{else}
+														<div class="delete-mission-product">	
+														{$dmission.product_name} {$dmission.product_type_name}  in
+														{$dmission.language_source_name}
+														 
+														<label class="label">Mission supprim&eacute;e</label>
+														
+														{if $dmission.misson_user_type eq 'seo'}
+															<label class="label label-warning">Proposition seo</label>{/if}
+														</div>	
+													{/if}									
+													<table class="table">
+														<tr>
+															<th style="width:7%">VOLUME</th>
+															<th style="width:12%">D&Eacute;LAI LIVRAISON</th>
+															<th style="width:21%">P VENTE/ARTICLE</th>
+															<th style="width:22%">CA <span {if $dmission.package neq 'user'}style="display:none"{/if} id="ca_thead_user_{$mission.identifier}">th&eacute;orique</span></th>
+															<th style="width:15%">CO&Ucirc;T INTERNE</th>
+															<th style="width:15%">MARGE</th>
+															<th style="width:11%">FORMULE</th>
+														</tr>
+														<tr class="misson-details-text">
+															<td>{$dmission.volume}</td>
+															<td>{$dmission.mission_length} {if $dmission.mission_length_option eq 'days'} JOURS{else}  {$dmission.mission_length_option|upper} {/if}</td>
+															<td>{$dmission.unit_price|zero_cut:2} &{$quote.sales_suggested_currency};</td>
+															<td>{$dmission.turnover|zero_cut:2} &{$quote.sales_suggested_currency};</td>
+															<td>{$dmission.internal_cost|zero_cut:2} &{$quote.sales_suggested_currency};<br>
+																<a data-placement="top" data-html="true" data-original-title="Co&ucirc;t interne" data-content="{$dmission.internalcost_details}" class="pop_over" href="#">d&eacute;tails</a>
+															</td>
+															<td>{$dmission.margin_percentage} %</td>
+															<td>{$dmission.package}</td>
+														</tr>
+													</table>
+												</div>
+											</div>
+										{/foreach}
+									{/if}
+									<div class="row-fluid">
+										<div class="span5 pull-right">
+											<table cellpadding="10" class="misson-details-text">
+												<tr>
+													<td class="alignright">CA TOTAL</td>
+													<td>
+														{if $quote.final_turnover_difference eq 'yes'}
+															<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$quote.final_turnover_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+														{/if}
+															<b><span id="total_price">{$quote.total_turnover|zero_cut:2}</span> &{$quote.sales_suggested_currency};</b>
+														{if $quote.final_turnover_difference eq 'yes'}
+															</span>
+														{/if}	
+													</td>
+												</tr>									
+												<tr>
+													<td class="alignright" style="margin-top: 6px;">MARGE</td>
+													<td>
+														<!--<span id="total_margin">{$quote.over_all_margin}</span>%-->
+														{if $quote.final_margin_difference eq 'yes'}
+															<div class="span1">
+																<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$quote.final_margin_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span>
+															</div>	
+														{/if}
+														<div {if $quote.final_margin_difference eq 'yes'}class="span11"{else}class="span12"{/if}>
+																<div class="input-append" {if $quote.final_margin_difference eq 'yes'} style="color:#b45f00;"{/if}>
+																<input type="text" id="total_margin" name="total_margin" class="span5" size="16" onkeyup="fnChangeAllMargins(this.value);" value="{$quote.over_all_margin}"{if $quote.final_margin_difference eq 'yes'} style="color:#b45f00;"{/if}><span class="add-on">%</span>
+															</div>
+														</div>
+														
+													</td>
+												</tr>									
+												<tr>
+													<td class="alignright" style="margin-top: -6px;">D&Eacute;LAI</td>
+													<td>
+														{if $quote.final_mission_length_difference eq 'yes'}
+														<div class="span1">
+															<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$quote.final_mission_length_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span>
+														</div>	
+														{/if}
+														<div class="span9">
+															<input type="text" id="total_mission_length" value="{$quote.total_mission_length}" name="total_mission_length" class="span5" style="margin-top: -10px;{if $quote.final_mission_length_difference eq 'yes'}color:#b45f00;{/if}" readonly>
+															<input type="hidden" name="total_time_option" id="total_time_option" value="{$quote.final_mission_length_option}">
+															<select disabled name="total_time_option" id="total_time_option" class="span5" style="margin-top: -10px;;{if $quote.final_mission_length_difference eq 'yes'}color:#b45f00;{/if}">					
+																<option value="days" {if $quote.final_mission_length_option eq 'days'} selected {/if}>Jours</option>
+																<option value="hours" {if $quote.final_mission_length_option eq 'hours'} selected {/if}>Hours</option>
+															</select>
+														</div>	
+													</td>
+												</tr>
+											</table>
+										</div>	
+									</div>
+									<div class="formSep topset2">						
+										<div class="row-fluid">
+											<div class="span4"></div>
+											<div class="span6">							
+												<button type="submit" name="review_save" class="btn btn-success">Valider</button>
+												<button type="submit" name="review_download" class="btn btn-primary">Valider & T&eacute;l&eacute;charger xls</button>
+											</div>
+										</div>
+									</div>
+								{/if}				
+							</div>
+							</form>
+						</div>
+						{if $quote.prod_review eq 'validated'}
+							<div class="tab-pane" id="details">
+								{$prod_view_details}
+							</div>
+						{/if}	
+					</div>	
+				</div>		
+			{/foreach}
+		{/if}	
+	</div>
+</div>	
+
+<div class="modal hide fade" id="delivery_time_calc_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Outil  de calcul de d&eacute;lai de livraison</h3>
+    </div>
+    <div class="modal-body">		
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>

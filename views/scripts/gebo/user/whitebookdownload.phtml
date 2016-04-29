@@ -1,0 +1,178 @@
+{literal}
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/datempicker.js"></script>
+<script type="text/javascript" >
+$(document).ready(function() {
+		$(".uni_style").uniform(); 
+		
+		$('#start_date').datepicker({language: 'fr'}).on('changeDate', function(ev){
+				var dateText = $(this).val();//data('date');
+				
+				var endDateTextBox = $('#end_date');
+				if (endDateTextBox.val() != '') {
+					var testStartDate = new Date(dateText);
+					var testEndDate = new Date(endDateTextBox.val());
+					if (testStartDate > testEndDate) {
+						endDateTextBox.val(dateText);
+					}
+				}
+				else {
+					endDateTextBox.val(dateText);
+				};
+				$('#end_date').datepicker('setStartDate', dateText);
+				$('#start_date').datepicker('hide');
+			});
+			
+			$('#end_date').datepicker({language: 'fr'}).on('changeDate', function(ev){
+				var dateText = $(this).val();//data('date');
+				var startDateTextBox = $('#start_date');				
+				if (startDateTextBox.val() != '') {
+					var testStartDate = new Date(startDateTextBox.val());
+					var testEndDate = new Date(dateText);
+					if (testStartDate > testEndDate) {
+						startDateTextBox.val(dateText);
+					}
+				}
+				else {
+					startDateTextBox.val(dateText);
+				};
+				$('#start_date').datepicker('setEndDate', dateText);
+				$('#end_date').datepicker('hide');
+			});
+		
+		if($('#wtable').length) {
+			$('#wtable').dataTable({
+				"sPaginationType": "bootstrap",
+				"iDisplayLength" : 25,
+				 "sDom": "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+				"aoColumns": [
+					{ "sType": "string" },
+					{ "sType": "formatted-num" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" }
+					
+				],
+				"aaSorting": [[ 1, "asc" ]],
+				"oTableTools": {
+					"aButtons": [
+						"copy",
+						"print",
+						{
+							"sExtends":    "collection",
+							"sButtonText": 'Sauvegarder <span class="caret" />',  
+							"aButtons":    [ "csv", "xls", "pdf" ]
+						}
+					],
+					"sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+				}
+			});
+		}
+		
+		function clearAll()
+        {
+			$('#start_date').attr('value', '');
+            $('#end_date').attr('value', ''); 
+		}
+ });
+ 
+	function deleteWBdownl()
+	{
+		 var $b = $('input[type=checkbox]');
+		 var countselected = $b.filter(':checked').length;
+		
+		   if(countselected == 0)
+		   {
+				smoke.alert("Please select atleast one");
+			   return false;
+		   }
+		   else
+		   {
+				if(confirm("Do you really want to delete these records?"))
+				{
+					return true;
+				}
+				else
+				  return false;
+		   }	
+	}
+ </script>
+{/literal}
+
+<div class="row-fluid">	
+	<div class="span12">
+		<h3 class="heading">WHITE BOOK DOWNLOADS<a class="btn btn-gebo1 alignright" data-toggle="modal" data-target="#uploadWB" href="/user/upload-whitebook">Upload White book</a><a onclick="$('#searchblock').toggle();"  class="btn btn-gebo1" style="float:right">Search</a></h3>
+		<form action="/user/whitebook-download?submenuId=ML10-SL9" method="GET" name="formsearchpoll">
+			<div class="hide well clearfix" id="searchblock">
+				<input type="hidden" name="submenuId" id="submenuId" value="{$smarty.get.submenuId}" />
+				<table width="100%">
+					<tr>
+						<td valign="top">Date de création</td>
+						<td nowrap>
+							<input type="text" id="start_date" name="start_date" value="{$start_date}" placeholder="From" data-date-format="dd/mm/yyyy" />
+							<input type="text" id="end_date" name="end_date"  value="{$end_date}" placeholder="To" data-date-format="dd/mm/yyyy" />
+						</td>
+						<td colspan="" align="right">
+							<input type="submit" value="Search" name="search_submit" id="search_submit" class="btn btn-success"/>
+							<input type="reset" value="Clear" name="clearall" id="clearall" class="btn btn-danger" onclick="clearAll();"/>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</form>
+		
+		<form action="/user/whitebook-download?submenuId=ML10-SL9" method="post" >
+			<table class="table table-bordered table-striped table_vam" id="wtable">
+				<thead>
+					<tr>
+						<th></th>
+						<th>ID N°</th>
+						<th>Name</th>
+						<th>Surname</th>
+						<th>Email</th>
+						<th>Status</th>
+						<th>Created</th>
+						<th>Updated at</th>
+						<th>Contact</th>
+					</tr>
+				</thead>
+				<tbody>
+					{foreach from=$wlist item=wb_item name="wb_loop"}
+						<tr>
+							<td>
+								<label class="uni-checkbox">
+									<input type="checkbox" name="deletecheck[]" id="deletecheck_{$wb_item.id}" value="{$wb_item.id}" class="uni_style"/>
+								</label>	
+							</td>
+							<td>{$smarty.foreach.wb_loop.index+1}</td>
+							<td>{$wb_item.name}</td>
+							<td>{$wb_item.surname}</td>
+							<td>{$wb_item.email}</td>
+							<td>{$wb_item.status}</td>
+							<td><div style="display:none;">{$wb_item.created_at}</div>{$wb_item.created_at|date_format:"%d/%m/%Y %H:%M:%S"}</td>
+							<td><div style="display:none;">{$wb_item.updated_at}</div>{$wb_item.updated_at|date_format:"%d/%m/%Y %H:%M:%S"}</td>
+							<td>{$wb_item.contactbo}</td>
+						</tr>
+					{/foreach}
+				</tbody>
+			</table> 
+			<div style="float:left;padding:20px 0px 10px 20px;">
+				<input type="submit" class="btn btn-info" name="deletewb" id="deletewb"  onClick="return deleteWBdownl();" value="Delete" />
+			 </div>
+		</form>
+	</div>	
+</div>
+
+<div class="modal hide fade" id="uploadWB">
+    <div class="modal-header">
+        <button  class="close" onclick="closePopup('uploadWB');">&times;</button>
+        <h3>Upload White Book</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>

@@ -1,0 +1,88 @@
+
+/*
+#Content-Log {margin:-17px 10px 20px 33px;width:945px;}
+#Logo {float:left;width:300px;margin:17px 0 20px 41px}*/
+
+#head-log {width:945px;height:95px;margin:0 auto;text-align:left}
+#logo-log {float:left;width:300px;margin:15px 0 20px 15px;height:80px;}
+#content-log {width:945px;min-height:100%;background:url(images/bg-content-acc-c.png) repeat-y center;margin:0 auto;}
+
+#info-box {float:left;background:url(images/bg-login-acc.png) no-repeat;width:613px;height:90px;margin:20px 0 0 5px;font-size:13px;#424143}
+
+#info-box .profile-img {float:left;margin:10px 0 10px 0;border-right:solid 1px #cfcfd0;width:130px;text-align:center}
+#info-box .profile-info {float:left;margin:15px 0 0 15px;width:450px}
+#info-box .profile-links {float:right;margin-top:15px}
+#info-box .profile-links a{font-size:11px;color:#767676}
+
+.left-bg {background:url(images/bg-content-acc-c.png) repeat-y 0 -50px;}
+.container {float:left;width:615px;margin-bottom:20px}
+
+.main-box {float:left;width:615px;margin:10px 0 0 0;font-size:13px;#424143}
+.blue-box {background:#e7ebfc;width:595px;padding:10px}
+.blue-box-2 {background:url(images/line-acc-c.png) no-repeat bottom;width:595px;padding:0 10px 12px 10px}
+.blue-line {background:url(images/line-acc-c.png) no-repeat bottom;}
+
+/*.icon-info {cursor:pointer;width:20px;height:20px;background:url(images/icon-info.gif) no-repeat;float:right;margin:12px 20px 0 0;text-align:center}*/
+.info-link {font-size:11px;color:#424143}
+.icon-info {float:right;margin:2px 30px 0 0;text-align:center}
+
+.contact-box {background:url(images/bg-acc-c.png);}
+.contact-inside {background:#ffffff;margin:6px;padding:10px;font-size:12px;color:#474747}
+
+#layout-contact {width:600px;height:70px}
+#layout-contact .phone {float:left;height:60px;width:280px;margin:5px 0 5px 0;font-size:13px;#424143}
+#layout-contact .phone img {float:left;margin:5px 0 0 0;width:60px;}
+#layout-contact .phone .info {float:left;margin:15px 0 0 0;width:150px}
+
+#layout-contact .mail {float:left;height:60px;width:290px;margin:10px 0 5px 0;font-size:13px;#424143}
+#layout-contact .mail img {float:left;margin:2px 0 0 0;width:60px;}
+#layout-contact .mail .info {float:left;margin:15px 0 0 0;width:230px}
+#layout-contact .mail a{font-size:13px;color:#424143;font-weight:bold}
+
+
+.radio-title-box {background:url(images/bg-acc-c.png);width:610px;padding-left:5px}
+.radio-title {color:#4f4f4f; font-size:20px; font-family: Verdana, sans-serif; font-weight:bold;}
+
+#col-left {float:left;margin:0 0 0 33px;}
+#left-nav-c {float:left;width:300px;/*background:url(images/bg-acc-c.png);border:solid 1px #5675e7;padding:10px*/}
+
+#left-nav-c .item{padding:10px;margin:8px 0px 10px 15px;background:#ffffff;}
+#left-nav-c .title{font-size:13px;text-transform:uppercase;font-weight:bold;color:#424143;background:url(images/arrow-d.png) no-repeat right	#ffffff}
+
+.title1 {font-family:Comfortaa, sans-serif; font-size:24px;color:#555;font-weight:Bold}
+.title2 {font-family:Comfortaa, sans-serif; font-size:26px;color:#555;font-weight:Bold}
+.path-1 {background:url(images/path-1.png) no-repeat right top;height:50px;}
+.path-2 {background:url(images/path-2.png) no-repeat right top;height:50px;}
+.path-3 {background:url(images/path-3.png) no-repeat right top;height:50px;}
+
+.title-section {background:url(images/bg-acc-c.png); color:#4f4f4f; font-size:22px; font-family: Verdana, sans-serif; font-weight:bold; height:30px;width:610px;padding-left:5px;padding-top:5px;margin-bottom:10px}
+.title-section span{margin-top:8px;font-size:20px;}
+.opt {height:35px;padding-top:12px;padding-left:14px;font-size:20px;}
+
+.hold-intro {float:left;margin-top:8px;margin-bottom:10px;font-size:13px;line-height:20px}
+
+.holder-modif-article {float:left;width:605px;background:url(images/bot-border.png) repeat-x bottom #f2f4fd;border:1px solid #dfdfdf;margin-top:10px;padding:5px;}
+
+.holder-link-sup {margin-top:5px}
+.link-sup {background:url(images/cross-close.png) no-repeat left;padding-left:15px;padding-bottom:2px;margin-left:8px;color:#474747;font-weight:bold}
+.link-sup:hover{text-decoration:none}
+
+.grey-text {color:#c6c5c5}
+
+
+.number {float:left;margin-right:10px;width:60px;height:60px;}
+.n1b {background:url(images/number.png) no-repeat 0 0}
+.n2b {background:url(images/number.png) no-repeat -60px 0}
+.n3b {background:url(images/number.png) no-repeat -120px 0;}
+.n1g {background:url(images/number.png) no-repeat 0 -60px;}
+.n2g {background:url(images/number.png) no-repeat -60px -60px;}
+.n3g {background:url(images/number.png) no-repeat -120px -60px;}
+
+
+input {vertical-align: middle;}
+
+.holder-opt-l {float:left;width:300px;margin:0 15px 0 0}
+.holder-opt-r {float:left;width:270px;margin:15px 0 0 0;padding:10px}
+.info-opt {float:left;background:#f2f2f2;width:270px;min-height:150px;border:1px solid #999;font-size:11px;color:#4e4e4e;padding:5px}
+.total-opt {float:left;height:40px;width:615px;border-top:solid 8px #ededed;margin-top:15px}
+.numb-art {float:left;background:url(images/bg-acc-c.png); height:50px;width:605px;margin-top:15px}

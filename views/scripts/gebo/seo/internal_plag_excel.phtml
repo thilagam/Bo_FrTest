@@ -1,0 +1,225 @@
+<form method="POST" action="/seotool/internal-plagxls-upload" name="internalplag" class="form_validation_reg"  enctype="multipart/form-data" id="seo">
+    <div class="span10">
+
+        <h3 class="heading">Internal Plagiarism (excel)</h3>
+{if $msg neq ''}
+        <div class="alert alert-{$class}" id="seo-message" style="disply:block;width:800px;">
+            <div class="row-fluid">
+                <div class="span12 form-inline">{$msg}</div>
+            </div>
+        </div>
+{/if}
+        <div class="control-group formSep" id="seotool-notify">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <div id="seo-message">
+                        {$msg}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep" id="csv">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">CSV File<span class="f_req">*</span></label>
+                    
+                    <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" />
+                        <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" />
+                            <div class="input-append">
+                                <div class="uneditable-input span2"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input name="internalplag_file" id="internalplag_file" type="file" /></span><a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Column (ID)<span class="f_req">*</span></label>
+                    <select name="column_id" id="row_index" class="chzn_b">
+                        <option value="1" selected>A</option>
+                        <option value="2">B</option>
+                        <option value="3">C</option>
+                        <option value="4">D</option>
+                        <option value="5">E</option>
+                        <option value="6">F</option>
+                        <option value="7">G</option>
+                        <option value="8">H</option>
+                        <option value="9">I</option>
+                        <option value="10">J</option>
+                        <option value="11">K</option>
+                        <option value="12">L</option>
+                        <option value="13">M</option>
+                        <option value="14">N</option>
+                        <option value="15">O</option>
+                        <option value="16">P</option>
+                        <option value="17">Q</option>
+                        <option value="18">R</option>
+                        <option value="19">S</option>
+                        <option value="20">T</option>
+                        <option value="21">U</option>
+                        <option value="22">V</option>
+                        <option value="23">W</option>
+                        <option value="24">X</option>
+                        <option value="25">Y</option>
+                        <option value="26">Z</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Column<span class="f_req">*</span></label>
+                    <select name="column_index" id="column_index" class="chzn_b">
+                        <option value="1">A</option>
+                        <option value="2" selected>B</option>
+                        <option value="3">C</option>
+                        <option value="4">D</option>
+                        <option value="5">E</option>
+                        <option value="6">F</option>
+                        <option value="7">G</option>
+                        <option value="8">H</option>
+                        <option value="9">I</option>
+                        <option value="10">J</option>
+                        <option value="11">K</option>
+                        <option value="12">L</option>
+                        <option value="13">M</option>
+                        <option value="14">N</option>
+                        <option value="15">O</option>
+                        <option value="16">P</option>
+                        <option value="17">Q</option>
+                        <option value="18">R</option>
+                        <option value="19">S</option>
+                        <option value="20">T</option>
+                        <option value="21">U</option>
+                        <option value="22">V</option>
+                        <option value="23">W</option>
+                        <option value="24">X</option>
+                        <option value="25">Y</option>
+                        <option value="26">Z</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep" id="numofchar">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Number of Character</label>
+                    <label class="uni-checkbox">
+                        <input type="checkbox" name="numchar" id="numchar" class="uni_style" value="1">
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep" id="numofwords">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Number of Words</label>
+                    <label class="uni-checkbox">
+                        <input type="checkbox" name="numword" id="numword" class="uni_style" value="1">
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep" >
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Density of Words</label>
+                    <label class="uni-checkbox">
+                        <input type="text" name="density" id="density" class="uni_style" value="">
+                    </label> (Ex. 1,2,3)
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <button class="btn btn-gebo" name="submit" type="submit">Upload</button>
+                </div>
+            </div>
+        </div>
+        <div id="data"></div>
+    </div>
+</form>
+
+{literal}
+<script type="text/javascript">
+	$.validator.addMethod("csvextension", function(value, element, param) {
+		param = typeof param === "string" ? param.replace(/,/g, '|') : "csv";
+		return this.optional(element) || value.match(new RegExp(".(" + param + ")$", "i"));
+	}, $.format("Only csv file is accepted."));
+
+    $(document).ready(function() {
+        gebo_chosen.init();
+        gebo_validation.reg();
+    });
+
+    //* validation
+    gebo_validation = {
+        reg : function() {
+            reg_validator = $('.form_validation_reg').validate({
+                onkeyup : false,
+                errorClass : 'error',
+                validClass : 'valid',
+                highlight : function(element) {
+                    $(element).closest('div').addClass("f_error");
+                    $(element).closest('div').css("color", "black");
+                },
+                unhighlight : function(element) {
+                    $(element).closest('div').removeClass("f_error");
+                },
+                errorPlacement : function(error, element) {
+                    $(element).closest('div').append(error);
+                    $('.error').css("font-size", "10px");
+                    $('.error').css("padding-top", "5px");
+                },
+                rules : {
+                    internalplag_file : {required : true, csvextension: "csv"}
+                },
+                messages : {
+                    internalplag_file :  {required: "Please select csv file.", accept: "Only csv file is accepted."}
+                },
+                invalidHandler : function(form, validator) {
+                    $.sticky("There are some errors. Please corect them and submit again.", {
+                        autoclose : 5000,
+                        position : "top-center",
+                        type : "st-error"
+                    });
+                }
+            })
+        }
+    };
+
+    gebo_chosen = {
+        init: function(){
+            $(".chzn_a").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_b").chosen({
+                allow_single_deselect: true,
+                disable_search: true
+            });
+        }
+    };
+    
+    function loadblkws (client) {
+        var target_page = "/seotool/loadblkws?client="+client ;
+        if(client != '')
+        {
+            $.post(target_page, function(data){
+                var data = $.trim(data);
+                $('#seo-message').html('') ;
+                $('#seo-message').removeClass("alert alert-info");
+                if(data != "")
+                {
+                    data=data.replace(/, /g, '\n');
+                    data=data.replace(/,/g, '\n');
+                    $('#txtarea_sp').val(data);
+                }
+            });
+        }
+    }	
+</script>
+{/literal}

@@ -1,0 +1,81 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript" >
+
+$(document).ready(function() {
+	$("#techmissiontypeform").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+	$("#delivery_option").chosen({ allow_single_deselect: false,disable_search: true});
+});
+
+</script>
+{/literal}
+
+<form name="techmissiontypeform" id="techmissiontypeform" action="/quote/tech-mission-type?submenuId=ML2-SL12" method="POST" > 
+	<div class="row-fluid">
+		<div class="row-fluid">
+			<div class="span8">
+				<label><h4>Type</h4></label>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span8">
+				<select name="tech_type_assign" id="tech_type_assign" class="validate[required]">
+					 <option value="superadmin" {if $techmissiondetail[0].tech_type_assign eq 'superadmin'} selected{/if}>Tech(superadmin)</option>
+					 <option value="sales" {if $techmissiondetail[0].tech_type_assign eq 'sales'} selected{/if}>Sales</option>
+					<option value="edito" {if $techmissiondetail[0].tech_type_assign eq 'edito'} selected{/if}>Edito</option>
+					<option value="integration" {if $techmissiondetail[0].tech_type_assign eq 'integration'} selected{/if}>Integration</option>
+				</select>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span8">
+				<label><h4>Title</h4></label>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span8">
+				<input type="text" class="span12 validate[required]" name="tech_title" id="tech_title" value="{$techmissiondetail[0].tech_title}"/>
+			</div>
+		</div>
+		
+		<div class="row-fluid">
+			<div class="span8">
+				<label><h4>Cost</h4></label>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span4">
+				<input type="text" class="span12 validate[required]" name="cost" id="cost" value="{$techmissiondetail[0].cost}"/>
+			</div>
+		</div>
+		
+		<div class="row-fluid">
+			<div class="span8">
+				<label><h4>Delivery time</h4></label>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span4">
+				<input type="text" class="span12 validate[required]" name="delivery_time" id="delivery_time" value="{$techmissiondetail[0].delivery_time}"/>
+			</div>
+			<div class="span3">
+				<select name="delivery_option" id="delivery_option">    
+					<option value="hours" {if $techmissiondetail[0].delivery_option eq 'hours'} selected{/if}>Heure(s)</option>
+					<option value="days" {if $techmissiondetail[0].delivery_option eq 'days'} selected{/if}>Jour(s)</option>
+				</select>
+			</div>
+		</div>
+		
+		<div class="row-fluid">
+			<div class="span4">
+				<input type="submit" id="submit_techmission" name="submit_techmission" value="Submit" class="btn btn-info"/>
+				<input type="button" name="cancel" value="Fermer" data-dismiss="modal" class="btn btn-danger"/>
+			</div>
+		</div>		
+		<input type="hidden" name="tid" id="tid" value="{$techmissiondetail[0].tid}"/>
+	</div>
+</form>
+

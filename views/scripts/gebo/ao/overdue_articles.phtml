@@ -1,0 +1,100 @@
+{literal}
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/lib/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" >
+			$(document).ready(function() {
+				$('#overduetable').dataTable({
+					"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+					"sPaginationType": "bootstrap",
+					"aaSorting": [[ 0, "asc" ]],
+					"aoColumns": [
+						{ "sType": "formatted-num" },
+						{ "sType": "string" },
+						{ "sType": "string" },
+						{ "sType": "string" },
+						{ "sType": "string" },
+						{ "sType": "string" }
+					]
+				});
+			} );
+
+			function getExtendform(participationId)
+        	{
+				var ts = Math.round((new Date()).getTime() / 1000);
+				if(participationId != 'undefined')
+				{
+					var target_page = "/ao/over-due?action_from=popup&from=overdue&timestamp="+ts+"&participationId="+participationId;
+					$.post(target_page, function(data){ 
+					   $("#overdueform").html(data);
+					   if (CKEDITOR.instances['extend_comment_'+participationId])
+						{
+							CKEDITOR.instances['extend_comment_'+participationId].destroy();
+						}
+					   /////////////////////////////////
+						 var editor = CKEDITOR.replace( 'extend_comment_'+participationId,
+							 {
+								 language: 'de',
+								 uiColor: '#D9DDDC',
+								 enterMode : CKEDITOR.ENTER_BR,
+								 removePlugins : 'resize',
+								 toolbar :
+								 [
+									 ['Undo','Redo'],
+									 ['Find','Replace','-','SelectAll','RemoveFormat'],
+									 ['Link', 'Unlink', 'Image'],
+									 '/',
+									 ['FontSize', 'Bold', 'Italic','Underline'],
+									 ['NumberedList','BulletedList','-','Blockquote'],
+									 ['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize']
+								 ],
+							 }
+						 );
+					});
+				}
+			}
+	</script>
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">Liste des articles rendus en retard</h3>
+		<form action="/ao/over-due?submenuId={$submenuId}" method="post" id="selectallprofile" name="selectallprofile" onsubmit="return validate3NewUser(1);">
+			<table class="table table-bordered table-striped table_vam" id="overduetable">
+				<thead>	
+					<tr>
+					  <th>TITRE ARTICLE</th>
+					  <th>TITRE AO</th>
+					  <th>CONTRIBUTEUR</th>
+					  <th>Project manager</th>
+					  <th>Expired Date</th>
+					  <th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					{foreach from=$overDueArticles item=Article_item }
+					<tr>
+					   <td>{$Article_item.title|stripslashes|wordwrap:22:"\n":true}</td>
+					   <td><a href="/ongoing/ao-details?client_id={$Article_item.user_id}&ao_id={$Article_item.did}&submenuId=ML2-SL4">{$Article_item.deliveryTitle|stripslashes|wordwrap:20:"\n":true}</a></td>
+					   <td>{$Article_item.first_name} {$Article_item.last_name|wordwrap:10:"\n":true}</td>
+					   <td>{$Article_item.bouser}</td>
+					   <td><div style="display:none;">{$Article_item.submit_expires_sort}</div>{$Article_item.submit_expires}</td>
+					   <td><a data-toggle="modal" data-target="#overdue"  href="javascript:void(0);" onclick="return getExtendform('{$Article_item.id}');">Ajouter temps</a></td>
+					</tr>
+					{/foreach}
+				</tbody>
+			</table>
+		</form>
+	</div>
+</div>	
+
+<div class="modal hide fade" id="overdue">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">&times;</button>
+        <h3>Ajouter temps</h3>
+    </div>
+    <div class="modal-body" id="overdueform">
+	</div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+

@@ -1,0 +1,193 @@
+{literal}
+<script language="JavaScript" type="text/javascript" src="/BO/script/jquery.multiselect.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/script/jquery.multiselect.filter.js"></script>
+<link rel="stylesheet" href="/BO/css/jquery.multiselect.css" type="text/css" />
+<link rel="stylesheet" href="/BO/css/jquery.multiselect.filter.css" type="text/css" />
+
+<link href="/BO/script/datatable/demo_page.css" rel="stylesheet" type="text/css" />
+<link href="/BO/script/datatable/demo_table_jui.css" rel="stylesheet" type="text/css" />
+<link href="/BO/script/datatable/TableTools_JUI.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" charset="utf-8" src="/BO/script/datatable/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/script/datatable/ZeroClipboard.js"></script>
+<script type="text/javascript" charset="utf-8" src="/BO/script/datatable/TableTools.js"></script>
+
+
+<script type="text/javascript">
+		
+	   
+	   $(document).ready(function() {
+		
+		$("#poll_list").multiselect({
+					multiple: false,
+					header: "",
+					noneSelectedText: "S&eacute;lectionner",
+					selectedList: 1
+				});
+
+			$("#poll_list").multiselectfilter();
+		
+		
+	/*	$('#atitle a[title]').qtip({
+			  position: {
+				 corner: {
+					target: 'topMiddle',
+					tooltip: 'bottomMiddle'
+				 }
+			  },
+			  style: {
+				 name: 'cream',
+				 padding: '7px 13px',
+				 width: {
+					max: 310,
+					min: 0
+				 },
+				 tip: true
+			  }
+			});*/
+		});
+
+/*
+		var asInitVals = new Array();
+
+			$(document).ready(function() {
+				var oTable = $('#example').dataTable( {
+					"iDisplayLength": parseInt($("#pagelimit").val()),
+					"bJQueryUI": true,
+					"sPaginationType": "full_numbers",
+					"oLanguage": {
+						"sSearch": "Search all columns:"
+					}
+				} );
+
+				$("tfoot input").keyup( function () {
+					oTable.fnFilter( this.value, $("tfoot input").index(this) );
+				} );
+
+				$("tfoot input").each( function (i) {
+					asInitVals[i] = this.value;
+				} );
+
+				$("tfoot input").focus( function () {
+					if ( this.className == "search_init" )
+					{
+						this.className = "";
+						this.value = "";
+					}
+				} );
+
+				$("tfoot input").blur( function (i) {
+					if ( this.value == "" )
+					{
+						this.className = "search_init";
+						this.value = asInitVals[$("tfoot input").index(this)];
+					}
+				} );
+		} );*/
+
+		function fnloadpoll()
+		{
+			var poll=$('#poll_list').val();
+			window.location="/ao/polldetail?submenuId=ML2-SL16&poll="+poll;
+		}
+		
+	</script>
+{/literal}
+
+<table align="center" class="ao_create_table1" width="70%" cellpadding="4" cellspacing="4" style="margin-top:15px; padding:10px;" >
+    <tr>
+        <th colspan="2" align="left" class="pagehead" style="padding:12px;">Poll Detail</th>
+    </tr>
+    <tr>
+		<td>Select Poll :</td>
+		<td style="float:left;width:360px">
+	       {html_options name=poll_list id=poll_list options=$poll_list onChange=fnloadpoll(); selected=$smarty.get.poll}
+		</td>
+    </tr>
+</table>
+
+<table align="center" class="ao_create_table1" width="70%" cellpadding="4" cellspacing="4" style="border:1px groove #666666; margin-top:15px; padding:10px;" >
+	<tr style="padding-top:20px">
+		<th colspan="2" align="center" style="padding:12px;">Poll info</th>
+	</tr>
+	<tr width="100%">
+		<td width="50%">Title :</td>
+		<td width="50%">{$pollinfo[0].title|stripslashes}</td>
+	</tr>
+	<tr width="100%">
+		<td width="50%">Poll date :</td>
+		 {assign var=datetime value=$dateformat|cat:" %H:%M:%S" }
+		<td width="50%">{$pollinfo[0].poll_date|date_format:$datetime}</td>
+	</tr>
+	<tr>
+		<td>Number of articles :</td>
+		<td  style="float:left;">{$pollinfo[0].total_article}</td>
+	</tr>
+	<tr>
+		<td>Poll Spec File :</td>
+		<td  style="float:left;">
+			{if $pollinfo[0].file_name !=""}
+				 <a href="/ao/downloadpollspec?file={$pollinfo[0].id}">Download</a>
+			{else}
+				 Aucun fichier disponible
+			{/if}
+		</td>
+	</tr>
+</table>
+
+<!--
+
+<input type="hidden" name="count" id="count" value="{$art_count}"/>
+<table align="center" width="80%" cellpadding="4" cellspacing="4" style="border:0px groove #666666; margin-top:15px; padding:10px;" >
+	<tr>
+	<td colspan="2">
+		<div class="demo" >
+		<br>
+			<table class="display" id="example">
+				<thead>
+					<tr>
+						<th>S.NO</th>
+						<th>Article title</th>
+						<th>Language</th>
+						<th>Type</th>
+						<th>Catergory</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th><input type="text" name="search_number" value="Search number" class="search_init" /></th>
+						<th><input type="text" name="search_title" value="Search title" class="search_init" /></th>
+						<th><input type="text" name="search_lang" value="Search language" class="search_init" /></th>
+						<th><input type="text" name="search_type" value="Search type" class="search_init" /></th>
+						<th><input type="text" name="search_cat" value="Search category" class="search_init" /></th>
+					</tr>
+				</tfoot>
+				<tbody>
+					{foreach from=$artlist item=pollitem name=polldet}
+						<tr>
+							<td>{$smarty.foreach.polldet.index+1}</td>
+							<td id="atitle">
+										{if $pollitem.title|@strlen > 22}
+											<a href="javascript:void(0);" title="{$pollitem.title}">{$pollitem.title|truncate:22:"...":true}</a>
+										{else}
+											{$pollitem.title}
+										{/if}
+							</td>
+							<td>{$ep_lang[$pollitem.language]}</td>
+							<td>{$ep_art_type[$pollitem.type]}</td>
+							<td>{$ep_art_cat_type[$pollitem.category]}</td>
+						</tr>
+					{/foreach}
+				</tbody>
+			</table>
+			<div class="spacer"></div>
+	</td>
+	</tr>
+	<tr>
+		<td></td>
+	</tr>
+<input type="hidden" name="pagelimit" id="pagelimit" value="{$pagelimit}">
+</table>
+-->
+
+

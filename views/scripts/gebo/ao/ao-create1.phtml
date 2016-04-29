@@ -1,0 +1,2049 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" >
+var filearray = new Array();
+
+$(document).ready(function() {
+	$.validator.addMethod("pricecompare",
+        function(value, element) {
+		    if($('#price_min').val()!="")	
+				return (parseFloat($('#price_max').val()) >= parseFloat($('#price_min').val()));
+			else
+				return true;
+        }	
+    );
+	correction_set();
+    $.validator.addMethod("corrpricecompare",
+        function(value, element) {
+			if($('#correction_pricemin').val()!="")	
+				return (parseFloat($('#correction_pricemax').val()) >= parseFloat($('#correction_pricemin').val())); 
+			else
+				return true;	
+        }
+    ); 
+	
+	$("#favcontribcheck").multiselect();  
+    $("#favcontribcheck").multiselectfilter();
+	$("#contrib_lang").multiselect({
+		checkAll: function(){
+				//alert('All Multiselect items selected!');
+				updatecontriblist(0);
+			},
+		uncheckAll: function(){
+			//alert('All Multiselect items selected!');
+				updatecontriblist(0);
+			}
+			
+		});
+    $("#contrib_lang").multiselectfilter();
+	/*$("#corrector_lang").multiselect({ 
+		checkAll: function(){
+				//alert('All Multiselect items selected!');
+				updatecorrectorlist(0);
+			},
+		uncheckAll: function(){
+			//alert('All Multiselect items selected!');
+				updatecorrectorlist(0);
+			}
+	});*/
+	//$("#corrector_lang").multiselectfilter();
+	$("#correctorcheck").multiselect();  
+    $("#correctorcheck").multiselectfilter();
+	
+	$("#publish_language").multiselect();
+    $("#publish_language").multiselectfilter();
+				
+	$("#client_list").chosen({ allow_single_deselect: true,search_contains: true });
+	$("#testmarks").chosen({ disable_search: true, allow_single_deselect: true });
+	$("#templateid").chosen({ allow_single_deselect: true }); 
+	$("#type").chosen({ disable_search: true });
+	$("#language").chosen({	disable_search: true });
+	$("#estimated_worktime_option").chosen({	disable_search: true });
+	$("#category").chosen({ disable_search: true });
+	$("#signtype").chosen({ disable_search: true });
+	//$("#contrib_lang").chosen({ disable_search: true });
+	$("#contrib_cat").chosen({ disable_search: true	});
+	//$("#caloption").chosen({ disable_search: true	});
+	$("#quiz_cat").chosen({ disable_search: true });
+	$("#pollao").chosen({ disable_search: true	});
+	$("#quiz").chosen({	disable_search: true });
+	$("#submit_option").chosen({disable_search: true });
+	$("#resubmit_option").chosen({disable_search: true });
+	$("#correction_submit_option").chosen({disable_search: true });
+	$("#correction_resubmit_option").chosen({disable_search: true });
+
+	$('#deli_anonymouscheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"}
+    });
+	$('#testrequiredcheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var type=$("input[name='testrequired']:checked").val();
+			if(type=="yes")
+				$("#testmarksblock").show();
+			else
+				$("#testmarksblock").hide();
+		updatecontriblist(0);		
+		}
+    });
+
+    function correction_set() {
+		if($('input:radio[name=correction]:checked').val() == "on"){
+			$("#correctionblock").show('slow');
+			$("#correctionblock2").hide('slow');
+			$("#correctornotifyblock").show('slow');
+			updatecorrectorlist(0);
+		}else if($('input:radio[name=correction]:checked').val() == "intern" || $('input:radio[name=correction]:checked').val() == "freelance"  ){
+			$("#correctionblock2").show('slow');
+			$("#correctornotifyblock").show('slow');
+			
+		}
+	}
+	
+	/************************** Test mission **************************/
+	$('#missiontestcheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var type=$("input[name='missiontest']:checked").val();
+			if(type=="on")
+			{
+				$("#total_article").attr("disabled","true");
+				
+				$('#cor_2[type=radio]').closest('span').removeClass("uni-checked"); 
+				$('#cor_3[type=radio]').closest('span').removeClass("uni-checked"); 
+				$("input[name='correction'][value='on']").attr("checked", "checked"); 
+				$('#cor_1').closest('span').addClass("uni-checked");
+				correction_set();
+				//alert('Hi');
+				//$('#correctioncheck').toggleButtons('setState', true); 
+				//var radioCorrection = document.getElementsByName("correction")[3];
+				//var radioCorrection2 = document.getElementsByName("correction")[2];
+				
+				//radioCorrection.checked=false;
+				//radioCorrection2.checked=true;
+				//$('input[name="correction"]').uniform();
+				//alert(radioCorrection.checked);
+				//$('input[name="correction"]').prop('checked',true);
+				//$("input[name='correction'][value='on']").attr("checked", "checked");
+				//$(".uni_style").uniform(); 
+
+				//$('input:radio[name=correction]')[1].checked = true;
+				//$("input[name='correction'][value='on']").attr("checked", "checked");
+				//RadionButtonSelectedValueSet('correction','on');
+				$('#mission_typecheck').toggleButtons('setState', false); 
+				$("#invoiceblock").show();
+				$("#writerinvoiceblock").show();
+				$("#marksblock").show();
+				//$('#invoicecheck').toggleButtons('setState', true); 
+				$('#writerinvoicecheck').toggleButtons('setState', true); 
+				$('#AOtypecheck').toggleButtons('setState', true); 
+				$('#correction_typecheck').toggleButtons('setState', true); 
+				$('#creation_step1').attr('action', '/ao/ao-create2test?submenuId=ML2-SL3');
+				$("#liberteblock").hide();
+				$("#premiumlist").hide();
+			}
+			else 
+			{   
+				//$('#AOtypecheck').toggleButtons('setState', false); 
+				$("#total_article").removeAttr("disabled"); 
+				//$('#invoicecheck').toggleButtons('setState', false); 
+				$('#writerinvoicecheck').toggleButtons('setState', false); 
+				$("#invoiceblock").hide();
+				$("#writerinvoiceblock").hide();
+				$("#marksblock").hide();
+				//$('#correctioncheck').toggleButtons('setState', false); 
+				
+					if($("input[name='articletype']:checked").val()=="lot")
+						$('#creation_step1').attr('action', '/ao/ao-create2lot?submenuId=ML2-SL3');
+					else 
+						$('#creation_step1').attr('action', '/ao/ao-create2?submenuId=ML2-SL3');
+				$("#liberteblock").show();				
+				$("#premiumlist").show();				
+			}
+		}
+    });
+	
+/*	$('#correctioncheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var type=$("input[name='correction']:checked").val();
+			if(type=="on")
+			{
+				$("#correctionblock").show();
+				$('#mission_typecheck').toggleButtons('setState', false); 
+				$("#correctornotifyblock").show();
+			}
+			else
+			{
+				$("#correctionblock").hide();
+				$('#missiontestcheck').toggleButtons('setState', false); 
+				$("#correctornotifyblock").hide();
+				$('#correctornotifycheck').toggleButtons('setState', false); 
+			}
+		}
+    });*/
+
+    $("input[name='correction']").click(function(){
+		//alert('You clicked radio!');
+		
+		
+		if($('input:radio[name=correction]:checked').val() == "on"){
+			$("#correctionblock").show('slow');
+			$('#mission_typecheck').toggleButtons('setState', false); 
+			$("#correctornotifyblock").show('slow');
+			$("#correctionblock2").hide('slow');
+		}else if($('input:radio[name=correction]:checked').val() == "intern" || $('input:radio[name=correction]:checked').val() == "freelance"  ){
+			$("#correctionblock2").show('slow');
+			$("#correctionblock").hide('slow');
+			$('#mission_typecheck').toggleButtons('setState', false); 
+			$("#correctornotifyblock").show('slow');
+			$('#AOtypecheck').toggleButtons('setState', false); 
+			$('#missiontestcheck').toggleButtons('setState', false); 
+		}
+	});
+	$('#invoicecheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var itype=$("input[name='invoice']:checked").val();
+			if(itype=="on")
+			{
+				$("#correction_pricemin").val('0');
+				$("#correction_pricemax").val('0');
+				$("#correction_pricemin").attr("readonly","true");
+				$("#correction_pricemax").attr("readonly","true");
+			}
+			else
+			{
+				$("#correction_pricemin").val('');
+				$("#correction_pricemax").val('');
+				$("#correction_pricemin").removeAttr("readonly");
+				$("#correction_pricemax").removeAttr("readonly");
+			}
+		}
+    });
+	
+	$('#writerinvoicecheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var itype=$("input[name='writerinvoice']:checked").val();
+			if(itype=="on")
+			{
+				$("#price_min").val('0');
+				$("#price_max").val('0');
+				$("#price_min").attr("readonly","true");
+				$("#price_max").attr("readonly","true");
+			}
+			else
+			{
+				$("#price_min").val('');
+				$("#price_max").val('');
+				$("#price_min").removeAttr("readonly");
+				$("#price_max").removeAttr("readonly");
+			}
+		}
+    });
+	
+	$('#correction_typecheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var type=$("input[name='correction_type']:checked").val();
+			if(type=="private")
+			{
+				$("#selcorrectors").show();
+				updatecorrectorlist(0);
+			}
+			else
+			{
+				$("#selcorrectors").hide();
+			}
+		}	
+    });
+
+	$('#corrector_mailcheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"}
+    });
+	
+	$('#nomoderationcheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"}
+    });
+	$('#white_listcheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"}
+    });
+	$('#black_listcheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"}
+    });
+    $('#blwllist_check').toggleButtons({
+        label:{enabled: "Oui",disabled: "Non"}
+    });
+	$('#pricedisplaycheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"}
+    });
+    $('#link_quizcheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var type=$("input[name='link_quiz']:checked").val();
+			if(type=="on")
+			{
+				$("#quizblock").show();
+				updatequizlist(1);
+			}
+			else
+			{
+				$("#quizblock").hide();
+			}
+		}	
+    });
+
+	//AO type
+	$('#AOtypecheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var type=$("input[name='AOtype']:checked").val();
+			if(type=="private")
+			{
+				$("#contribbysel").show();
+				$("#contrib_lang").multiselect();
+                $("#contrib_lang").multiselectfilter();
+				$("#price_min").removeAttr("disabled");
+				$("#price_max").removeAttr("disabled");
+				$("#publish_languagelist").hide();
+				$("#pricedisplay").removeAttr('disabled');
+				$("#pricedisplaycheck").removeClass('deactivate');
+				$('#pricedisplaycheck').toggleButtons('setState', true); 
+				updatecontriblist(1);
+			}
+			else
+			{
+				$("#contribbysel").hide();
+				if($("input[name='mission_type']:checked").val()=="liberte")
+				{
+					$("#price_min").attr("disabled","true");
+					$("#price_max").attr("disabled","true");
+					$("#price_min").val('');
+					$("#price_max").val('');
+				}
+				else
+				{
+					$("#price_min").removeAttr("disabled");
+					$("#price_max").removeAttr("disabled");
+				}
+				$('#missiontestcheck').toggleButtons('setState', false); 
+				$("#publish_languagelist").show();
+				$("#publish_language").multiselect();
+                $("#publish_language").multiselectfilter();
+				$('#pricedisplaycheck').toggleButtons('setState', false); 
+				$("#pricedisplay").attr('disabled',"true");
+				$("#pricedisplaycheck").addClass('deactivate');
+				updatecontribtype();
+			}
+			
+		}		
+    });
+
+	//Mission type
+	$('#mission_typecheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var type=$("input[name='mission_type']:checked").val();
+			if(type=="liberte")
+			{
+				$('#TotPrem').val("0");
+				if($("input[name='AOtype']:checked").val()!="private")
+				{
+					$("#price_min").val('');
+					$("#price_max").val('');
+					$("#price_min").attr("disabled","true");
+					$("#price_max").attr("disabled","true");
+					
+					$('#correctioncheck').toggleButtons('setState', false); 
+				}
+				else
+				{
+					$("#price_min").removeAttr("disabled");
+					$("#price_max").removeAttr("disabled");
+				}
+				$('#missiontestcheck').toggleButtons('setState', false); 
+				$("#premiumlist").hide();
+				var client = $("#client_list").val();
+				
+				if(client=='110726133627903' || client=='111201131205299')
+				{
+					$("#price_min").removeAttr("disabled"); 
+					$("#price_max").removeAttr("disabled"); 
+					$("#price_min").attr("readonly","true"); 
+					$("#price_max").attr("readonly","true"); 
+					$('#pricetotal').show(); 
+				}
+				else
+					$('#pricetotal').hide(); 
+			}
+			else
+			{
+				$("#premiumlist").show();
+				$('#TotPrem').val("1"); 
+				$('#prem input[type=checkbox]').closest('span').removeClass("uni-checked"); 
+				$('#prem input[type=radio]').closest('span').removeClass("uni-checked"); 
+				$('#premium_option_0').attr('checked','true'); 
+				$('#premium_option_0').closest('span').addClass("uni-checked"); 
+				$("#price_min").removeAttr("disabled");
+				$("#price_max").removeAttr("disabled");
+				$("#price_min").removeAttr("readonly");
+				$("#price_max").removeAttr("readonly");
+				$('#pricetotal').hide();  
+				
+			}
+			$('#prem input[type=checkbox]').attr('disabled','true');
+		}
+    });
+
+    $('#linkpollcheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var type = $("input[name='linkpoll']:checked").val();
+			var client = $("#client_list").val();//alert(client);
+			if(type=="on")
+			{
+				if(client=="0")
+				{
+					smoke.alert("Please select client");
+					$("#linkpoll").removeAttr('checked');
+				}
+				else
+				{
+					showpoll();
+				}
+			}
+			else
+				$("#pollcontent").hide();
+		}
+    });
+    $(".uni_style").uniform(); 
+
+	updatequizlist(1);
+	updatecontriblist(1);
+	updatecorrectorlist(1);
+	clientvariable(1);
+	updatecontribtype();
+	if($("input[name='linkpoll']:checked").val()=='on')
+	{
+		showpoll();
+		loadpollcontent();
+	}
+	
+	var spec = $("#spec_file_name").val();
+	if(spec!="")
+	{
+		var speclist = spec.split(","); 
+		if(speclist.length>0)
+		{
+			for(var s=0;s<speclist.length;s++)
+				filearray.push(speclist[s]);
+		}
+	}
+	
+	var premm=$("input[name='premium_option']:checked").val();
+	if(premm=="13_1")
+		$('#prem input[type=checkbox]').attr('disabled','true');
+
+	$('#correction_pricemin').blur(function() {
+		if($('#correction_pricemin').val() =='')
+			this.placeholder = "Min.";
+	});
+
+	$('#correction_pricemax').blur(function() {
+		if($('#correction_pricemax').val() =='')
+			this.placeholder = "Max.";
+	});
+
+	$('#correction_pricemin').focus(function() {
+		if($('#correction_pricemin').val() ==String("Min.")) 
+		  this.placeholder = "";
+	});
+
+	$('#correction_pricemax').focus(function() {
+		if($('#correction_pricemax').val() ==String("Max."))
+			  this.placeholder = "";
+	}); 
+	
+	$('#min_sign').blur(function() {
+		if($('#min_sign').val() =='')
+			this.placeholder = "Min.";
+	});
+
+	$('#max_sign').blur(function() {
+		if($('#max_sign').val() =='')
+			this.placeholder = "Max.";
+	});
+
+	$('#min_sign').focus(function() {
+		if($('#min_sign').val() ==String("Min.")) 
+		  this.placeholder = "";
+	});
+
+	$('#max_sign').focus(function() {
+		if($('#max_sign').val() ==String("Max."))
+			  this.placeholder = "";
+	}); 
+
+	$('#price_min').blur(function() {
+		if($('#price_min').val() =='')
+			this.placeholder = "Min.";
+	});
+
+	$('#price_max').blur(function() {
+		if($('#price_max').val() =='')
+			this.placeholder = "Max.";
+	});
+
+	$('#price_min').focus(function() {
+		if($('#price_min').val() ==String("Min.")) 
+		  this.placeholder = "";
+	});
+
+	$('#price_max').focus(function() {
+		if($('#price_max').val() ==String("Max."))
+			  this.placeholder = "";
+	}); 
+	
+	$('#articletypecheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var type=$("input[name='articletype']:checked").val();
+			if(type=="lot")
+			{
+				$("#lotarticle").show();
+				$("#totalarticle_text").html('DE COMBIEN DE LOTS AVEZ-VOUS BESOIN?');
+				$('#creation_step1').attr('action', '/ao/ao-create2lot?submenuId=ML2-SL3');
+			}
+			else 
+			{
+				$("#lotarticle").hide();
+				$("#totalarticle_text").html('De combien d\'articles ou de lots avez-vous besoin?');
+				if($("input[name='missiontest']:checked").val()=="on")
+					$('#creation_step1').attr('action', '/ao/ao-create2test?submenuId=ML2-SL3');
+				else
+					$('#creation_step1').attr('action', '/ao/ao-create2?submenuId=ML2-SL3');
+				
+			}
+		}	
+    });
+	
+	$('#writernotifycheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+	});
+	
+	$('#correctornotifycheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+	});
+	
+	//validation templates
+	var product=$("input[name='product']:checked").val();
+	if(product=="redaction" || product=="translation") 
+		loadvalidationtemplate(product,1);  
+	
+	
+});
+
+	$(function(){
+			var btnUpload=$('#uploadspec');
+			var status=$('#fname');
+			
+			new AjaxUpload(btnUpload, {
+
+				action: 'uploadaospec',
+				name: 'uploadfile',
+
+				onSubmit: function(file, ext){
+					if (! (ext && /^(doc|docx|xls|xlsx|pdf|csv|xml|rtf|zip)$/.test(ext))){
+						$('#fileerr').html('Uniquement doc, docx, xls, xlsx, pdf, csv, xml, zip et rtf').css('color','#FF0000');
+						return false;
+					}
+					
+					var client=$("#client_list").val();
+					
+					if(client==0) 
+					{
+						$('#fileerr').html('Please select client').css('color','#FF0000');
+						return false;
+					}
+					
+					status.html('<img src="/BO/theme/gebo/img/loading.gif" />');
+				},
+				onComplete: function(file, response){//alert(response);
+					if(response!="error"){
+					status.html('').css('color','#000000');
+						var fname=response.split("#");
+						$('#spec_file_name').val(fname[1]);
+						$('#fname').html(fname[1]);
+						$('#fileerr').html('');
+					}
+				}
+			 });
+	});
+
+
+	$(function(){
+
+		var btnUpload=$('#corrspec');
+
+		var status=$('#corrfname');
+
+		
+
+		new AjaxUpload(btnUpload, {
+
+
+
+			action: 'uploadcorrspec',
+
+			name: 'corrfile',
+
+
+
+			onSubmit: function(file, ext){
+
+				if (! (ext && /^(doc|docx|xls|xlsx|pdf|csv|xml|rtf|zip)$/.test(ext))){
+						status.html('Uniquement doc, docx, xls, xlsx, pdf, csv, xml, zip et rtf').css('color','#FF0000');
+						return false;
+					}
+
+				var client=$("#client_list").val();
+
+				
+
+				if(client==0) 
+
+				{
+
+					status.html('Please select client').css('color','#FF0000');
+
+					return false;
+
+				}
+
+				
+
+				status.html('<img src="/BO/theme/gebo/img/loading.gif" />');
+
+			},
+
+			onComplete: function(file, response){
+
+				if(response!="error"){
+
+				status.html('').css('color','#000000');
+
+					var fname=response.split("#");
+
+					$('#correction_spec_file').val(fname[1]);
+
+					$('#corrfname').html(fname[1]);
+
+					$('#correction_spec_file_err').html('');
+
+				} 
+
+			}
+
+		 });
+
+	});
+
+	
+
+	function CuteWebUI_AjaxUploader_OnTaskComplete(task)
+
+	{
+	
+		filearray.push(task.FileName);
+
+		$('#spec_file_name').val(filearray);
+
+		
+
+	}
+
+	
+
+	 function CuteWebUI_AjaxUploader_OnStart()
+
+    {
+
+      var hidden=this;
+
+       hidden.internalobject.cancelBtn.style.visibility="hidden";
+
+       hidden.internalobject.cancelBtn.style.display="none";
+
+	   $("#fileerr").hide();
+
+    }
+	
+	function updatecontribtype() 
+	{
+		var ao_type=$("input[name='AOtype']:checked").val();
+		if(ao_type!="private")
+		{
+			var lang=$("select#publish_language").val();
+			$.ajax({
+				type: 'GET',
+				url: '/ao/updatecontribtype',
+				data: 'language='+lang,
+				  
+				success: function(result)
+				{
+					var resnt=result.split("#");
+					$('#seniorcount').html(resnt[0]);
+					$('#juniorcount').html(resnt[1]);
+					$('#sjuniorcount').html(resnt[2]);
+				}
+			});
+		}
+	}
+
+	function loadvalidationtemplate(vtype,mode)
+	{ 
+		$.ajax({
+			type: 'GET',
+			url: '/ao/loadvalidationtemplates',
+			data: 'validationtype=' + vtype+'&mode='+mode,
+			success: function(data)
+			{ 
+				$("#validationtemplateblock").html(data);
+			}
+		});
+	}
+</script>	
+
+
+
+<style>
+
+	.error {  display: none !important;}
+	
+	.usererror {  color:red}
+
+	.AjaxUploaderCancelAllButton { display: none !important;}
+
+	input {text-transform:none !important;}
+	
+	.popover-title { padding: 8px 14px;}
+	.popover-content {  padding: 9px 14px;}
+	#multiselect_corrector_lang .ui-multiselect-all{display: none !important;}
+	#multiselect_corrector_lang .ui-multiselect-none{display: none !important;}
+	
+	#submit_option_chzn,#correction_submit_option_chzn,#correction_resubmit_option_chzn,#resubmit_option_chzn,#estimated_worktime_option_chzn,#customselect_chzn
+	{
+		top: 7px;
+	}
+</style>
+
+{/literal}
+
+
+
+<form {if $missiontest=="on"}action="/ao/ao-create2test?submenuId=ML2-SL3"{else}{if $articletype=="lot"}action="/ao/ao-create2lot?submenuId=ML2-SL3"{else}action="/ao/ao-create2?submenuId=ML2-SL3"{/if}{/if} name="creation_step1" id="creation_step1" method="post" enctype="multipart/form-data" >
+
+	<div class="row-fluid">
+
+  		<div class="span12">
+
+    		<h3 class="heading">Cr&eacute;ation d'un Appel d'Offres
+
+				<span align="right">
+
+					<img src="/BO/theme/gebo/img/path-1.png" width="120" height="35" border="0" usemap="#Map" style="float:right;" />
+
+					<map name="Map" id="Map">
+
+					{if $nav_2==1}
+						{if $missiontest=='on'}
+							<area shape="circle" coords="60,18,17" id="area1" href="/ao/ao-create2test?submenuId=ML2-SL3"/>
+						{else}
+							{if $articletype=="lot"}
+								<area shape="circle" coords="60,18,17" id="area1" href="/ao/ao-create2lot?submenuId=ML2-SL3"/>
+							{else}
+								<area shape="circle" coords="60,18,17" id="area1" href="/ao/ao-create2?submenuId=ML2-SL3"/>
+							{/if}	
+						{/if}
+
+					{/if}
+
+					{if $nav_3==1}
+
+						<area shape="circle" coords="102,17,18" id="area2" href="/ao/ao-create3?submenuId=ML2-SL3"/>
+
+					{/if}
+
+					</map>
+
+				</span> 
+
+			</h3>	
+
+				<div class="w-box">
+
+					<div class="w-box-header">CLIENT</div>
+
+					<div class='w-box-content'>
+
+						<table align="center" cellpadding="4" cellspacing="4" width="78%">
+
+							<tr>
+
+								<td valign="top" width="50%">Client</td>
+
+								<td>
+
+									<span>
+
+									<select name="client_list" id="client_list" class="chzn_a span12" onChange="clientvariable(0);">
+										<option value="0">Select Client</option>
+										{foreach from=$client_invoiced item=client key=clientkey}
+
+											{if $clientkey==$def_user}
+
+												<option value="{$clientkey}" selected>{$client}</option>
+
+											{else}
+
+												<option value="{$clientkey}">{$client}</option>
+
+											{/if}
+
+										{/foreach}
+
+									</select>
+
+									</span>
+
+									<br />
+
+									<a data-toggle="modal" data-target="#newuser" href="javascript:void(0);">
+
+										Ajouter un nouveau client
+
+									</a><br>
+
+									<span id="profileMsg" style="color:red;"></span>
+
+								</td>
+
+						    </tr>
+
+							<tr id="template_block" style="display:none;">
+
+								<td>Templates</td>
+
+								<td id="templatelist"></td>
+
+						    </tr>
+							
+							<tr id="contribtest_block">
+
+								<td>Ce client exige que les contributeurs soient test&eacute;s</td>
+								<td>
+									<div id="testrequiredcheck">
+								  		<input type="checkbox" name="testrequired" id="testrequired" value="yes" {if $testrequired=="yes"}checked="checked"{/if} />
+								  	</div>
+								</td>
+
+						    </tr>
+							<tr id="testmarksblock" {if $testrequired!="yes"}style="display:none;"{/if}>
+								<td>Quelle est la note re&ccedil;ue au test minimale requise pour pouvoir participer &agrave; la mission ?</td>  
+								<td>
+									{assign var="foo" value="1"}
+									<select name="testmarks" id="testmarks" style="width:80px;" class="chzn_a span12" onchange="updatecontriblist(0);">
+										<option value="">Note</option>
+										{while $foo < 21}
+											<option value="{$foo}" {if $testmarks == $foo}selected{/if}>{$foo}</option>
+											{$foo++}
+										{/while}
+									</select>
+								</td>
+							</tr>
+							<tr>
+
+								<td>Appel d'offres Anonyme</td>
+
+								<td>
+
+								  	<div id="deli_anonymouscheck">
+
+								  		<input type="checkbox" name="deli_anonymous" id="deli_anonymous" {if $deli_anonymous=="on"}checked="checked"{/if} />
+
+								  	</div>	
+
+								</td>
+
+						    </tr>
+							<tr>
+
+								<td>URLs &agrave; ne pas v&eacute;rifier dans la phase plagiat <div style="color:red">(Séparées par des virgules)</div></td>
+
+								<td>
+
+								  	<textarea name="urlsexcluded" id="urlsexcluded" placeholder="Example:edit-place.com, www.edit-place.com" >{$urlsexcluded}</textarea>
+
+								</td>
+
+						    </tr>
+
+						</table>
+
+					</div>
+
+				</div>
+
+				
+
+				<div class="w-box">
+
+					<div class="w-box-header">AO TYPE</div>
+
+					<div class='w-box-content'>
+
+						<table align="center" cellpadding="4" cellspacing="4" width="78%">
+
+						    <tr id="templateblock" style="display:none;">
+
+								<td>Templates of missions</td>
+
+								<td id="templatelist">:
+
+									
+
+								</td>
+
+							</tr>
+
+						  
+							<tr>
+								<td width="50%">Nom de cet appel d'offres</td>
+								<td><span><input type="text" name="title" id="title" value="{$title|stripslashes}" size="42"/></span></td>
+
+						    </tr>
+							  
+							<!----- validation templates--->
+						    <tr>
+								<td valign="top">Type de mission / Critères de notation vs refus</td>
+								<td>
+									<div style="padding-bottom:10px;">
+										<input type="radio" name="product" id="product" value="redaction" onClick="loadvalidationtemplate('redaction',0);" {if $product=="redaction"}checked{/if}/> Rédaction&nbsp;
+										<input type="radio" name="product" id="product" value="translation" onClick="loadvalidationtemplate('translation',0);" {if $product=="translation"}checked{/if}/> Traduction
+									</div>
+									<div id="content_type_err" style="color:red;"></div>	  
+									<div id="validationtemplateblock" style="border: 1px solid;min-width:400px;min-height:200px;padding:15px;">
+										<div style="text-align:center;padding-top:85px">
+										Choisissez un type de mission ci-dessus<br/>
+										pour sélectionner les critères de notation du rédacteur
+										</div>
+									</div>
+									<div id="refusal_err" style="color:red;"></div>	  
+								</td>
+						    </tr>
+							
+							<tr>
+								<td>Mission Test</td>
+								<td>
+									<div id="missiontestcheck">
+								  		<input type="checkbox" name="missiontest" id="missiontest" {if $missiontest=="on"}checked="checked"{/if}/>
+								  	</div>
+								</td>
+						    </tr>
+
+							<!-------------------------------------------- Correction ---------------------------------------------->
+
+							<!-------------------------------------------- Quiz ---------------------------------------------->
+
+							<tr>
+
+						        <td>Appel d'offres avec quizz</td>
+
+						        <td>  
+
+						           <div id="link_quizcheck">
+
+								  		<input type="checkbox" name="link_quiz" id="link_quiz" {if $link_quiz=="on"}checked="checked"{/if}/>
+
+								  	</div>
+
+						        </td>
+
+						    </tr>
+
+							<tr id="quizblock" {if $link_quiz!="on"}style="display:none;"{/if}>
+
+								<td colspan="2" align="center">
+
+									<div class="well" style="width:600px">
+
+										<table align="center" cellpadding="4" cellspacing="4" width="100%" >
+
+											<tr>
+
+												<td width="50%">Cat&eacute;gorie</td> 
+
+												<td> {html_options name=quiz_cat id=quiz_cat options=$Contrib_cats selected=$quiz_cat onChange="updatequizlist(0);} </td>
+
+											</tr>
+
+											<tr>
+
+												<td>Quizz</td>
+
+												<td id="quizlist">{$quiz}
+
+													<select name="quiz" id="quiz"  onchange="loadquizvals();">
+
+													<option value="">S&eacute;lectionner</option>
+
+													{foreach from=$quiz_list item=quizitem}
+
+														{if $quiz==$quizitem.id}
+
+															<option value="{$quizitem.id}" selected>{$quizitem.title}</option>
+
+														{else}
+
+															<option value="{$quizitem.id}">{$quizitem.title}</option>
+
+														{/if}	
+
+													{/foreach}
+
+													</select>
+
+												</td>
+
+											</tr>
+
+											<tr>
+
+												<td>Nb mini. de bonnes r&eacute;ponses</td> 
+
+												<td><input type="text" name="quiz_marks" id="quiz_marks" value="{$quiz_marks}" class="span2"/></td>
+
+											</tr>
+
+											<tr>
+
+												<td>Dur&eacute;e du quizz</td>
+
+												<td>
+
+													<input type="text" name="quiz_duration" id="quiz_duration" value="{$quiz_duration}" class="span2"/>&nbsp;Mins
+
+												</td>
+
+											</tr>
+
+										</table>
+
+									</div>
+
+								</td>
+
+							</tr>  
+
+							<tr id="liberteblock" {if $missiontest=="on"}style="display:none;"{/if}>
+
+								<td>Mission libert&eacute;</td>
+
+								<td>
+
+									<div id="mission_typecheck">
+
+								  		<input type="checkbox" name="mission_type" id="mission_type" value="liberte" {if $mission_type=="liberte"}checked="checked"{/if}/>
+
+								  	</div>
+
+								</td>
+
+							</tr>
+
+							<tr id="premiumlist" {if $mission_type=="liberte" || $missiontest=="on"}style="display:none;"{/if}>
+
+								<td valign="top">&nbsp;</td>
+
+								<td valign="top">  
+
+									<div id="prem">
+
+										<span>
+
+										{foreach from=$options item=option name=option_loop}  
+
+											<label class="uni-radio">
+
+											<div id="uniform-premium_option_{$smarty.foreach.option_loop.index}" class="uni-radio"> 
+
+											 {if $premium_option==$option.value || $premium_option==$option.id}
+
+												<input type="radio" class="uni_style" value="{$option.value}" name="premium_option" checked id="premium_option_{$smarty.foreach.option_loop.index}"  onClick="services_update('parent',{$smarty.foreach.option_loop.index},this.value,this)"/>
+
+											 {else}
+
+												<input type="radio" class="uni_style" value="{$option.value}" name="premium_option"  id="premium_option_{$smarty.foreach.option_loop.index}"  onClick="services_update('parent',{$smarty.foreach.option_loop.index},this.value,this)"/>
+
+											 {/if}
+
+											</div>   
+
+											<span style="vertical-align:middle;font-weight:normal; cursor:pointer">{$option.option_name|utf8_encode}</span>
+
+											<a class="pop_over" data-placement="right" data-content="{$option.description1}" data-html="true" ><i class="splashy-information"></i></a>
+											 
+
+											</label>
+
+										
+
+										<div style="padding-left:30px;" id="premium_{$smarty.foreach.option_loop.index}">
+
+											{foreach from=$option.childlist item=child}
+
+												{if $child.id!=""}
+
+												<label class="uni-checkbox">
+
+												<div class="rowS" >
+
+												  {if in_array($child.value,$prem_ser) || in_array($child.id,$prem_ser)}
+
+													 <input type="checkbox" class="uni_style" id="premium_service_{$child.id}" name="premium_service[]" value="{$child.value}" onClick="services_update('child',{$smarty.foreach.option_loop.index},this.value,this,{$child.id})" checked />
+
+												  {else}
+
+													 <input type="checkbox" class="uni_style" id="premium_service_{$child.id}" name="premium_service[]" value="{$child.value}" onClick="services_update('child',{$smarty.foreach.option_loop.index},this.value,this,{$child.id})" />
+
+												  {/if}
+
+												  {$child.option_name|utf8_encode}
+
+												  <a class="pop_over" data-placement="right" data-content="{$child.description}" data-html="true"><i class="splashy-information"></i></a>
+
+												</div>
+
+												</label>	
+
+												{/if}  
+
+										   {/foreach}  
+
+									   </div>
+
+									   {/foreach}
+
+									   </span>
+
+									</div>
+
+									<input type="hidden" id="TotPrem" name="TotPrem" value="{$TotPrem}" />
+
+								</td>
+
+						    </tr>
+
+							<tr id="spec_block" {if $client_list=="0"}style="display:none;"{/if}>
+								<td valign="top">Brief r&eacute;dactionnel</td>
+								<td valign="top"> 
+									<div id="uploadspec">
+										<span class="btn btn-file">
+											<span class="fileupload-new">Select Spec file</span>
+											<input type="file" name="file" id="file"  class="" />
+										</span>
+										<span id="fileerr" style="color:red;"></span>
+										<br><div id="fname">{$sp_file}</div>
+									</div>
+									<input type="hidden" id="spec_file_name" name="spec_file_name" value="{$sp_file}" />
+								</td>
+						    </tr>
+						</table>
+					</div>
+				</div>
+
+				<div class="w-box">
+
+					<div class="w-box-header">SEO</div>
+
+					<div class='w-box-content'>
+
+						<table align="center" cellpadding="4" cellspacing="4" width="78%">    
+
+						    <tr>
+
+						        <td width="50%">White list</td>
+
+						        <td>
+
+						            <div id="white_listcheck">
+
+								  		<input type="checkbox" name="white_list" id="white_list" {if $white_list=="on"}checked="checked"{/if}/>
+
+								  	</div>
+
+						        </td>
+
+						    </tr>
+
+						    <tr>
+
+						        <td>Black list</td>
+
+						        <td>
+
+						            <div id="black_listcheck">
+
+								  		<input type="checkbox" name="black_list" id="black_list" {if $black_list=="on"}checked="checked"{/if}/>
+
+								  	</div>
+
+						        </td>
+
+						    </tr>
+                            <!--<tr>
+                                <td width="50%">White list and Black list check</td>
+                                <td>
+                                    <div id="blwllist_check">
+                                        <input type="checkbox" name="blwl_check" id="blwl_check" {if $blwl_check=="on"}checked="checked"{/if}/>
+                                    </div>
+                                </td>
+                            </tr>-->
+
+						</table>
+
+					</div>
+
+				</div>
+
+					
+
+				<div class="w-box">
+
+					<div class="w-box-header">CONTRIBUTOR</div>
+
+					<div class='w-box-content'>
+
+						<table align="center" cellpadding="4" cellspacing="4" width="78%">    
+
+							<tr>
+
+						        <td width="50%">Appels d'offres priv&eacute;s</td>
+
+						        <td>
+
+						            <div id="AOtypecheck">
+
+								  		<input type="checkbox" name="AOtype" id="AOtype" value="private" {if $AOtype=="private"}checked="checked"{/if}/>
+
+								  	</div>
+
+						        </td>
+
+						    </tr>
+
+							<tr id="contribbysel" {if $AOtype!="private"}style="display:none;"{/if}>
+
+								<td colspan="2" align="center">
+
+									<div class="well" style="width:600px">
+
+										<table align="center" cellpadding="4" cellspacing="4" width="100%" >
+
+											<tr>
+
+												<td width="50%">Tri par langue</td>
+
+												<td> 
+
+													<select name="contrib_lang[]" id="contrib_lang" onchange="updatecontriblist(0);" multiple="multiple" style="width:230px;float:left;">
+
+														{foreach from=$Contrib_langs item=langitem key=langkey}
+
+															{if in_array($langkey,$contrib_langarray)}
+
+																<option value="{$langkey}" selected>{$langitem}</option>
+
+															{else}
+
+																<option value="{$langkey}">{$langitem}</option>
+
+															{/if}
+
+														{/foreach}
+
+													</select>
+													
+
+												</td>
+
+											</tr>
+
+											<tr>
+
+												<td>Tri par type</td>
+
+												<td> {html_options name=contrib_cat id=contrib_cat options=$Contrib_cats selected=$contrib_cat style="width:250px;" onChange="updatecontriblist(0);} <span id='langspinner' style='float:right;display:none;'><img src='/BO/theme/gebo/img/loading.gif'></span> </td>
+
+											</tr>
+
+											<tr>
+
+												<td valign="top">Contributeur</td>
+
+												<td valign="top" id="contribs">
+
+													<select name="favcontribcheck[]" id="favcontribcheck" multiple="multiple"> 
+
+													{foreach from=$contriblistall1 item=contrib}
+
+																{if in_array($contrib.identifier,$contrib_array)}
+
+																<option value="{$contrib.identifier}" selected>{$contrib.name}</option>
+
+																{else}
+
+																<option value="{$contrib.identifier}">{$contrib.name}</option>
+
+																{/if}
+
+													{/foreach}
+
+													</select>
+													
+													<div id="favcontrib_err" style="color:red;"></div>
+
+												</td>
+
+											</tr>
+
+										</table>
+
+									</div>
+
+								</td>
+
+							</tr>		
+
+						    <tr>
+						        <td valign="top">Contributeur type</td>
+						        <td>
+						            <label class="uni-checkbox">
+										<input type="checkbox" value="senior" name="contribtype[]" id="contribtype1" class="uni_style" {if in_array('senior',$contribtype)}checked{/if}  onClick="updatecontriblist(0);"/>
+										SC<b>(<div id="seniorcount" style="display:inline">{$sc_count}</div>)</b>
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="junior" name="contribtype[]" id="contribtype2" class="uni_style" {if in_array('junior',$contribtype)}checked{/if} onClick="updatecontriblist(0);"/>
+										JC<b>(<div id="juniorcount" style="display:inline">{$jc_count}</div>)</b>
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="sub-junior" name="contribtype[]" id="contribtype2" class="uni_style" {if in_array('sub-junior',$contribtype)}checked{/if} onClick="updatecontriblist(0);"/>
+										JC0<b>(<div id="sjuniorcount" style="display:inline">{$jc0_count}</div>)</b> 
+									</label>
+						        </td>	
+						    </tr>
+							<tr id="publish_languagelist" {if $AOtype=="private"}style="display:none;"{/if}>
+								<td>Langue des contributeurs qui verront l'AO et recevront une alerte par email</td>
+								<td> 
+									<select name="publish_language[]" id="publish_language" multiple="multiple" style="width:250px;" Onchange="updatecontribtype();">
+										{if $publish_langarray|@count>0}
+											{foreach from=$Contrib_langs item=langitem key=langkey}
+												{if in_array($langkey,$publish_langarray)}
+													<option value="{$langkey}" selected>{$langitem}</option>
+												{else}
+													<option value="{$langkey}">{$langitem}</option>
+												{/if}
+											{/foreach}
+										{else}
+											{foreach from=$Contrib_langs item=langitem key=langkey}
+												<option value="{$langkey}" selected>{$langitem}</option>
+											{/foreach}
+										{/if}
+									</select>
+									<div id="publishlang_err" style="color:red;"></div>
+								</td>
+							</tr>
+							<tr id="poll_block" {if $client_list=="0"}style="display:none;"{/if}>
+								<td>Faire le lien avec un devis </td>
+								<td>
+									<div id="linkpollcheck">
+								  		<input type="checkbox" name="linkpoll" id="linkpoll" {if $linkpoll=="on"}checked="checked"{/if}/>
+								  	</div>
+								</td>
+							</tr>
+
+							<tr {if $linkpoll!="on"}style="display:none;"{/if} id="pollcontent">
+
+								<td colspan="2" align="center">
+
+									<div class="well" style="width:600px">
+
+										<table align="center" cellpadding="4" cellspacing="4" width="100%" >
+
+												<tr>
+
+													<td width="50%">Nom du devis</td>
+
+													<td id="polldiv">
+
+														<select name="pollao" id="pollao" disabled>
+
+														</select>
+
+													</td>
+
+												</tr>
+
+												<tr>
+
+													<td valign="top">Contributeurs ayant particip&eacute;</td>
+
+													<td id="pcontribs">
+
+														 Select Poll
+
+													</td>
+
+												</tr>
+
+												<tr>
+
+													<td>Temps pendant lequel ces contributeurs seront prioritaires</td>
+
+													<td >
+
+														<input type="text" name="priority_hours" id="priority_hours" value="{$priority_hours}" class="span2" disabled />
+
+													</td>
+
+												</tr>
+
+										</table>
+
+									</div>
+
+								</td>
+
+							</tr>
+
+							<tr>
+
+								<td>D&eacute;lai de rendu de l'article</td>
+
+								<td>
+
+									<span style="">JC0 <input type="text" name="subjunior_time" id="subjunior_time" class="span2" value="{$subjunior_time}" maxlength="3" /></span>
+
+									<span style="">JC <input type="text" name="junior_time" id="junior_time" class="span2" value="{$junior_time}" maxlength="3" /></span>&nbsp;
+
+									<span style="">SC <input type="text" name="senior_time" id="senior_time" class="span2" value="{$senior_time}"  maxlength="3"/></span>&nbsp; 
+
+									<select name="submit_option" id="submit_option" style="width:90px;top:5px">
+
+										<option value="min" {if $submit_option=="min"}selected{/if}>Min(s)</option>
+
+										<option value="hour" {if $submit_option=="hour" || $submit_option==""}selected{/if}>Heure(s)</option>
+
+										<option value="day" {if $submit_option=="day"}selected{/if}>Jour(s)</option>
+
+									</select>
+
+							  </td>
+
+							</tr>
+
+							<tr>
+
+								<td>D&eacute;lai apr&egrave;s refus d'un article</td> 
+
+								<td>
+
+									<span style="">JC0 <input type="text" name="jc0_resubmission" id="jc0_resubmission" class="span2" value="{$jc0_resubmission}"  maxlength="3"/></span>
+
+									<span style="">JC <input type="text" name="jc_resubmission" id="jc_resubmission" class="span2" value="{$jc_resubmission}"  maxlength="3" /></span>&nbsp;
+
+									<span style="">SC <input type="text" name="sc_resubmission" id="sc_resubmission" class="span2" value="{$sc_resubmission}"  maxlength="3"/></span>&nbsp;
+
+									<select name="resubmit_option" id="resubmit_option" style="width:90px">
+
+										<option value="min" {if $resubmit_option=="min"}selected{/if}>Min(s)</option>
+
+										<option value="hour" {if $resubmit_option=="hour" || $resubmit_option==""}selected{/if}>Heure(s)</option>
+
+										<option value="day" {if $resubmit_option=="day"}selected{/if}>Jour(s)</option>
+
+									</select>
+
+							  </td>
+
+							</tr>
+
+							<tr>
+
+								<td>D&eacute;lai donn&eacute; qu'a un contributeur pour participer</td>
+
+								<td>
+
+									<span><input type="text" name="participation_time" id="participation_time" class="span2" value="{$participation_time}"  /></span> mins 
+
+								</td>
+
+							</tr>
+
+							<tr>
+
+								<td>Part pour le contributeur (100% normalement)</td>
+
+								<td>
+
+									<span><input type="text" name="contrib_percentage" id="contrib_percentage" value="{$contrib_percentage}" class="span2"/><span>
+
+									%
+
+								</td>
+
+							</tr>
+
+						</table>
+
+					</div>
+
+				</div>	
+
+				<div class="w-box">
+					<div class="w-box-header">R&Eacute;DACTION / TRADUCTION</div>
+					<div class='w-box-content'>
+						<table align="center" cellpadding="4" cellspacing="4" width="78%">    	
+							<tr>
+								<td width="50%">LOTS OU ARTICLES?</td>
+								<td>
+									 <div id="articletypecheck">
+								  		<input type="checkbox" name="articletype" id="articletype" value="lot" {if $articletype=="lot"}checked="checked"{/if}/>
+								  	</div>
+								</td>
+						    </tr>
+							<tr>
+								<td id="totalarticle_text">De combien d'articles ou de lots avez-vous besoin?</td>
+								<td>
+									<span><input type="text" name="total_article" id="total_article" value="{$total_article}" class="span2" {if $missiontest=='on'}disabled{/if}/></span>
+								</td>
+						    </tr>
+							<tr id="lotarticle" {if $articletype!="lot"}style="display:none;"{/if}>
+								<td>SOUHAITEZ-VOUS D�TAILLER LES ARTICLES DANS CHAQUE LOT ?Si oui, indiquez le nombre d�articles</td>
+								<td>
+									<span><input type="text" name="sub_article" id="sub_article" value="{$sub_article}" class="span2"/></span>
+								</td>
+						    </tr>
+							<tr>
+								<td>Type</td>
+								<td>{*{html_options name=type id=type options=$type_array|stripslashes selected=$type class="span8"}*} 
+									<select name="type" id="type" class="span8">
+										{foreach from=$type_array item=type_name key=type_key name=typeloop}
+											{if $smarty.foreach.typeloop.index>7}
+												<option value="{$type_key}" {if $type==$type_key} selected{/if}>{$type_name}</option>
+											{/if}
+										{/foreach} 	
+									</select>
+								</td>
+						    </tr>
+						    <tr>
+								<td>Langue</td>
+								<td>{html_options name=language id=language options=$language_array selected=$language class="span8" onChange="updatecorrectorlist(0);"} </td>
+						    </tr>
+						    <tr>
+								<td>Cat&eacute;gorie</td>
+								<td>{html_options name=category id=category options=$category_array selected=$category class="span8"} </td>
+						    </tr>
+						    <tr>
+								<td>Nombre de</td>
+								<td>{html_options name=signtype id=signtype selected=$signtype options=$signtype_array class="span8"}
+								  <span><input type="text" id="min_sign" name="min_sign" value="{$min_sign}" class="span2" placeholder="Min." style="margin-top:-12px"/></span>
+								  <span><input type="text" id="max_sign" name="max_sign" value="{$max_sign}" class="span2" placeholder="Max." style="margin-top:-12px"/></span>
+								 </td> 
+						    </tr>
+						    <tr {if $missiontest!="on"}style="display:none;"{/if} id="writerinvoiceblock">
+								<td>Aucune generation de facture</td>  
+								<td>
+									<div id="writerinvoicecheck">
+										<input type="checkbox" name="writerinvoice" id="writerinvoice" {if $writerinvoice=="on"}checked="checked"{/if}/>
+									</div>
+								</td>
+							</tr>
+							<tr {if $mission_type!="liberte"}style="display:none;"{/if} id="pricetotal">
+								<td>Prix total</td>
+								<td> 
+									<span><input type="text" name="price_min_total" id="price_min_total" value="{$price_min_total}"  placeholder="Min." class="span2" onKeyup="addprice('min');" /></span>
+									<span><input type="text" name="price_max_total" id="price_max_total" value="{$price_max_total}"  placeholder="Max." class="span2" onKeyup="addprice('max');" /></span>
+								</td>
+						    </tr>
+							
+							<tr>
+								<td>Votre fourchette de prix</td>
+								<td> 
+									<span><input type="text" name="price_min" id="price_min" value="{$price_min}"  placeholder="Min." class="span2" {if $writerinvoice=="on"}readonly{/if} {if $mission_type=="liberte" && $AOtype!="private"}disabled{/if} /></span>
+									<span><input type="text" name="price_max" id="price_max" value="{$price_max}"  placeholder="Max." class="span2" {if $writerinvoice=="on"}readonly{/if} {if $mission_type=="liberte" && $AOtype!="private"}disabled{/if} /></span>
+								</td>
+						    </tr>
+							{if $usertype=='superadmin'}	
+							<tr id="pricedisplayblock">
+								<td>Afficher la fourchette de prix</td>  
+								<td>
+									<div id="pricedisplaycheck">
+										<input type="checkbox" name="pricedisplay" id="pricedisplay" value="yes" {if $pricedisplay=="yes"}checked="checked"{elseif $AOtype!="private"}disabled="disabled"{/if}/>
+									</div>
+								</td>
+							</tr>
+							{else}
+								<input type="hidden" name="pricedisplay" id="pricedisplay" value="yes"/>
+							{/if}
+							<tr>
+								<td>Temps de travail estim&eacute; par lot/article</td>
+								<td>
+									<div style="float:left" class="span7">
+									<span style=""> <input type="text" name="estimated_worktime" id="estimated_worktime" class="required digits span3" value="{$estimated_worktime}" /></span>&nbsp; Heure(s)
+									<span style=""> <input type="text" name="estimated_worktime_min" id="estimated_worktime_min" class="required digits span3" value="{$estimated_worktime_min}" /></span>&nbsp; Min(s)
+									<!-- <select name="estimated_worktime_option" id="estimated_worktime_option" style="width:90px">
+										<option value="min" {if $estimated_worktime_option eq 'min'}selected="selected"{/if}>Min(s)</option>
+										<option value="hour" {if $estimated_worktime_option eq 'hour'}selected="selected"{/if}>Heure(s)</option>
+									</select> -->
+									
+									</div>
+									<div style="float:left;" class="span4">
+									<a name="save" id="calculation" class="btn btn-info">Calculate</a> 
+									</div>
+								</td>
+							</tr>
+							<!-- column for xls/xlsx article --->
+							<tr>  
+								<td style="vertical-align:top">Columns for XLS/XLSX Article (add comma(,) <br>seperated for multiple)</td>
+								<td>
+								  <textarea name="column_xls" id="column_xls">{$column_xls}</textarea>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div> 
+				
+				<div class="w-box">
+					<div class="w-box-header">CORRECTION</div>
+					<div class='w-box-content'>
+						<table align="center" cellpadding="4" cellspacing="4" width="78%">    	
+							<tr id="correction_tr">
+								<td width="40%">Correction</td>   
+								<td>
+									<div class='' id='corrections_2'>
+										<label class="uni-radio">
+											<input id='cor_2' type="radio" class="uni_style" value="intern" name="correction"  {if $correction=="intern" || $correction!='on' || $correction !='freelance' }checked="checked;"{/if} />Correction Interne</label>
+								  	</div>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<div class='' id='corrections_1'>
+										<label class="uni-radio"><input id='cor_1' type="radio" class="uni_style" value="on" name="correction"  {if $correction=="on" }checked="checked;"{/if} />Correction Externe</label>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<div class='' id='corrections_3'>
+										<label class="uni-radio"><input id='cor_3' type="radio" class="uni_style" value="freelance" name="correction"  {if $correction=="freelance" }checked="checked;"{/if} />Correction Frelance</label>
+									</div>
+								</td>
+							</tr>
+							<tr id="correctionblock2" {if $correction!="intern" AND $correction!="freelance"}style="display:none;"{/if}>
+								<td colspan="2" align="center">
+									<div>
+										<table align="center" cellpadding="4" cellspacing="4" width="100%" >
+											<tr>
+												<td width="40%" >Correction Cost</td>
+												<td><span><input type="text" name="correction_cost" id="correction_cost" value="{$correction_cost}" placeholder="" class="span3" /></span></td>
+											</tr>
+										</table>
+									</div>
+								</td>
+							</tr>	
+							<tr id="correctionblock" {if $correction!="on"}style="display:none;"{/if}>
+								<td colspan="2" align="center">
+									<div>  
+										<p style="text-align: left; border: 1px solid #FAAC58;background-color:#F9FCCC;color:#FB8925;padding:5px;width:700px">Les participations pour la correction seront ouvertes en m&ecirc;me temps pour la r&eacute;daction et pour la correction,<br/> le correcteur, une fois s&eacute;lectionn&eacute;, devra attendre que le r&eacute;dacteur soumette son fichier pour d&eacute;marrer la correction</p>
+										<table align="center" cellpadding="4" cellspacing="4" width="100%" >
+											<tr {if $missiontest!="on"}style="display:none;"{/if} id="invoiceblock">
+												<td width="40%" >Aucune generation de facture</td>  
+												<td>
+													<div id="invoicecheck">
+														<input type="checkbox" name="invoice" id="invoice" {if $invoice=="on"}checked="checked"{/if}/>
+													</div>
+												</td>
+											</tr>
+											<tr {if $missiontest!="on"}style="display:none;"{/if} id="marksblock">
+												<td width="40%" >Note /10</td>  
+												<td>
+													<span><input type="text" name="min_mark" id="min_mark" value="{$min_mark}" placeholder="Min." class="span3"/></span>
+												</td>
+											</tr>
+											<tr>
+												<td width="40%" valign="top">fourchette prix correcteur</td>  
+												<td>
+													<span><input type="text" name="correction_pricemin" id="correction_pricemin" value="{$correction_pricemin}" placeholder="Min." class="span3" {if $invoice=="on"}readonly{/if}/></span>
+													<span><input type="text" name="correction_pricemax" id="correction_pricemax" value="{$correction_pricemax}" placeholder="Max." class="span3" {if $invoice=="on"}readonly{/if}/></span>
+												</td>
+											</tr>
+											<tr>
+												<td valign="top">Brief correcteur</td>
+												<td id="corrspec">
+													<span class="btn btn-file">
+														<span class="fileupload-new">Select Correction Spec file</span>
+														<input type="file" name="correction_file" id="correction_file"/>    
+													</span>	
+													<div id="correction_spec_file_err" style="color:red;"></div>
+													<div id="corrfname">{$correction_spec_file}</div>
+													<input type="hidden" id="correction_spec_file" name="correction_spec_file" value="{$correction_spec_file}" />
+												</td>
+											</tr>
+
+											<!-------------------- Private correction ------------------------>
+											<tr>
+												<td valign="top">Correction priv&eacute;e</td>
+												<td  >
+													<div id="correction_typecheck">
+														<input type="checkbox" name="correction_type" id="correction_type" value="private" {if $correction_type=="private"}checked="checked"{/if}/>
+													</div>
+												</td>
+											</tr>  
+
+											<tr id="selcorrectors" {if $correction_type!="private"}style="display:none;"{/if}>
+												<!--<td colspan="2" width="50%">
+													<table align="center" cellpadding="4" cellspacing="4" width="100%" >
+														<tr>
+															<td width="30%">Tri par langue</td>
+															<td> 
+																<select name="corrector_lang[]" id="corrector_lang" onChange="updatecorrectorlist(0);" multiple="multiple" style="width:250px;">
+																	{foreach from=$Contrib_langs item=langitem key=langkey}
+																		{if in_array($langkey,$corrector_langarray)}
+																			<option value="{$langkey}" selected>{$langitem}</option>
+																		{else}
+																			<option value="{$langkey}">{$langitem}</option>
+																		{/if}
+																	{/foreach}
+																</select>
+															</td>
+														</tr>
+														<tr>-->
+															<td valign="top" width="40%">Correcteurs</td>
+															<td valign="top" id="correctors">
+																<select multiple="multiple" name="correctorcheck[]" id="correctorcheck" >
+																{foreach from=$correctorlist item=corr}{$corr.identifier}
+																	{if in_array($corr.identifier,$corrector_array)}
+																		<option value="{$corr.identifier}" selected>{$corr.name}</option>
+																	{else}
+																		<option value="{$corr.identifier}">{$corr.name}</option>
+																	{/if}
+																{/foreach}
+																</select>
+																<div id="corrcontrib_err" style="color:red;"></div>
+															</td>
+													<!--	</tr>
+													</table>
+												</td>-->
+											</tr>		
+											<tr>
+												<td valign="top">Delai de participation</td>
+												<td>
+													<span><input type="text" name="correction_participation" id="correction_participation" value="{$correction_participation}" class="span2"/></span> mins
+												</td>
+											</tr>
+											<tr>
+												<td valign="top">Temps de correction</td>
+												<td>
+													<span style="">JC <input type="text" name="correction_jc_submission" id="correction_jc_submission" class="span2" value="{$correction_jc_submission}"/></span>
+													<span style="">SC <input type="text" name="correction_sc_submission" id="correction_sc_submission" class="span2" value="{$correction_sc_submission}"/></span> 
+													<select name="correction_submit_option" id="correction_submit_option" style="width:90px;top:5px">
+														<option value="min" {if $correction_submit_option=="min"}selected{/if}>Min(s)</option>
+														<option value="hour" {if $correction_submit_option=="hour" || $correction_submit_option==""}selected{/if}>Heure(s)</option>
+														<option value="day" {if $correction_submit_option=="day"}selected{/if}>Jour(s)</option>
+													</select>
+												</td>
+											</tr>
+											<tr>
+												<td valign="top">Temps de correction apr&egrave;s un refus</td> 
+												<td> 
+													<span style="">JC <input type="text" name="correction_jc_resubmission" id="correction_jc_resubmission" class="span2" value="{$correction_jc_resubmission}"/></span> 
+													<span style="">SC <input type="text" name="correction_sc_resubmission" id="correction_sc_resubmission" class="span2" value="{$correction_sc_resubmission}"/></span> 
+													<select name="correction_resubmit_option" id="correction_resubmit_option" style="width:90px">
+														<option value="min" {if $correction_resubmit_option=="min"}selected{/if}>Min(s)</option>
+														<option value="hour" {if $correction_resubmit_option=="hour" || $correction_resubmit_option==""}selected{/if}>Heure(s)</option>
+														<option value="day" {if $correction_resubmit_option=="day"}selected{/if}>Jour(s)</option>
+													</select>
+												</td>
+											</tr>
+											<tr>
+												<td>Envoyer un email aux correcteurs</td>
+												<td>
+													<div id="corrector_mailcheck">
+														<input type="checkbox" name="corrector_mail" id="corrector_mail" {if $corrector_mail=="on"}checked="checked"{/if}/>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td>Ne pas modérer les décisions du correcteur</td>
+												<td>
+													<div id="nomoderationcheck">
+														<input type="checkbox" name="nomoderation" id="nomoderation" value="yes"{if $nomoderation=="yes"}checked="checked"{/if}/>
+													</div>
+												</td>
+											</tr>
+										</table>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>	
+				
+				<div class="w-box">
+					<div class="w-box-header">NOTIFICATIONS</div>
+					<div class='w-box-content'>
+						<table align="center" cellpadding="4" cellspacing="4" width="78%">  
+							<tr>
+								<td colspan="2"><strong>Souhaitez-vous &ecirc;tre alert&eacute;s lorsque:</strong></td>
+							</tr>
+							<tr>
+								<td width="50%">Un r&eacute;dacteur soumet son article sur la plateforme ?</td>
+								<td>
+									 <div id="writernotifycheck">
+								  		<input type="checkbox" name="writer_notify" id="writer_notify" value="yes" {if $writer_notify=="yes"}checked="checked"{/if}/>
+								  	</div>
+								</td>
+						    </tr>
+							<tr id="correctornotifyblock" {if $correction!="on"}style="display:none"{/if}>
+								<td>Un correcteur soumet l'article corrig&eacute; sur la plateforme ?</td>
+								<td>
+									 <div id="correctornotifycheck">
+								  		<input type="checkbox" name="corrector_notify" id="corrector_notify" value="yes" {if $corrector_notify=="yes"}checked="checked"{/if}/>
+								  	</div>
+								</td>
+						    </tr>
+						</table>	
+					</div>
+				</div>
+				
+	   			<div style="float:right;padding:30px">
+
+	           		<button type="button" value="clear form" class="btn btn-info" onClick="window.location='/ao/ao-create1?submenuId=ML2-SL3&delsession=1'">Annuler champs</button>
+
+					<button type="submit" value="Aller en Etape 2" class="btn btn-info" id="aoSubmit" onClick="return validate_aocreation_step1();">Aller en Etape 2</button>
+
+	           	</div>
+
+		</div>
+
+	</div>
+	<input type="hidden" name="eppercent" id="eppercent" value="{$eppercent}"/>
+	<input type="hidden" name="refusal_reasons_max" id="refusal_reasons_max" value="{$refusal_reasons_max}"/>
+</form>	
+
+
+
+<!--   Add new user   -->
+
+<div class="modal hide fade" id="newuser">
+
+    <div class="modal-header">
+
+        <button class="close" data-dismiss="modal" >&times;</button>
+
+        <h3>AJOUT D'UN NOUVEAU CLIENT</h3>
+
+    </div>
+
+    <div class="modal-body">
+
+		<form action="/ao/adduser?type=ao" id="newuserform" id="newuserform" method="post" >
+
+			<table cellpadding="2" cellspacing="2" align="center">
+
+				<tr>
+
+					<td valign="top">Email</td>
+
+					<td><span><input type="text" id="newemail" name="newemail"/></span></td>
+
+				</tr>
+
+				<tr>
+
+					<td valign="top">Mot de passe</td>
+
+					<td><span><input type="password" id="newpwd" name="newpwd"/></span></td>
+
+				</tr>
+
+				<tr>
+
+					<td valign="top">Confirmer mot de passe</td>
+
+					<td><span><input type="password" id="newcpwd" name="newcpwd" value=""/></span></td>
+
+				</tr>
+
+				<tr>
+
+					<td valign="top">Nom du client</td>
+
+					<td><span><input type="text" id="company_name" name="company_name" value=""/></span></td>
+
+				</tr>
+
+				<tr>
+
+					<td>&nbsp;</td>
+
+					<td>
+
+						<button type="submit" id="submit_pop_edit" name="submit_pop_edit" value="Add" class="btn btn-info" onClick="validate_newuser();">Ajouter client</button>&nbsp;&nbsp;
+
+					</td>
+
+				</tr>
+
+			</table>	
+
+		</form>
+
+    </div>
+
+    <div class="modal-footer">
+
+    </div>
+
+</div>
+
+
+
+<div class="modal hide fade" id="profileupdate">
+
+    <div class="modal-header">
+
+        <button class="close" data-dismiss="modal" onClick="closeModal();">&times;</button>
+
+        <h3>UPDATER PROFIL CLIENT</h3>
+
+    </div>
+
+    <div class="modal-body" id="profileform">
+
+	</div>
+
+    <div class="modal-footer">
+
+    </div>
+
+</div>
+
+
+
+<div id="fadeblock"></div>
+{literal}
+	<style>
+	.form-horizontal .controls
+	{
+		margin-left: 250px;
+	}
+	
+	.form-horizontal .control-label
+	{
+		width: 240px;
+	}	
+	</style>
+{/literal}
+<!--popup to show Calculation-->
+<div class="modal hide fade" id="calculate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Calculation</h3>
+    </div>
+    <div class="modal-body">
+			<form action="#" class="form-horizontal" name="cal" id="cal">
+			<section>
+				<div class="row-fluid">
+					<div class="control-group topset2">
+						<label class="control-label">Temps pass&eacute; par <span class="cal_type"></span></label>
+						<div class="controls">
+							<div class="span12">
+								<input type="text" class="validate[required,custom[integer]] keyup span3" id="time_spent" value="" name="">
+					
+								<select name="" id="caloption" class="span4">
+										<option value="min">Min(s)</option>
+										<option value="hour">Heure(s)</option>
+								</select>
+
+							</div>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">Nombre de <span class="cal_type"></span> dans chaque lot</label>
+						<div class="controls">
+							<div class="span12">
+								<input type="text" class="validate[required,custom[integer]] keyup span3" id="no_of_pack" value="" name="">
+							</div>
+						</div>
+					</div>
+					<div class="control-group topset2">
+						<div class="controls pull-center">
+							<button class="btn btn-primary" type="submit">Calculate</button>
+							<button class="btn" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</section>
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+{literal}
+	<script>
+		$(document).ready(function(){
+					
+			$(document).on("click","#calculation",function(){
+						$(".cal_type").text($("#type option:selected").text());
+						$("#calculate").modal('show');
+						$("#calculate").removeClass( "hide" ).addClass("in");
+			})
+			
+			$("#cal").validationEngine('attach',{
+				onValidationComplete: function(form, status){
+					if(status === true){
+						var time_spent = parseInt($("#time_spent").val());
+						var no_of_pack = parseInt($("#no_of_pack").val());
+						var calopt = $("#caloption").val();
+						if(calopt=="hour")
+						{
+							hours = time_spent*no_of_pack;
+							minutes = 0;
+						}
+						else
+						{
+							hours = parseInt((time_spent*no_of_pack)/60);
+							minutes = parseInt((time_spent*no_of_pack)%60);
+						}
+						$("#estimated_worktime").val(hours);
+						$("#estimated_worktime_min").val(minutes);
+						
+						$("#calculate").modal('hide');
+					}
+				}
+			});    
+			
+		});
+		
+	</script>
+{/literal}
+
+

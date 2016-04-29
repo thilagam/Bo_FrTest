@@ -1,0 +1,800 @@
+{literal}
+<style type="text/css">
+    .mod .error
+    {
+        display:none !important;
+    }
+    .error {
+        color: #C62626;
+        font-size: 11px;
+        font-weight: 700;
+    }
+    .mod {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+        border-image: none;
+        border-radius: 4px;
+        border-style: solid;
+        border-width: 1px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+        margin-bottom: 15px;
+        overflow: hidden;
+        padding: 12px;
+    }
+    .contacterror
+    {
+        border:1px solid red !important;
+    }
+</style>
+{/literal}
+
+<form class="form_validation_reg" method="POST" action="/seotool/positiontoolupload" name="importcsv" id="seo" ENCTYPE="multipart/form-data">
+        <div class="span10">
+
+            <h3 class="heading">Position Tool</h3>
+
+            <div class="control-group formSep" id="seotool-notify" style="display: none;">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                            <div id="seo-message">{$msg}</div>
+                    </div>
+                </div>
+            </div>    
+            
+            <div class="control-group formSep" id="clientRow">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3"><span class="error_placement">Client</span></label>
+                        <select name="client" id="client" class="chzn_a" data-placeholder="S&eacute;lectionner">                            
+                            <!--<option value=""></option>-->
+							{foreach from=$client_list item=client}
+                                {if $client.identifier==$def_user}
+                                <option value="{$client.identifier}" selected>{$client.name}</option>
+                                {else}
+                                <option value="{$client.identifier}">{$client.name}</option>
+                                {/if}
+                            {/foreach}
+                        </select>   
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="title">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Title<span class="f_req">*</span></label>
+                        <div class="span8 form-inline no-margin-first">
+                            <input type="text" name="title" class="span5"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Type </label>
+                        <label class="uni-radio"><input type="radio" name="word_type" class="uni_style"  value="1" {if $word_type neq '2'} checked {/if} id="csvxls">CSV / XLS</label>
+                            <label class="uni-radio"><input type="radio" name="word_type" class="uni_style"  value="2" {if $word_type eq '2'} checked {/if} id="opt_text">Text</label>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="csv" {if $word_type eq '2'} style="display:none" {/if}>
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">URL & Keywords<span class="f_req">*</span></label>
+
+                        
+                        <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" />
+                            <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" />
+                                <div class="input-append">
+                                    <div class="uneditable-input span2"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input name="keyword_file" id="keyword_file" type="file" /></span><a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="control-group formSep" id="text_words" {if $word_type neq '2'} style="display:none"{/if} >
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="span3 control-label">URL & Keywords<span class="f_req">*</span></label>
+                        <div class="span8 controls">
+                            <span class="help-block syntax">Syntax : <span id="load_syntax_text">url;kw</span></span>
+                            <textarea name="kw" id="txtarea_sp" cols="1" rows="4" class="span10"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+        <div class="control-group formSep" id="urlRow" {if $word_type neq '2'} style="display:none" {/if} >
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label class="span3 control-label">Url<span class="f_req">*</span></label>
+                    <div class="span8 controls">
+                        <input type="text" id="url_text" name="url_text" class="span5">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep" id="compRow" style="display:none;">
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label class="span3 control-label">Comp url<span class="f_req">*</span></label>
+                    <div class="span8 controls">
+                        <input type="text" id="comp_url_text" name="comp_url_text" class="span5">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep" id="kwRow" {if $word_type neq '2'} style="display:none" {/if} >
+        <div class="row-fluid">
+            <div class="control-group">
+                <label class="span3 control-label">Keywords<span class="f_req">*</span></label>
+                <div class="span8 controls">
+                    <textarea name="kw" id="txtarea_sp" cols="1" rows="4" class="span10"  placeholder="Merci de pr&#233;enter vos &#233;l&#233;ments de cette fa&#231;on: Input : url;kw url1;kw1 url2;kw2...etc sans finir par un ;"></textarea>
+                </div>
+            </div>
+        </div>
+        </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3"><span class="error_placement">Site</label>
+                        <select name="site" id="chosen_b" class="chzn_b span3">
+                            <option value="1">google.fr</option>
+                            <option value="2">google.com</option>
+                            <option value="3">google.pt</option>
+                            <option value="4">google.co.in</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Result limit</label>
+                         <select name="limit" id="chosen_c" class="chzn_c span3">
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
+                         </select>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <label class="span3">Type</label>
+                        <div class="span8 form-inline no-margin-first">
+                            <label class="uni-radio"><input type="radio" name="type" id="compoption1" class="uni_style" value="1" checked>Position Google sur une url donn&eacute;e
+                                <a href="javascript:void(0);" class="pop_over" data-content="Merci de pr&#233;enter vos &#233;l&#233;ments de cette fa&#231;on:
+Input :
+url;kw
+url1;kw1
+url2;kw2...etc sans finir par un ;" data-original-title="Position Google sur une url donn&eacute;e" data-placement="right"><span class="splashy-information"></span></a>
+                            </label>
+                            <label class="uni-radio"><input type="radio" name="type" id="compoption2" class="uni_style" value="2" >Meilleure position Google sur un nom de domaine<a href="javascript:void(0);" class="pop_over" data-content="En dessous de url;kw
+Input :
+Merci de pr&#233;senter vos &#233;l&#233;ments de cette fa&#231;on:
+url;kw
+url1;kw1
+url2;kw2...etc sans finir par un ; " data-original-title="Meilleure position Google sur un nom de domaine" data-placement="right"><span class="splashy-information"></span></a>
+                            </label>
+                            <label class="uni-radio"><input type="radio" name="type" id="compoption3" class="uni_style" value="3" >Position Google sur une url donn&eacute;e VS meilleure position Google sur le nom de domaine<a href="javascript:void(0);" class="pop_over" data-content="En dessous de url;kw
+Input :
+Merci de pr&#233;senter vos &#233;l&#233;ments de cette fa&#231;on:
+url;kw
+url1;kw1
+url2;kw2...etc sans finir par un ;" data-original-title="Position Google sur une url donn&eacute;e VS meilleure position Google sur le nom de domaine" data-placement="left"><span class="splashy-information"></span></a></label>
+                            <label class="uni-radio"><input type="radio" name="type" id="compoption4" class="uni_style" value="4" >Position Google sur une url donn&eacute;e et comparatif avec la meilleure url du concurrent<a href="javascript:void(0);" class="pop_over" data-content="En dessous de url;kw;urlcomp
+Input :
+Merci de pr&#233;senter vos &#233;l&#233;ments de cette fa&#231;on:
+url;kw;compurl
+url1;kw1;compurl
+...etc sans finir par un ;
+Pour plusieurs mots cl&#233;s, vous pouvez indiquer: url;kw;kw1;compurl" data-original-title="Position Google sur une url donn&eacute;e et comparatif avec la meilleure url du concurrent" data-placement="left"><span class="splashy-information"></span></a></label>
+                            <label class="uni-radio"><input type="radio" name="type" id="compoption5" class="uni_style" value="5" >Meilleure position Google d'un domaine par rapport &agrave; un concurrent<a href="javascript:void(0);" class="pop_over" data-content="En dessous de url;kw;urlcomp
+Input
+Merci de pr&#233;senter vos &#233;l&#233;ments de cette fa&#231;on:
+url;kw;compurl
+url1;kw1;compurl1
+...etc sans finir par un ;
+Pour plusieurs mots cl&#233;s, vous pouvez indiquer: url;kw;kw1;compurl" data-original-title="Meilleure position Google d'un domaine par rapport &agrave; un concurrent" data-placement="right"><span class="splashy-information"></span></a></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        <div class="control-group formSep" style="display:none" id="checksuburl">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3"></label>
+                    <div class="span9 alert">
+                        <div class="span6">
+                        <input type="checkbox" name="mainurl" id="mainurl" class="uni_style" value="1">
+                        <label class="span6" for="mainurl">Check the domain urls</label></div>
+                        <div class="span6">
+                        <input type="checkbox" name="suburl" id="suburl" class="uni_style" value="1">
+                            <label class="span6" for="suburl">Check the sub domain urls</label></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">INURL</label>
+                    <div><input type="checkbox" name="url" id="url" class="uni_style" value="1"></div>
+                    <div class="mod form-inline" id="urldiv" style="display:none">
+                        <div style="padding-left:18px" class="form-inline span">
+                            <input style="float:left" type="checkbox" name="inurl_given[]" id="inurl_given1"  value="1">
+                            <label class="span11" for="inurl_given1">On given best URL</label>
+                        <div>
+                        <div class="form-inline span">
+                            <input style="float:left" type="checkbox" name="inurl_given[]" id="inurl_given2"  value="2">
+                            <label class="span11" for="inurl_given2">On n1 URL of given keyword</label>
+                        </div>
+                        <div class="form-inline span compcheck pull-right" style="display:none">
+                            <input style="float:left" type="checkbox" name="inurl_given[]" id="inurl_given3"  value="3">
+                            <label class="span11" for="inurl_given3">On competitor URL</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Meta title</label>
+                    <div><input type="checkbox" name="meta" id="meta" class="uni_style" value="1"></div>
+                    <div class="mod" id="metadiv" style="display:none">
+                        <div style="padding-left:18px" class="form-inline span">
+                            <input style="float:left" type="checkbox" name="meta_given[]" id="metal_given1"  value="1">
+                            <label class="span11" for="metal_given1">On given best URL</label>
+                        </div>
+                        <div class="form-inline span">
+                            <input style="float:left" type="checkbox" name="meta_given[]" id="meta_given2"  value="2">
+                            <label class="span11" for="meta_given2">On n1 URL of given keyword</label>
+                        </div>
+                        <div class="form-inline span compcheck" style="display:none">
+                            <input style="float:left" type="checkbox" name="meta_given[]" id="meta_given3"  value="3">
+                            <label class="span11" for="meta_given3">On competitor URL</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Page Rank</label>
+                    <div><input type="checkbox" name="rank" id="rank" class="uni_style" value="1"></div>
+                    <div class="mod" id="rankdiv" style="display:none">
+                        <div style="padding-left:18px" class="form-inline span">
+                            <input style="float:left" type="checkbox" name="rank_given[]" id="rank_given1"  value="1">
+                            <label class="span11" for="rank_given1">On given best URL</label>
+                        </div>
+                        <div  class="form-inline span">
+                            <input style="float:left" type="checkbox" name="rank_given[]" id="rank_given2"  value="2">
+                            <label class="span11" for="rank_given2">On n1 URL of given keyword</label>
+                        </div>
+                        <div class="form-inline span compcheck" style="display:none">
+                            <input style="float:left" type="checkbox" name="rank_given[]" id="rank_given3"  value="3">
+                            <label class="span11" for="rank_given3">On competitor URL</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Back links</label>
+                    <div><input type="checkbox" name="blink" id="blink" class="uni_style" value="1"></div>
+                    <div class="mod" id="blinkdiv" style="display:none">
+                        <div style="padding-left:18px" class="form-inline span">
+                            <input style="float:left" type="checkbox" name="link_given[]" id="link_given1"  value="1">
+                            <label class="span11" for="link_given1">On given best URL</label>
+                        </div>
+                        <div class="form-inline span">
+                            <input style="float:left" type="checkbox" name="link_given[]" id="link_given2"  value="2">
+                            <label class="span11" for="link_given2">On n1 URL of given keyword</label>
+                        </div>
+                        <div class="form-inline span compcheck" style="display:none">
+                            <input style="float:left" type="checkbox" name="link_given[]" id="link_given3"  value="3">
+                            <label class="span11" for="link_given3">On competitor URL</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">SMO</label>
+                    <div class="span9 alert alert-success">
+                        <div class="span3">
+                        <input type="checkbox" name="socialnetwork[]" id="socialnetwork1" class="uni_style sgroup" value="1">
+                        <label class="span6" for="socialnetwork1">Face book</label></div>
+                        <div class="span2">
+                        <input type="checkbox" name="socialnetwork[]" id="socialnetwork2" class="uni_style sgroup" value="2">
+                        <label class="span1" for="socialnetwork2">Twitter</label></div>
+                        <div class="span2">
+                        <input type="checkbox" name="socialnetwork[]" id="socialnetwork3" class="uni_style sgroup" value="3">
+                        <label class="span1" for="socialnetwork3">Gplus</label></div>
+                        <div class="span3">
+                        <input type="checkbox" name="socialnetwork[]" id="socialnetwork4" class="uni_style sgroup" value="4">
+                        <label class="span5" for="socialnetwork4">Lingked in</label></div>
+                        <div class="span1">
+                        <input type="checkbox" name="socialnetwork[]" id="socialnetwork5" class="uni_style sgroup" value="5">
+                        <label class="span2" for="socialnetwork5">Printerest</label></div>
+                    </div>
+                    <div class="span3"></div>
+                    <div class="mod" id="socialdiv" style="display:none">
+                        <div style="padding-left:18px" class="form-inline span">
+                            <input style="float:left" type="checkbox" name="social_given[]" id="social_given1"  value="1">
+                            <label class="span11" for="social_given1">On given best URL</label>
+                        </div>
+                        <div class="form-inline span">
+                            <input style="float:left" type="checkbox" name="social_given[]" id="social_given2"  value="2">
+                            <label class="span11" for="social_given2">On n1 URL of given keyword</label>
+                        </div>
+                        <div class="form-inline span compcheck" style="display:none">
+                            <input style="float:left" type="checkbox" name="social_given[]" id="social_given3" value="3">
+                            <label class="span11" for="social_given3">On competitor URL</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+            <!--<div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span2">Schedule</label>
+                        <label class="uni-checkbox">
+                            <input type="checkbox" name="posSchedule" id="posSchedule" class="uni_style" value="1">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="scheduleRow1" style="display: none;">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Date<span class="f_req">*</span></label>
+                        <div  id="scheduleDate1" class="input-append date" >
+                              <input data-format="dd/MM/YYYY HH:mm:ss" id="scheduleDate" name="scheduleDate" type="text" value="" class="input-append date" readonly="readonly" />
+                                <span class="add-on">
+                                  <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+                                  </i>
+                                </span>
+                          </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="scheduleRow2" style="display: none;">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Email</label>
+                        <label class="uni-checkbox">
+                            <input type="checkbox" name="posSchedule" id="posSchedule" class="uni_style" value="1">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span2">Frequency</label>
+                        <label class="uni-checkbox">
+                            <input type="checkbox" name="frequency" id="frequency" class="uni_style" value="1">
+                            <span id="select_all"><a class="select-all" href="javascript:void(0);">Select all</a></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="fr">
+                <div class="row-fluid">
+                    <div class="span12" id="days">
+                        <label class="span3">&nbsp;</label>
+                        <div class="span2 no-margin-first">
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" id="day1" class="uni_style" value="sunday">
+                                sunday
+                            </label>
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" id="day2" class="uni_style" value="thursday">
+                                Thursday
+                            </label>
+                        </div>
+                        <div class="span2">
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" id="day3" class="uni_style" value="monday">
+                                Monday
+                            </label>
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" id="day4" class="uni_style" value="friday">
+                                Friday
+                            </label>
+                        </div>
+                        <div class="span2">
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" id="day5" class="uni_style" value="tuesday">
+                                Tuesday
+                            </label>
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" id="day6" class="uni_style" value="saturday">
+                                Saturday
+                            </label>
+                        </div>
+                        <div class="span2">
+                            <label class="uni-checkbox">
+                                <input type="checkbox" name="day[]" id="day7" class="uni_style" value="wednesday">
+                                Wednesday
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="fr_end_date">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Frequency end Date<span class="f_req">*</span></label>
+                        <div  id="frequencyEndDate" class="input-append date" >
+                              <input data-format="dd/mm/YYYY" id="enddate" name="enddate" type="text" value=""   class="input-append date" readonly="readonly" />
+                                <span class="add-on">
+                                  <i class="icon-calendar" data-time-icon="icon-time" data-date-icon="icon-calendar">
+                                  </i>
+                                </span>
+                          </div>
+                    </div>
+                </div>
+            </div>-->
+           <!-- <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Output</label>
+                        <label class="uni-radio"><input type="radio" name="op_type" class="uni_style"  value="1" checked>csv</label>
+                        <label class="uni-radio"><input type="radio" name="op_type" class="uni_style"  value="2">xls</label>
+                    </div>
+                </div>
+            </div>-->
+            <div class="control-group">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <button class="btn btn-gebo" name="submit" type="submit">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+</form>
+
+<div id="data">
+    
+</div>
+
+{literal}
+    <script type="text/javascript">
+	$.validator.addMethod("csvextension", function(value, element, param) {
+		param = typeof param === "string" ? param.replace(/,/g, '|') : "xls|csv";
+		return this.optional(element) || value.match(new RegExp(".(" + param + ")$", "i"));
+	}, $.format("Please use only csv/xls file."));
+
+        $(document).ready(function() {
+            $(".uni_style").uniform();
+            gebo_validation.reg();
+            gebo_chosen.init();
+            gebo_popOver.init();
+            
+            $('#scheduleDate1').datetimepicker({
+                language: 'pt-BR',
+                format: 'dd/MM/yyyy HH:mm',
+                pickSeconds: false,
+                pick12HourFormat: false
+            });
+            $('#frequencyEndDate').datepicker({
+                language: 'pt-BR',
+                format: 'dd/mm/yyyy',
+                pickSeconds: false,
+                pick12HourFormat: false
+            });
+        });
+        
+        /*$("input[name='word_type']").change(function() {
+            var type=$('input[name=word_type]:checked').val();
+            if(type==1)
+            {
+                $("#text_words").hide();
+                $("#csv").show();
+            }
+            else
+            {
+                $("#text_words").show();
+                $("#csv").hide();
+            }
+        });*/
+    $("input[name='word_type']").change(function() {
+        var type=$('input[name=word_type]:checked').val();
+        if(type==1)
+        {
+            $("#urlRow").hide();
+            $("#compRow").hide();
+            $("#kwRow").hide();
+            $("#csv").show();
+        }
+        else
+        {
+            $("#urlRow").show();
+            $("#kwRow").show();
+            $("#csv").hide();
+
+            $('input:radio[name=type][value=1]').click();
+        }
+    });
+
+        /*$("input[name='type']").change(function() {
+            
+             var type=$('input[name=type]:checked').val();
+             var csvformat ;
+             switch(type) {
+              case '4':
+               csvformat = 'url;kw;urlcomp';
+              break;
+              case '5':
+               csvformat = 'url;kw;urlcomp';
+              break;
+              default :
+               csvformat = 'url;kw';
+                   break ;
+              }
+              $('#load_syntax_file').html(csvformat);
+              $('#load_syntax_text').html(csvformat);
+        });*/
+    $("input[name='type']").change(function() {
+        var type=$('input[name=type]:checked').val() ;
+        if(type==1){
+            var phText = "Merci de préenter vos éléments de cette façon: Input : url;kw url1;kw1 url2;kw2...etc sans finir par un ;" ;
+        } else if(type==2){
+            var phText = "En dessous de url;kw Input : Merci de présenter vos éléments de cette façon: url;kw url1;kw1 url2;kw2...etc sans finir par un ;" ;
+        } else if(type==3){
+            var phText = "En dessous de url;kw Input : Merci de présenter vos éléments de cette façon: url;kw url1;kw1 url2;kw2...etc sans finir par un ; " ;
+        } else if(type==4){
+            var phText = "En dessous de url;kw;urlcomp Input : Merci de présenter vos éléments de cette façon: url;kw;compurl url1;kw1;compurl ...etc sans finir par un ; Pour plusieurs mots clés, vous pouvez indiquer: url;kw;kw1;compurl" ;
+        } else if(type==5){
+            var phText = "En dessous de url;kw;urlcomp Input Merci de pr&#233;senter vos &#233;l&#233;ments de cette fa&#231;on: url;kw;compurl url1;kw1;compurl1 ...etc sans finir par un ; Pour plusieurs mots cl&#233;s, vous pouvez indiquer: url;kw;kw1;compurl" ;
+        }
+        $("#txtarea_sp").attr("placeholder", phText);
+        var wordtype=$('input[name=word_type]:checked').val() ;
+        if((type==4 || type==5) && wordtype==2)
+        {
+            $("#compRow").show() ;
+        }
+        else
+        {
+            $("#compRow").hide() ;
+        }
+    }) ;
+            
+        $('input[name=frequency]').change(function(){
+            if($('input[name=frequency]').is(':checked'))
+            {
+                $('#fr').show();
+                $('#fr_end_date').show();
+                $('#clientRow').show();
+                $('#title').show();
+                $('#select_all').show();
+            } 
+            else 
+            {
+                 $('#fr').hide();
+                 $('#fr_end_date').hide();
+                 if($('input[name=posSchedule]:checked').val() != 1 )
+                 {
+                     $('#clientRow').hide();
+                     $('#title').hide();					 
+                 }
+                 $('#select_all').hide();
+                 var $b = $('input[name=day\\[\\]]');
+                 $b.attr('checked', false); 
+                 $('a.select-all').text('S.elect all');
+                 
+            }
+        });
+
+        $('a.select-all').bind('click', function() {
+            for (var i = 1; i <= 7; i++) {
+                $('#day'+i).click();
+            }
+            if(this.innerHTML.indexOf('Deselect') != -1) {
+                //var $b = $('input[name=day\\[\\]]');
+                    //$b.attr('checked', false); 
+                $(this).text('Select all');
+            } else {
+                $(this).text('Deselect all');
+                //var $b = $('input[name=day\\[\\]]');
+                //$b.attr('checked', true);                
+                //$(this).closest("span").addClass("uni-checked");
+            }
+        });
+
+        $('input[name=posSchedule]').change(function(){
+            if($('input[name=posSchedule]').is(':checked'))
+            {
+                $("#scheduleRow1").show();
+                $("#scheduleRow2").show();
+                $('#clientRow').show();
+                $('#title').show();				
+            } 
+            else 
+            {
+                 $("#scheduleRow1").hide();
+                 $("#scheduleRow2").hide();
+                 if($('input[name=frequency]:checked').val() != 1 )
+                 {
+                     $('#clientRow').hide();
+                     $('#title').hide();
+                 }
+            }
+        });
+
+        gebo_chosen = {
+            init: function(){
+                $(".chzn_a").chosen({
+                    allow_single_deselect: true
+                });
+                $(".chzn_b").chosen({
+                    allow_single_deselect: true,
+                    disable_search: true
+                });
+                $(".chzn_c").chosen({
+                    allow_single_deselect: true,
+                    disable_search: true
+                });
+            }
+        };
+		$('#client').bind("change", function(){
+			$('.form_validation_reg').validate().element($('#client'));
+		});
+        $('#url').click(function(){
+            if($(this).is(":checked"))
+                $('#urldiv').show();
+            else
+                $('#urldiv').hide();
+        });
+        $('#meta').click(function(){
+            if($(this).is(":checked"))
+                $('#metadiv').show();
+            else
+                $('#metadiv').hide();
+        });
+        $('#rank').click(function(){
+            if($(this).is(":checked"))
+                $('#rankdiv').show();
+            else
+                $('#rankdiv').hide();
+        });
+        $('#blink').click(function(){
+            if($(this).is(":checked"))
+                $('#blinkdiv').show();
+            else
+                $('#blinkdiv').hide();
+        });
+        $('.sgroup').click(function(){
+            if($('#socialnetwork1').is(":checked") || $('#socialnetwork2').is(":checked") || $('#socialnetwork3').is(":checked")
+                || $('#socialnetwork4').is(":checked") || $('#socialnetwork5').is(":checked"))
+                $('#socialdiv').show();
+            else
+                $('#socialdiv').hide();
+        });
+        /*$('#compoption1, #compoption2, #compoption3, #compoption4, #compoption5').click(function(){
+            if($('#compoption4').is(":checked") || $('#compoption5').is(":checked")){
+                $('.compcheck').show();
+                $('#link_given3, #rank_given3, #meta_given3, #inurl_given3, #social_given3').show();
+            }
+            else{
+                $('.compcheck').hide();
+                $('#link_given3, #rank_given3, #meta_given3, #inurl_given3, #social_given3').hide();
+
+            }
+
+
+        });*/
+    $('#compoption4').click(function(){
+        $('.compcheck').show();
+        $('#link_given3, #rank_given3, #meta_given3, #inurl_given3, #social_given3').show();
+        $('#checksuburl').show();
+    });
+    $('#compoption5').click(function(){
+        $('.compcheck').show();
+        $('#link_given3, #rank_given3, #meta_given3, #inurl_given3, #social_given3').show();
+        $('#checksuburl').hide();
+    });
+    $('#compoption1, #compoption3').click(function(){
+        $('.compcheck').hide();
+        $('#link_given3, #rank_given3, #meta_given3, #inurl_given3, #social_given3').hide();
+        $('#checksuburl').hide();
+    });
+    $('#compoption2').click(function(){
+        $('.compcheck').hide();
+        $('#link_given3, #rank_given3, #meta_given3, #inurl_given3, #social_given3').hide();
+        $('#checksuburl').show();
+    });
+
+    //* popovers
+        gebo_popOver = {
+            init: function() {
+                $(".pop_over").popover({trigger: 'hover'});
+            }
+        };
+
+        gebo_validation = {
+            reg: function() {
+                reg_validator = $('.form_validation_reg').validate({
+                    onkeyup: false,
+                    errorClass: 'error',
+                    validClass: 'valid',
+                    highlight: function(element) {
+                        $(element).closest('div').addClass("f_error");
+                        $(element).closest('div').css("color", "black");
+                    },
+                    unhighlight: function(element) {
+                        $(element).closest('div').removeClass("f_error");
+                    },
+                    submitHandler: function(element) {
+                        $('#seotool-notify').show();
+                    },
+                    errorPlacement: function(error, element) {
+                        $('#seotool-notify').hide();
+                        $(element).closest('div').append(error);
+                        $('.error').css("font-size", "10px");
+                        $('.error').css("padding-top", "5px");
+                    },
+                    rules: {
+                               kw: {required: function(element) {
+                                  return $('input:radio[name=word_type]:checked').val()==2;
+                                 }
+                              },
+                     keyword_file: {required: function(element) {
+                                  return $('input:radio[name=word_type]:checked').val()==1;
+                                 },
+				 csvextension: "xls|csv"
+                              },
+                          client: {required:true},
+                          title: {required: function(element) {
+                                  return ($('#posSchedule').is(':checked'));
+                                 }
+                              },
+                  scheduleDate: {required: function(element) {
+                                  return ($('#posSchedule').is(':checked'));
+                                 }
+                              }
+                    },
+                    messages: {
+                              kw: "Please enter keyword(s).",
+                    keyword_file: {required: "Please selects csv/xls file.", accept: "Accept only xls or csv."},
+                    client: "Please select one client.",
+                    title: "Please enter title.",
+                    scheduleDate: "Please select the scheduled date."
+                    },
+                    invalidHandler: function(form, validator) {
+                        $.sticky("There are some errors. Please corect them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
+                    }
+                })
+            }
+        };
+        function clientValidation()
+        {
+            if($('#posSchedule').is(':checked'))
+              {
+                  //if($("#client option[value='']")){return false;}else{return true;}
+                  if($("#client").val()==''){return false;}else{return true;}
+              }
+        }
+        function modalwindow(url)
+        {
+            $.get( "http://admin-ep-test.edit-place.com/seotool/"+url, function( data ) {
+              $( ".modal-body" ).html( data );
+            });
+            $("#seoresults").modal('show');
+        }
+    </script>
+{/literal}

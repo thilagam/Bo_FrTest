@@ -1,0 +1,185 @@
+{literal}
+<style type="text/css">
+.media {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+    border-image: none;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+    margin-bottom: 15px;
+    overflow: hidden;
+    padding: 12px;
+}
+.close
+{
+   padding: 3px;
+}
+</style>
+<script type="text/javascript">
+//Comments submission
+$(document).ready(function() {
+		$("#comment_submit").click(function(){
+				
+			var $b = $('input[name=user_val]');
+			var countselected = $b.filter(':checked').length;
+			var selected = '';
+			if(countselected >= 1)
+			{				
+				$('input[name=user_val]:checked').each(function() {
+					if(selected)
+						selected =   selected + '|' + ($(this).val());
+					else			
+						selected =   $(this).val();
+				});
+			}	
+			//alert(selected);
+			
+			$.post("/ongoing/save-comments?send_notification="+selected, $("#comment_form").serialize(),
+				function(data) {
+					//alert(data);
+					 var obj = $.parseJSON(data);
+					$("#comments_list").html(obj.comments);
+					$("#comment_count").text(obj.count);
+					$("#comment_count_1").html('<i class="icon-comment"></i> '+obj.count);
+					$("#article_comments").val(''); 
+				}
+			);
+		});
+		
+		//refreshing comments
+		
+		var comment_type=$("#comment_type").val();
+		var identifier=$("#identifier").val();
+		 /* setInterval(function() {
+			//$('#comments_list').load('/ongoing/save-comments?comment_type='+comment_type+'&identifier='+identifier);
+			$.getJSON('/ongoing/save-comments?comment_type='+comment_type+'&identifier='+identifier,
+				{
+					format: "json"
+				},
+				function(data) {
+					$("#comments_list").html(data.comments);
+					$("#comment_count").text(data.count);
+					$("#comment_count_1").html('<i class="icon-comment"></i> '+data.count);
+					$("#article_comments").val('');
+				});
+		}, 60000); */ 
+		
+		//changing active status of a comment
+		$("[id^=delete_comment_]").die('click').live('click', function() {
+			
+			var parentLi=$(this).parents("li:first").attr('id');
+			var deleteButton=$(this).attr('id').split("_");
+			var comment_id=deleteButton[2];
+			var msg = "Etes-vous s&ucirc;r(e) de vouloir cacher ce  commentaire sur la plateforme ?";
+			smoke.confirm(msg,function(e){
+				if (e){
+					deleteComments(comment_id,comment_type,identifier);
+				}
+				else{
+					return false;
+				}
+			}); 			
+				
+		});
+		
+		//edit textarea toggle
+		$("[id^=edit_comment_]").die('click').live('click', function(event) {
+			
+			event.preventDefault();
+			
+			var editButton=$(this).attr('id').split("_");
+			var comment_id=editButton[2];		
+			var comment_box=$('#user_comment_'+comment_id).toggle();
+			var comment_new=$('#edit_user_comment_'+comment_id).toggle();
+				
+		});
+		
+		//update comments
+		$("[id^=update_submit_]").live('click', function() {
+			
+			var updateButton=$(this).attr('id').split("_");
+			var comment_id=updateButton[2];		
+			var comments=$("#article_comments_"+comment_id).val();				
+			
+			var target_page = '/ongoing/save-comments?comment_action=update&article_comments='+comments+'&comment_id='+comment_id+'&comment_type=article&identifier='+identifier;			
+			$.post(target_page, function(data){					
+					//alert(data);
+					var obj = $.parseJSON(data);
+					$("#comments_list").html(obj.comments);
+					$("#comment_count").text(obj.count);
+					$("#comment_count_1").html('<i class="icon-comment"></i> '+obj.count);
+					$("#article_comments").val('');
+				}
+			);
+		});
+		
+	});	
+/** ajax function to delete/inactive comment data**/
+function deleteComments(comment_id,comment_type,identifier)
+{
+        var target_page = '/ongoing/save-comments?comment_action=delete&comment_id='+comment_id+'&comment_type='+comment_type+'&identifier='+identifier;
+		
+		$.post(target_page, function(data){									
+				
+				var obj = $.parseJSON(data);
+				$("#comments_list").html(obj.comments);
+				$("#comment_count").text(obj.count);
+				$("#comment_count_1").html('<i class="icon-comment"></i> '+obj.count);
+				$("#article_comments").val('');							
+			});
+}
+	
+</script>
+{/literal}
+<div class="mod">	 
+	 <ul class="media-list" id="comments_list">
+	 {if $commentDetails |@count gt 0}
+		 	{foreach from=$commentDetails item=comment name=commentDetails}
+				<li class="media" id="comment_{$comment.identifier}">					
+					{if $comment.edit eq 'yes'}
+						<a  class="close hint--left" type="button" id="edit_comment_{$comment.identifier}" data-hint="Edit Comment"><i class="icon-pencil"></i></a>
+					{/if}
+					
+					<a  class="close hint--left" data-hint="Hide Comment" type="button" id="delete_comment_{$comment.identifier}">&times;</a>
+					{if $comment.edit neq 'yes'}
+					<label class="uni-checkbox pull-left">
+                            <input type="checkbox" name="user_val" id="user_val_{$smarty.foreach.commentDetails.index+1}" class="uni_style " value="{$comment.user_id}">
+					</label>
+					{/if}
+					<a class="pull-left imgframe" href="#" role="button" data-toggle="modal" data-target="#viewProfile-ajax">
+						<img alt="Topito" class="media-object" width="60px" src="{$comment.profile_pic}">
+					</a>
+					<div class="media-body">
+						<h4 class="media-heading">
+							
+							<a  role="button" data-toggle="modal" data-target="#viewProfile-ajax">{$comment.profile_name|utf8_encode}</a></h4>
+							
+						<span id="user_comment_{$comment.identifier}">{$comment.comments|utf8_encode|stripslashes}</span>
+						
+						<span id="edit_user_comment_{$comment.identifier}" style="display:none">
+							<textarea class="span10" name="article_comments_{$comment.identifier}" id="article_comments_{$comment.identifier}">{$comment.comments|utf8_encode|stripslashes}</textarea>
+							<button type="button" id="update_submit_{$comment.identifier}" name="update_submit_{$comment.identifier}" class="btn">Mettre &agrave; jour</button>
+						</span>								
+						<p class="muted">{$comment.time}</p>
+					</div>
+				</li>		
+			{/foreach}	
+		
+	{/if}	
+	</ul>
+	<div class="row-fluid">
+		<div class=" well">
+			<form action="" method="POST" id="comment_form">
+				<h4>Commenter / poser une question</h4>
+				<fieldset>
+					<textarea class="span12" placeholder="Ecrire un commentaire" name="article_comments" id="article_comments"></textarea>
+					<button type="button" id="comment_submit" name="comment_submit" class="btn">Envoyer</button>
+					<input type="hidden" name="comment_type" value="{$comment_type}" id="comment_type">
+					<input type="hidden" name="identifier" value="{$identifier}" id="identifier">
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</div>

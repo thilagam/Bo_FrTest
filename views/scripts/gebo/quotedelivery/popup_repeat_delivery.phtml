@@ -1,0 +1,274 @@
+<div class="row-fluid">
+	<div class="span12">		
+		<form class="form-horizontal form_validation_ttip" id="repeat_delivery_form">
+			<input type="hidden" id="step2_repeat" name="step2_repeat" value="{$prod_step2.repeat}">
+			<fieldset>
+				<div class="control-group formSep">
+					<label class="control-label">Repeats :</label>
+					<div class="controls">
+						<select name="repeat_option" id="repeat_option" class="span8" onchange="fncheckrepeat(this.value)">
+							<option value="daily" {if $repeat_delivery.repeat_option eq 'daily'} selected{/if}>Daily</option>
+							<option value="week" {if $repeat_delivery.repeat_option eq 'week'} selected{/if}>Weekly (7 days)</option>
+							<option value="week_b" {if $repeat_delivery.repeat_option eq 'week_b'} selected{/if}>Weekly (Business days)</option>
+							<option value="month" {if $repeat_delivery.repeat_option eq 'month'} selected{/if}>Monthly</option>
+						</select>						
+					</div>
+				</div>
+				<div class="control-group formSep" id="repeat_every_div" {if $repeat_delivery.repeat_option eq 'daily'} style="display:none"{/if}>
+					<label class="control-label">Repeat every :</label>
+					<div class="controls">
+						<input type="text" class="span2" name="repeat_every" id="repeat_every" value="{$repeat_delivery.repeat_every}"/>
+						{if $repeat_delivery.repeat_option eq 'week'}
+							<span id="repeat_option_text">Week(s)</span>
+						{elseif $repeat_delivery.repeat_option eq 'month'}
+							<span id="repeat_option_text">Month(s)</span>
+						{/if}							
+					</div>
+				</div>
+				<div class="control-group formSep" id="repeat_on_div" {if $repeat_delivery.repeat_option eq 'month' || $repeat_delivery.repeat_option eq 'daily' } style="display:none"{/if}>
+					<label class="control-label">Repeat on :</label>
+					<div class="controls">						
+						<input type="checkbox" id="check2"  class="validate[required]"  name="repeat_on[]" {if In_array(1,$repeat_delivery.repeat_on)} checked{/if}  value="1">M 
+						<input type="checkbox" id="check3"  class="validate[required]"  name="repeat_on[]" {if In_array(2,$repeat_delivery.repeat_on)} checked{/if}  value="2">T 
+						<input type="checkbox" id="check4"  class="validate[required]"  name="repeat_on[]" {if In_array(3,$repeat_delivery.repeat_on)} checked{/if}  value="3">W 
+						<input type="checkbox" id="check5"  class="validate[required]"  name="repeat_on[]" {if In_array(4,$repeat_delivery.repeat_on)} checked{/if}  value="4">T 
+						<input type="checkbox" id="check6"  class="validate[required]"  name="repeat_on[]" {if In_array(5,$repeat_delivery.repeat_on)} checked{/if}  value="5">F 
+						<input type="checkbox" id="check7"  class="validate[required]"  name="repeat_on[]" {if In_array(6,$repeat_delivery.repeat_on)} checked{/if}  value="6" {if $repeat_delivery.repeat_option eq 'week_b'} disabled {/if}>S
+						<input type="checkbox" id="check1" class="validate[required]"  name="repeat_on[]"  {if In_array(7,$repeat_delivery.repeat_on)} checked{/if} value="7" {if $repeat_delivery.repeat_option eq 'week_b'} disabled {/if}>S 						
+					</div>
+				</div>
+				<div class="control-group formSep">
+					<label class="control-label">Starts on :</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input class="span12 validate[required]" value="{$repeat_delivery.repeat_start}" disabled type="text" name="repeat_start" id="repeat_start"/><span class="add-on"><i class="splashy-calendar_day_up"></i></span>
+						</div>	
+					</div>
+				</div>
+				<div class="control-group formSep">
+					<label class="control-label">End :</label>
+					<div class="controls">
+						<label>
+							<input type="radio" id="repeat_end" class="validate[required]"  name="repeat_end"  value="never" {if $repeat_delivery.repeat_end eq 'never'} checked{/if} >Never
+						</label>
+						<label>
+							<input type="radio" id="repeat_end" class="validate[required]"  name="repeat_end"  value="after" {if $repeat_delivery.repeat_end eq 'after'} checked{/if}>After 
+							<span id="occurance_div" {if $repeat_delivery.repeat_end neq 'after'}style="display:none"{/if}>
+								<input type="text" name="after_occurance" id="after_occurance" class="span2 validate[required,custom[integer]]" value="{$repeat_delivery.after_occurance}"> Occurances
+							</span>	
+						</label>
+						<label>
+							<input type="radio" id="repeat_end" class="validate[required]"  name="repeat_end"  value="on" {if $repeat_delivery.repeat_end eq 'on'} checked{/if}>On 
+							<div class="input-append date" id="repeat_end_div" {if $repeat_delivery.repeat_end neq 'on'}style="display:none"{/if}>
+								<input class="span12 validate[required]" value="{$repeat_delivery.end_on}" type="text" name="end_on" id="end_on"/><span class="add-on"><i class="splashy-calendar_day_up"></i></span>
+							</div>
+						</label>
+					</div>
+				</div>
+				<div class="control-group formSep">
+					<label class="control-label">Summary :</label>
+					<div class="controls">
+					<span id="summary_text" style="font-weight:bold;"></span>
+					<input type="hidden" name="summary_text_input" id="summary_text_input" value="">
+					</div>
+				</div>	
+				<div class="control-group">
+					<div class="controls">
+						<button class="btn btn-gebo" name="repeat_done" id="repeat_done" type="button">Valider</button>
+						<button class="btn" data-dismiss="modal" id="cancel">Annuler</button>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>	
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+
+<link rel="stylesheet" href="/BO/theme/gebo/lib/iCheck/skins/square/blue.css" type="text/css"/>
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script><script src="/BO/theme/gebo/js/jquery.MultiFileQuote.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" >
+   $(document).ready(function() {
+		
+		var weekday=new Array(7);		
+		weekday[1]="Monday";
+		weekday[2]="Tuesday";
+		weekday[3]="Wednesday";
+		weekday[4]="Thursday";
+		weekday[5]="Friday";
+		weekday[6]="Saturday";
+		weekday[7]="Sunday";
+		
+		//get summary text on loading modal
+		summaryText();
+		
+		//form validation
+		$("#repeat_delivery_form").validationEngine({autoHidePrompt: true,promptPosition: "topLeft",prettySelect : true,useSuffix: "_chzn"}); 
+		
+		$("#repeat_option").chosen({disable_search: true });
+		
+		$("#repeat_every").spinner({ min: 1});
+		
+		/** activate icheck plugin **/
+		  $('#repeat_delivery_form input').iCheck({
+			checkboxClass: 'icheckbox_square-blue',
+			radioClass: 'iradio_square-blue',
+			//increaseArea: '20%' // optional
+		 }); 	
+		
+		//repeat start date 
+		$('#repeat_start').datetimepicker({
+			format:'Y-m-d',
+			lang:'fr',
+			timepicker:false,
+			minDate:$('#publish_time').val()
+		});
+		
+		//end date if on radio selected
+		$('#end_on').datetimepicker({
+			format:'Y-m-d',
+			lang:'fr',
+			timepicker:false,
+			onShow:function( ct ){
+			   this.setOptions({
+				minDate:get_date($('#repeat_start').val())?get_date($('#repeat_start').val()):false,formatDate:'Y-m-d'
+			})
+			},
+		});
+		
+		get_date=function(input) {
+			if(input == '') {
+			return false;
+			}	else {
+			// Split the date, divider is '/'
+			var parts = input.match(/(\d+)/g);
+			return parts[0]+'-'+parts[1]+'-'+parts[2];
+			} 
+		}
+		
+		//repeat end radio click changes
+		$('input[name="repeat_end"]').on('ifClicked', function (event) {
+			var value=this.value;			
+			if(value=='after')
+			{
+				$("#occurance_div").show();	
+				$("#repeat_end_div").hide();
+			}
+			else if(value=='on')
+			{
+				$("#repeat_end_div").show();
+				$("#occurance_div").hide();						
+			}			
+			else{
+				$("#occurance_div").hide();	
+				$("#repeat_end_div").hide();
+			}	
+		
+		});	
+		
+		//get summary text on click of weekdays
+		$('input[name="repeat_on[]"]').on('ifToggled', function (event) {
+			summaryText();
+		});	
+
+
+		//actions w.r.t repeat drop down select
+		fncheckrepeat=function(value)
+		{		
+			var repeat_option=value;
+			if(repeat_option=='month')
+			{
+				$("#repeat_option_text").text('Month(s)');
+				$("#repeat_every_div").show();
+				$("#repeat_on_div").hide();
+			}
+			else if(repeat_option=='week')
+			{
+				$("#repeat_option_text").text('Week(s)');
+				$("#repeat_every_div").show();
+				$("#repeat_on_div").show();
+				$('#check1, #check7').iCheck('enable');
+			}
+			else if(repeat_option=='week_b')
+			{
+				$("#repeat_option_text").text('Week(s)');
+				$("#repeat_every_div").show();
+				$("#repeat_on_div").show();
+				$('#check1, #check7').iCheck('uncheck');
+				$('#check1, #check7').iCheck('disable');
+			}
+			else if(repeat_option=='daily')
+			{
+				$("#repeat_every_div").hide();
+				$("#repeat_on_div").hide();
+			}
+			summaryText();
+		
+		}
+		
+		function summaryText()
+		{
+			var repeat_option=$("#repeat_option").val();
+			var summary_text='';
+			if(repeat_option=='week' || repeat_option=='week_b')
+			{
+				var checkedValues = $('#repeat_delivery_form input:checkbox:checked').map(function() {
+					return weekday[this.value];
+				}).get().join( ", ");
+				
+				if(checkedValues)
+					summary_text='Weekly on '+checkedValues; 
+			}
+			else if(repeat_option=='month')
+				summary_text='Monthly';
+			else if(repeat_option=='daily')
+				summary_text='Daily';	
+				
+			$("#summary_text").text(summary_text);
+			$("#summary_text_input").val(summary_text);			
+		}
+		
+		
+		//Repeat form validation
+		$("#repeat_done").click(function(){
+			if($("#repeat_delivery_form").validationEngine('validate'))
+			{
+				var target_page='/quoteDelivery/save-repeat-delivery?session_id={/literal}{$smarty.get.session_id}{literal}';
+				var post_data = $("#repeat_delivery_form").serialize();	
+				
+				$.post(target_page,post_data,function(data){				
+					//alert(data);
+					$("#summary_text_step2").html($("#summary_text_input").val()+' <a href="/quotedelivery/repeat-delivery?session_id={/literal}{$smarty.get.session_id}{literal}" data-target="#repeat_delivery" role="button" data-toggle="modal">Edit</a>');
+					//re generate the events
+					destroyCalendar();
+					displayArticleEventCalendar();
+					$("#repeat_delivery").modal('hide');
+				});
+			}
+		});	
+		
+		//uncheck repeat in step2 if first time click on annuler
+		$("#cancel").click(function(){			
+			var step2_repeat=$("#step2_repeat").val();			
+			if(step2_repeat!='yes')
+				$('#repeat').attr('checked', false);
+		});
+		
+   });
+ 
+
+</script>
+<style type="text/css">
+.form-horizontal .control-label{
+	font-weight:bold;
+}
+#repeat_delivery .modal-body {
+    min-height: 470px;
+}
+.icheckbox_square-blue, .iradio_square-blue, .mission-overview .icheckbox_square-blue {
+margin:0 7px;
+}
+</style>
+{/literal}

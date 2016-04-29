@@ -1,0 +1,55 @@
+<form action="/contractmission/insert-final-invoice" id="finalinvoice" class="form-horizontal" enctype="multipart/form-data" method="POST">
+<div class="row-fluid topset2">
+	<div class="media mission-comment">
+		<div class="control-group">
+			<label class="control-label">Invoice Number<span class="f_req">*</span></label>
+			<div class="controls">
+				<input type="text" name="invoice_number" class="span3 validate[required]" value="" />
+			</div>
+		</div>
+	</div>
+	<div class="media mission-comment">
+		<div class="control-group">
+			<label class="control-label">Turnover<span class="f_req">*</span></label>
+			<div class="controls">
+				<input type="text" name="turnover" class="span3 validate[required,custom[number]]" value="" />
+			</div>
+		</div>
+	</div>
+	<div class="media mission-comment">
+		<div class="control-group">
+			<label class="control-label">Add a Comment</label>
+			<div class="controls" style="margin-top:0">
+				<div class="media mission-comment span10">
+				<a class="pull-left imgframe">
+				<img class="media-object" width="60px" src="{$fo_path}profiles/bo/{$userId}/logo.jpg">
+				</a>
+				<div class="media-body">
+					<textarea name="comment" class="span12"></textarea>
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="media mission-comment">
+		<div class="control-group">
+			<label class="control-label">Attach a file</label>
+			<div class="controls">
+				<input type="file" name="finalfile" accept="doc|xls|zip|docx|xlsx" class="validate[required,funcCall[checkExtension]]" id=""/>
+			</div>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls topset2 pull-center" style="margin-left:0">
+			<button  class="btn" data-dismiss="modal" type="reset">Cancel</button>
+			<button class="btn btn-primary" type="submit">Upload</button>
+		</div>
+	</div>
+</div>
+<input type="hidden" name="contract_id" value="{$cid}" />
+</form>
+{literal}
+<script type="text/javascript">
+	 $("#finalinvoice").validationEngine();
+</script>
+{/literal}

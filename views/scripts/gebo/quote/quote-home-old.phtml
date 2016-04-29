@@ -1,0 +1,165 @@
+{literal}
+{/literal}
+
+<section id="workflow">
+	<div id="logo-workflow"><img src="/BO/theme/gebo/css/images/workplace.png"></div>
+	<div class="row-fluid">
+		<div class="span3">
+			<ul class="nav nav-tabs nav-stacked">
+			<li><a href="/quote/create-client?submenuId=ML13-SL1">New Client</a></li>
+			<li><a href="/quote/sales-quotes-list?submenuId=ML13-SL2">Quote</a></li>
+			<li><a href="/contractmission/contract-list?submenuId=ML13-SL3">Contract</a></li>
+			<li><a href="/contractmission/missions-list?submenuId=ML13-SL4">Mission</a></li>
+			</ul>
+		</div>
+		<div class="span5 offset1">
+		
+		<span class="data">Turnover of signed quotes in {$smarty.now|date_format:"%B"}
+		<a href="#">
+		 {if $monthlyCASignedQuotes|@count > 0}
+						{$monthlyCASignedQuotes[0].ca_month|zero_cut_t:0} &{$monthlyCASignedQuotes[0].sales_suggested_currency};
+						{if $monthlyCASignedQuotes[1].ca_month}						
+							<small> All quotes in pounds : {$monthlyCASignedQuotes[1].ca_month|zero_cut_t:0} &{$monthlyCASignedQuotes[1].sales_suggested_currency};</small>
+						{/if}
+					{else}
+						0
+					{/if}
+		</a>
+		</span>
+		<br><br><br>
+		<span class="data">Turnover of ongoing contract this year
+		<a href="#">{if $caOpendContractOfYear|@count > 0}
+						{$caOpendContractOfYear[0].ca_year|zero_cut_t:0} &{$caOpendContractOfYear[0].sales_suggested_currency};
+						{if $caOpendContractOfYear[1].ca_year}
+							<small> All contracts in pounds : {$caOpendContractOfYear[1].ca_year|zero_cut_t:0} &{$caOpendContractOfYear[1].sales_suggested_currency};</small>
+						{/if}
+					{else}
+						0
+					{/if}</a>
+		
+		</span>
+		</div>
+
+		<div class="span3">
+		<div class="data-list"><span class="data">Total client <a href="/user/clients?submenuId=ML10-SL2">{$clientsCount}</a></span></div>
+		<div class="data-list"><span class="data">Ongoing contract <a href="/contractmission/contract-list?submenuId=ML13-SL3">{$ongContractsCount}</a></span></div>
+		<div class="data-list">
+			<span class="data hint--left" data-hint="
+				{if $ongContractMissionsCount|@count > 0}						
+						( {foreach from=$ongContractMissionsCount item=cmission name=cmission}							
+							{$cmission.type|ucfirst} - {$cmission.missions} {if not $smarty.foreach.cmission.last}/{/if}
+						{/foreach} )
+					
+					{/if}">
+				Ongoing missions <a href="/contractmission/missions-list?submenuId=ML13-SL4">{$totalOngContractMissions}</a>
+			</span>
+		</div>
+		
+		</div>
+
+	</div>	
+</section>
+
+<section id="homestat">
+<div class="row-fluid">
+	<div class="span4">
+		<div class="well wbg well-large">
+			<h3>Recent signed quotes</h3><br>
+			
+				{if $recentSignedQuotes|@count gt 0}
+					<table class="table table-hover">
+       
+						<tbody>
+						{foreach from=$recentSignedQuotes item=quote_item name=oquote_loop}
+							<tr>								
+								<td>
+									<a class="hint--right" data-hint="{$quote_item.company_name}">
+										<img class="" width="70" src="{$fo_path}profiles/client/{$quote_item.client_id}/{$quote_item.client_id}_global.png">
+									</a>
+								</td>
+								<td>
+									<a href="/quote/quote-followup?quote_id={$quote_item.identifier}&submenuId=ML13-SL2" target="_followup">{$quote_item.title}</a>
+									<br>{$quote_item.signed_at|date_format:"%d/%m/%Y"}
+								</td>									
+								<td class="ar">
+									{if $quote_item.final_turnover > 0}
+										<h4>{$quote_item.final_turnover|zero_cut_t:2} &{$quote_item.sales_suggested_currency};</h4>
+									{else}
+										-
+									{/if}
+								</td>
+							</tr>
+						{/foreach}
+						</tbody>
+					</table>
+				{else}
+					<h5>No quotes found.</h5>
+				{/if}
+			</div>			
+		</div>
+
+	<div class="span4">
+		<div class="well wbg well-large">
+			
+				{if $monthlyContracts|@count gt 0}
+				<h3>Contracts ended soon</h3>
+				<br>
+					<div class="accordion" id="accordion">
+						{foreach from=$monthlyContracts key=key item=month name=contracts}
+							{assign var=index value=$smarty.foreach.contracts.index+1}
+							<div class="accordion-group">
+								<div class="accordion-heading">
+								  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse{$index}">
+									{$key|date_format:"%B %Y"}
+								  </a>
+								</div>
+								<div id="collapse{$index}" class="accordion-body collapse {if $index eq 1} in{/if}">
+									<div class="accordion-inner">
+										{foreach from=$month item=contract}
+											<table class="table table-hover">       
+												<tbody>
+													<tr>
+														<td><a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view" target="_contract">{$contract.contractname}</a>
+														<br>{$contract.company_name} - {$contract.expected_end_date|date_format:"%d/%m/%Y"}</td>									
+														<td class="ar">
+															{if $contract.final_turnover > 0}
+																<h4>{$contract.final_turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</h4>
+															{else}
+																-	
+															{/if}
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										{/foreach}
+									</div>
+								</div>		
+							</div>
+						{/foreach}
+					</div>
+				{else}
+					<p class="text-center"><br><img src="/BO/theme/gebo/css/images/contract.png"><br><br>There's no existing contract yet ! <br><a href="/quote/sales-quotes-list?submenuId=ML13-SL2">Create a New contract</a></p>
+				{/if}	
+			</div>			
+		</div>
+	
+	<div class="span4">
+		<div class="">
+			<h3>Busy guys !</h3><br>
+			
+				{if $assignedTeamMembers|@count gt 0}
+					<ul class="profile unstyled clearfix">
+					{foreach from=$assignedTeamMembers item=team_user}
+						<li class="pull-left">		
+								<a class="hint--left" href="/contractmission/missions-list?pmid={$team_user.identifier}&submenuId=ML13-SL4" data-hint="{$team_user.first_name} {$team_user.last_name}">
+								<span class="badge badge-info">{$team_user.num_missions}</span>
+									<img class="rd_30" width="50" height="50" src="{$fo_path}profiles/bo/{$team_user.identifier}/logo.jpg" >
+								</a>	
+							</li>
+					{/foreach}
+						</ul>
+				{/if}
+			</div>			
+		</div>
+	</div>
+</section>

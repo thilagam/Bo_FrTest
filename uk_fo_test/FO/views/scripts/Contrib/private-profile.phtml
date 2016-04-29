@@ -1,0 +1,251 @@
+{literal}
+<script type="text/javascript">
+$("#menu_profile").addClass("active");
+
+/**cv uploading**/
+$(function(){
+		var btnUpload=$('#upload_cv');
+		var status=$('#cv_status');
+		new AjaxUpload(btnUpload, {
+			action: 'upload-cv',
+			name: 'cv_file',
+			onSubmit: function(file, ext){
+				 if (! (ext && /^(doc|docx|pdf)$/.test(ext))){ 
+                    // extension is not allowed 
+					status.text('Only doc,docx,pdf files are allowed').css('color','#FF0000');
+					return false;
+					}
+
+				 /*if (! (ext && /^(doc|docx|rtf)$/.test(ext))){ 
+                    // extension is not allowed 
+					status.html('Only doc,docx,rtf files are allowed').css('color','#FF0000');
+					return false;
+					}*/
+				status.html('<img src="/FO/images/icon-generic.gif" /> uploading..');
+			},
+			onComplete: function(file, response){
+				//On completion clear the status
+				status.html('');
+				
+				var obj = $.parseJSON(response);
+				if(obj.status=="success"){
+					
+					status.html('CV publi&eacute; le : <time datetime="'+obj.published+'">'+obj.published+'</time>.');		
+					$("#download_cv").show();		
+					
+				}				
+				else{
+					status.html('Error in upload').css('color','#FF0000');
+				}
+			}
+		});			
+	});
+</script>
+{/literal}
+<div class="container">
+ 
+	<section id="status">
+		<div class="row-fluid">
+			<div class="profilehead-mod">
+				<div class="span2">
+					<div class="editor-container">
+						{if $profileType eq 'senior'}
+							<span data-original-title="Senior level" data-content="I have at least 5 articles approved by Edit-place. I am an approved contributor for Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>Senior</span>
+						{elseif $profileType eq 'junior'}
+							<span data-original-title="Available to Junior" data-content="At least 1 article accepted on Edit-place" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>Junior</span>
+						{elseif $profileType eq 'sub-junior'}
+							<span data-original-title="Available to Beginner" data-content="No articles accepted on Edit-place yet" rel="popover" data-trigger="hover" data-placement="right" class="label label-level"><i class="icon-bookmark"></i>Beginner</span>	
+						{/if}	
+							
+						<a class="imgframe-large" href="/contrib/modify-profile"><img src="{$profile_image}" title="{$client_email}"></a>
+					</div>
+				</div>
+				<div class="span7 profile-name">
+					<h3>{$client_email}</h3>
+					<p class="" style="">{$ep_contrib_age} years old  <span class="muted">&bull;</span>  {$allCategories}  <span class="muted">&bull;</span> {$ep_language} {if $allLanguages} , {$allLanguages}{/if}</p>
+					<blockquote>
+						<i class="icon-leaf"></i> {$ep_contrib_profile_self_details}
+					</blockquote>
+				</div>
+
+				<div class="span3 stat">
+					<div class="progress progress-success">
+						<div class="bar" style="width: {$profile_percentage}%"></div>
+					</div>
+					Your profile is <strong>{$profile_percentage}%</strong> complete
+					<hr>
+					<p class=""><a class="btn btn-small btn-block btn-primary" href="/contrib/modify-profile"><i class="icon-refresh icon-white"></i> Update my profile</a></p>
+					<p><a href="/contrib/public-profile" role="button" data-toggle="modal" data-target="#viewProfile-ajax" class="btn btn-small btn-block"> See my public profile</a></p>
+				</div>
+			</div>
+		</div>
+	</section>
+	 <!-- end, contributor status --> 
+	<div class="row-fluid"> 
+		<div class="span8">
+			<section id="skills">
+				<div class="mod">
+					<h4>Languages</h4>
+					<strong>{$ep_language}</strong> (mother tongue)
+					{if $language_more|@count gt 0}
+						{foreach from=$language_more item=lang}
+							<div class="skillstat row-fluid">
+								<div class="span6">
+									<p><strong>{$lang.name}</strong>  {$lang.percent}%</p>
+									<div class="progress">
+										<div class="bar" style="width: {$lang.percent}%"></div>
+									</div>
+									<span class="pull-left legend muted">Beginner</span> <span class="pull-right legend muted">Bilingual</span>
+								</div>
+							</div>
+						{/foreach}
+					{/if}	
+				</div>
+
+				<div class="mod">
+					<h4>Skills/ Areas Of Expertise</h4>
+
+					{if $category_more|@count gt 0}
+						{foreach from=$category_more item=category}
+							<div class="skillstat row-fluid">
+								<div class="span6">
+									<p><strong data-original-title="{$category.name}" rel="tooltip">{$category.name}</strong>  {$category.percent}%</p>
+									<div class="progress">
+										<div class="bar" style="width: {$category.percent}%"></div>
+									</div>
+									<span class="pull-left legend muted">Beginner</span> <span class="pull-right legend muted">Expert</span>
+								</div>
+							</div>		
+						{/foreach}
+					{/if}			
+				</div>
+				<div class="mod">
+					<h4>Work Experience</h4>
+					{if $jobDetails|@count gt 0}
+					<dl>
+						{foreach from=$jobDetails item=job name="job_details"}
+							<dt>{$job.title}</dt>
+							<dd class="company">{$job.institute}</dd>
+							<dd class="muted">
+								Type de contrat : {if $job.contract=='cdi'}Full-time{elseif $job.contract=='cdd'}Part-time{elseif $job.contract=='freelance'}Freelance{elseif $job.contract=='intern'}Temporary{elseif $job.contract=='stage'}Placement/Training{/if}
+							</dd>
+							<dd class="muted">
+								<time datetime="{$job.start_date}">{$job.start_date}</time> - <time datetime="{$job.end_date}">{$job.end_date}</time>
+							</dd>
+						{/foreach}							
+					</dl>
+					{/if}
+				</div>
+				<div class="mod">
+					<h4>Training/Education</h4>
+					{if $educationDetails|@count gt 0}
+					<dl>	
+						{foreach from=$educationDetails item=education name="edu_details"}
+							<dt>{$education.title}</dt>
+							<dd class="company">{$education.institute}</dd>
+							<dd class="muted">
+								<time datetime="{$education.start_date}">{$education.start_date}</time> - <time datetime="{$education.end_date}">{$education.end_date}</time>
+							</dd>
+							{/foreach}
+					</dl>
+					{/if}
+
+				</div>
+				<div class="mod">
+					<h4>Personal Information</h4>
+					<address>
+						<strong>{$ep_contrib_profile_fname} {$ep_contrib_profile_lname}</strong><br>
+						{$ep_contrib_profile_address}<br>
+						{$ep_contrib_profile_city}, {$ep_contrib_profile_postalcode}<br>
+						<abbr title="Phone">Tel:</abbr> {$ep_contrib_profile_telephone}
+					</address>
+					Nationality : {$nationality}
+				</div>
+				<div class="mod"><a href="/contrib/modify-profile" class="btn btn-primary pull-right"><i class="icon-refresh icon-white"></i> Update my profile</a>
+				</div>
+			</section>
+		</div>
+		<div class="span4">
+			<!--  right column  -->
+			<aside>
+				<div class="aside-bg">
+					<div class="aside-block" id="we-trust">
+						<h4>Your Work</h4>
+						{if $publishedClients | @count gt 0}
+						<ul class="unstyled">
+							{foreach item=pclient from=$publishedClients}
+								<li><img title="{$pclient.company_name}" src="{$pclient.client_pic}"></li>
+							{/foreach}
+							
+						</ul>
+						{/if}
+						
+					</div>
+					<div class="aside-block" id="shipping">
+						<h4>Invoicing Information</h4>
+
+						<dl>
+							{*<dt>Status</dt>
+							{if $ep_contrib_profile_pay_info_type =='ssn'}
+								<dd class="company">Droit d'auteur (AGESSA)</dd>
+								<dd class="muted">
+									Social security number : {$ep_contrib_profile_SSN}
+								</dd>
+							{elseif $ep_contrib_profile_pay_info_type =='comp_num'}
+								<dd class="company">Freelance</dd>
+								<dd class="muted">
+									N&deg; de SIRET : {$ep_contrib_profile_company_number}
+								</dd>
+								<dd class="muted">
+									Soumis &agrave; la TVA : {if $ep_contrib_profile_vat_check=='YES'}YES{else}NO{/if}
+								</dd>
+							{elseif $ep_contrib_profile_pay_info_type =='out_uk'}
+								<dd class="company">Outside of UK </dd>
+							{elseif $ep_contrib_profile_pay_info_type =='freelance'}
+								<dd class="company">Freelance </dd>	
+							{/if}*}		
+							
+							<dt>Preferred method of payment</dt>
+							<dd class="muted">
+								<p class="btn btn-small disabled">
+									{if $ep_contrib_profile_payment_type eq 'paypal'}
+										Paypal
+									{elseif $ep_contrib_profile_payment_type eq 'cheque'}
+										Cheque
+									{elseif $ep_contrib_profile_payment_type eq 'virement'}
+										BANK TRANSFER
+									{/if}	
+								</p>
+							</dd>
+							<dt>Your royalties</dt>
+							<dd class="muted">
+								Earnings since last invoice : <strong><a href="/contrib/royalties">
+								{$userRoyalty[0].royalty|zero_cut:2} &{$userRoyalty[0].currency};
+								{if $userRoyalty[0].royalty && $userRoyalty[1].royalty } , {/if}
+								{if $userRoyalty[1].royalty}
+										{$userRoyalty[1].royalty|zero_cut:2} &{$userRoyalty[1].currency};
+								{/if}
+								</a></strong>
+							</dd>
+						</dl>
+					</div>
+					<div class="aside-block" id="cv">
+						<h4>My CV</h4>
+						Your CV is viewed by Edit-place or the client when you have been selected for a mission. Remember to update it regularly.
+						
+						<p class="muted" id="cv_status">
+							{if $cv_exists eq 'yes'}
+								CV updated on : <time datetime="{$cv_uploaded_at}">{$cv_uploaded_at}</time>.
+							{/if}	
+						</p>	
+						<div class="btn-group">
+							
+								<a class="btn btn-small" id="download_cv" href="/contrib/download-file?type=cv" {if $cv_exists neq 'yes'} style="display:none" {/if}><i class="icon-download"></i> Downlaod</a>
+								<a class="btn btn-small" id="upload_cv"><i class="icon-upload"></i> New version</a>
+						</div>
+					</div>
+				</div>
+			</aside>  
+		</div>
+	</div>
+</div>

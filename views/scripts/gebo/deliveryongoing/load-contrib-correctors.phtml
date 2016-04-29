@@ -1,0 +1,21 @@
+{if $userreqtype=='contributors'}
+	<select multiple="multiple" name="favcontribcheck[]" data-placeholder="Select Writer..." id="favcontribcheck" style="width:400px">
+	{foreach from=$contriblistall item=contrib}
+		{if in_array($contrib.identifier,$contrib_array)}
+		<option value="{$contrib.identifier}" selected>{$contrib.name|utf8_encode}</option>
+		{else}
+		<option value="{$contrib.identifier}">{$contrib.name|utf8_encode}</option>
+		{/if}
+	{/foreach}
+	</select>
+{elseif $userreqtype=='correctors'}
+	<select multiple="multiple" {if $stage2 eq 'yes'} disabled {/if} name="favcorrectorcheck[]" data-placeholder="Select corrector..." id="favcorrectorcheck" style="width:400px">
+	{foreach from=$correctorlistall item=contrib}
+		{if in_array($contrib.identifier,$correctors_array)}
+		<option value="{$contrib.identifier}" selected>{$contrib.name|utf8_encode}</option>
+		{else}
+		<option value="{$contrib.identifier}">{$contrib.name|utf8_encode}</option>
+		{/if}
+	{/foreach}
+	</select>
+{/if}

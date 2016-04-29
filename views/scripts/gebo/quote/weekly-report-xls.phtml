@@ -1,0 +1,11 @@
+{if $quoteDetails|@count gt 0}
+	{foreach from=$quoteDetails item=quote_item name="quote"}
+		<table>
+			<tr>
+				<td>Total {$quote_item.quotetotal} in FR</td>
+				<td>{$quote_item.turnover} euros</td>
+				<td>{$quote_item.quotetotal}</td>
+			</tr>
+		</table>
+	{/foreach}
+{/if}

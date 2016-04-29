@@ -1,0 +1,168 @@
+{literal}
+<script type="text/javascript" >
+    function validate_onedit(value,type,error_id,old_value){
+        if(value == old_value){
+            console.log("do nothing");
+        }
+        else {
+            if ((type == 'themes'))
+                var ajax_url = "/ebookers/validate?&value=" + value + "&type=" + type;
+            else if (type == 'category')
+                var ajax_url = "/ebookers/validate?&value=" + value + "&type=" + type + "&cat_themes_id=" + $("#edit_cat_themes_id").val();
+            else if(type == 'tokens')
+                var ajax_url = "/ebookers/validate?&value="+value+"&type="+type+"&tokens_themes_id="+$("#edit_tokens_themes_id").val()+"&tokens_category_id="+$("#edit_tokens_category_id").val();
+
+            $.ajax({
+                type: 'POST',
+                url: ajax_url,
+                success: function (data) {
+                    console.log(data);
+                    if ($.trim(data) == 1) {
+                        $("#" + error_id).show();
+                        $("#edit_" + type + "_submit").attr('disabled', true);
+                    }
+                    else {
+                        $("#" + error_id).hide();
+                        $("#edit_" + type + "_submit").attr('disabled', false);
+                    }
+
+                }
+            });
+        }
+    }
+    function edit_managelist(submit_id,type,id){
+        smoke.confirm("are you sure you want to save?", function(e) {
+            if (e) {
+                console.log("start =" + $("#" + submit_id).closest('form').serialize());
+                var ajax_url = "/ebookers/edit-managelist?";
+                var form_data = "&submit=" + submit_id + "&type=" + type + "&id=" + id + "&" + $("#" + submit_id).closest('form').serialize();
+                //console.log(ajax_url+form_data);
+                $.ajax({
+                    type: 'POST',
+                    url: ajax_url + form_data,
+                    success: function (data) {
+                        console.log(data);
+                        console.log("ajax terminated");
+                        load_datatable(type);
+                        smoke.alert("updated Successfully");
+                        $("#editModal").modal('toggle');
+                    }
+                });
+            }
+            else {
+                $("#editModal").modal('toggle');
+            }
+        });
+    }
+</script>
+{/literal}
+<div class="row-fluid">
+    {if $data[0].type eq 'themes'}
+        <form>
+            <div class="formSep">
+                <strong>Edit Themes</strong>
+            </div>
+            <div class="formSep">
+                <label>Theme Name<span class="danger">*</span></label>
+                <input class="form-control" type="text" name="theme_name" value="{$data[0].theme_name}" onkeyup="validate_onedit(this.value,'themes','edit_themes_error','{$data[0].theme_name}')"/>
+                <span class="danger error_msg" id="edit_themes_error">Already Exist, Error</span>
+            </div>
+            <div class="formSep">
+                <label>Description(If any)</label>
+                <textarea class="form-control" name="description" >{$data[0].description}</textarea>
+            </div>
+            <div class="formSep">
+                <button onclick="edit_managelist(this.id,'themes','{$data[0].theme_id}');" class="btn btn-info" type="button" id="edit_themes_submit" name="edit_themes_submit">Submit</button>
+            </div>
+        </form>
+    {elseif $data[0].type eq 'category'}
+        <form>
+            <div class="formSep">
+                <strong>Edit Category</strong>
+            </div>
+            <div class="formSep">
+                <label>Select Theme<span class="danger">*</span></label>
+                <select id="edit_cat_themes_id" name="themes_id">
+                    {$data[0].themes_option}
+                </select>
+            </div>
+            <div class="formSep">
+                <label>Category Name<span class="danger">*</span></label>
+                <input class="form-control" type="text" name="category_name" value="{$data[0].category_name}" onkeyup="validate_onedit(this.value,'category','edit_category_error','{$data[0].category_name}');"/>
+                <span class="danger error_msg" id="edit_category_error">Already Exist, Error</span>
+            </div>
+            <div class="formSep">
+                <label>Description(If any)</label>
+                <textarea class="form-control" name="description" >{$data[0].description}</textarea>
+            </div>
+            <div class="formSep">
+                <button onclick="edit_managelist(this.id,'category','{$data[0].cat_id}');" class="btn btn-info" type="button" id="edit_category_submit" name="edit_category_submit">Submit</button>
+            </div>
+        </form>
+    {elseif $data[0].type eq 'tokens'}
+        <form>
+            <div class="formSep">
+                <strong>Edit Tokens</strong>
+            </div>
+            <div class="formSep">
+                <label>Select Theme<span class="danger">*</span></label>
+                <select id="edit_tokens_themes_id" name="themes_id" onchange="load_category(this.value,'tokens')">
+                    {$data[0].themes_option}
+                </select>
+            </div>
+            <div class="formSep">
+                <label>Select category<span class="danger">*</span></label>
+                <select id="edit_tokens_category_id" name="category_id" >
+                    {$data[0].category_option}
+                </select>
+            </div>
+            <div class="formSep">
+                <label>Token Name<span class="danger">*</span></label>
+                <input class="form-control" type="text" id="edit_token_name" name="token_name" value="{$data[0].token_name}" onkeyup="validate_onedit(this.value,'tokens','edit_tokens_error','{$data[0].token_name}')"/>
+                <span class="danger error_msg" id="edit_tokens_error">Already Exist, Error</span>
+
+            </div>
+            <div class="formSep">
+                <label>Token code</label>
+                <textarea class="form-control" name="token_code" >{$data[0].token_code}</textarea>
+            </div>
+            <div class="formSep">
+                <label>Description(If any)</label>
+                <textarea class="form-control" name="description" >{$data[0].description}</textarea>
+            </div>
+            <div class="formSep">
+                <label> <input value="mandatory" name="token_type" type="radio" {if $data[0].token_type eq 'mandatory'}checked="checked"{/if}> Mandatory</label>
+                <label> <input value="optional" name="token_type" type="radio" {if $data[0].token_type eq 'optional'}checked="checked"{/if}> Optional</label>
+                <label> <input value="hidden" name="token_type" type="radio" {if $data[0].token_type eq 'hidden'}checked="checked"{/if}> Hidden</label>
+            </div>
+            <div class="formSep">
+                <button onclick="edit_managelist(this.id,'tokens','{$data[0].token_id}');" class="btn btn-info" type="button" id="edit_tokens_submit" name="edit_tokens_submit">Submit</button>
+            </div>
+        </form>
+    {elseif $data[0].type eq 'sample_text'}
+        <form>
+            <div class="formSep">
+                <strong>Edit Sample Text</strong>
+            </div>
+            <div class="formSep">
+                <label>Select Theme<span class="danger">*</span></label>
+                <select id="edit_sample_text_themes_id" name="themes_id" onchange="load_category(this.value,'sample_text')">
+                    {$data[0].themes_option}
+                </select>
+            </div>
+            <div class="formSep">
+                <label>Select category<span class="danger">*</span></label>
+                <select id="edit_sample_text_category_id" name="category_id" >
+                    {$data[0].category_option}
+                </select>
+            </div>
+            <div class="formSep">
+                <label>Sample Description</label>
+                <textarea class="form-control" name="description" >{$data[0].description}</textarea>
+            </div>
+            <div class="formSep">
+                <button onclick="edit_managelist(this.id,'sample_text','{$data[0].sample_id}');" class="btn btn-info" type="button" id="edit_sample_text_submit" name="edit_sample_text_submit">Submit</button>
+            </div>
+        </form>
+    {/if}
+</div>

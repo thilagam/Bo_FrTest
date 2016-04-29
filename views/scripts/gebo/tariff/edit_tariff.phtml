@@ -1,0 +1,1050 @@
+{literal}
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script>
+    function submitclient()
+    {
+        var errcount=0;
+        var newemail = ($('#newemail').val()).trim();
+        var newpwd = $('#newpwd').val();
+        var newcpwd = $('#newcpwd').val();
+        var company_name = ($('#company_name').val()).trim();
+        var idx = $('#useradddata').val();
+        
+        if((newemail != '') && (newpwd != '') && (newpwd == newcpwd) && (company_name != ''))
+        {
+            $.post(
+                "/ao/checknewuseremail?newemail="+newemail,
+                function(data,status){
+                    data=data.trim();
+                    if(data == 'false')
+                    {
+                        $("#newemail").css("border-color","red");
+                        $("#newpwd").css("border-color","");
+                        $("#newcpwd").css("border-color","");
+                        $("#company_name").css("border-color","");
+                        smoke.alert('Cette adresse email existe d&eacute;j&agrave;');
+                        errcount++;
+                    }
+                    else
+                    {
+                        addclient(newemail,newpwd,company_name,idx);
+                    }
+                }
+            );
+            
+        }
+        return false;
+    }
+    function validateClient()
+    {
+        $("#newuserform").validate({
+            onkeyup: false,
+            errorClass: 'usererror',
+            validClass: 'valid',
+            rules: {
+                newemail:{
+                    required:true,
+                    email:true,
+                    remote: "/ao/checknewuseremail"
+                },
+                newpwd:{
+                    required:true,
+                    minlength:6
+                },
+                newcpwd:{
+                    required:true,
+                    equalTo:"#newpwd"
+                },
+                company_name:"required"
+            },
+            messages:{
+                newemail:{
+                    required:"Merci d'indiquer une adresse email",
+                    email:"Merci d'ins&eacute;rer une adresse email correcte",
+                    remote:"Cette adresse email existe d&eacute;j&agrave;"
+                },
+                newpwd:{
+                    required:"Merci d'ins&eacute;rer votre mot de passe",
+                    minlength:"Le mot de passe doit comporter plus de 6 caract&egrave;res"
+                },
+                newcpwd:{
+                    required:"Merci de confirmer votre mot de passe",
+                    equalTo: "Le mot de passe doit &ecirc;tre le m&ecirc;me"
+                },
+                company_name:"Merci d'indiquer un nom de client"
+            }
+        });
+        submitclient();
+        return false;
+    }
+    function addclient(newemail,newpwd,company_name,idx)
+    {
+        $.post(
+            "/tariff/adduser?newemail="+newemail+"&newpwd="+newpwd+"&company_name="+company_name,
+            function(data,status){
+                data = data.trim();
+                $('.modal-header .close').click();
+                cls(data, idx);
+            }
+        );
+    }
+    function cls(sel, idx)
+    {
+        $.post(
+            "/tariff/get-clients-select?sel="+sel+"&idx="+idx,
+            function(data,status){
+                data = data.trim();
+                data1 = data.split('#');//alert('#'+data+'#'+idx+'#');
+                $('#clientRow'+idx).html('');
+                $('#clientRow'+idx).html(data1[0]);
+                $('#client'+idx+'_name').val(getName(data1[1]));
+                $(".chzn_a").chosen({
+                    allow_single_deselect: true
+                });
+                $('#aoRow'+idx).html('');
+                $('#aoRow'+idx).html('<select name="ao[]" id="ao'+idx+'" class="chzn_b" data-placeholder="S&eacute;lectionner" onchange="aodata(this.value, this.options[this.selectedIndex].text, '+idx+')"></select>');
+                $(".chzn_b").chosen({
+                    allow_single_deselect: true
+                });
+                clearAoData(idx);
+            }
+        );
+    }
+    function clearAoData(idx)
+    {
+        $("#tariffid"+idx+" #ao"+idx+"_name").val('');
+        $("#tariffid"+idx+" #num_articles").val('');
+        $("#tariffid"+idx+" #avg_price_word").val('');
+        $("#tariffid"+idx+" #price_min").val('');
+        $("#tariffid"+idx+" #price_max").val('');
+        $("#tariffid"+idx+" #writer_price_sum").val('');
+        $("#tariffid"+idx+" #article_total_price_sum").val('');
+        $("#tariffid"+idx+" #delivery_time").val('');
+    }
+    function tarifftype()
+    {
+        var type=$('input[name=type]:checked').val();
+        if(type==1)
+        {
+            $("#langRow").hide();
+            $("#catRow").show();
+            filter1('category', ($('#category').val()));
+        }
+        else
+        {
+            $("#langRow").show();
+            $("#catRow").hide();
+            filter1('language', ($('#language').val()));
+        }
+    }
+    function clearText()
+    {
+        $('#price1').val('');
+        $('#price2').val('');
+        $('#urgency_interval').val('');
+        $('#urgency_percent').val('');
+        return false ;
+    }
+    function isNumeric(string)
+    {
+        var numericExpression = /^[0-9]+$/;
+        if(string.match(numericExpression)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function  CheckFloatingPoint(ValueNumeric)
+    {
+        var objRegex = /(^-?\d\d*\.\d\d*$)|(^-?\.\d\d*$)/;
+        //check for numeric characters
+        if((objRegex.test(ValueNumeric) && (parseFloat(ValueNumeric)>0)) || parseInt(ValueNumeric)>0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    function isFloat(string)
+    {
+        var numericExpression = /^[+-]?\d+(\.\d+)?$/;
+        if(string.match(numericExpression)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function  CheckFloatingPoint(ValueNumeric)
+    {
+        var objRegex = /(^-?\d\d*\.\d\d*$)|(^-?\.\d\d*$)/;
+        //check for numeric characters
+        if((objRegex.test(ValueNumeric) && (parseFloat(ValueNumeric)>0)) || parseInt(ValueNumeric)>0)
+        {
+            return false;
+        }
+    }
+    function clearerr(idx)
+    {   //alert(idx);
+        $("#tariffid"+idx+" #client"+idx+"_name").css("border-color","");
+        //$("#tariffid"+idx+" #client"+i+"_chzn .chzn-container-single .chzn-single").css("border-color","");
+        $("#tariffid"+idx+" #ao"+idx+"_name").css("border-color","");
+        $("#tariffid"+idx+" #num_articles").css("border-color","");
+        $("#tariffid"+idx+" #avg_price_word").css("border-color","");
+        $("#tariffid"+idx+" #price_min").css("border-color","");
+        $("#tariffid"+idx+" #price_max").css("border-color","");
+        $("#tariffid"+idx+" #writer_price_sum").css("border-color","");
+        $("#tariffid"+idx+" #article_total_price_sum").css("border-color","");
+        $("#tariffid"+idx+" #delivery_time").css("border-color","");
+    }
+    function validate_tariff()
+    {
+        var len = parseInt($('#tariffCount').val());
+        for (var i=1;i<=len;i++)
+        {
+            clearerr(i);
+        } 
+        $(".error").hide();
+        var errcount=0;
+        var price1=$("#price1").val();
+        var price2=$("#price2").val();
+        var price3=$("#price3").val();
+        var urgency_interval=$("#urgency_interval").val();
+        var urgency_percent=$("#urgency_percent").val();
+        var fo_text=$("#fo_text").val();
+        
+        if(price1.trim() == '') {
+            $("#price1").css("border-color","red");
+            errcount++;
+        }
+        else  {
+            $("#price1").css("border-color","");
+        }
+
+        if((isNumeric(price1) || isFloat(price1)) && (price1 > 0)) {
+            $("#price1").css("border-color","");
+        }        
+        else  {
+            $("#price1").css("border-color","red");
+            errcount++;
+        }
+        
+        if(price2.trim() == '') {
+            $("#price2").css("border-color","red");
+            errcount++;
+        }
+        else  {
+            $("#price2").css("border-color","");
+        }
+        
+        if((isNumeric(price2) || isFloat(price2)) && (price2 > 0)) {
+            $("#price2").css("border-color","");
+        }
+        else  {
+            $("#price2").css("border-color","red");
+            errcount++;
+        }
+        
+        if(price3.trim() == '') {
+            $("#price3").css("border-color","red");
+            errcount++;
+        }
+        else  {
+            $("#price3").css("border-color","");
+        }
+        
+        if((isNumeric(price3) || isFloat(price3)) && (price3 > 0)) {
+            $("#price3").css("border-color","");
+        }        
+        else  {
+            $("#price3").css("border-color","red");
+            errcount++;
+        }
+        
+        if(urgency_interval.trim() == '') {
+            $("#urgency_interval").css("border-color","red");
+            errcount++;
+        }
+        else  {
+            $("#urgency_interval").css("border-color","");
+        }
+        
+        if(isNumeric(urgency_interval) && (urgency_interval > 0) && (urgency_interval <= 100)) {
+            $("#urgency_interval").css("border-color","");
+        }
+        else  {
+            $("#urgency_interval").css("border-color","red");
+            errcount++;
+        }
+        
+        if(urgency_percent.trim() == '') {
+            $("#urgency_percent").css("border-color","red");
+            errcount++;
+        }
+        else  {
+            $("#urgency_percent").css("border-color","");
+        }
+        
+        if(isNumeric(urgency_percent) && (urgency_percent > 0) && (urgency_percent <= 100)) {
+            $("#urgency_percent").css("border-color","");
+        }        
+        else  {
+            $("#urgency_percent").css("border-color","red");
+            errcount++;
+        }
+        
+        if(urgency_percent.trim() == '') {
+            $("#urgency_percent").css("border-color","red");
+            errcount++;
+        }
+        else  {
+            $("#urgency_percent").css("border-color","");
+        }
+        
+        if(fo_text.trim() == '') {
+            $("#fo_text").css("border-color","red");
+            errcount++;
+        }
+        else  {
+            $("#fo_text").css("border-color","");
+        }
+        
+        var ao_field, art_num_field, avg_price_word_field, price_min_field,price_max_field, writer_price_sum_field, article_total_price_sum_field, delivery_time_field;
+        for (var i=1;i<=len;i++)
+        {
+            ao_field = $("#tariffid"+i+" #ao"+i+"_name");
+            ao_select_field = $("#tariffid"+i+" #ao"+i);
+            cl_field = $("#tariffid"+i+" #client"+i+"_name");
+            cl_select_field = $("#tariffid"+i+" #client"+i);
+            art_num_field = $("#tariffid"+i+" #num_articles");
+            avg_price_word_field = $("#tariffid"+i+" #avg_price_word");
+            price_min_field = $("#tariffid"+i+" #price_min");
+            price_max_field = $("#tariffid"+i+" #price_max");
+            writer_price_sum_field = $("#tariffid"+i+" #writer_price_sum");
+            article_total_price_sum_field = $("#tariffid"+i+" #article_total_price_sum");
+            delivery_time_field = $("#tariffid"+i+" #delivery_time");
+            
+            if((cl_select_field.val()).trim() == ''){$('#client'+i+'_chzn .chzn-single').css("border-color","red");errcount++;}
+            if((cl_field.val()).trim() == ''){cl_field.css("border-color","red");errcount++;}
+            //if((ao_select_field.val()).trim() == ''){$('#ao'+i+'_chzn .chzn-single').css("border-color","red");errcount++;}
+            if((ao_field.val()).trim() == ''){ao_field.css("border-color","red");errcount++;}
+            
+            if((art_num_field.val()).trim() == ''){art_num_field.css("border-color","red");errcount++;}
+            
+            if((avg_price_word_field.val()).trim() == '' || CheckFloatingPoint((avg_price_word_field.val()).trim())){avg_price_word_field.css("border-color","red");errcount++;}
+            if((price_min_field.val()).trim() == '' || CheckFloatingPoint((price_min_field.val()).trim())){price_min_field.css("border-color","red");errcount++;}
+            if((price_max_field.val()).trim() == '' || CheckFloatingPoint((price_max_field.val()).trim())){price_max_field.css("border-color","red");errcount++;}
+            if((writer_price_sum_field.val()).trim() == '' || CheckFloatingPoint((writer_price_sum_field.val()).trim())){writer_price_sum_field.css("border-color","red");errcount++;}
+            if((article_total_price_sum_field.val()).trim() == '' || CheckFloatingPoint((article_total_price_sum_field.val()).trim())){article_total_price_sum_field.css("border-color","red");errcount++;}
+            if((delivery_time_field.val()).trim() == '' || CheckFloatingPoint((delivery_time_field.val()).trim())){delivery_time_field.css("border-color","red");errcount++;}
+        }
+        
+        
+        if(errcount>0)
+            return false;
+        else
+            return true;
+    }
+    function clearTFD_old(idx)
+    {
+        var aoSelBox = '<select name="ao[]" id="ao'+idx+'" class="chzn_b" data-placeholder="S&eacute;lectionner" onchange="aodata(this.value, this.options[this.selectedIndex].text, '+idx+')"><option value="">S&eacute;lectionner</option>';
+{/literal}
+        {foreach from=$mission_list key=mssn item=mission}
+{literal}
+        aoSelBox += '<option value="{/literal}{$mssn}{literal}">{/literal}{$mission}{literal}</option>';
+{/literal}
+        {/foreach}
+{literal}
+        aoSelBox += '</select>';
+        $("#tariffid"+idx+" #ao"+idx+"_name").val('{/literal}{$ao_def}{literal}');
+        $("#tariffid"+idx+" #client"+idx+"_name").val('{/literal}{$cl_def}{literal}');
+    }
+    function clearTFD(idx)
+    {
+        var clSelBox = '<select name="client[]" id="client'+idx+'" class="chzn_a" data-placeholder="S&eacute;lectionner" onchange="aos(this.value, this.options[this.selectedIndex].text, '+idx+')"><option value="">S&eacute;lectionner</option>';
+{/literal}
+        {foreach from=$client_list item=client}
+{literal}
+        clSelBox += '<option value="{/literal}{$client.identifier}{literal}">{/literal}{$client.name}{literal}</option>';
+{/literal}
+        {/foreach}
+{literal}
+        clSelBox += '</select>';
+        $('#clientRow'+idx).html(clSelBox);
+        
+        var aoSelBox = '<select name="ao[]" id="ao'+idx+'" class="chzn_b" data-placeholder="S&eacute;lectionner" onchange="aodata(this.value, this.options[this.selectedIndex].text, '+idx+')"><option value="">S&eacute;lectionner</option></select>';
+        $('#aoRow'+idx).html(aoSelBox);
+        
+        $(".chzn_a").chosen({allow_single_deselect: true});
+        $(".chzn_b").chosen({allow_single_deselect: true});
+        $("#tariffid"+idx+" #num_articles").val('');
+        $("#tariffid"+idx+" #num_articles").val('');
+        $("#tariffid"+idx+" #ao"+idx+"_name").val('');
+        $("#tariffid"+idx+" #client"+idx+"_name").val('');
+        $("#tariffid"+idx+" #num_articles").val('');
+        $("#tariffid"+idx+" #avg_price_word").val('');
+        $("#tariffid"+idx+" #price_min").val('');
+        $("#tariffid"+idx+" #price_max").val('');
+        $("#tariffid"+idx+" #writer_price_sum").val('');
+        $("#tariffid"+idx+" #delivery_time").val('');
+        $("#tariffid"+idx+" #article_total_price_sum").val('');
+    }
+    $(document).ready(function(){
+        gebo_chosen.init();
+        $(".uni_style").uniform();
+        $("#category").chosen({ disable_search: true });
+        $("#language").chosen({ disable_search: true });
+        
+        $("[id^=tariffid]" ).each(function(z) { tariffid=++z; });//tariff_close_1
+        
+        $("#addmore-btn").click(function(){
+            //var trf_1_id = 0;
+            //$("[id^=tariffid]" ).each(function(p) { if(trf_1_id == 0){trf_1_id = p;} });
+            $("#tariffid1").clone().attr( 'id', 'tariffid'+(++tariffid) ).insertBefore( $("#addmore-btn") );
+            $("#tariffid"+tariffid+" .chzn_a").attr('id', 'client'+tariffid);
+            $("#tariffid"+tariffid+" .chzn_a").attr('onchange', "aos(this.value, this.options[this.selectedIndex].text, "+tariffid+")");
+
+            $.post(
+                "/tariff/get-clients-select?&idx="+tariffid,
+                function(data,status){
+                    data = data.trim();
+                    $('#clientRow'+tariffid).html(data);
+                    $(".chzn_a").chosen({
+                        allow_single_deselect: true
+                    });
+                }
+            );
+
+            $("#tariffid"+tariffid+" #client1_name").attr('id', 'client'+tariffid+"_name");
+            $("#tariffid"+tariffid+" .chzn_b").attr('id', 'ao'+tariffid);
+            $("#tariffid"+tariffid+" #aoRow1").attr('id', 'aoRow'+tariffid);
+            $("#tariffid"+tariffid+" #clientRow1").attr('id', 'clientRow'+tariffid);
+            $("#tariffid"+tariffid+" #tariff_close_1").attr('id', 'tariff_close_'+tariffid);
+            $("#tariffid"+tariffid+" #tariff_close_"+tariffid).css('display', 'block');
+            $("#tariffid"+tariffid+" #tariff_close_"+tariffid).attr('onclick', 'closeTariff('+tariffid+');');
+            $("#tariffid"+tariffid+" #newcl").attr('onclick', 'clmod('+tariffid+')');
+            $("#tariffid"+tariffid+ " #tariffdataids").remove();
+            $("#tariffid"+tariffid+" #ao"+tariffid).attr('onchange', "aodata(this.value, this.options[this.selectedIndex].text, "+tariffid+")");
+            $("#tariffid"+tariffid+" #ao1_name").attr('id', 'ao'+tariffid+"_name");
+            $("#tariffid"+tariffid+" .chzn_c").attr('id', 'date_option'+tariffid);
+            $("#tariffid"+tariffid+" #date_option"+tariffid).attr('onchange', 'changedateoption(this.value, '+tariffid+')');
+
+            $("#client"+tariffid).removeClass("chzn_a chzn-done" ).addClass( "chzn_a" );
+            $("#ao"+tariffid).removeClass("chzn_b chzn-done" ).addClass( "chzn_b" );
+            $("#date_option"+tariffid).removeClass("chzn_c chzn-done" ).addClass( "chzn_c span2" );
+            $("#tariffid"+tariffid+ " .chzn-container").remove();
+            $('#tariffid'+tariffid+' #avg_price_per_word_text').html('');
+
+            $(".chzn_a").chosen({
+                allow_single_deselect: true
+            }); 
+            $(".chzn_b").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_c").chosen({
+                allow_single_deselect: true,
+                disable_search: true,
+                width : '95px'
+            });
+            //setTimeout(function(){ $("#date_option"+tariffid+"_chzn").css("width","95px !important") },30000);
+            $('#tariffCount').val(tariffid);
+            clearTFD(tariffid);
+            
+            for (var i=1;i<=tariffid;i++)
+            {
+                clearerr(i);
+            }
+        });
+        
+        for (var i=1;i<=($('#tariffCount').val());i++)
+        {
+            if($('#tariffid'+i).length > 0)
+            {
+                //$("#tariffid"+i+" #client"+i+"_name").val(getName($("#tariffid"+i+" #client"+i+"_name").val()));
+            }
+        }
+        //aodata({/literal}{$ao_def_id}{literal}, '{/literal}{$ao_def}{literal}', 1);
+        //filter1('{$tariff.type}', ($('#{$tariff.type}').val()));
+        $('textarea').tinymce({
+            // Location of TinyMCE script
+            script_url                          : '/BO/theme/gebo/lib/tiny_mce/tiny_mce.js',
+            // General options
+            theme                               : "advanced",
+            plugins                             : "autoresize,style,table,advhr,advimage,advlink,emotions,inlinepopups,preview,media,contextmenu,paste,fullscreen,noneditable,xhtmlxtras,template,advlist",
+            // Theme options
+            theme_advanced_buttons1             : "undo,redo,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,fontsizeselect",
+            theme_advanced_buttons2             : "forecolor,backcolor,|,cut,copy,paste,pastetext,|,bullist,numlist,link,image,media,|,code,preview,fullscreen",
+            theme_advanced_buttons3             : "",
+            theme_advanced_toolbar_location     : "top",
+            theme_advanced_toolbar_align        : "left",
+            theme_advanced_statusbar_location   : "bottom",
+            theme_advanced_resizing             : false,
+            font_size_style_values              : "8pt,10pt,12pt,14pt,18pt,24pt,36pt",
+            init_instance_callback              : function(){
+                function resizeWidth() {
+                    document.getElementById(tinyMCE.activeEditor.id+'_tbl').style.width='100%';
+                }
+                resizeWidth();
+                $(window).resize(function() {
+                    resizeWidth();
+                })
+            }
+        });
+    });
+    function closeTariff(id)
+    {
+        $('#tariffid'+id).remove();
+    }
+    function deleteTariff(id)
+    {
+        smoke.confirm('Do you really want to delete this tariff data ?',function(e){
+            if (e){
+                $('#tariffCount').val(($('#tariffCount').val()-1));
+                $('#tariffid'+id+' #delLoad').html('<center><img alt="" src="/BO/theme/gebo/img/ajax_loader.gif"> Deleting tariff data... </center>');
+                $.post(
+                    "/tariff/delete-tariff?tid="+($('#tariffid'+id+' #tariffdataids').val()),
+                    function(data,status){
+                        sleep(4000);
+                        $('#tariffid'+id+' #delLoad').html('');
+                        $('#tariffid'+id).remove();
+                        if($('#tariffCount').val() == 0)
+                            window.location='/tariff/edit-tariff?submenuId=ML3-SL12&id='+($('#id').val());
+                    }
+                );
+            }else{
+                //e.preventDefault();
+            }
+        }, {ok:"OUI", cancel:"NON"}) ;
+    }
+    gebo_chosen = {
+        init: function(){
+            $(".chzn_a").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_b").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_c").chosen({
+                disable_search: true,
+                allow_single_deselect: true
+            });
+        }
+    };
+    function filter1(col, val)
+    {
+        var len = parseInt($('#tariffCount').val());
+        var clids = '', clval = '', rowid = 0 ;
+        for (var i=1;i<=len;i++)
+        {
+            if($('#tariffid'+i).length > 0)
+            {
+                clval = $('#tariffid' + i + ' #client'+i).val();
+                if(clids != '')
+                    clids = clids + '|' + clval+'z'+i;
+                else
+                    clids = clval+'z'+i;
+            }
+        }
+        
+        $.getJSON("/tariff/filter-by-cat-or-lan?col="+col+"&val="+val+"&clids="+clids, function(data) {
+            $('#price1').val(data.prices[0].trim());
+            $('#price2').val(data.prices[1].trim());
+            $('#price3').val(data.prices[2].trim());
+            /*for (var i=1;i<=len;i++)
+            {
+                if($('#tariffid'+i).length > 0)
+                {
+                    $('#aoRow'+i).html(data.clients[rowid].selectmenu);
+                    $(".chzn_b").chosen({
+                        allow_single_deselect: true
+                    });
+                    //alert(data.aodata[rowid].avg_price_per_word);
+                    $('#ao'+i+'_name').val(data.clients[rowid].def_ao_text);
+                    $('#tariffid'+i+' #num_articles').val(data.aodata[rowid].articles_count);
+                    $('#tariffid'+i+' #avg_price_word').val(data.aodata[rowid].avg_price_per_word);
+                    $('#tariffid'+i+' #avg_price_per_word_text').html(data.aodata[rowid].avg_price_per_word_text);
+                    $('#tariffid'+i+' #price_min').val(data.aodata[rowid].min_price_d);
+                    $('#tariffid'+i+' #price_max').val(data.aodata[rowid].max_price_d);
+                    $('#tariffid'+i+' #writer_price_sum').val(data.aodata[rowid].writer_price_sum);
+                    $('#tariffid'+i+' #article_total_price_sum').val(data.aodata[rowid].sum_price_final);
+                    $('#tariffid'+i+' #delivery_time').val(data.aodata[rowid].delivery_time_days);
+                    $('#tariffid'+i+' #deldays').val(data.aodata[rowid].delivery_time_days);
+                    $('#tariffid'+i+' #delhrs').val(data.aodata[rowid].delivery_time_hrs);
+                    rowid++;
+                }
+            }*/
+        });
+    }
+    function aos(client_id, client_text, idval)
+    {
+        $('#client'+idval+'_name').val(getName(client_text));
+        var type=$('input[name=type]:checked').val();
+        if(type==1)
+        {
+            var colCond = "&cat="+($("#category").val());
+        }
+        else
+        {
+            var colCond = "&lang="+($("#language").val());
+        }
+        $.post(
+            "/tariff/get-aos-select?id="+client_id+colCond+"&idx="+idval,
+            function(data,status){
+                data1 = data.split('#');
+                $('#aoRow'+idval).html('');
+                $('#aoRow'+idval).html(data1[0]);
+                $('#ao'+idval+'_name').val('');//$('#ao'+idval+'_name').val(data1[1]);
+                $(".chzn_b").chosen({
+                    allow_single_deselect: true
+                });
+                //$("#tariffid"+idval+" #ao1_name option:first").attr('selected','selected');
+                //aodata(data1[2], data1[1], idval);
+            }
+        );
+    }
+    function aodata(del_id, del_text, idval)
+    {
+        $('#ao'+idval+'_name').val(del_text);
+        $.getJSON('/tariff/get-ao-data?id='+del_id, function(jd) {
+            $('#tariffid'+idval+' #num_articles').val(jd.articles_count);
+            $('#tariffid'+idval+' #avg_price_word').val(jd.avg_price_per_word);
+            $('#tariffid'+idval+' #avg_price_per_word_text').html(jd.avg_price_per_word_text);
+            $('#tariffid'+idval+' #price_min').val(jd.min_price_d);
+            $('#tariffid'+idval+' #price_max').val(jd.max_price_d);
+            $('#tariffid'+idval+' #writer_price_sum').val((jd.writer_price_sum ? jd.writer_price_sum : 0));
+            $('#tariffid'+idval+' #article_total_price_sum').val((jd.sum_price_final ? jd.sum_price_final : 0));
+            if($('#tariffid'+idval+' #date_option'+idval).val() == 'hours')
+                $('#tariffid'+idval+' #delivery_time').val((jd.delivery_time_hrs ? jd.delivery_time_hrs : 0));
+            else
+                $('#tariffid'+idval+' #delivery_time').val((jd.delivery_time_days ? jd.delivery_time_days : 0));
+            $('#tariffid'+idval+' #deldays').val(jd.delivery_time_days);
+            $('#tariffid'+idval+' #delhrs').val(jd.delivery_time_hrs);
+        });
+    }
+    function getName(txt)
+    {
+        var clname = txt.substr((txt.indexOf('('))+1,(txt.indexOf(')'))-(txt.indexOf('('))-1);
+        spl = clname.split(', ');
+        if(((txt.split('(').length) > 1) && spl[1] && spl[2])
+        {
+            if(spl[0].trim() != '')
+                var name = spl[0].trim();
+            else
+                var name = ((spl[1].trim()) + ' ' + (spl[2].trim()));
+        }
+        else
+        {
+            if((txt.split(',').length)<2)
+                var name = clname;
+            else
+                var name = txt.trim();
+        }
+        return name;
+    } 
+    function clmod(id)
+    {
+        $('#useradddata').val(id);
+    }
+    function changedateoption(typ, id)
+    {
+        var tdys = $('#tariffid'+id+' #deldays').val();
+        var thrs = $('#tariffid'+id+' #delhrs').val();
+        if(typ == 'days'){
+            if(tdys != '')
+                $("#tariffid"+id+" #delivery_time").val(tdys);
+        }else{//alert('type='+typ+'='+($('#tariffid'+id+' #delhrs').val()));
+            if(thrs != '')
+                $("#tariffid"+id+" #delivery_time").val(thrs);}
+    }
+    function totarifflist()
+    {
+        window.location='/tariff/list-tariff?submenuId=ML3-SL12';
+        return false;
+    }
+</script>
+<style>
+    .error {  display: none !important;}
+
+    .usererror {  color:red}
+
+    .AjaxUploaderCancelAllButton { display: none !important;}
+
+    input {text-transform:none !important;}
+    
+    .popover-title { padding: 8px 14px;}
+    .popover-content {  padding: 9px 14px;}
+
+    .mod {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+        border-image: none;
+        border-radius: 4px;
+        border-style: solid;
+        border-width: 1px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+        margin-bottom: 15px;
+        overflow: hidden;
+        padding: 12px;
+    }
+    
+    .row-fluid input[class*="span"], .row-fluid textarea[class*="span"], .row-fluid select[class*="span"]
+    {
+        vertical-align: top;
+    }
+    
+    #avg_price_per_word_text
+    {
+        float: right;
+        margin-right: 150px;
+        text-align: center;
+        width: 120px;
+    }
+</style>
+{/literal}
+
+
+ <div class="row-fluid">
+    <div class="span12">
+        <h3 class="heading">EDIT TARIFF<div style="display:inline;float:right"><button onclick="return totarifflist()" class="btn btn-success" name="back">Back</button></div></h3>
+<form action="/tariff/edit-tariff?submenuId=ML3-SL12" name="add_tariff" method="post" enctype="multipart/form-data"  onSubmit="return validate_tariff();" >
+        <div class="w-box">
+            <div class="w-box-header">Tariff</div>
+            <div class="w-box-content">
+                <input type="hidden" name="id" id="id" value="{$tariff.id}"/>
+                <table align="center" cellpadding="10" cellspacing="10" width="78%">
+                    <tr>
+                        <td width="50%">Tariff type</td>
+                        <td class="form-inline">
+                            <label class="uni-radio"><input type="radio" name="type" class="uni_style"  value="1" id="catTyp" onclick="tarifftype();" {if $tariff.type eq 'category'} checked {/if} >Category</label>
+                            <label class="uni-radio"><input type="radio" name="type" class="uni_style"  value="2" id="langTyp" onclick="tarifftype();" {if $tariff.type neq 'category'} checked {/if} >Language</label>
+                        </td>
+                    </tr>   
+                    <tr id="catRow"{if $tariff.type neq 'category'} style="display: none;"{/if}>
+                        <td>Cat&eacute;gorie</td>
+                        <td>{html_options name=category id=category onchange="filter1('category', this.value)" options=$catArr selected=$tariff.category}</td>
+                    </tr>   
+                    <tr id="langRow"{if $tariff.type eq 'category'} style="display: none;"{/if}>
+                        <td>Language</td>
+                        <td>{html_options name=language id=language onchange="filter1('language', this.value)" options=$langArr selected=$tariff.language}</td>
+                    </tr>
+                    <tr>
+                        <td>Price / word</td>
+                        <td>
+                            <input type="text" name="price1" id="price1" value="{$tariff.price_word_1_month}" class="span2"/>
+                            <span class="help-inline">Sur 1 mois &nbsp;&nbsp;</span>
+                            <input type="text" name="price2" id="price2" value="{$tariff.price_word_3_month}" class="span2"/>
+                            <span class="help-inline">Sur 3 mois &nbsp;&nbsp;</span>
+                            <input type="text" name="price3" id="price3" value="{$tariff.price_total}" class="span2"/>
+                            <span class="help-inline">All</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Urgency interval</td>
+                        <td>
+                            <input type="text" name="urgency_interval" id="urgency_interval" value="{$tariff.urgency_interval}" class="span2"/>
+                            <span class="help-inline"> 1-100</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Urgency percent</td>
+                        <td>
+                            <input type="text" name="urgency_percent" id="urgency_percent" value="{$tariff.urgency_percent}" class="span2"/>
+                            <span class="help-inline"> 1-100</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>FO Text</td>
+                        <td>
+                            <span><textarea rows="5" cols="10" id="fo_text" name="fo_text">{$tariff.fo_text}</textarea></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- tariff details -->
+
+        <div class="w-box">
+            <div class="w-box-header">Tariff details</div>
+                <div id="tariffrow" class="row-fluid">
+            	{if $tariffdata|@count gt 0}
+                	{foreach from=$tariffdata key=indx item=vall}
+	                    <div id="tariffid{$indx+1}" class="mod"><div id="delLoad"></div>
+                	        <input type="hidden" id="tariffdataids" name="tariffdataid[]" value="{$vall.id}"/>
+	                        <button rel="" id="tariff_close_{$indx+1}" type="button" class="close" onclick="return deleteTariff({$indx+1});">&#215;</button>
+	                        <div class="span12 form-inline formSep">
+	                            <label class="span3">Clients</label>
+	                            <div class="span3 no-margin-first" id="clientRow{$indx+1}">
+	                                <select name="client[]" id="client{$indx+1}" class="chzn_a" data-placeholder="S&eacute;lectionner" onchange="aos(this.value, this.options[this.selectedIndex].text, {$indx+1})">
+	                                    {foreach from=$client_list item=client}
+	                                        {if $client.identifier eq $vall.client_id}
+	                                        <option value="{$client.identifier}" selected>{$client.name}</option>
+	                                        {else}
+	                                        <option value="{$client.identifier}">{$client.name}</option>
+	                                        {/if}
+	                                    {/foreach}
+	                                </select>
+	                            </div>
+	                            <div class="">
+	                                 <input type="text" name="client_name[]" id="client{$indx+1}_name" class="span3" value="{$vall.client_name}"/>
+	                            </div>
+	                            <div class="span3">
+	                                 <a data-toggle="modal" onclick="clmod({$indx+1})" data-target="#newuser" href="javascript:void(0);" id="newcl">Ajouter un nouveau client</a>
+	                            </div>
+	                        </div>
+	                        
+	                        <div class="span12 form-inline formSep">
+	                            <label class="span3">AO</label>
+	                            <div class="span3 no-margin-first" id="aoRow{$indx+1}">
+	                                <select name="ao[]" id="ao{$indx+1}" class="chzn_b" data-placeholder="S&eacute;lectionner" onchange="aodata(this.value, this.options[this.selectedIndex].text, {$indx+1})">
+	                                    {$aoselect[$indx]}
+	                                </select>
+	                            </div>
+	                            <div class="">
+	                                 <input type="text" name="ao_name[]" id="ao{$indx+1}_name" class="span3" value="{$vall.delivery_name}"/>
+	                            </div>
+	                        </div>
+	                        
+	                        <div class="span12 form-inline formSep">
+	                            <label class="span3">Number of articles</label>
+	                            <div class="span5 no-margin-first">
+	                                 <input type="text" name="num_articles[]" id="num_articles" class="span3" value="{$vall.articles_count}"/>
+	                            </div>
+	                        </div>
+	                        
+	                        <div class="span12 form-inline formSep">
+	                            <label class="span3">Average price per word</label>
+	                            <div class="span5 no-margin-first">
+	                                <input type="text" name="avg_price_word[]" id="avg_price_word" class="span3" value="{$vall.avg_price_per_word}"/>
+	                            	<span id="avg_price_per_word_text" class="span3">
+	                            	</span>
+	                            </div>
+	                        </div>
+	                        
+	                        <div class="span12 form-inline formSep">
+	                            <label class="span3">Minimum price</label>
+	                            <div class="span5 no-margin-first">
+	                                 <input type="text" name="price_min[]" id="price_min" class="span3" value="{$vall.min_price}"/>
+	                            </div>
+	                        </div>
+	                        
+	                        <div class="span12 form-inline formSep">
+	                            <label class="span3">Maximum price</label>
+	                            <div class="span5 no-margin-first">
+	                                 <input type="text" name="price_max[]" id="price_max" class="span3" value="{$vall.max_price}"/>
+	                            </div>
+	                        </div>
+	
+	                        <div class="span12 form-inline formSep">
+	                            <label class="span3">Delivery time taken</label>
+	                            <div class="span8 no-margin-first">
+	                                 <input type="text" name="delivery_time[]" id="delivery_time" class="span3" value="{$vall.delivery_time}"/>&nbsp;
+	                            <!--</div>
+	                            <div class="span3 no-margin-first">--><span>
+	                                 <select name="date_option[]" id="date_option{$indx+1}" class="chzn_c span2" onchange="changedateoption(this.value, {$indx+1});">
+	                                    <option value="days" {if $vall.delivery_time_option eq 'days'} selected="selected"{/if}>Jour(s)</option>
+	                                    <option value="hours" {if $vall.delivery_time_option eq 'hours'} selected="selected"{/if}>Heure(s)</option>
+	                                 </select></span>
+	                            </div>
+	                            <input type="hidden" name="delhrs" id="delhrs" value="{if $vall.delivery_time_option eq 'hours'}{$vall.delivery_time}{/if}">
+	                            <input type="hidden" name="deldays" id="deldays" value="{if $vall.delivery_time_option eq 'days'}{$vall.delivery_time}{/if}">
+	                        </div>
+	                        
+	                        <div class="span12 form-inline formSep">
+	                            <label class="span3">Sum of writer price</label>
+	                            <div class="span5 no-margin-first">
+	                                 <input type="text" name="writer_price_sum[]" id="writer_price_sum" class="span3" value="{$vall.contrib_price_sum}"/>
+	                            </div>
+	                        </div>
+	                        
+	                        <div class="span12 form-inline formSep">
+	                            <label class="span3">Sum of article total price</label>
+	                            <div class="span5 no-margin-first">
+	                                 <input type="text" name="article_total_price_sum[]" id="article_total_price_sum" class="span3" value="{$vall.article_total_price_sum}"/>
+	                            </div>
+	                        </div>
+	                    </div>
+					{/foreach}
+            	{else}
+                    <div id="tariffid1" class="mod">     
+                        <button rel="" id="tariff_close_1" type="button" onclick="closeTariff(1);" class="close" style="display:none;">&#215;</button>
+                        <div class="span12 form-inline formSep">
+                            <label class="span3">Clients</label>
+                            <div class="span3 no-margin-first" id="clientRow1">
+                                <select name="client[]" id="client1" class="chzn_a" data-placeholder="S&eacute;lectionner" onchange="aos(this.value, this.options[this.selectedIndex].text, 1)">
+                                    <option value="">S&eacute;lectionner</option>
+                                    {foreach from=$client_list item=client}
+                                        {if $client.identifier==$def_user}{else}{/if}
+                                        <option value="{$client.identifier}">{$client.name}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                            <div class="">
+                                 <input type="text" name="client_name[]" id="client1_name" value="" class="span3"/>
+                                 <!--<input type="text" name="client_name[]" id="client1_name" value="{$cl_def}" class="span3"/>-->
+                            </div>
+                            <div class="span3">
+                                 <a data-toggle="modal" onclick="clmod(1)" data-target="#newuser" href="javascript:void(0);" id="newcl">Ajouter un nouveau client</a>
+                            </div>
+                        </div>
+                        
+                        <div class="span12 form-inline formSep">
+                            <label class="span3">AO</label>
+                            <div class="span3 no-margin-first" id="aoRow1">
+                                <select name="ao[]" id="ao1" class="chzn_b" data-placeholder="S&eacute;lectionner" onchange="aodata(this.value, this.options[this.selectedIndex].text, 1)">
+                                    <option value="">S&eacute;lectionner</option>
+                                    {foreach from=$mission_list key=mssn item=mission}{/foreach}
+                                </select>
+                            </div>
+                            <div class="">
+                                 <input type="text" name="ao_name[]" id="ao1_name" class="span3"/>
+                            </div>
+                        </div>
+                        
+                        <div class="span12 form-inline formSep">
+                            <label class="span3">Number of articles</label>
+                            <div class="span5 no-margin-first">
+                                 <input type="text" name="num_articles[]" id="num_articles" class="span3"/>
+                            </div>
+                        </div>
+                        
+                        <div class="span12 form-inline formSep">
+                            <label class="span3">Average price per word</label>
+                            <div class="span5 no-margin-first">
+                                <input type="text" name="avg_price_word[]" id="avg_price_word" class="span3"/>
+                                <span id="avg_price_per_word_text" class="span3"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="span12 form-inline formSep">
+                            <label class="span3">Minimum price</label>
+                            <div class="span5 no-margin-first">
+                                 <input type="text" name="price_min[]" id="price_min" class="span3"/>
+                            </div>
+                        </div>
+                        
+                        <div class="span12 form-inline formSep">
+                            <label class="span3">Maximum price</label>
+                            <div class="span5 no-margin-first">
+                                 <input type="text" name="price_max[]" id="price_max" class="span3"/>
+                            </div>
+                        </div>
+
+                        <div class="span12 form-inline formSep">
+                            <label class="span3">Delivery time taken</label>
+                            <div class="span8 no-margin-first">
+                                 <input type="text" name="delivery_time[]" id="delivery_time" class="span3"/>&nbsp;
+                            <!--</div>
+                            <div class="span3 no-margin-first">--><span>
+                                 <select name="date_option[]" id="date_option1" class="chzn_c span2" onchange="changedateoption(this.value, 1);">
+                                    <option value="days" selected="selected">Jour(s)</option>
+                                    <option value="hours">Heure(s)</option>
+                                 </select></span>
+                            </div>
+                            <input type="hidden" name="delhrs" id="delhrs">
+                            <input type="hidden" name="deldays" id="deldays">
+                        </div>
+                        
+                        <div class="span12 form-inline formSep">
+                            <label class="span3">Sum of writer price</label>
+                            <div class="span5 no-margin-first">
+                                 <input type="text" name="writer_price_sum[]" id="writer_price_sum" class="span3"/>
+                            </div>
+                        </div>
+                        
+                        <div class="span12 form-inline formSep">
+                            <label class="span3">Sum of article total price</label>
+                            <div class="span5 no-margin-first">
+                                 <input type="text" name="article_total_price_sum[]" id="article_total_price_sum" class="span3"/>
+                            </div>
+                        </div>
+                    </div>            	
+            	{/if}
+
+                    <div id="addmore-btn" class="addmore-button"><a class="btn"><i class="icon-plus"></i></a></div>
+                </div>
+                <input type="hidden" name="tariffCount" id="tariffCount" value="{if $tariffdata|@count gt 0}{$tariffdata|@count}{else}1{/if}">
+        <!-- tariff details -->
+        </div>
+        <div align="right" style="margin-top:10px">  
+            <!--<input type="button" value="ANNULER" class="btn btn-info" onClick="return clearText()" />-->
+            <input name="submit" type="submit" value="SAUVER" class="btn btn-info" />
+        </div>
+</form>
+    </div>
+</div>
+
+
+<!--   Add new user   -->
+
+<div class="modal hide fade" id="newuser">
+
+    <div class="modal-header">
+
+        <button class="close" data-dismiss="modal" >&times;</button>
+
+        <h3>AJOUT D'UN NOUVEAU CLIENT</h3>
+
+    </div>
+
+    <div class="modal-body">
+
+        <form action="#" id="newuserform" id="newuserform" method="post">
+
+            <table cellpadding="2" cellspacing="2" align="center">
+
+                <tr>
+
+                    <td valign="top">Email</td>
+
+                    <td><span><input type="text" id="newemail" name="newemail"/></span></td>
+
+                </tr>
+
+                <tr>
+
+                    <td valign="top">Mot de passe</td>
+
+                    <td><span><input type="password" id="newpwd" name="newpwd"/></span></td>
+
+                </tr>
+
+                <tr>
+
+                    <td valign="top">Confirmer mot de passe</td>
+
+                    <td><span><input type="password" id="newcpwd" name="newcpwd" value=""/></span></td>
+
+                </tr>
+
+                <tr>
+
+                    <td valign="top">Nom du client</td>
+
+                    <td><span><input type="text" id="company_name" name="company_name" value=""/></span></td>
+
+                </tr>
+
+                <tr>
+
+                    <td>&nbsp;</td>
+
+                    <td>
+
+                        <button type="submit" id="submit_pop_edit" name="submit_pop_edit" value="Add" class="btn btn-info" onClick="return validateClient();">Ajouter client</button>&nbsp;&nbsp;
+
+                    </td>
+
+                </tr>
+
+            </table>    
+<input type="hidden" name="useradddata" id="useradddata" value="" />
+        </form>
+
+    </div>
+
+    <div class="modal-footer">
+
+    </div>
+
+</div>

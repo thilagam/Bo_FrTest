@@ -1,0 +1,282 @@
+{literal}
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/datempicker.js"></script>
+<script type="text/javascript" >
+	$(document).ready(function() {
+		$('#quizztable').dataTable({
+			"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+			"sPaginationType": "bootstrap",
+			"aaSorting": [[ 6, "desc" ]],
+			"aoColumns": [
+				{ "sType": "formatted-num" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "string" }
+			]
+		});
+		$("#category").chosen({ disable_search: true });	
+		$("#status").chosen({ disable_search: true });	
+		$('#start_date').datepicker({language: 'fr'}).on('changeDate', function(ev){
+				var dateText = $(this).val();//data('date');
+				
+				var endDateTextBox = $('#end_date');
+				if (endDateTextBox.val() != '') {
+					var testStartDate = new Date(dateText);
+					var testEndDate = new Date(endDateTextBox.val());
+					if (testStartDate > testEndDate) {
+						endDateTextBox.val(dateText);
+					}
+				}
+				else {
+					endDateTextBox.val(dateText);
+				};
+				$('#end_date').datepicker('setStartDate', dateText);
+				$('#start_date').datepicker('hide');
+			});
+			
+			$('#end_date').datepicker({language: 'fr'}).on('changeDate', function(ev){
+				var dateText = $(this).val();//data('date');
+				var startDateTextBox = $('#start_date');				
+				if (startDateTextBox.val() != '') {
+					var testStartDate = new Date(startDateTextBox.val());
+					var testEndDate = new Date(dateText);
+					if (testStartDate > testEndDate) {
+						startDateTextBox.val(dateText);
+					}
+				}
+				else {
+					startDateTextBox.val(dateText);
+				};
+				$('#start_date').datepicker('setEndDate', dateText);
+				$('#end_date').datepicker('hide');
+			});
+			
+	});
+
+	function participants(id){
+		window.location="/quizz/listparticipants?submenuId=ML2-SL22&id="+id;
+	}
+	
+    function clearAll()
+    {
+        $('#creation_date').val(null);
+        $('#quizztitle').attr('value',null);
+		$("#status option").removeAttr("selected");
+		$("#status").val('').trigger("liszt:updated");
+		$("#category option").removeAttr("selected");
+		$("#category").val('all').trigger("liszt:updated");   
+    }
+	
+	function permanentdeleteQuizz(quizzid)
+	{
+		if(confirm("Do you really want to delete this Quizz Permanently?"))
+		{
+			$.ajax({
+			type : 'post', 
+			url : '/quizz/deletequizz', 
+			data :  'quiz='+quizzid, 
+			   
+			success : function(response)
+		   {
+				smoke.alert("Quizz deleted successfully !!"); 	
+				window.location.reload();
+		   }
+		});
+		}
+		else
+			return false;
+	}
+	
+	function deleteQuizz(quizzid)
+	{
+		smoke.confirm("Do you really want to delete this Quizz ",function(e){
+			if (e)
+			{
+			   // window.location.href="users-list?submenuId=ML2-SL7&tab="+tab+"&delete=yes&userId="+userid;
+				var target_page = "/quizz/changequizzstatus?status=2&quizz_id="+quizzid;
+				$.post(target_page, function(data){ //alert(data);
+					window.location.reload();
+				});
+			}
+			else
+			{
+				return false;
+			}
+		});	
+	}
+	
+	function changeStatusQuizz(quizzid, quizzstatus)
+	{
+		if(quizzstatus == 2)
+		{
+			var statusmsg = 'Active';
+			var param =1;
+		}
+		else
+		{
+			var statusmsg = 'Inactive';
+			var param =2;
+		}
+		smoke.confirm("Do you really want to make this Quizz "+statusmsg,function(e){
+			if (e)
+			{
+			   // window.location.href="users-list?submenuId=ML2-SL7&tab="+tab+"&delete=yes&userId="+userid;
+				var target_page = "/quizz/changequizzstatus?status="+param+"&quizz_id="+quizzid;
+				$.post(target_page, function(data){ //alert(data);
+					$('#quizzstatus_'+quizzid).html("<a onclick=\"changeStatusQuizz('"+quizzid+"', '"+param+"');\">"+statusmsg+"</a>");
+					window.location.reload();
+				});
+			}
+			else
+			{
+				return false;
+			}
+		});
+
+	}
+	
+	function linkedao(quizz)
+	{
+		var target_page = "/quizz/quizzlinkedao?quizz="+quizz;
+
+		$.post(target_page, function(data){   
+			$("#linkedaocontent").html(data);
+		});
+	}
+		
+     </script>
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">Voir Quizz<a onclick="$('#searchblock').toggle();"  class="btn btn-gebo1" style="float:right">Search</a></h3>
+		 <form action="/quizz/listallquizz?submenuId=ML2-SL22" method="GET" id="searchform" name="searchform">
+			<div class="hide well clearfix" id="searchblock">
+				<input type="hidden" name="submenuId" id="submenuId" value="{$smarty.get.submenuId}" />
+				<table width="100%">
+					<tr>
+						<td valign="top">Titre du quizz</td>
+						<td><input type="text" name="quizztitle" id="quizztitle" value="{$quizztitle}" size="31"/></td>
+						<td valign="top">Cat&eacute;gorie</td>
+						<td>
+							<select name="category" id="category">
+								<option value="all">All</option>{html_options options=$categories selected=$category}
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td valign="top">Statut du quizz</td>
+						<td>
+							 <select name="status" id="status">
+								<option value="">ALL</option>
+								<option value="1" {if $status eq '1'}selected{/if}>Active</option>
+								<option value="2" {if $status eq '2'}selected{/if}>Inactive</option>
+							</select>
+						</td>
+						<td valign="top">Date cr&eacute;ation</td> 
+						<td>
+							<input type="text" id="start_date" name="start_date" readonly="readonly" value="{$start_date}" placeholder="From" data-date-format="dd-mm-yyyy" style="width:120px;"/>
+							<input type="text" id="end_date" name="end_date" readonly="readonly" value="{$end_date}" placeholder="To" data-date-format="dd-mm-yyyy" style="width:120px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td colspan="5" align="right">
+							<input type="submit" value="Search" name="search_button" id="search_button" class="btn btn-success"/>
+							<input type="button" value="Clear" name="clearall" id="clearall" class="btn btn-danger" onclick="clearAll();" />
+						</td>
+					</tr>
+				</table>
+			</div>
+		</form>
+		<table class="table table-bordered table-striped table_vam" id="quizztable" >
+            <thead>
+                <tr>
+                   <th>S.NO</th>
+                   <th>Titre Quizz</th>
+                   <th>Cat&#233;gorie</th>
+                   <th>Nb question</th>
+                   <th>Nb min. r&#233;ponses</th>
+                   <th>Dur&#233;e</th>
+                   <th>Date cr&#233;ation</th>
+                   <th>Statut</th>
+                   <th>Cr&#233;&#233; par</th>
+                   <th>Nombre participants</th>  
+                   <th>Modifier</th>
+                </tr>
+            </thead>
+			<tbody>
+			{if $quizzlist|@count>0}
+				{foreach from=$quizzlist item=quizz_item name=quizz_loop}
+					<tr id="tr{$quizz_item.id}">
+						<td>{$smarty.foreach.quizz_loop.index+1}</td>
+						<td>{$quizz_item.title|stripslashes}</td>
+						<td>{$quizz_item.category}</td>
+						<td>{$quizz_item.quest_count}</td>
+						<td>{$quizz_item.correct_ans_count}</td>
+						<td>{$quizz_item.setuptime|replace:'|':' '}&nbsp;minutes</td>
+						<td>{$quizz_item.creation_date|date_format:"%e/%m/%Y"}</td>
+						<td id="quizzstatus_{$quizz_item.id}">
+							{if	$usertype=='superadmin'}
+							<a href="javascript:void(0);"  onclick="return changeStatusQuizz('{$quizz_item.id}', '{$quizz_item.status}')" >
+								{if $quizz_item.status eq '1'}Active{else}Inactive{/if}
+							</a>
+							{else}
+								{if $quizz_item.status eq '1'}Active{else}Inactive{/if}
+							{/if}
+						</td>
+						<td>{$quizz_item.login}</td>
+						<td><a href="javascript:void(0);" {if $quizz_item.participants > 0} onclick="participants({$quizz_item.id});"{/if}>{$quizz_item.participants}</a></td>
+						<td style="float:left">
+							<!---------------------------------------EDIT --------------------------------------->
+							<a href="/quizz/modifyquizz?submenuId=ML2-SL22&id={$quizz_item.id}" class="hint--left hint--info" data-hint="Edit Quizz"><img class="splashy-application_windows_edit"></a>&nbsp;
+							
+							<!---------------------------------------VIEW --------------------------------------->
+							<a href="/quizz/viewquizz?submenuId=ML2-SL22&id={$quizz_item.id}" class="hint--left hint--info" data-hint="View Quizz" target="_blank"><i class="icon-eye-open"></i></a>
+							
+							<!---------------------------------------DUPLICATE --------------------------------------->							
+							<a href="/quizz/duplicatequizz?submenuId=ML2-SL22&id={$quizz_item.id}" class="hint--left hint--info" data-hint="Create Duplicate Quizz"><img class="splashy-document_copy" src="/BO/theme/gebo/img/copy.png"></a>&nbsp;
+							
+							<!---------------------------------------AO VIEW --------------------------------------->
+							{if $quizz_item.linkcount neq 0}
+							<a data-toggle="modal" data-target="#linkedao" OnClick="return linkedao('{$quizz_item.id}')" class="hint--left hint--info" data-hint="View AO Links"><i class="icon-list-alt"></i></a>
+							{/if}
+							
+							
+							<!---------------------------------------DELETE --------------------------------------->
+							{if $quizz_item.linkcount==0}
+								<a href="javascript:void(0);" onClick="deleteQuizz('{$quizz_item.id}');" class="hint--left hint--info" data-hint="Delete Quizz"><i class="splashy-remove"></i></a>
+							{/if}
+							
+							<!---------------------------------------PERMANAENT DELETE --------------------------------------->
+							{if $usertype=='superadmin'}
+								<a href="javascript:void(0);" onClick="permanentdeleteQuizz('{$quizz_item.id}');" class="hint--left hint--info" data-hint="Permanent Delete Quizz"><img src="/BO/theme/gebo/img/red_trash.png"/></a>
+							{/if}
+							
+						</td>
+					</tr>
+				{/foreach}
+			{/if}
+			</tbody>
+		</table>
+    </div>
+</div>	
+
+
+<!--View linked AOs -->
+	<div class="modal4 hide fade" id="linkedao">
+		<div class="modal-header">
+			<button class="close" data-dismiss="modal">&times;</button>
+			<h3>Linked AOs / Recruitments </h3>
+		</div>
+		<div class="modal-body" id="linkedaocontent">
+		</div>
+		<div class="modal-footer">
+		</div>
+	</div>

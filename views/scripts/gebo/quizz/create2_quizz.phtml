@@ -1,0 +1,159 @@
+{literal}
+<style>.quizzAns{ float: left; padding: 5px 0; text-align: left; width: 100%;}</style>
+    <script>
+    $(document).ready(function() {  
+	 $(".uni_style").uniform(); 
+	});
+	
+	function validate_bo_quizzstep2()
+    {
+        var errcount=0;
+{/literal}
+    {if $quest_count > 0}
+                {assign var="i" value=0}
+        {while $i < $quest_count}
+{literal}
+            var quizzqn=$("#qn{/literal}{$i}{literal}").val();
+            var quizzan0=$("#an{/literal}{$i}0{literal}").val();
+            var quizzan1=$("#an{/literal}{$i}1{literal}").val();
+            var quizzan2=$("#an{/literal}{$i}2{literal}").val();
+            var quizzan3=$("#an{/literal}{$i}3{literal}").val();
+            var quizzr_an=$('input:radio[name=r_an{/literal}{$i}{literal}]:checked').val();
+            if(quizzqn.trim()=='')
+            {
+                //$("#qn{/literal}{$i}{literal}_span").html('<img src="/BO/theme/gebo/img/RedX.gif" />');
+                $("#qn{/literal}{$i}{literal}").css("border-color","red")
+                errcount++;
+            }
+            else
+            {
+               // $("#qn{/literal}{$i}{literal}_span").html('<img src="/BO/theme/gebo/img/Green_Check_Mark.png" />');
+                $("#qn{/literal}{$i}{literal}").css("border-color","")
+            }
+            if( (quizzan0.trim()=='') || (quizzan1.trim()=='') || (quizzan2.trim()=='') || (quizzan3.trim()=='') || !quizzr_an )
+            {
+                $("#an{/literal}{$i}{literal}_span").html('<img src="/BO/theme/gebo/img/RedX.gif" />');                    
+                errcount++;
+            }
+            else
+            {
+                $("#an{/literal}{$i}{literal}_span").html('<img src="/BO/theme/gebo/img/Green_Check_Mark.png" />');
+            }
+{/literal}
+                {assign var="i" value=$i+1}
+        {/while}
+    {/if}
+{literal}
+            if(errcount>0)
+            {
+                return false;
+            }
+    }
+
+    function quizz_step1()
+    {
+        window.location='/quizz/createquizz?submenuId=ML2-SL21';
+        return false;
+    }
+    
+    function clearText()
+    {
+
+{/literal}
+    {if $quest_count > 0}
+                {assign var="i" value=0}
+        {while $i < $quest_count}
+{literal}
+            $("#qn{/literal}{$i}{literal}").val('');
+            $("#an{/literal}{$i}0{literal}").val('');
+            $("#an{/literal}{$i}1{literal}").val('');
+            $("#an{/literal}{$i}2{literal}").val('');
+            $("#an{/literal}{$i}3{literal}").val('');
+            $('input:radio[name=r_an{/literal}{$i}{literal}]:checked').removeAttr("checked");
+{/literal}
+                {assign var="i" value=$i+1}
+        {/while}
+    {/if}
+{literal}
+        return false ;
+    }
+    
+    </script>
+	
+	<style>
+		input {text-transform:none !important;} 
+	</style>
+{/literal}
+
+<form action="/quizz/create2quizz?submenuId=ML2-SL21" name="bo_quizzstep2_form" method="post" enctype="multipart/form-data"  onSubmit="return validate_bo_quizzstep2();" >
+  <div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">Titre du Quizz : {$questtitle}</h3>
+		<table align="center" cellpadding="4" cellspacing="4" width="78%">
+			<tr><td colspan="2">Merci de cliquer sur la "bonne r&#233;ponse" pour chaque question ci-dessous</td></tr>
+                    {if $quest_count > 0}
+                            {assign var="i" value=0}
+				{while $i < $quest_count}
+				{assign var="qns" value="qn$i"}
+				{assign var="qnid" value="qnid$i"}
+				{assign var="ans1" value="an0$i"}
+				{assign var="ans2" value="an1$i"}
+				{assign var="ans3" value="an2$i"}
+				{assign var="ans4" value="an3$i"}
+				{assign var="rans" value="r_an$i"}
+			<tr id="tr1{$quizz.$qnid}">
+				<td valign="top">Q{$i+1}:</td>
+				<td><input type="text" name="qn{$i}" id="qn{$i}" class="span9" value="{$quizz.$qns}"/>
+				</td>
+			</tr>
+			<tr id="tr2{$quizz.$qnid}">
+				<td></td>
+				<td valign="top">&nbsp;
+					<span class="quizzAns">
+						<span style="float:left">A1:&nbsp;&nbsp;
+							<input type="text" name="an{$i}0" id="an{$i}0" class="{$quizz.$ans1}" value="" />
+						</span>
+						<label class="uni-radio">
+							<input type="radio" name="r_an{$i}" value="1" class="uni_style"/>
+						</label>
+						<span id="an{$i}_span" style="padding:5px;"></span>
+					</span><br />
+					<span class="quizzAns">
+						<span style="float:left">A2:&nbsp;&nbsp;
+							<input type="text" name="an{$i}1" id="an{$i}1" value=""/>
+						</span>
+						<label class="uni-radio">
+							<input type="radio" name="r_an{$i}" value="2"  class="uni_style"/>
+						</label>	
+					</span><br />
+					<span class="quizzAns">
+						<span style="float:left">A3:&nbsp;&nbsp;
+							<input type="text" name="an{$i}2" id="an{$i}2" value=""/>
+						</span>
+						<label class="uni-radio">
+							<input type="radio" name="r_an{$i}" value="3" class="uni_style"/>
+						</label>
+					</span><br />
+					<span class="quizzAns">
+						<span style="float:left">A4:&nbsp;&nbsp;
+							<input type="text" name="an{$i}3" id="an{$i}3" value="" />
+						</span>
+						<label class="uni-radio">
+							<input type="radio" name="r_an{$i}" value="4" class="uni_style"/>
+						</label>
+					</span>
+				</td>
+			</tr>
+			<tr id="tr3{$quizz.$qnid}"><td colspan="2"><hr></td></tr>
+                            {assign var="i" value=$i+1}
+				{/while}
+            {/if}
+		</table>
+		<div align="right" style="padding-right:150px;padding-top:50px">
+			<input type="button" value="ANNULER" class="btn btn-info" onClick="return clearText()" />
+			<input type="button" value="RETOUR" class="btn btn-info" onclick="return quizz_step1();" />
+			<input type="submit" value="CR&Eacute;ER QUIZZ" class="btn btn-info" />
+		</div>
+	</div>
+</div>
+</form>

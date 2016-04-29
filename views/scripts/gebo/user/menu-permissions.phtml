@@ -1,0 +1,253 @@
+{literal}
+<script type="text/javascript">
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+var ctype = getUrlVars()["counttype"];
+var count = getUrlVars()["count"];
+
+$(document).ready(function() {
+    $("#permissionstab").addClass('active');
+    $(".uni_style").uniform();
+    $("#sel_group").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#sel_user").chosen({ allow_single_deselect: false,search_contains: true  });
+    $("#sel_mainmenu").chosen({ allow_single_deselect: false,search_contains: true  });
+    gebo_validation.reg();
+    //////////////////////////////////////////////////////////////////////
+    $('#linkpermissionsgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "formatted-num" }
+        ]
+    });
+
+});
+function checkEmailExist()
+{
+    var email = $("#email").val();
+    var target_page = "/user/email-exits?email="+email;
+    $.post(target_page, function(data){ //alert(data);
+        var data1 = data.trim();
+        if(data1 == "yes")
+        {
+            smoke.alert("email id is already exist");
+            $("#emai").val('');
+            return false;
+        }
+        else
+        {
+
+            return true;
+        }
+    });
+}
+
+//* bootstrap datepicker
+gebo_datepicker = {
+    init: function() {
+        $('#dp1').datepicker();
+        $('#dp2').datepicker();
+        $('#actdp1').datepicker();
+        $('#actdp2').datepicker();
+    }};
+function changeStatusUser(userid, status)
+{
+    if(status == 'Inactive')
+        var statusmsg = 'Active';
+    else
+        var statusmsg = 'Inactive';
+    smoke.confirm("Do you really want to make user "+statusmsg,function(e){
+        if (e)
+        {
+           // window.location.href="users-list?submenuId=ML2-SL7&tab="+tab+"&delete=yes&userId="+userid;
+            var target_page = "/user/changeuserstatus?status="+statusmsg+"&user_id="+userid;
+            $.post(target_page, function(data){ //alert(data);
+                $('#userstatus_'+userid).html("<a onclick=\"changeStatusUser('"+userid+"', '"+statusmsg+"');\">"+statusmsg+"</a>");
+                window.location.reload();
+            });
+        }
+        else
+        {
+            return false;
+        }
+    });
+
+}
+function swift(sa)
+{
+    if(sa=='1')
+    {
+        document.getElementById('sel_user').selectedIndex=0;
+        return true;
+    }
+    else
+    {
+        document.getElementById('sel_group').selectedIndex=0;
+        return true;
+    }
+}
+
+function selectMainMenu(styclass)
+{
+    if($('.sub'+styclass).attr('checked'))
+        $('.'+styclass).prop('checked',true);
+    else
+        $('.'+styclass).prop('checked',false);
+}
+function selectValues(styclass)
+{
+    if($('.'+styclass).attr('checked'))
+        $('.sub'+styclass).prop('checked',true);
+    else
+        $('.sub'+styclass).prop('checked',false);
+
+    if($('.sub'+styclass).attr('checked'))
+        $('.'+styclass).prop('checked',true);
+    else
+        $('.'+styclass).prop('checked',false);
+    var selectedVal = new Array();
+    $("#linkpermissionsgrid input:checkbox:checked").each(function()
+    {
+       selectedVal.push($(this).val());
+    });
+    $("#selectedmenus").val(selectedVal);
+}
+function Assign()
+{
+    var menus = $('input[name="chkmenu"]:checked').serialize();
+    var sel_group = $("#sel_group").val();
+    var sel_user = $("#sel_user").val();
+    var submenuId = $("#submenuId").val();
+
+    var params = {menus:menus, assign:'assign',sel_group:sel_group, sel_user:sel_user, tab:'permissionstab', submenuId:submenuId}
+    $.post('/user/menu-permissions',params, function(data){
+        window.location.href = "/user/menu-permissions?submenuId=ML10-SL7";
+    });
+}
+</script>
+{/literal}
+<div class="row-fluid">
+  <div class="span12" style="">
+   <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+      <div class="tabbable">
+          <ul class="nav nav-tabs">
+              <li ><a href="#permissionstab" data-toggle="tab" class="lable-info"><strong>Menu Permissions</strong></a></li>
+          </ul>
+          <div class="tab-content">
+             <div id="permissionstab" class="tab-pane" >
+                  <form action="/user/menu-permissions?submenuId={$submenuId}&tab=permissionstab" method="post" id="permission" name="permission">
+                  <div class="alert alert-info">
+                      <div class="form-inline">
+                          <select name="sel_group" id="sel_group" onchange="javascript:swift(1); this.form.submit();">
+                              <option value="0" >S&eacute;lectionnez un groupe</option>
+                              {foreach from=$groupList item=group key=k name=groups}
+                              <option value={$group->id} {if $group->id eq $GpSel} selected{/if} >{$group->groupName}</option>
+                              {/foreach}
+                          </select>
+                          <select name="sel_user" id="sel_user" onchange="javascript:swift(2); javascript:this.form.submit();">
+                              <option value="0" >S&eacute;lectionnez un user</option>
+                              {foreach from=$userList item=user key=uk name=users}
+                              <option value={$user->identifier} {if $user->identifier eq $UsrSel} selected{/if}>{$user->login}</option>
+                              {/foreach}
+                          </select>
+
+                          <!--<select name="sel_mainmenu" id="sel_mainmenu" onchange="javascript:swift(3); javascript:this.form.submit();">
+                              <option value="0" >S&eacute;lectionnez un Main Menu</option>
+                              {foreach from=$sel_mainmenu item=menu key=menuk name=mainmenu}
+                              <option value={$menuk} {if $menuk eq $smarty.get.sel_user} selected{/if}>{$menu}</option>
+                              {/foreach}
+                          </select>-->
+                          <input type="hidden" id="submenuId" name="submenuId" value={$submenuId} />
+                      </div>
+                  </div>
+                  </form>
+
+                  <div id="accordion1" class="accordion">
+                      {foreach from=$MainMenu item=i key=MainMenukey name=MainMenu_loop }
+                      {if $MainMenukey neq 'ML1'}
+                      <div class="accordion-group">
+                          <div class="accordion-heading">
+                              <label class="span1" style="padding: 10px;"> <input type="checkbox" id="chk_{$MainMenukey}" name="chkmenu" value="{$MainMenukey}" class="{$MainMenukey}" onclick="selectValues('{$MainMenukey}');"  {if $GpSel neq 0} {if $MainMenukey|in_array:$menuGpSel} checked {/if} {/if}{if $UsrSel neq 0} {if $MainMenukey|in_array:$menuUsrSel} checked {/if} {/if}/> </label>
+                              <a href="#collapseOne{$MainMenukey}" data-parent="#accordion{$MainMenukey}" data-toggle="collapse" class="accordion-toggle"><h3>{$i|stripslashes}</h3></a>
+                          </div>
+                          <div class="accordion-body collapse" id="collapseOne{$MainMenukey}">
+                              <div class="accordion-inner">
+                                  <table id="{$MainMenukey}" class="table table-bordered table-striped table_vam pull-left">
+                                      {foreach from=$SubMenus key=submenukey item=i name=count}
+                                      {foreach from=$i key=ids item=ii}
+                                      {if $EP_BO_MenuUrls.$ids neq null}
+                                      {assign var=mainmenuid value=$ids|explode:"-"}
+                                      {if $mainmenuid[0] eq $MainMenukey && $ids neq 'ML2-SL7'  && $ids neq 'ML2-SL20' && $ids neq 'ML10-SL1'}
+                                      <tr>
+                                          <td >
+                                              <label class="uni-checkbox pull-left">
+                                                  <span> <input type="checkbox" id="chk_{$ids}" name="chkmenu" value="{$ids}" class="sub{$MainMenukey}" onclick="selectMainMenu('{$MainMenukey}');" {if $GpSel neq 0} {if $ids|in_array:$menuGpSel} checked {/if} {/if}{if $UsrSel neq 0} {if $ids|in_array:$menuUsrSel} checked {/if} {/if}/></span>
+                                              </label>
+                                          </td>
+                                          <td>{$ids}</td>
+                                          <td ><label for="chk_{$ids}" class="pull-left" style="cursor: pointer;">{$ii|escape:"htmlall"}</label></td>
+                                          <!--<td><label for="chk_{$menukey}" class="pull-left" style="cursor: pointer;">{$menuvalue|utf8_decode}</label></td>-->
+                                      </tr>
+                                      {/if}
+                                      {/if}
+                                      {/foreach}
+                                      {/foreach}
+                                  </table>
+                                  <input type="hidden" name="tab" id="tab" value="permissionstab" />
+                                  <input type="hidden" name="selectedmenus"  id="selectedmenus" value="" />
+                              </div>
+                          </div>
+                      </div>
+                      {/if}
+                      {/foreach}
+                  </div>
+                      <div style="height: 10px;"></div>
+                      {if $GpSel neq 0 || $UsrSel neq 0}
+                        <button type="submit" value="assign" name="assign" id="assign" onclick="Assign();" class="btn btn-info" style="margin-left: 50%">Assign </button>
+                      {/if}
+              </div>
+
+          </div>
+      </div>
+
+  </div>
+</div>
+
+
+<div style="visibility:hidden" >
+    <form id="user_login_form" name="user_login_form" method="post" action="" target="_blank">
+        <input type="text" id="login_name" name="login_name" value="">
+        <input type="password" id="login_password" name="login_password" value="{$user_detail[0].password}" >
+        <input type="submit" value="Login" />
+    </form>
+</div>
+
+
+{literal}
+<script type="text/javascript" >
+    function connect_fo(user,email,pwd)
+    {
+        document.forms["user_login_form"].action="http://mmm-new.edit-place.com/index/userfologin";
+        $('#login_name').val(email);
+        $('#login_password').val(pwd);
+        document.forms["user_login_form"].submit();
+    }
+</script>
+{/literal}
+
+

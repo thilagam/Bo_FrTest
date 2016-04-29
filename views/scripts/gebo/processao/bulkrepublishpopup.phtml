@@ -1,0 +1,215 @@
+{literal}
+<script type="text/javascript" >
+$(document).ready(function() {
+   $("#parttime_option").chosen({ allow_single_deselect: false,search_contains: true  });
+   $("#sub_opt_time").chosen({ allow_single_deselect: false,search_contains: true  });
+   $("#sub_opt_resub").chosen({ allow_single_deselect: false,search_contains: true  });
+
+});
+///when republish popup will come to upate values
+function saveRepublishPop() ///when directly republish
+{
+    var artId = $("#artId").val();
+    var closerepublish = $("#closerepublish").val();
+    var stage = $("#stage").val();
+    var parttime_option = $("#parttime_option").val();
+    var parttime = $("#participation_time").val();
+    var suboptparttime = $("#sub_opt_parttime").val();
+    var jc0time = $("#subjunior_time").val();
+    var jctime =  $("#junior_time").val();
+    var sctime = $("#senior_time").val();
+    var subopttime = $("#sub_opt_time").val();
+    var jc0resub = $("#jc0_resubmission").val();
+    var jcresub = $("#jc_resubmission").val();
+    var scresub = $("#sc_resubmission").val();
+    var suboptresub = $("#sub_opt_resub").val();
+    var object = $("#object").val();
+    var message = tinyMCE.get('mailbody').getContent();
+    if(closerepublish == 'yes')
+    {
+        var refusalmessage = tinyMCE.get('refusemessage').getContent();
+    }
+		var closemessage = tinyMCE.get('refusemessage').getContent();
+    
+    var emailyes =  $("#emailyes").val();
+    var target_page = "/processao/republishpopup?artId="+artId+"&save=save&parttime_option="+parttime_option+"&parttime="+parttime+"&suboptparttime="+suboptparttime+"&jc0time="+jc0time+
+            "&jctime="+jctime+"&sctime="+sctime+"&subopttime="+subopttime+"&jc0resub="+jc0resub+"&jcresub="+jcresub+"&scresub="+scresub+"&suboptresub="+suboptresub+"&object="+escape(object)+"&message="+escape(message);
+    $.post(target_page, function(data){  //alert(data);
+        if($("#nopartsforrepublish").val() == 'yes')
+        {
+            alert("Plus personne ne peut participer.");
+        }
+        if(stage != '')   /////////when republish pop up generated in any of stages
+        {
+            smoke.confirm("L\'article sera remis en ligne",function(e){
+                if(e)
+                {
+                    /* smoke.confirm("PREVENIR PAR EMAIL",function(e2){
+                        if(e2)
+                        {
+                            $("#sendtofo").val('yes');
+                            $("#crtsendtofo").val('yes');
+                            $("#anouncebyemail").val('yes');
+                            $("#anouncebyemail2").val('yes');
+                            $("#disapprove"+stage+"form").submit();
+                            return true;
+                        }
+                        else
+                        { */
+                            $("#sendtofo").val('yes');
+                            $("#crtsendtofo").val('yes');
+                            $("#disapprove"+stage+"form").submit();
+                            return true;
+                        /* }
+
+                    }); */
+                }
+                else
+                {
+                    $("#sendtofo").val('no');
+                    $("#crtsendtofo").val('no');
+                    $("#disapprove"+stage+"form").submit();
+                    return true;
+                }
+            });
+        }
+        else      /////////when republish pop up generated in selection profile related pages
+        {
+            smoke.confirm("L\'article sera remis en ligne",function(e){
+                if (e)
+                {
+                    /* smoke.confirm("PREVENIR PAR EMAIL",function(e){
+                        if (e)
+                        {
+                            if(closerepublish == 'yes')
+                                window.location.href = "/processao/publisharticlefo?art_id="+artId+"&sendmail=yes&sendrefusalmail=yes&refusalmailcontent="+refusalmessage;
+                            else
+                                window.location.href = "/processao/publisharticlefo?art_id="+artId+"&sendmail=yes";
+                        }
+                        else
+                        { */
+                            if(closerepublish == 'yes')
+                                window.location.href = "/processao/publisharticlefo?art_id="+artId+"&sendmail=no&sendrefusalmail=yes&refusalmailcontent="+refusalmessage;
+                            else
+                                window.location.href = "/processao/publisharticlefo?art_id="+artId+"&sendmail=no";
+                        /* }
+                    }); */
+                }
+                else
+                {
+                    //return false;					
+                    window.location.href = "/processao/publisharticlefo?art_id="+artId+"&sendtofo=no&refusalmailcontent="+escape(closemessage);
+                }
+            });
+
+        }
+    });
+}
+
+if (tinymce.getInstanceById('mailbody'))
+{
+    tinymce.execCommand('mceRemoveControl', true, 'mailbody');
+    loadEditors('mailbody');
+}
+else  if (!tinymce.getInstanceById('mailbody'))
+    loadEditors('mailbody');
+
+
+if (tinymce.getInstanceById('refusemessage'))
+{
+    tinymce.execCommand('mceRemoveControl', true, 'refusemessage');
+    loadEditors('refusemessage');
+}
+else  if (!tinymce.getInstanceById('refusemessage'))
+    loadEditors('refusemessage');
+
+function fngetmailcontent(artname)
+{
+    if (tinymce.getInstanceById('mailbody'))
+    {
+        tinymce.execCommand('mceRemoveControl', true, 'mailbody');
+        loadEditors('mailbody');
+    }
+    else  if (!tinymce.getInstanceById('mailbody'))
+        loadEditors('mailbody');
+
+    var parttime_option = $("#parttime_option").val();
+     var extend_time = $("#participation_time").val();
+     var target_page = "/processao/getextendparticipationtime?part_time="+extend_time+"&parttime_option="+parttime_option+"&artname="+artname;
+     $.post(target_page, function(data){
+         $('#mailbody').html(data);
+     });
+}
+</script>
+<style type="text/css">
+    .form-horizontal .control-label {
+        float: left;
+        padding-top: 5px;
+        text-align: right;
+        width: 42%;
+        font-weight:bold;
+        cursor:default;
+    }
+    .form-horizontal .controls {
+        margin-left: 47%;
+    }
+
+
+</style>
+{/literal}
+<div class="alert alert-warning" ><strong>Configuration de republication - {$missiontitle}</strong></div>
+<input type="hidden" id="nopartsforrepublish" name="nopartsforrepublish" value="{$nopartsforrepublish}" >
+<!--<input type="hidden" id="mailcontent" name="mailcontent" value="{$message}" >-->
+<input type="hidden" id="refusemailcontent" name="refusemailcontent" value="{$refusemessage}" >
+<input id="closerepublish" name="closerepublish" value="{$close}" type="hidden">
+<input id="stage" name="stage" value="{$stage}" type="hidden">
+<div class="alert alert-success"><strong>Renvoyer l'article aux personnes ayant déjà participé sans être sélectionnées</strong> ({$refusedcontributors} contributeurs pourront participer)</div>
+<form class="form-horizontal form_validation_ttip" >
+<fieldset>
+    <div class="control-group formSep">
+        <label class="control-label">Temps de bidding :</label>
+        <div class="controls form-inline">
+            <span style="vertical-align:top;"><input id="participation_time" name="participation_time" type="text" value="{$artdeldetails[0].participation_time}" onkeyup="fngetmailcontent('{$artdeldetails[0].artId}');"/></span>
+            <select name="parttime_option" id="parttime_option" onchange="fngetmailcontent('{$artdeldetails[0].artId}');">
+                <option value="min" selected="">Minute(s)</option>
+                <option value="hour">Heure(s)</option>
+                <option value="day">Jour(s)</option>
+            </select>
+        </div>
+    </div>
+    <div class="control-group formSep">
+        <label class="control-label">min price :</label>
+        <div class="controls form-inline">
+          <input id="min_price" name="min_price" type="text" class="span1" value="{$min_price}"/>
+        </div>
+    </div>
+    <div class="control-group formSep">
+        <label class="control-label">max price :</label>
+        <div class="controls form-inline">
+          <input id="max_price" name="max_price" type="text" class="span1" value="{$max_price}"/>
+        </div>
+    </div>
+    <div class="control-group formSep">
+        <label class="control-label">Objet de l'email :</label>
+        <div class="controls form-inline">
+            <input id="object" name="object" type="text" class="span5" value="{$object|utf8_encode}"/>
+        </div>
+    </div>
+</fieldset>
+</form>
+<table class="table table-bordered">
+    <tr>
+        {if $close == 'yes'}
+            <td colspan=2><div class="alert alert-danger">Email envoy&eacute; aux participants de la prochaine ench&egrave;re</div><textarea rows="4" cols="50" name="mailbody" id="mailbody">{$message}</textarea></td>
+            <td colspan=3><div class="alert alert-danger">Email de refus envoy&eacute; aux participants de cette ench&egrave;re</div><textarea rows="4" cols="50" name="refusemessage" id="refusemessage">{$refusemessage}</textarea></td>
+        {else}
+            <td colspan=5><textarea rows="4" cols="50" name="mailbody" id="mailbody">{$message}</textarea></td>
+        {/if}
+    </tr>
+    <tr>
+        <input id="artId" name="artId" value="{$artdeldetails[0].artId}" type="hidden"/>
+
+        <td colspan="5"><button type="button" id="republish" name="republish" class="btn btn-danger" onclick="saveRepublishPop();" >Re-publier</button></td>
+    </tr>
+</table>
+

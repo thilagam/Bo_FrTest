@@ -1,0 +1,301 @@
+{literal}
+
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/jquery.MultiFileQuote.js" type="text/javascript" charset="utf-8"></script>
+
+
+<style type="text/css">
+.mod .error
+{
+	display:none !important;		
+}
+.error {
+    color: #C62626;    
+    font-size: 11px;
+    font-weight: 700;
+}
+.mod {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+    border-image: none;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+    margin-bottom: 15px;
+    overflow: hidden;
+    padding: 12px;
+}
+</style>
+{/literal}
+{literal}
+<script language="javascript">
+
+$(document).ready(function() {
+	
+    $("#create").validationEngine({prettySelect : true,useSuffix: "_chzn"}); 
+
+	$(".uni_style").uniform();
+		
+	//$(".currency").chosen({ allow_single_deselect: false,search_contains: true});
+	$("#payment_type").chosen({ allow_single_deselect: false,search_contains: true});	
+	$("#country").chosen({ allow_single_deselect: false,search_contains: true});
+
+    $("#rib").chosen({ allow_single_deselect: false,search_contains: true});
+
+
+
+    $("#exp_date_0").datepicker({language: 'fr'}).on('changeDate', function(ev){
+
+    });
+
+    $('#compoffgrid').dataTable( {
+        "sPaginationType": "bootstrap",
+        "aaSorting": [ [0,'asc'] ],
+        "iDisplayLength": 5,
+        "aoColumns": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+
+        ]
+    } );
+    $('#compoffjuliengrid').dataTable( {
+        "sPaginationType": "bootstrap",
+        "aaSorting": [ [0,'asc'] ],
+        "iDisplayLength": 5,
+        "aoColumns": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+
+        ]
+    } );
+    ////vlidating dates///
+    $('#datestart').datepicker({language: 'fr'}).on('changeDate', function(ev){
+        var dateText = $(this).val();//data('date');
+        var startDateTextBox = $('#datestart');
+        var startdate = startDateTextBox.val();
+        var endDateTextBox = $('#dateend');
+        var endDateTime = endDateTextBox.val();
+        if (startDateTextBox.val() != '') {
+            var testStartDate = new Date(dateText);
+            var testEndDate = new Date(endDateTextBox.val());
+            if (testStartDate > testEndDate) {
+                endDateTextBox.val(dateText);
+            }
+            $("#results").html('');
+            if(endDateTime == '')
+                var target_page = '/hrm/datesinbetweencompoff?start='+startdate+'&end='+startdate;
+            else
+                var target_page = '/hrm/datesinbetweencompoff?start='+startdate+'&end='+endDateTime;
+            $.post(target_page, function(data){ //alert(data);
+                var data = $.trim(data);
+                if(data != 'empty'){
+                    $.each($.parseJSON(data), function(idx, obj) {
+                        $("#results").append('<input type="text" readonly="readonly" value="'+obj+'" name="date[]" /> ' +
+                        'Half day : <input type="checkbox"  name="halfday_'+idx+'" /> ');
+                    });
+                } else {
+                    smoke.alert('Its not possible to apply on weekday');
+                }
+            });
+        }
+        else {
+            endDateTextBox.val(dateText);
+        };
+        $('#dateend').datepicker('setStartDate', dateText);
+        $('#datestart').datepicker('hide');
+    });
+    $('#dateend').datepicker({language: 'fr'}).on('changeDate', function(ev){
+        var dateText = $(this).val();//data('date');
+        var startDateTextBox = $('#datestart');
+        var startdate = startDateTextBox.val();
+        if (startDateTextBox.val() != '') {
+            var testStartDate = new Date(startDateTextBox.val());
+            var testEndDate = new Date(dateText);
+            if (testStartDate > testEndDate) {
+                startDateTextBox.val(dateText);
+            }
+            $("#results").html('');
+            var target_page = '/hrm/datesinbetweencompoff?start='+startdate+'&end='+dateText;
+            $.post(target_page, function(data){
+                var data = $.trim(data);
+                if(data != 'empty'){
+                    $.each($.parseJSON(data), function(idx, obj) {
+                        $("#results").append('<input type="text" readonly="readonly" value="'+obj+'" name="date[]" /> ' +
+                        'Half day : <input type="checkbox"  name="halfday_'+idx+'" /> ');
+                    });
+                } else {
+                    smoke.alert('Its not possible to apply on weekday');
+                }
+            });
+
+        }
+        else {
+            startDateTextBox.val(dateText);
+        };
+        $('#datestart').datepicker('setEndDate', dateText);
+        $('#dateend').datepicker('hide');
+    });
+
+
+});
+ function addCompOff()
+ {
+     var title = $("#comp_title").val();
+     var requestto = $("#requestto").val();
+     var datestart = $("#datestart").val();
+     var dateend = $("#dateend").val();
+     if(title == '' || requestto == '' || datestart == '' || dateend == '')
+     {
+         smoke.alert("please enter all valid inputs");
+         return false;
+     }else{
+         $("#addcompoff").submit();
+     }
+ }
+function changeStatus(compoffid, status)
+{
+    if(status == 'Inactive')
+        var statusmsg = 'Active';
+    else
+        var statusmsg = 'Inactive';
+    smoke.confirm("Do you want to approve this request ",function(e){
+        if (e)
+        {
+            // window.location.href="users-list?submenuId=ML2-SL7&tab="+tab+"&delete=yes&userId="+userid;
+            var target_page = "/hrm/changecompoffstatus?status="+statusmsg+"&compoff_id="+compoffid;
+            $.post(target_page, function(data){ //alert(data);
+                $('#compoffstatus_'+compoffid).html("<a onclick=\"changeStatus('"+compoffid+"', '"+statusmsg+"');\">"+statusmsg+"</a>");
+                window.location.reload();
+            });
+        }
+        else
+        {
+            return false;
+        }
+    });
+
+}
+
+</script>	
+{/literal}
+{if $loginuserId == '111113163826982'}
+
+<table id="compoffjuliengrid" class="table table-bordered table-striped table_vam ">
+    <thead>
+    <tr>
+        <th>Sl.no</th>
+        <th>Comp off</th>
+        <th>Start</th>
+        <th>end</th>
+        <th>requested by</th>
+        <th>project manager</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {if $compoffs neq 'NO'}
+    {foreach from=$compoffs key=compoff_key item=compoff_item name=compoff_loop}
+    <tr>
+        <td>{$smarty.foreach.compoff_loop.index+1}</td>
+        <td>{$compoff_item.comp_off|stripslashes|wordwrap:20:"\n":true}</td>
+        <td>{$compoff_item.start|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{$compoff_item.end|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{$compoff_item.requested_by}</td>
+        <td>{$compoff_item.manager}</td>
+        <td id="compoff_{$compoff_item.id}"><a href="#" class="hint--left hint--info" data-hint="Make {if $compoff_item.status == 'Active' }Inactive{else}Active{/if}" data-displacement="left" onclick="return changeStatus('{$compoff_item.id}', '{$compoff_item.status}')" >{$compoff_item.status}</a></td>
+    </tr>
+    {/foreach}
+    {/if}
+    </tbody>
+</table>
+
+{else}
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading span">Comp off </h3>
+        <form id="addcompoff" name="addcompoff" action="/hrm/comp-off" >
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span6 form-inline">
+                        <label class="span3">Title <span class="f_req">*</span></label>
+                        <input type="text" name="comp_title" id="comp_title"  value="{$publicleaves[0].leave}"  />
+                    </div>
+                    <div class="span6 form-inline">
+                        <label class="span3">Request to <span class="f_req">*</span></label>
+                        <select name="requestto" id="requestto" data-placeholder="S&eacute;lectionnez un user" class="validate[required]" data-prompt-position="bottomLeft">
+                            <option value="" ></option>
+                            {foreach from=$userList item=user key=uk name=users}
+                            <option value={$user->identifier} {if $smarty.get.mode eq 'edit' && $leavedetials[0].in_charge == $user->identifier} selected='selected'{/if}>{$user->first_name} {$user->last_name}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span6 form-inline">
+                        <label class="span3">start <span class="f_req">*</span></label>
+                        <input type="text" placeholder="From" id="datestart" name="startdate" data-date-format="dd-mm-yyyy" value="{if  $smarty.get.mode eq 'edit'} {$leavedetials[0].start|date_format:'%d-%m-%Y'} {/if}" class="validate[required]"/>
+                    </div>
+                    <div class="span6 form-inline">
+                        <label class="span3">end <span class="f_req">*</span></label>
+                        <input type="text"  placeholder="To" id="dateend" name="enddate" data-date-format="dd-mm-yyyy" value="{if  $smarty.get.mode eq 'edit'} {$leavedetials[0].end|date_format:'%d-%m-%Y'} {/if}" />
+                    </div>
+                </div>
+            </div>
+            <tr class="span" id="daterangeresult"><td colspan="2"><div class="span alert" id="results"></div></td></tr>
+            <div class="row-fluid">
+                <div class="span7 pull-right form-inline">
+                    <input type="hidden" name="holidayId" id="holidayId" value="{$publicleaves[0].id}"  />
+                    <input type="hidden" name="save" id="save" value="save"  />
+                    {if $smarty.get.mode neq 'edit'}
+                    <button type="button" class="btn btn-success" id="save" name="save" value="save" onclick="addCompOff();">Add</button>
+                    {else}
+                    <button type="submit" class="btn btn-success" id="edit" name="edit" value="edit"  >Edit</button>
+                    {/if}
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<table id="compoffgrid" class="table table-bordered table-striped table_vam ">
+    <thead>
+    <tr>
+        <th>Sl.no</th>
+        <th>Comp off</th>
+        <th>Start</th>
+        <th>end</th>
+        <th>project manager</th>
+        <th>status</th>
+    </tr>
+    </thead>
+    <tbody>
+    {if $compoffs neq 'NO'}
+    {foreach from=$compoffs key=compoff_key item=compoff_item name=compoff_loop}
+    <tr>
+        <td>{$smarty.foreach.compoff_loop.index+1}</td>
+        <td>{$compoff_item.comp_off|stripslashes|wordwrap:20:"\n":true}</td>
+        <td>{$compoff_item.start|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{$compoff_item.end|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{$compoff_item.manager}</td>
+        <td>{$compoff_item.status}</td>
+    </tr>
+    {/foreach}
+    {/if}
+    </tbody>
+</table>
+{/if}

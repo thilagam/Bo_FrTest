@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<link rel="stylesheet" href="http://www.edit-place.com/css/Contrib/invoice_pdf.css" type="text/css"/>
+<style type="text/css">
+table.change_order_items { 
+  font-size: 10pt;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  border: 1px solid black;
+  
+}
+/*table.change_order_items>tbody { 
+  border: 1px solid black;
+}*/
+table.change_order_items>tbody>tr>th { 
+  border-bottom: 1px solid black;
+  font-size: 12pt;
+  
+}
+table.change_order_items>tbody>tr>td { 
+  border-right: 1px solid black;
+  padding: 0.5em;
+}
+td.change_order_total_col { 
+  padding-right: 4pt;
+  text-align: right;
+}
+td.change_order_unit_col { 
+  padding-left: 2pt;
+  text-align: left;
+}
+</style>
+</head>
+<body>
+<div id="body">
+	<div id="section_header"></div>
+	<div id="content">  
+		<div class="page">
+			<div style="width:100%;float:left">
+				<table style="width: 50%;float:left;">
+					<tr>
+						<td colspan="2"><img src="http://mmm-new.edit-place.com/FO/images/logo-edit-place-old.png" style="background-repeat: no-repeat;" width="279px" height="49px"/></td>
+					</tr>
+					<tr>
+						<td colspan="2" style="font-size: 12pt;">16 rue Jesse Owens - 93200</td>
+					</tr>
+					<tr>
+						<td style="font-size: 12pt;width:40%">SAINT  DENIS - FRANCE</td>
+						<td colspan="2"></td>
+					</tr>
+				</table>
+				<table style="width: 50%;padding-top:0px;float:right;">
+					<tr>
+						<td></td>
+						<td style="text-align: left;width: 60%;background-color:#FFF;padding:10px;font-size: 12pt;">
+							<b>INVOICE</b>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td style="text-align: left;width: 60%;background-color:#FFF;padding:10px;font-size: 12pt;">
+							Invoice No. $$$$invoice_identifier$$$$							
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td style="text-align: left;width: 60%;background-color:#FFF;padding:10px;font-size: 12pt;">
+							Date: $$$$date_invoice$$$$
+						</td>
+					</tr>
+				</table>
+				
+			</div>	
+			<div style="width:100%;float:left;margin-top:10px;">
+				<table style="width: 50%;padding-top:0px;float:left;">
+					<tr>						
+						<td style="text-align: left;background-color:#FFF;padding:10px;font-size: 12pt;">
+							$$$$address$$$$
+						</td>
+					</tr>
+				</table>
+				<table style="width: 50%;padding-top:0px;float:right;">
+					<tr>
+						<td></td>
+						<td style="text-align: left;width: 60%;background-color:#FFF;padding:10px;font-size: 12pt;">
+							<b>Bill to:</b>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td style="text-align: left;width: 60%;background-color:#FFF;padding:10px;font-size: 12pt;">
+							<b>Edit-Place Uk</b><br>
+							20 Hanover Square<br>
+							W1S1JY London<br>
+							England
+						</td>
+					</tr>					
+				</table>
+			</div>
+			<div style="width:100%;float:left;">
+				<table style="width: 100%;float:left;">
+					<tr>
+						<td style="font-size:12pt">Work completed in  : $$$$date_invoice_full$$$$</td>
+					</tr>
+				</table>
+			</div>	
+			<div style="width:100%;float:left;">
+				$$$$invoice_details_pdf$$$$
+				$$$$tax_details_pdf$$$$
+				$$$$final_invoice_amount$$$$
+				$$$$bank_transfer_price$$$$
+				$$$$total_transfer_amount$$$$
+			</div>	
+			<div style="width:100%;float:left;">
+				<table style="width: 50%;padding-top:0px;float:left;">
+					<tr>						
+						<td style="text-align: left;background-color:#FFF;padding:10px;font-size: 12pt;">
+							<b>Account Details :</b>
+						</td>
+					</tr>
+					<tr>						
+						<td style="text-align: left;background-color:#FFF;padding:10px;font-size: 12pt;">
+							$$$$full_name$$$$
+						</td>
+					</tr>
+					<tr>						
+						<td style="text-align: left;background-color:#FFF;padding:10px;font-size: 12pt;">
+							$$$$payinfo_number$$$$
+							$$$$remuneration$$$$
+						</td>
+					</tr>
+					<tr>						
+						<td style="text-align: left;background-color:#FFF;padding:10px;font-size: 12pt;">
+							Thank you
+						</td>
+					</tr>					
+				</table>
+			</div>	
+		</div>
+	</div>
+</div>
+<script type="text/php">
+//if ( isset($pdf) ) {
+  $font = Font_Metrics::get_font("verdana");;
+  $size = 6;
+  $color = array(0,0,0);
+  $text_height = Font_Metrics::get_font_height($font, $size);
+  $foot = $pdf->open_object();
+  
+  $w = $pdf->get_width();
+  $h = $pdf->get_height();
+  // Draw a line along the bottom
+  $y = $h - 2 * $text_height - 24;
+  $pdf->line(16, $y, $w - 16, $y, $color, 1);
+  $y += $text_height;
+  $text = "Job: 132-003";
+  $pdf->text(16, $y, $text, $font, $size, $color);
+  $pdf->close_object();
+  $pdf->add_object($foot, "all");
+  global $initials;
+  $initials = $pdf->open_object();
+  
+  // Add an initals box
+  $text = "Initials:";
+  $width = Font_Metrics::get_text_width($text, $font, $size);
+  $pdf->text($w - 16 - $width - 38, $y, $text, $font, $size, $color);
+  $pdf->rectangle($w - 16 - 36, $y - 2, 36, $text_height + 4, array(0.5,0.5,0.5), 0.5);
+    
+  $pdf->close_object();
+  $pdf->add_object($initials);
+ 
+  // Mark the document as a duplicate
+  $pdf->text(110, $h - 240, "DUPLICATE", Font_Metrics::get_font("verdana", "bold"),
+             110, array(0.85, 0.85, 0.85), 0, -52);
+  $text = "Page {PAGE_NUM} of {PAGE_COUNT}";  
+  // Center the text
+  $width = Font_Metrics::get_text_width("Page 1 of 2", $font, $size);
+  $pdf->page_text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
+  
+//}
+</script>
+</body>
+</html>

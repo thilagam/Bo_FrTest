@@ -1,0 +1,80 @@
+{literal}
+<script>
+    $(document).ready(function() {
+
+    	$("#recruitment_quiz_step1").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+
+		$("#category_quiz").chosen({ disable_search: true });	
+		$("#status_quiz").chosen({ disable_search: true });	
+
+
+		$("#quiz-create-step1").live('click',function(){
+
+			if($("#recruitment_quiz_step1").validationEngine('validate'))
+			{
+				var cmid='{/literal}{$qz_step1.cmid}{literal}';
+
+				$.post("/recruitment/save-quiz-step1?cmid="+cmid,$("#recruitment_quiz_step1").serialize(),function(data){            
+					
+					var href = '/recruitment/create-quiz-step2';
+					$("#recruitment_create_quiz").removeData('modal');
+					$('#recruitment_create_quiz .modal-body').load(href);
+					$("#recruitment_create_quiz").modal();
+					$(".modal-backdrop:gt(0)").remove();
+		        });	
+			}
+
+		});
+	});	
+</script>
+<style>
+	input {text-transform:none !important;}
+</style>
+{/literal}
+
+<form id="recruitment_quiz_step1">
+<input type="hidden" name="cmid" value="{$qz_step1.cmid}">
+ <div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">QUIZZ CREATION PAGE</h3>
+		<table align="center" cellpadding="4" cellspacing="4" width="50%">
+			<tr>
+				<td>Titre du quizz</td>
+				<td><input type="text" class="validate[required]" name="quizztitle" id="quizztitle" value="{$qz_step1.quizztitle}"/></td>
+			</tr>   
+			<tr>
+				<td>Cat&eacute;gorie</td>
+				<td>{html_options name=category class="validate[required]" id=category_quiz options=$categories selected=$qz_step1.category}</td>
+			</tr>   
+			<tr>
+				<td>Statut du quizz</td>
+				<td>
+					<select name="status" id="status_quiz" class="validate[required]">
+						<option value="1">Active</option>
+						<option value="2" {if $qz_step1.status eq '2'}selected{/if}>Not Active</option>
+					</select>
+				</td>
+			</tr>   
+			<tr>
+				<td>Nombre de questions</td>
+				<td><input type="text" name="quest_count" id="quest_count" value="{$qz_step1.quest_count}" class="span4 validate[required,custom[integer]]"/></td>
+			</tr>   
+			<tr>
+				<td>Nombre de r&eacute;ponses correctes min</td>
+				<td><input type="text" name="correct_ans_count" id="correct_ans_count" value="{$qz_step1.correct_ans_count}" class="span4 validate[required,custom[integer]]"/></td>
+			</tr>   
+			<tr>
+				<td>Dur&eacute;e du quizz</td>
+				<td><input type="text" name="setuptime" id="setuptime" value="{$qz_step1.setuptime}" class="span4 validate[required,custom[integer]]"/> minutes</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<button class="btn" data-dismiss="modal">ANNULER</button>
+					<button class="btn btn-primary" id="quiz-create-step1" type="button">ETAPE SUIVANTE</button>				
+				</td>
+			</tr>
+		</table>		
+	</div>
+  </div>	
+</form>

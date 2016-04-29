@@ -1,0 +1,211 @@
+<form method="POST" action="/seotool/keyword-xls-upload" name="ge" id="kwxls" class="form_validation_reg"  enctype="multipart/form-data">
+    <div class="span10">
+
+        <h3 class="heading">Blacklist Keyword Finder</h3>
+{if $msg neq ''}
+        <div class="alert alert-{$class}" id="seo-message" style="disply:block;width:800px;">
+            <div class="row-fluid">
+                <div class="span12 form-inline">{$msg}</div>
+            </div>
+        </div>
+{/if}
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3"><span class="error_placement">Client</span></label>
+                    <select name="clientblkws" id="clientblkws" class="chzn_a" onchange="loadblkws(this.value);">
+                        <option value="">s&#233;lectionner</option>
+                        <option value="cch">CCH</option>
+                        <option value="bnb">BNB</option>
+                        <option value="sct">SCT</option>
+                        <option value="les_furets">LES FURETS</option>
+                        <option value="orange.com">ORANGE.COM</option>
+                        <option value="celio">CELIO</option>
+                        <option value="caroll">CAROLL</option>
+                        <option value="armand_thiery_desc">ARMAND THIERY DESC</option>
+                        <option value="ptt_fr">PTT FR</option>
+                        <option value="meetic">MEETIC</option>
+                        <option value="lbm">LBM</option>
+                        <option value="cdc_fr">CDC FR</option>
+                        <option value="cosmoparis">COSMOPARIS</option>
+                    </select>   
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep" id="csv">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">File (doc,docx,xls,xlsx)<span class="f_req">*</span></label>
+                    
+                    <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" />
+                        <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" />
+                            <div class="input-append">
+                                <div class="uneditable-input span2"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input name="keyword_file" id="keyword_file" type="file" /></span><a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep" id="text_words">
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label class="span3 control-label">Input<span class="f_req">*</span></label>
+                    <div class="span8 controls no-margin-first">
+                        <textarea name="kw" id="txtarea_sp" cols="1" rows="4" class="span10"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group formSep">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <label class="span3">Content Reference<span class="f_req">*</span></label>
+                    <select name="index_reference" id="index_reference" class="chzn_b">
+                        <option value="1">A</option>
+                            
+                            <option value="2" selected>B</option>
+                            
+                            <option value="3">C</option>
+                            
+                            <option value="4">D</option>
+                            
+                            <option value="5">E</option>
+                            
+                            <option value="6">F</option>
+                            
+                            <option value="7">G</option>
+                            
+                            <option value="8">H</option>
+                            
+                            <option value="9">I</option>
+                            
+                            <option value="10">J</option>
+                            
+                            <option value="11">K</option>
+                            
+                            <option value="12">L</option>
+                            
+                            <option value="13">M</option>
+                            
+                            <option value="14">N</option>
+                            
+                            <option value="15">O</option>
+                            
+                            <option value="16">P</option>
+                            
+                            <option value="17">Q</option>
+                            
+                            <option value="18">R</option>
+                            
+                            <option value="19">S</option>
+                            
+                            <option value="20">T</option>
+                            
+                            <option value="21">U</option>
+                            
+                            <option value="22">V</option>
+                            
+                            <option value="23">W</option>
+                            
+                            <option value="24">X</option>
+                            
+                            <option value="25">Y</option>
+                            
+                            <option value="26">Z</option>
+                    </select>   
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="row-fluid">
+                <div class="span12 form-inline">
+                    <button class="btn btn-gebo" name="submit" type="submit">Upload</button>
+                </div>
+            </div>
+        </div>
+        <div id="data"></div>
+    </div>
+</form>
+
+{literal}
+<script type="text/javascript">
+	$.validator.addMethod("csvextension", function(value, element, param) {
+		param = typeof param === "string" ? param.replace(/,/g, '|') : "doc|docx|xls|xlsx";
+		return this.optional(element) || value.match(new RegExp(".(" + param + ")$", "i"));
+	}, $.format("Only doc,docx,xls and xlsx files are accepted."));
+
+    $(document).ready(function() {
+        gebo_chosen.init();
+        gebo_validation.reg();
+    });
+
+    //* validation
+    gebo_validation = {
+        reg : function() {
+            reg_validator = $('.form_validation_reg').validate({
+                onkeyup : false,
+                errorClass : 'error',
+                validClass : 'valid',
+                highlight : function(element) {
+                    $(element).closest('div').addClass("f_error");
+                    $(element).closest('div').css("color", "black");
+                },
+                unhighlight : function(element) {
+                    $(element).closest('div').removeClass("f_error");
+                },
+                errorPlacement : function(error, element) {
+                    $(element).closest('div').append(error);
+                    $('.error').css("font-size", "10px");
+                    $('.error').css("padding-top", "5px");
+                },
+                rules : {
+                    keyword_file : {required : true, csvextension: "doc|docx|xls|xlsx"},
+                    kw : {required : true}
+                },
+                messages : {
+                    keyword_file :  {required: "Please select (doc,docx,xls,xlsx) file.", accept: "Only doc,docx,xls and xlsx files are accepted."},
+                    kw : "Please enter keyword(s)."
+                },
+                invalidHandler : function(form, validator) {
+                    $.sticky("There are some errors. Please corect them and submit again.", {
+                        autoclose : 5000,
+                        position : "top-center",
+                        type : "st-error"
+                    });
+                }
+            })
+        }
+    };
+
+    gebo_chosen = {
+        init: function(){
+            $(".chzn_a").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_b").chosen({
+                allow_single_deselect: true,
+                disable_search: true
+            });
+        }
+    };
+    
+    function loadblkws (client) {
+        var target_page = "/seotool/loadblkws?client="+client ;
+        if(client != '')
+        {
+            $.post(target_page, function(data){
+                var data = $.trim(data);
+                $('#seo-message').html('') ;
+                $('#seo-message').removeClass("alert alert-info");
+                if(data != "")
+                {
+                    data=data.replace(/, /g, '\n');
+                    data=data.replace(/,/g, '\n');
+                    $('#txtarea_sp').val(data);
+                }
+            });
+        }
+    }	
+</script>
+{/literal}

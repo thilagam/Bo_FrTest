@@ -1,0 +1,59 @@
+{literal}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#userdetailId").bind('click',function(){
+            var url = $(this).attr('href');
+            var id = getURLParameters(url, 'id');
+            getUserDetails(id);
+        });
+
+        function getURLParameters(url, id){
+            return (RegExp(name + '=' + '(.+?)(&|$)').exec(url)||[,null])[1];
+        }
+
+        function getUserDetails(id)
+        {
+            var url="/userlist/get-details?&id="+id;
+            $.ajax({
+                url:url,
+                success:function(data){
+                    console.log(data);
+                    $("#userDetails").html(data);
+                }
+            });
+        }
+
+    });
+</script>
+{/literal}
+
+<div class="row-fluid">
+    <div class="span12">
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th>Sl No</th>
+                <th>Details</th>
+                <th>Options</th>
+            </tr>
+
+            {assign var="i" value=0}
+            {while $i < $listCount}
+            <tr>
+                <td>{$i+1}</td>
+                <td>
+                    {foreach from=$list[$i] key=name item=value}
+                    {$name}:{$value}<br />
+                    {/foreach}
+                </td>
+                <td>
+                    <a href="javascript:void(0);" id="userdetailId">Edit</a>
+                </td>
+            </tr>
+            {assign var="i" value=$i+1}
+            {/while}
+        </table>
+        <div id="userDetails">
+            <h5>userdetail</h5>
+        </div>
+    </div>
+</div> 

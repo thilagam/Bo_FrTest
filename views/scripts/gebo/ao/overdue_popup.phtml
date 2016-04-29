@@ -1,0 +1,116 @@
+{literal}
+<link href="/BO/theme/gebo/lib/wysihtml5/bootstrap-wysihtml5.css" type="text/css" rel="stylesheet" />
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/lib/wysihtml5/wysihtml5-0.3.0.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/lib/wysihtml5/bootstrap-wysihtml5.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/lib/wysihtml5/locales/bootstrap-wysihtml5.fr-FR.js"></script>
+
+<script type="text/javascript" >
+	$(document).ready(function() { 			
+		 $("#extend_form").validate({
+		  message:false,
+		  errorClass: 'error',
+		  highlight: function(element) {
+					$(element).closest('span').addClass("f_error");
+			},
+		 unhighlight: function(element) {
+				$(element).closest('span').removeClass("f_error");
+			},
+		  rules: {
+			extend_date: {
+			  required: true,
+			  digits: true
+			}
+		  }
+		});
+	});
+		
+	function fngetmailcontent(extend_time,participateId)
+	{
+		
+		var ts = Math.round((new Date()).getTime() / 1000);
+		if(participateId!='')
+		{
+			var commentBox1=$("#extend_comment_"+participateId);
+			  commentBox1.hide();
+			if (CKEDITOR.instances['extend_comment_'+participateId])
+			{
+				CKEDITOR.instances['extend_comment_'+participateId].destroy();
+			}
+		   /////////////////////////////////
+			 var editor = CKEDITOR.replace( 'extend_comment_'+participateId,
+				 {
+					 language: 'de',
+					 uiColor: '#D9DDDC',
+					 enterMode : CKEDITOR.ENTER_BR,
+					 removePlugins : 'resize',
+					 toolbar :
+					 [
+						 ['Undo','Redo'],
+						 ['Find','Replace','-','SelectAll','RemoveFormat'],
+						 ['Link', 'Unlink', 'Image'],
+						 '/',
+						 ['FontSize', 'Bold', 'Italic','Underline'],
+						 ['NumberedList','BulletedList','-','Blockquote'],
+						 ['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize']
+					 ],
+				 }
+			 );
+			
+			 var target_page = "/ao/getextendmail?extend_time="+extend_time;
+			 $.post(target_page, function(data){   
+				CKEDITOR.instances['extend_comment_'+participateId].setData(data);
+			 });
+			commentBox.show();
+			//alert('done');
+		}
+	}
+ </script>
+<style>
+	.error {  display: none !important;}
+</style>
+{/literal}
+
+{if $nores neq 'true'}
+<form name="extend_time" action="/ao/extend-article-submit" method="post" id="extend_form">
+	<table cellpadding="4" cellspacing="4">
+		<tr> 
+			<td>Titre</td>
+			<td>{$overDueArticles[0].title}</td>
+		</tr>
+		<tr>
+			<td>Titre mission</td>
+			<td>{$overDueArticles[0].deliveryTitle}</td>
+		</tr>
+		<tr>	
+			<td>CONTRIBUTEUR</td>
+			<td>{$overDueArticles[0].first_name|utf8_encode} {$overDueArticles[0].last_name|wordwrap:10:"\n":true|utf8_encode}</td>
+		</tr>
+		<tr>	
+			<td>D&eacute;lai de rendu max</td>
+			<td>{$overDueArticles[0].submit_expires}</td>
+		</tr>
+		<tr>	
+			<td>Ajouter heures</td>
+			<td>
+				<span><input type="text" id="extend_date" class="span1" name="extend_date" onkeyup="fngetmailcontent(this.value,'{$overDueArticles[0].id}');" /></span>
+			</td>
+		</tr>
+		<tr>	
+			<td valign="top">Email envoy&eacute;</td>
+			<td id="extend_{$overDueArticles[0].id}" style="float:right;">
+				<textarea rows="4" cols="35" name="extend_comment_{$overDueArticles[0].id}" id="extend_comment_{$overDueArticles[0].id}">{$mail_content}</textarea>
+			</td>
+		</tr>
+		<tr>	
+			<td>&nbsp;</td>
+			<td style="float:right">
+				<input type="hidden" name="participationId" value="{$overDueArticles[0].id}">
+				<input type="hidden" name="pagefrom" id="pagefrom" value="{$pagefrom}">
+				<input type="submit" id="submit_pop_edit" name="submit_pop_edit" value="Update" class="btn btn-info"> </input>&nbsp;&nbsp;
+				<input type="button" id="close_pop_edit" name="close_pop_edit" value="Fermer" class="btn btn-info" data-dismiss="modal" ></input>
+			</td>
+		</tr>
+	</table>	
+</form>	
+{else}
+{/if}

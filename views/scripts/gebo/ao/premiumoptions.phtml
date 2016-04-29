@@ -1,0 +1,81 @@
+{literal}
+     <script type="text/javascript" >
+		$(document).ready(function() {
+			$('#premiumtable').dataTable({
+				"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 0, "asc" ]],
+				"aoColumns": [
+					{ "sType": "formatted-num" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" } 
+				]
+			});
+		} );
+
+        function confrimDelete()
+        {
+            var c = confirm('Do you really want to delete the option ?');
+            if(c == true)
+            {
+               return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+ </script>
+{/literal}
+	
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">Premium Options :: Liste de Options</h3>
+		<div align="right" style="padding-bottom:10px;"><a href="/ao/addpremoption?submenuId=ML2-SL8" class="btn btn-info">Nouveau Option</a></div>
+		<table class="table table-bordered table-striped table_vam" id="premiumtable">
+			<thead>
+				<tr>
+				  <th>SL NO.</th>
+				  <th>Options de</th>
+				  <th>Fo Prix</th>
+				  <th>Bo Prix</th>
+				  <th>Description</th>
+				  <th>Status</th>
+				  <th>Actions</th>
+				</tr>
+			</thead>
+		   <tbody>
+			{foreach from=$paginator  key=premoptions_key item=premoptions name=optionsgrid}
+			<tr>
+			   <td>{$smarty.foreach.optionsgrid.index+1}</td>
+			   <td>{$premoptions.option_name}</td>
+			   <td>{$premoptions.option_price}</td>
+			   <td>{$premoptions.option_price_bo}</td>
+			   <td>{$premoptions.description}</td>
+			   <td>{$premoptions.status}</td>
+			   <td>
+					<a href="editpremoption?submenuId={$submenuId}&optionId={$premoptions.id}" class="hint--left hint--info" data-hint="Edit Option">
+						<i class="splashy-application_windows_edit"></i>
+					</a>&nbsp;
+					<a href="deletepremoption?submenuId={$submenuId}&optionId={$premoptions.id}" onclick="return confrimDelete();" class="hint--left hint--info" data-hint="Delete Option">
+						<i class="splashy-remove"></i>
+					</a>
+			   </td>
+			</tr>
+			{/foreach}
+			</tbody>
+		</table>
+	</div>
+</div>	
+      
+		
+
+
+
+
+

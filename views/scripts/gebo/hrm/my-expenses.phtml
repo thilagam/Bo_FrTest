@@ -1,0 +1,274 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/lib/fullcalendar/fullcalendar_gebo.css" />
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/jquery.MultiFileQuote.js" type="text/javascript" charset="utf-8"></script>
+
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jquery.eComboBoxClient.js"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/custom_js.js"></script>
+
+<style type="text/css">
+.mod .error
+{
+	display:none !important;		
+}
+.error {
+    color: #C62626;    
+    font-size: 11px;
+    font-weight: 700;
+}
+.mod {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+    border-image: none;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+    margin-bottom: 15px;
+    overflow: hidden;
+    padding: 12px;
+}
+</style>
+{/literal}
+{literal}
+<script language="javascript">
+
+$(document).ready(function() {
+	
+    $("#create").validationEngine({prettySelect : true,useSuffix: "_chzn"}); 
+
+	$(".uni_style").uniform();
+		
+	//$(".currency").chosen({ allow_single_deselect: false,search_contains: true});
+	$("#payment_type").chosen({ allow_single_deselect: false,search_contains: true});	
+	$("#country").chosen({ allow_single_deselect: false,search_contains: true});
+
+    $("#rib").chosen({ allow_single_deselect: false,search_contains: true});
+
+
+	//Add More my exenses
+	var expense=0;
+	
+	$("[id^=exp_close_]").live('click', function() {
+			var DivId = $(this).attr('id');
+			var parentDiv=$(this).parents("div:first").attr('id');
+			var client_identifier=$(this).attr('rel');
+			var closeDiv=$("#"+parentDiv).children(".close").attr('id');
+            totalAmount();
+			if(!client_identifier)
+				$("#"+parentDiv).remove();
+			else
+			{	
+				smoke.confirm("Do you really want to delete this contact ?",function(e){
+					if (e)
+					{
+						if($("[id^=my_expense_]").size()>1)
+						{
+							$("#"+parentDiv).html('<center><img alt="" src="/BO/theme/gebo/img/ajax_loader.gif"> Deleting Contact... </center>');
+							ajaxProfileUpdate('sccontact',client_identifier,parentDiv,'');
+						}	
+						else
+						{
+							$("#"+parentDiv).html('<center><img alt="" src="/BO/theme/gebo/img/ajax_loader.gif"> Deleting Contact... </center>');
+							ajaxProfileUpdate('sccontact',client_identifier,parentDiv,'final');	
+							
+						}
+					}
+					else
+					{
+						return false;
+					}
+				});				
+			}	
+				
+		});
+   // expense = 1;
+	$("[id^=my_expense_]" ).each(function(z) {
+        expense =++z;
+        $("[id^=exp_date_"+expense+"]").datepicker({language: 'fr'}).on('changeDate', function(ev){
+
+        });
+
+
+	});
+	$("#addmore_expense").click(function(){
+			
+		var cloned =$("#addmore_expense");
+		$("#my_expense_0").clone().attr('id', 'my_expense_'+(expense) ).insertBefore( cloned );
+		$("#my_expense_"+expense).show();
+        $('#my_expense_'+expense+' input[name="exp_currency[]"]').attr('id','exp_currency_'+expense);
+		$('#my_expense_'+expense+' input[name="exp_name[]"]').attr('id','exp_name_'+expense).val('');
+		$('#my_expense_'+expense+' input[name="exp_date[]"]').attr('id','exp_date_'+expense).val('');
+		$('#my_expense_'+expense+' input[name="exp_amt[]"]').attr('id','exp_amt_'+expense).val('');
+		$('#my_expense_'+expense+' input[name="exp_invoice[]"]').attr('id','exp_invoice_'+expense).val('');
+
+        $('#my_expense_'+expense+' #exp_close_0').attr('id','exp_close_'+expense);
+        $('#my_expense_'+expense+' #exp_currency_0').attr('id','exp_currency_'+expense);
+
+        $("#exp_close_"+expense).show();
+        $("[id^=exp_date_"+expense+"]").datepicker({language: 'fr'}).on('changeDate', function(ev){
+
+        });
+        $("#exp_currency_"+expense).removeClass("currency chzn-done" ).addClass( "currency" );
+        $("#my_expense_"+expense+ " .chzn-container").remove();
+
+
+        $(".currency").chosen({ allow_single_deselect: false,search_contains: true});
+
+        $(".uni_style").uniform();
+        expense++;
+		//clearChildren(document.getElementById('my_expense_'+expense));
+
+	});
+
+    $("#exp_date_0").datepicker({language: 'fr'}).on('changeDate', function(ev){
+
+    });
+
+});
+
+function totalAmount()
+{
+    sumeuro = 0;
+    sumpound = 0;
+    $("[id^=my_expense_]" ).each(function(i) {
+        if($('#exp_currency_'+i).val() == 'euro')
+         {
+
+             var amt = $('#exp_amt_'+i).val();
+                 //add only if the value is number
+                 if(!isNaN(amt) && amt.length!=0) {
+                     sumeuro += parseFloat(amt);
+                 }
+
+         }
+         else
+         {
+
+             var amtp = $('#exp_amt_'+i).val();
+                 //add only if the value is number
+                 if(!isNaN(amtp) && amtp.length!=0) {
+                     sumpound += parseFloat(amtp);
+                 }
+
+         }
+
+
+    });
+    $("#totaleuro").html(sumeuro.toFixed(2));
+    $("#totalpound").html(sumpound.toFixed(2));
+}
+function sleep(ms)
+{
+	var dt = new Date();
+	dt.setTime(dt.getTime() + ms);
+	while (new Date().getTime() < dt.getTime());
+}
+
+</script>	
+{/literal}	
+<div class="row-fluid">    
+	<div class="span12">
+		<h3 class="heading span">Mes notes de frais </h3>
+		<form class="form_validation_reg" action="/hrm/my-expenses" id="create" method="post" enctype="multipart/form-data">
+		<input type="hidden" name="client_id" value="{$client_info.client_id}">
+                <div class="row-fluid">
+
+
+                </div>
+			<div id="my_expenses">
+
+				<div class="mod" id="my_expense_0">
+					<button class="close" type="button" id="exp_close_0"  rel="" style="display:none" >&times;</button>
+
+					<div class="formSep">
+						<div class="row-fluid">							
+							<label class="span3 moveright">Nature des frais engages <span class="f_req">*</span> </label>
+							<div class="span4"><input  name="exp_name[]" id="exp_name_0" class="validate[required] span12" type="text"></div>
+						</div>	
+					</div>
+                    <div class="formSep">
+                        <div class="row-fluid">
+                            <label class="span3 moveright">Currency <span class="f_req">*</span> </label>
+                            <div class="span4"><select name="exp_currency[]" id="exp_currency_0" class="currency" onchange="totalAmount();">
+                                    <option value="euro" >Euro</option>
+                                    <option value="pound" >pound</option>
+                                </select></div>
+                        </div>
+                    </div>
+                    <div class="formSep">
+                        <div class="row-fluid">
+                            <label class="span3 moveright">Date de l'achat <span class="f_req">*</span> </label>
+                            <div class="span2"><input data-date-format="dd-mm-yyyy" name="exp_date[]" id="exp_date_0" class="validate[required] span12" type="text"></div>
+                        </div>
+                    </div>
+                    <div class="formSep">
+                        <div class="row-fluid">
+                            <label class="span3 moveright">Montant <span class="f_req">*</span> </label>
+                            <div class="span2"><input  name="exp_amt[]" id="exp_amt_0" class="validate[required] span12" type="text" onkeyup="totalAmount();"  onblur="totalAmount();"></div>
+                        </div>
+                    </div>
+                    <div class="formSep">
+                        <div class="row-fluid">
+                            <label class="span3 moveright ">Bouton d'upload de la facture  </label>
+                            <!--<div class="span2"><input  name="exp_invoice[]" id="exp_invoice_0" class="validate[required] span12" type="file"></div>-->
+                            <div class="uni-uploader span3" id="uniform-uni_file" style="width:190px;">
+                                <input id="exp_invoice_0" class="uni_style" type="file" name="exp_invoice[]" size="19">
+                                <span class="uni-filename" >No file selected</span>
+                                <span class="uni-action" >Choose File</span>
+                            </div>
+                        </div>
+                    </div>
+
+				</div>
+					<div class="addmore-button" id="addmore_expense"><a class="btn"><i class="icon-plus"></i>Ajouter plus de expense</a></div>
+
+			</div>
+            <div class="formSep">
+                <div class="row-fluid">
+                    <div class="span8 pull-right">
+                        <div class="span6 ">
+                            <label class="uni-checkbox">
+                                <div class="uni-checkbox">
+                                    <span><input type="checkbox" value="1" class="uni_style validate[required]" name="main_contact" style="opacity: 0;"></span>
+                                </div>Je certifie l'exactitude des informations ci-dessus.
+                            </label>
+                        </div>
+                        <div class="span2" ><strong>Total &euro; : </strong><span id="totaleuro" class="error">00</span>  </div>
+                        <div class="span2" ><strong>Total &pound;: </strong><span id="totalpound" class="error">00</span>  </div>
+                    </div>
+                </div>
+            </div>
+            <div class="formSep">
+                <div class="row-fluid">
+
+                    <div>
+                        {foreach from=$allribs key=ribs item=ribdetials name="ribsname}
+                        {assign var=rib_index value=$smarty.foreach.ribsname.index}
+                        <!-- Start, new language row -->
+                        <div class="addmore form-inline span11 alert alert-success pull-right" style="margin-right: 100px;" id="rib_more_{$rib_index}" >
+                            <label class="muted span3" >IBAN :
+                                <input type="text" class="span9" id="rib_num_{$rib_index}" name="rib_num[]" value="{$ribdetials.rib_number}" /></label>
+                            <label class="muted span5" >Nom du RIB :
+                                <input type="text" class="span9 " id="rib_name_{$rib_index}" name="rib_name[]" value="{$ribdetials.rib_name}" /> </label>
+                            <label class="muted span3" >RIB par d&eacute;faut :
+                                <input type="radio" class="span2 rib_default" id="rib_default_{$rib_index}" name="exp_rib" value="{$ribdetials.id}" onclick="return setChecks('{$rib_index}');"   {if $ribdetials.default_val eq 'yes'} checked {/if} />
+                            </label>
+                        </div>
+                        {/foreach}
+                    </div>
+
+                </div>
+            </div>
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span5 form-inline">
+							<button type="submit" name="exp_create"  value="save" class="btn btn-success pull-right">Envoyer</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>	

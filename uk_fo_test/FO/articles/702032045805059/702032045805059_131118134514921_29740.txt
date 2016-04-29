@@ -1,0 +1,215 @@
+
+Backyard spec updates 
+Red : Rakesh comments 
+
+
+ Public Holidays per country :  
+http://admin-test.edit-place.com/hrm/public-holidays?submenuId=ML12-SL1   
+
+The principle is okay for us. Some updates to be done :  
+
+Feature 1 to be added : We need to setup a reminder email to be sent 3 business days before the holiday, this email will be sent to all the EP team ( team@edit-place.com  +  techteam@edit-place.com )  :   OK 
+
+---- 
+Subject :   $date (format DD/MM/YYYY) - Holiday in $country - Holiday title 
+
+Content :  
+Hello,  
+
+We'd like to inform you that the next holiday in $country will be on the $date.  
+Please anticipate and send any requests you have for your colleagues who will be absent on this date. 
+
+Thank you, 
+
+The Edit-place team  OK    - &gt;  3hr s . 
+---- 
+
+Feature 2 to be added : Also, is there any feed we can take to automatically import classic holidays for each country ? So that we do not have to enter all manually ?  
+This would be great and will allow us to import feeds for the next 10 years at least. We won’t have anything to do manually.  Ok but in Bangalore office, we decide holidays based on employees voting. We gave the option to upload mass list in format of CSV.  
+
+Feature 3 to be added : a way to differenciate countries. Please differenciate them with colors (let’s say Green for India, Blue for France, Red for United Kingdom).    OK   -&gt; 1/2 hr. 
+
+To be modified : The current calendar view is a 6 months view but we would prefer having the same view for all BO calendars. We decided the leave calendar view will be better (3 tabs : month, week and day, default active view is month).   In public holidays list page, there is no half day holiday, 2 hrs leave, etc. So we kept 6 months calender view for better view than week/day. We discuss on this for better understanding. For other pages, we will update it. 
+
+
+
+
+2) Leaves :  
+http://admin-test.edit-place.com/hrm/apply-leaves?submenuId=ML12-SL2 
+
+To be modified :  
+Please remove the statistics part on the top left, we do not need that, it is essentially for the HR manager and he already has his own page to check that.  http://awesomescreenshot.com/09d490l457    It is for self stats but not for all. Stats will vary user by user. So that everyone comes to know how many they applied , how many granted, etc. 
+
+I should not be able to send a leave request for someone else (hide this droplist if I’m not manager, I’m automatically the one selected). I should only see a droplist where I can select other users if I am their manager, in order to send request for them.  Yes, we have to update it based on the hierarchy. We will discuss. 
+
+I should not see other people requests that are “in process”. I should only see the validated ones so that I can be informed of their future absence.  I can see my leaves info and respective status only but not other’s info. We will discuss. 
+
+To be added :  
+Please add the leave type “Sans solde” (Unpaid) ,  Here usually, if we don’t have enough leaves in each category, they will move to vacation. for ex : If I have max of 15 vacation leaves, and if I take 18 vacation leaves, then remaining 3 leaves will be considered as “Unpaid” only. We are showing it @  http://admin-test.edit-place.com/hrm/hrm-stats?submenuId=ML12-SL4   
+ http://awesomescreenshot.com/09e4a9y467 
+
+
+3) Leave validation : 
+http://admin-test.edit-place.com/hrm/leave-validation?submenuId=ML12-SL3   
+
+To be modified :  
+We should not have, as employee, the accept or refuse buttons availables. Those can only be available for each employee manager. Super admins only are exceptions and can see all the requests and have those actions availables.   Yes, We will update permissions based on “org hierarchy”.  
+In the user listing, we can see ALL (means all our employees as manager) and our employees.  
+(For instance, Johnny is Fanny and Djawed manager, he will see Fanny and Djawed in the listing and will be able to make actions on their requests, and he will see his name in the list, will see his own requests, but will not have any action available since it will be his manager to do it).  Yes, We will update permissions based on “org hierarchy”.  
+
+To be added :  
+Please add the leave type “Sans solde” (Unpaid) 
+Explained above.  We will discuss. 
+
+4) Leave statistics with employee listing :  
+http://admin-test.edit-place.com/hrm/hrm-stats?submenuId=ML12-SL4 
+
+This page will only be available for the RH manager (“facturation” group).  Ok we will update the permission if all fine for you. 
+
+To be modified :  
+We want to see a tab that regroups all the leave requests for all the EP employees.  To be discuss 
+Add 3 tabs next to this first tab : “Maladie” (Sick leave), “Congés payés” (Paid), “Sans solde” (Unpaid)  OK but can you cofirm how do you want the info in grid? 
+View by month like all other calendars in the BO (see the public holiday per country spec above). Please also check this file to see how we want the display on this page :  
+https://docs.google.com/spreadsheets/d/1g9Ox_a8Xv1Qwt8Nv2YUyCI9kZdq8gg_md3jr_53ycoM/edit?usp=sharing    To be discuss 
+(Do not forget to add tabs for each type of leave).  
+
+To be added :  
+We need to have a droplist in order to select a country (ALL, France, India or United Kingdom) and by selecting one, only people working in this country will be displayed in the calendar.  OK  ( no clear ) 
+
+5) My expenses :  
+http://admin-test.edit-place.com/hrm/my-expenses?submenuId=ML12-SL5   
+
+Almost okay, few things to be added and deleted :  
+https://moqups.com/lineceline/hIAh2kU9     OK    ( 1  day ) 
+
+Please see the WF above.  
+
+To be added :  
+Expense type : FR or UK  We are added currency than country, do you want to change it ? 
+VAT amount  OK 
+Total amount (which will be the addition of Amount + VAT Amount)  OK 
+By clicking on “Envoyer”, we are arriving on a new page (see below)  OK 
+
+To be deleted :  
+Upload invoice feature  Ok but it is optional to upload Accounting purpose. Are you sure to take it off ? It was there in initial specs. 
+
+
+6) My expense payments :  
+http://admin-test.edit-place.com/hrm/my-expenses?submenuId=ML12-SL5   
+
+ Each employee will send their expense but they cannot see other people requests.  Yes, no one can see the applied expenses here. I think we have to show own expenses list and status here. 
+ All the employee expenses and action buttons can be seen by HR management only (“facturation” group).   Yes,  http://admin-test.edit-place.com/hrm/expenses-payments?submenuId=ML12-SL6  page will be accessed by HR manager/Accountant only. 
+ We are now generating a PDF per currency. All the payments done in euros (type FR selected) will be on one PDF and all the payments done in pounds (type UK selected) will be on another PDF.  To be discuss. 
+
+On this page, will have the same view as currently, but we can only make one action (for basic employee user) : for each expense, download a pdf that regroups the expense requests (1 pdf per line). In this PDF we will have :  
+ The EP logo 
+ Centered title : Note de frais du mois de $month 
+ Employee name 
+ Each expense (all the fields we filled in) (invoice date - id - reason - amount w/o tax - tax - total amount) 
+ At the end, total amount of all listed expenses 
+ RIB info 
+ “Signature :” label at the bottom of the PDF. 
+ “Remboursé le :” label (leave empty after “:”) 
+To be discuss. 
+
+To be deleted :  
+ No email will be sent to  comptabilite@edit-place.com . They will check expenses each month directly in the BO.  OK  ( 10 mins ) 
+7) BO user creation :   ( 5  hrs) 
+http://admin-test.edit-place.com/user/new-bo-user?submenuId=ML10-SL4   
+
+To be deleted :  
+Password is asked twice in the BO user creation form, please remove one of those fields.   Here one password for BO access, another for EP email access. 
+Job description  OK 
+
+To be added :  
+Professionnal email password (to be hidden with * characters as typing)  It’s there  
+http://awesomescreenshot.com/06c4aa8335 
+Computer code (to be hidden with * characters as typing)     OK      
+Lieu de travail (Workplace) → Same droplist taken from second form  OK 
+Date d’arrivée  OK 
+
+By typing on validate, it sends an email to his personal email address with this content :  
+
+Subject :  
+
+Content :  
+“Bonjour $first_name, 
+
+Ton compte vient d'être créé sur le BO d'Edit-place ! Bienvenue dans l'équipe. 
+
+Voici tes informations de connexion les deux BO Edit-place :  
+BO FR :  https://admin-ep.edit-place.com/ 
+BO UK :  https://admin-ep.edit-place.co.uk/ 
+Sur ces deux plateformes, les informations de connexion sont :  
+Nom d’utilisateur : $login 
+Mot de passe : $password 
+As we creating account in FR DB, how do you want to create info in UK DB ? Do you want to migrate info to UK DB too ? If so, is it for all BO users ? 
+Plateforme de mails à distance :  http://t052.x1.fr/wm2   
+Ton adresse email professionnelle est : $professional_email_address 
+Ton mot de passe : $pw_email_address 
+
+Ton mot de passe d’ordinateur est : $computer_code 
+
+Il te reste à compléter quelques informations très importantes pour finir ton intégration ! 
+
+C'est par  ici  que ça se passe. 
+
+Bonne journée!  
+
+L'équipe d'Edit-place” 
+OK    
+
+8) BO user profile - 1st edition :   ( 4 hrs ) 
+http://admin-test.edit-place.com/user/profile-edit?tab=profileedit   
+
+To be deleted :  
+Professionnal email password  OK 
+Computer code  OK 
+Lieu de travail (Workplace)  OK 
+Date d’arrivée   OK 
+Identifiant  OK 
+Mot de passe  OK 
+Adresse email perso  OK 
+Langue des communication interne.   OK 
+Site URL  OK 
+Add new RIB button  OK 
+Interview  OK 
+
+Order :  
+In order we should see those fields :   OK 
+
+
+Email (OK) 
+Intitulé de poste (OK) 
+Titre (OK) 
+Photo (OK but please accept smallest files) 
+Nom (OK) 
+Prénom (OK) 
+Adresse (1st) 
+Numéro de téléphone 1 (mobile) mandatory 
+Code postal (2nd) 
+Numéro de téléphone 2 (domicile) not mandatory 
+Ville (3rd) 
+
+Ville de naissance  
+Pays de naissance 
+Yahoo ID  
+
+Skype ID 
+
+Numéro de poste 
+
+Numéro de sécurité sociale  
+Attestation carte vitale (current upload button, label to be added) 
+RIB (current RIB form) 
+RIB scan (new upload button to be added) 
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,74 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script language="javascript">
+
+$(document).ready(function() {
+	
+	var mission_id='{/literal}{$smarty.get.mission_id}{literal}';
+	var mission_type='{/literal}{$smarty.get.mission_type}{literal}';
+	var nbwriters='{/literal}{$smarty.get.nbwriters}{literal}';
+	fnCalculateDeliveryTime(mission_id,mission_type,nbwriters);
+	//validation
+	$("#calculate_dtime").validationEngine('attach',{
+		onValidationComplete: function(form, status){
+			if (status == true){
+				
+				var delivery_time= $("#delivery_time").val();
+				$('#mission_length_'+mission_id).val(delivery_time);
+				fnCalculateMissionTime();
+				$("#delivery_time_calc_modal").modal("hide");
+			}
+		}
+	});
+	$('#nbwriters').attr('data-prompt-position','bottomRight');
+	$('#nbwriters').data('promptPosition','bottomRight');
+});
+
+//recalculate the delivery time based on writers
+function fnCalculateDeliveryTime(mission_id,mission_type,nbwriters)
+{
+	var target_page='/quote/ajax-calculate-delivery-time?mission_id='+mission_id+'&mission_type='+mission_type+'&nbwriters='+nbwriters;
+	//alert(target_page);
+	$.post(target_page,function(response){
+		//alert(response);
+			var obj = $.parseJSON(response);
+			var staff_length=obj.staff_length;
+			var mission_length=obj.mission_length;
+			var time_option=obj.time_option;
+			
+			var total_length=parseInt(staff_length+mission_length);
+			$("#delivery_time").val(total_length);		
+		
+	});
+}
+</script>
+{/literal}
+<div class="row-fluid">
+	<div class="span12">
+		<form id="calculate_dtime" class="form-horizontal" action="#">
+			<fieldset>				
+				<div class="control-group">
+					<label class="control-label">Indiquer  un nombre de r&eacute;dacteurs </label>
+					<div class="controls">						
+						<input type="text" name="nbwriters" id="nbwriters" class="span3 validate[required,custom[integer],maxWriters[{$smarty.get.nbwriters}],minWriters[1]]" value="{$smarty.get.nbwriters}" onkeyup="fnCalculateDeliveryTime('{$smarty.get.mission_id}','{$smarty.get.mission_type}',this.value)">						
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">D&eacute;lai  de livraison propos&eacute;</label>
+					<div class="controls">
+						<input type="text" class="span3" name="delivery_time" disabled id="delivery_time"> JOURS
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="controls">
+						<button class="btn btn-primary" type="submit">Valider</button>
+						<button  class="btn" data-dismiss="modal" type="reset">Annuler</button>
+					</div>
+				</div>
+				
+			</fieldset>
+		</form>
+	</div>
+</div>	

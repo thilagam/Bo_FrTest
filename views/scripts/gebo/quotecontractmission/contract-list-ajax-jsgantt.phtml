@@ -1,0 +1,219 @@
+{if $opened eq '1'}
+
+{if $contracts|@count eq 0}
+
+
+<center><strong>No Contracts Found</strong></center>
+
+{else}
+<div id='contract-calender'></div>
+{literal}
+<script>
+
+ var g = new JSGantt.GanttChart('g',document.getElementById('contract-calender'), 'week');
+//var cedit = 'contract-sales-edit';
+var cedit = 'contract-edit';
+	g.setShowRes(0); // Show/Hide Responsible (0/1)
+	g.setShowDur(0); // Show/Hide Duration (0/1)
+	g.setShowComp(0); // Show/Hide % Complete(0/1)
+    g.setCaptionType('None');  // Set to Show Caption (None,Caption,Resource,Duration,Complete)
+
+	  if(g) {
+		{/literal}
+		{foreach from=$contracts item="contract" name="contracts" }
+		{literal} id = {/literal}{$contract.quotecontractid}{literal};{/literal}
+		{literal} cname = {/literal}"{$contract.contractname|utf8_encode}"{literal};{/literal}
+		{literal} cid = {/literal}"{$contract.client_id}"{literal};{/literal}
+		{literal} edate = {/literal}"{$contract.expected_end_date}"{literal};{/literal}
+		{literal} ldate = {/literal}"{$contract.expected_launch_date}"{literal};{/literal}
+		{literal} turnover = {/literal}"{$contract.turnover|zero_cut_t:2}"{literal};{/literal}
+		{literal} currency = {/literal}"{$contract.sales_suggested_currency}"{literal};{/literal}
+		{literal} duration = {/literal}"{$contract.duration}"{literal};{/literal}
+		{literal} sname = {/literal}"{$contract.first_name|utf8_encode} {$contract.last_name|utf8_encode}"{literal};{/literal}
+		{literal} sdate = {/literal}"{$contract.signaturedate|date_format:'%d/%m/%Y'}"{literal};{/literal}
+		{literal} pdone = {/literal}"0"{literal};{/literal}
+		/* {literal} clientname = {/literal}"{if $contract.clfname || $contract.cllname}{$contract.clfname|utf8_encode} {$contract.cllname|utf8_encode}{else}{$contract.clemail|utf8_encode}{/if}"{literal};{/literal} */
+		{literal} clientname = {/literal}"{$contract.clemail}"{literal};{/literal}
+		{literal} compname = {/literal}"{$contract.company_name}"{literal};{/literal}
+		{literal}
+		json = '{"turnover":"'+turnover+'","sname":"'+sname+'","sdate":"'+sdate+'","currency":"'+currency+'","duration":"'+duration+'","pdone":"'+pdone+'","id":"'+id+'","cedit":"'+cedit+'","clientname":"'+clientname+'","cid":"'+cid+'","compname":"'+compname+'"}';
+		g.AddTaskItem(new JSGantt.TaskItem(id,cname,ldate,edate,'2B78E4','',0,cname,0,0,0,0,'','Caption 1',json));
+		{/literal}
+		{/foreach}
+		{literal}
+		g.Draw();	
+		g.DrawDependencies();
+	  }
+	  else
+	  {
+		alert("not defined");
+	  }
+ 
+	  $(".uni_style").uniform();
+	  
+	  /* $('.tooltips').tooltipster(
+	 {
+		contentAsHTML: true,
+		theme: 'tooltipster-noir',
+		position: 'bottom',
+		positionTracker:true,
+		interactive: true,
+	 });  */
+	 
+		$(".tooltips").popover({ trigger: "manual" ,placement: 'top', html: true, animation:false})
+		.on("mouseenter", function () {
+			var _this = this;
+			$(this).popover("show");
+			$(".popover").on("mouseleave", function () {
+				$(_this).popover('hide');
+			});
+		}).on("mouseleave", function () {
+			var _this = this;
+			setTimeout(function () {
+				if (!$(".popover:hover").length) {
+					$(_this).popover("hide");
+				}
+			}, 300);
+		});
+ </script>
+ {/literal}
+ {/if}
+ {elseif $opened eq '2'}
+ {if $contracts|@count eq 0}
+
+<center><strong>No Contracts Found</strong></center>
+
+{else}
+<div id='contract-calender3'></div>
+{literal}
+<script>
+
+ var g2 = new JSGantt3.GanttChart('g2',document.getElementById('contract-calender3'), 'week');
+//var cedit = 'contract-sales-edit';
+var cedit = 'contract-edit';
+	g2.setShowRes(0); // Show/Hide Responsible (0/1)
+	g2.setShowDur(0); // Show/Hide Duration (0/1)
+	g2.setShowComp(0); // Show/Hide % Complete(0/1)
+    g2.setCaptionType('None');  // Set to Show Caption (None,Caption,Resource,Duration,Complete)
+
+	  if(g2) {
+		{/literal}
+		{foreach from=$contracts item="contract" name="contracts" }
+		{literal} id = {/literal}{$contract.quotecontractid}{literal};{/literal}
+		{literal} cname = {/literal}"{$contract.contractname|utf8_encode}"{literal};{/literal}
+		{literal} cid = {/literal}"{$contract.client_id}"{literal};{/literal}
+		{literal} edate = {/literal}"{$contract.expected_end_date}"{literal};{/literal}
+		{literal} ldate = {/literal}"{$contract.expected_launch_date}"{literal};{/literal}
+		{literal} turnover = {/literal}"{$contract.turnover|zero_cut_t:2}"{literal};{/literal}
+		{literal} currency = {/literal}"{$contract.sales_suggested_currency}"{literal};{/literal}
+		{literal} duration = {/literal}"{$contract.duration}"{literal};{/literal}
+		{literal} sname = {/literal}"{$contract.first_name|utf8_encode} {$contract.last_name|utf8_encode}"{literal};{/literal}
+		{literal} sdate = {/literal}"{$contract.signaturedate|date_format:'%d/%m/%Y'}"{literal};{/literal}
+		{literal} pdone = {/literal}"0"{literal};{/literal}
+		/* {literal} clientname = {/literal}"{if $contract.clfname || $contract.cllname}{$contract.clfname|utf8_encode} {$contract.cllname|utf8_encode}{else}{$contract.clemail|utf8_encode}{/if}"{literal};{/literal} */
+		{literal} clientname = {/literal}"{$contract.clemail}"{literal};{/literal}
+		{literal} compname = {/literal}"{$contract.company_name}"{literal};{/literal}
+		{literal}
+		json = '{"turnover":"'+turnover+'","sname":"'+sname+'","sdate":"'+sdate+'","currency":"'+currency+'","duration":"'+duration+'","pdone":"'+pdone+'","id":"'+id+'","cedit":"'+cedit+'","clientname":"'+clientname+'","cid":"'+cid+'","compname":"'+compname+'"}';
+		g2.AddTaskItem(new JSGantt.TaskItem(id,cname,ldate,edate,'2B78E4','',0,cname,0,0,0,0,'','Caption 1',json));
+		{/literal}
+		{/foreach}
+		{literal}
+		g2.Draw();	
+		g2.DrawDependencies();
+	  }
+	  else
+	  {
+		alert("not defined");
+	  }
+ 
+	  $(".uni_style").uniform();
+	  
+	  /* $('.tooltips').tooltipster(
+	 {
+		contentAsHTML: true,
+		theme: 'tooltipster-noir',
+		position: 'bottom',
+		positionTracker:true,
+		interactive: true,
+	 });  */
+	 
+		$(".tooltips").popover({ trigger: "manual" ,placement: 'top', html: true, animation:false})
+		.on("mouseenter", function () {
+			var _this = this;
+			$(this).popover("show");
+			$(".popover").on("mouseleave", function () {
+				$(_this).popover('hide');
+			});
+		}).on("mouseleave", function () {
+			var _this = this;
+			setTimeout(function () {
+				if (!$(".popover:hover").length) {
+					$(_this).popover("hide");
+				}
+			}, 300);
+		});
+ </script>
+ {/literal}
+ {/if}
+{else}
+<div id='contract-calender2'></div>
+{if $contracts|@count eq 0}
+<center><strong>No Contracts Found</strong></center>
+{/if}
+{literal}
+<script>
+var g1 = new JSGantt1.GanttChart('g1',document.getElementById('contract-calender2'), 'week');
+var assigncount = 0;
+var cedit = 'contract-sales-edit';
+	g1.setShowRes(0); // Show/Hide Responsible (0/1)
+	g1.setShowDur(0); // Show/Hide Duration (0/1)
+	g1.setShowComp(0); // Show/Hide % Complete(0/1)
+    g1.setCaptionType('None');  // Set to Show Caption (None,Caption,Resource,Duration,Complete)
+
+	  if(g1) {
+		{/literal}
+		{foreach from=$contracts item="contract" name="contracts" }
+		{literal} id = {/literal}{$contract.quotecontractid}{literal};{/literal}
+		{literal} cname = {/literal}"{$contract.contractname|utf8_encode}"{literal};{/literal}
+		{literal} cid = {/literal}"{$contract.client_id}"{literal};{/literal}
+		{literal} edate = {/literal}"{$contract.expected_end_date}"{literal};{/literal}
+		{literal} edispdate = {/literal}"{$contract.expected_end_date|date_format:'%d/%m/%Y'}"{literal};{/literal}
+		{literal} ldate = {/literal}"{$contract.expected_launch_date}"{literal};{/literal}
+		{literal} ldispdate = {/literal}"{$contract.expected_launch_date|date_format:'%d/%m/%Y'}"{literal};{/literal}
+		{literal} turnover = {/literal}"{$contract.turnover|zero_cut_t:2}"{literal};{/literal}
+		{literal} currency = {/literal}"{$contract.sales_suggested_currency}"{literal};{/literal}
+		{literal} duration = {/literal}"{$contract.duration}"{literal};{/literal}
+		{literal} sname = {/literal}"{$contract.first_name|utf8_encode} {$contract.last_name|utf8_encode}"{literal};{/literal}
+		{literal} sdate = {/literal}"{$contract.signaturedate|date_format:'%d/%m/%Y'}"{literal};{/literal}
+		/* {literal} clientname = {/literal}"{if $contract.clfname || $contract.cllname}{$contract.clfname|utf8_encode} {$contract.cllname|utf8_encode}{else}{$contract.clemail|utf8_encode}{/if}"{literal};{/literal} */
+		/*{literal} clientname = {/literal}"{if $contract.clfname || $contract.cllname}{$contract.clfname} {$contract.cllname}{else}{$contract.clemail}{/if}"{literal};{/literal} */
+		{literal} clientname = {/literal}"{$contract.clemail}"{literal};{/literal}
+		{literal} compname = {/literal}"{$contract.company_name}"{literal};{/literal}
+		{literal}
+		json = '{"turnover":"'+turnover+'","sname":"'+sname+'","sdate":"'+sdate+'","currency":"'+currency+'","edispdate":"'+edispdate+'","duration":"'+duration+'","id":"'+id+'","cedit":"'+cedit+'","ldispdate":"'+ldispdate+'","clientname":"'+clientname+'","cid":"'+cid+'","compname":"'+compname+'"}';
+			g1.AddTaskItem(new JSGantt1.TaskItem(id,cname,ldate,edate,'2B78E4','',0,cname,0,0,0,0,'','Caption 1',json));
+		{/literal}
+		assigncount++;
+		{/foreach}
+		{literal}
+		g1.Draw();	
+		g1.DrawDependencies();
+	  }
+	  else
+	  {
+		alert("not defined");
+	  } 
+	  
+	  $(".uni_style2").uniform();
+	  
+	if(assigncount>0)
+	{
+		$("#assigncount").text(assigncount);
+		$("#assigncount").removeClass('hide');
+	}
+	else
+	$("#assigncount").addClass('hide');
+  </script>
+ {/literal}
+{/if}

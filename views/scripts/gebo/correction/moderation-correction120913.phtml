@@ -1,0 +1,253 @@
+{literal}
+<script language="javascript">
+/////// when a Ep go with corrector's choice////////
+function getAcceptCrtChoice(artId, mode)
+{
+    var editor = CKEDITOR.instances['Moderator_crtwindow'];
+    if (editor) { editor.destroy(true); }
+    var editor = CKEDITOR.replace( 'Moderator_crtwindow',
+            {
+                language: 'de', uiColor: '#D9DDDC', enterMode : CKEDITOR.ENTER_BR, removePlugins : 'resize',
+                toolbar : [ ['Undo','Redo'], ['Find','Replace'],['Link', 'Unlink', 'Image'], ['FontSize', 'Bold', 'Italic','Underline'],
+                    ['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize'] ]
+            }
+    );
+    var buttonmode = mode;
+    if(buttonmode == 'disapproved_temp')
+    {
+        var contribmailid = 57;
+        var crtmailid = 58;
+    }
+    else
+    {
+        var contribmailid = 60;
+        var crtmailid = 61;
+    }
+    var target_page = "/correction/getmoderatemailcontent?articleid="+artId+"&contribmailId="+contribmailid+"&crtmailId="+crtmailid+"&actionmode=accept&status="+buttonmode; //
+        $.post(target_page, function(data){   //alert(data);
+        CKEDITOR.instances['Moderator_crtwindow'].setData(data);
+        $("#moderatemails").show();
+        $("#refusearea").hide();
+        $("#Moderator_comment").hide();
+        $("#acceptarea").show();
+        $("#acceptmailid").val(crtmailid);
+    });
+}
+/////// when a Ep refused to go with corrector's choice////////
+function getRefuseCrtChoice(artId, mode)
+{
+    var editor = CKEDITOR.instances['Moderator_comment'];
+    if (editor) { editor.destroy(true); }
+    var editor = CKEDITOR.replace( 'Moderator_comment',
+            {
+                language: 'de', uiColor: '#D9DDDC', enterMode : CKEDITOR.ENTER_BR, removePlugins : 'resize',
+                toolbar : [ ['Undo','Redo'], ['Find','Replace'],['Link', 'Unlink', 'Image'], ['FontSize', 'Bold', 'Italic','Underline'],
+                    ['TextColor', '-', 'Smiley','SpecialChar', '-', 'Maximize'] ]
+            }
+    );
+    var buttonmode = mode;
+    if(buttonmode == 'disapproved_temp')
+        var crtmailid = 54;
+    else
+        var crtmailid = 55;
+    var target_page = "/correction/getmoderatemailcontent?articleid="+artId+"&crtmailId="+crtmailid+"&actionmode=refuse&status="+buttonmode; //
+    $.post(target_page, function(data){   //alert(data);
+        CKEDITOR.instances['Moderator_comment'].setData(data);
+        $("#moderatemails").css("display","block");
+        $("#refusearea").show();
+        $("#acceptarea").hide();
+        $("#refusemailid").val(crtmailid);
+    });
+}
+/*function confirmAction()
+{
+    smoke.confirm("Confirmez-votre choix!",function(e){
+        if (e)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    });
+}
+function sendToFo()
+{
+    smoke.confirm("L\'article sera remis en ligne",function(e){
+        if (e)
+        {
+            smoke.confirm("Announcement by email",function(f){
+                if (f)
+                {
+                $("#sendtofo").val('yes');
+                $("#anouncebyemail").val('yes');
+                return true;
+                }
+                $("#sendtofo").val('yes');
+                return true;
+            });
+        }
+        else
+        {
+            $("#sendtofo").val('no');
+            return true;
+        }
+    });
+}*/
+function confirmAction()
+{
+    var r=confirm("Confirmez-votre choix!");
+    if (r==true)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+function sendToFo()
+{
+    var r=confirm("L'article sera remis en ligne");
+    if (r==true)
+    {
+        var r1=confirm("Announcement by email");
+        if (r1==true)
+        {
+            $("#sendtofo").val('yes');
+            $("#anouncebyemail").val('yes');
+            return true;
+        }
+
+        $("#sendtofo").val('yes');
+        return true;
+    }
+    else
+    {
+        $("#sendtofo").val('no');
+        return true;
+    }
+}
+</script>
+{/literal}
+<div class="row-fluid">
+    <div class="span12" >
+        <h3 class="heading">Correction Moderation<a class="label label-inverse pull-right" href="/correction//correction/moderation?submenuId=ML3-SL10" id="returnback">retour</a></h3>
+        <table id="grptabledetails" class="table btn-gebo tdleftalign" >
+            <tr>
+                <td><b>Titre de l'article : </b>{$articledetails[0].title|escape:'htmlall'}</td>
+                <td><b>Titre de l'AO : </b>{$articledetails[0].deliveryTitle|escape:'htmlall'}</td>
+            </tr>
+            <tr>
+                <td><b>Personne en charge de la mission : </b>{$loginusername}</td>
+                <td><b>Brief de la mission : </b>{if $articledetails[0].filepath neq NULL}
+                    <a href="/proofread/downloadfile?submenuId={$submenuId}&spec={$articledetails[0].id}" class="label label-important">Download</a> {else} no spec {/if}</td>
+            </tr>
+        </table>
+        <table id="s1crtgrid" class="table table-bordered table-striped table_vam">
+            <thead>
+            <tr>
+                <th>Version</th>
+                <th>Nom du fichier</th>
+                <th>Contributeur</th>
+                <th>Action</th>
+                <th>Date</th>
+                <th>Commentaire</th>
+                <th>Decision EP</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach from=$versions_details key=versions_key item=versions_item name=versions_loop}
+            <tr>
+                <td>{if $versions_item.version != 0} {assign var=i value=$versions_item.version} {$i} {/if}
+                    {if $versions_item.version == 0} {$i}   {/if}</td>
+                <td><a href="/proofread/downloadfile?submenuId={$submenuId}&path={$versions_item.id}">{$versions_item.article_name}</a></td>
+                <td {if $versions_item.stage eq 'corrector'} style="background-color: #993365;color:#ffffff;" {else} style="background-color: #FFCC00;color:#ffffff;" {/if} >
+                    {if $versions_item.first_name eq ''}{$versions_item.email}{else}{$versions_item.first_name}{/if}</td>
+                <td>{if $versions_item.stage eq 's1'} Soumission pour correction
+                    {elseif $versions_item.status eq 'closed_temp' && $versions_item.current_stage eq 'corrector'}
+                    Refus Definitif {else} Demande de reprise {/if}
+                    </td>
+                <td>{$versions_item.article_sent_at|date_format:"%d/%m/%Y %H:%M"}</td>
+                <td>{if $versions_item.comments neq ''}<a class="pop_over" data-placement="left" data-original-title="Commentaire" data-html="true"
+                       data-content="<div>{$versions_item.comments|stripslashes}</div>" >  <i class="splashy-comments_reply"></i></a>{/if}
+
+                </td>
+                <td>
+                    {if $versions_item.moderate_epdecision eq 'refused'}
+                    <i class="splashy-error_x"></i>
+                    {elseif $versions_item.moderate_epdecision eq 'accepted'}
+                    <i class="splashy-okay"></i>
+                    {/if}
+                </td>
+            </tr>
+            {if $versions_item.stage eq 'corrector'} {assign var=correctorId value=$versions_item.user_id }
+            {else}{assign var=contributorId value=$versions_item.user_id }  {/if}
+
+
+            {/foreach}
+            </tbody>
+        </table>
+       <div class="pull-right span7" >
+           <button type="button" class="btn btn-success"  onclick="return getAcceptCrtChoice('{$smarty.get.articleid}','{$smarty.get.status}');" value="Valider" >Valider</button>
+           <button type="button" class="btn btn-warning" onclick="return getRefuseCrtChoice('{$smarty.get.articleid}','{$smarty.get.status}');" value="Refuser" >Refuser</button>
+       </div>
+   </div>
+</div>
+<div id="moderatemails" style="display: none;width: 95%;float:left;">
+    <form action="/correction/moderation?submenuId={$submenuId}&articleid={$smarty.get.articleid}" method="post" id="valstage2arts" name="valstage2arts" >
+        <div>
+            <div id="acceptarea">
+                <table width="100%">
+                    <tr><td></td></tr>
+                    <tr><td><b>  Validation du choix du correcteur - {if $smarty.get.status == 'disapproved_temp'}Refuser{else}Refuser Definite{/if} :</b></td></tr>
+                    <tr><td></td></tr>
+                   <!-- <tr >
+                        <td width="100%"><textarea id="Moderator_contribwindow" name="Moderator_contribwindow" cols="100" rows="5"></textarea>
+                            <input type="hidden" id="Contribmailobject" name="Contribmailobject" value="{$Contribmailobject}"></td>
+                    </tr>-->
+                    <tr><td></td></tr>
+                    <tr >
+                        <td width="100%"><textarea id="Moderator_crtwindow" name="Moderator_crtwindow" cols="100" rows="5">{$Correctormailcontent}</textarea>
+                            <input type="hidden" id="Correctormailobject" name="Correctormailobject" value="{$Correctormailobject}">
+                            <input type="hidden" id="acceptmailid" name="acceptmailid" value="">
+                        </td>
+                    </tr>
+                </table>
+                {if $smarty.get.status == 'disapproved_temp'}
+                <button type="submit" class="btn btn-success"  name="moderate_approve" onclick="return confirmAction();">Valider</button>
+                {else}
+                <button type="submit" class="btn btn-success" name="moderate_approve" onclick="return sendToFo();">Valider</button>
+                {/if}
+                <input type="hidden" id="sendtofo" name="sendtofo" value="">
+                <input type="hidden" id="anouncebyemail" name="anouncebyemail" value="">
+            </div>
+            <div id="refusearea">
+                <table width="100%" id="magic">
+                    <tr><td></td></tr>
+                    <tr><td><b> Refus du choix du correcteur - {if $smarty.get.status == 'disapproved_temp'}Refuser{else}Refuser Definite{/if} :</b></td></tr>
+                    <tr><td></td></tr>
+                    <tr >
+                        <td width="100%"><textarea id="Moderator_comment" name="Moderator_comment" cols="100" rows="5"></textarea>
+                            <input type="hidden" id="onlycorrectorobject" name="onlycorrectorobject" value="{$onlycorrectorobject}">
+                            <input type="hidden" id="refusemailid" name="refusemailid" value="">
+                        </td>
+                    </tr>
+                </table>
+                <button type="submit" class="btn btn-warning" id="moderate_disapprove" name="moderate_disapprove" onclick="return confirmAction();">Refuser</button>
+            </div>
+        </div>
+        <div align="right" class="">
+            <div class="buttontwo" >
+                <input type="hidden" id="latestmarks" name="latestmarks" value="{php} echo $latestmarks; {/php}">
+                <input type="hidden" id="correctorId" name="correctorId" value="{$correctorId}">
+                <input type="hidden" id="contributorId" name="contributorId" value="{$contributorId}">
+                <input type="hidden" id="artsentdate" name="artsentdate" value="{php} echo $artsentdate; {/php}">
+                <input type="hidden" id="actionmode" name="actionmode" value="{php} echo $_GET['actionmode']; {/php}" />
+                <input type="hidden" id="status" name="status" value="{php} echo $_GET['status']; {/php}" />
+            </div>
+        </div>
+    </form>
+</div>

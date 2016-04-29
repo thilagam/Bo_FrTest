@@ -1,0 +1,192 @@
+{literal}
+<style>
+	.time1
+	{
+		padding-bottom:0px;
+		padding-top:0px;
+	}
+	
+	td .icon-time
+	{
+		top:1px;
+	}
+	
+	.alert
+	{
+		padding:5px 10px;
+	}
+	
+</style>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/countdown.js"></script>
+<script type="text/javascript">	
+$(document).ready(function() {
+	
+	////////////to show the timer in selection profile page///////
+    var cur_date={/literal}{$smarty.now}{literal};
+    var js_date=(new Date().getTime())/ 1000;
+    var diff_date=Math.floor(js_date-cur_date);
+    //////////show timer//////////
+	$("[id^=time_]").each(function(i) {
+        var article=$(this).attr('id').split("_");
+        var ts=article[1];
+        var ts2 =article[2];
+        $("#time_"+article[1]).countdown({
+            timestamp   : ts,
+            diff_date  : diff_date,
+            callback    : function(days, hours, minutes, seconds){
+                var message = "";
+                message += days + "j"  +" ";
+                message += hours + "h" +" ";
+                message += minutes + "mns"+ " ";
+				if(minutes<1)	
+			    message += seconds + "s";
+                $("#time_"+article[2]).html(message);
+                if(days==0 && hours==0 && minutes==0 && seconds==0)
+                {
+                    //window.location.reload();
+                }
+            }
+        });
+    });
+
+	$('#recruitmentList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" }
+            ]
+        });
+				
+	$('#surveyList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+            ]
+        });
+});	
+</script>
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">Recruitment Survey Delivery List</h3>
+		<div class="span12">
+			<ul class="nav nav-tabs">
+				<li class="{if $smarty.get.active eq ''}active{/if}"><a href="#recruitment" data-toggle="tab">Recruitment</a></li>
+				<li class="{if $smarty.get.active eq 'survey'}active{/if}"><a href="#survey" data-toggle="tab">Survey</a></li>
+				<li class=""><a href="#delivery" data-toggle="tab">Delivery</a></li>
+			</ul>	
+			<div class="tab-content">
+				<!-- Recruitment Starts -->
+				<div class="tab-pane {if $smarty.get.active eq ''}active{/if}" id="recruitment">
+					 <table class="table table-bordered table-striped table_vam" id="recruitmentList" >
+						<thead>
+							<tr>
+							   <th>Mission Name</th>
+							   <th>Contract Name</th>
+							   <th>Quiz</th>
+							   <th>Test Article</th>
+							   <th>Count Down</th>                   
+							   <th>Cost max/art</th>                   
+							   <th>Status</th>                   
+							   <th>Action</th>                         
+							</tr>
+						</thead>
+						<tbody>
+							{if  $recruitments|@count>0 }
+							{foreach from=$recruitments item="recruitment" name="recruitments"}
+							<tr>
+								<td>{if $recruitment.product eq 'translation'} {$recruitment.product_name} {$recruitment.product_type_name} 				{$recruitment.language_source_name} au {$recruitment.language_dest_name} {else} {$recruitment.product_name} {$recruitment.product_type_name}  in {$recruitment.language_source_name} {/if}</td>
+								<td>{$recruitment.contractname}</td>
+								<td>{if $recruitment.is_quiz}Yes{else}No{/if}</td>
+								<td>{if $recruitment.is_test_article}Yes{else}No{/if}</td>
+								<td>
+									<span id="time_{$recruitment.expires}_{$recruitment.recruitment_id}" class="alert alert-danger">
+										<i class="icon-time"></i>
+										<span id="time_{$recruitment.recruitment_id}"></span>
+									</span>
+								</td>
+								<td>{$recruitment.max_cost_art}&nbsp;&{$recruitment.sales_suggested_currency};</td>
+								<td>{if $recruitment.rstatus}Closed{else}Not Closed{/if}</td>
+								<td><a href="/contractmission/recruitment-follow-up?recruitment_id={$recruitment.recruitment_id}">Followup</a></td>
+							</tr>
+							{/foreach}
+							{/if}
+						</tbody>
+					</table>
+				</div>
+				
+				<!-- Survey Starts -->
+				<div class="tab-pane {if $smarty.get.active eq 'survey'}active{/if}" id="survey">
+					
+					<table class="table table-bordered table-striped table_vam" id="surveyList" >
+						<thead>
+							<tr>
+							   <th>Poll Name</th>
+							   <th>Mission Name</th>
+							   <th>Contract Name</th>
+							   <th>Count Down</th>                                   
+							   <th>Status</th>                   
+							   <th>Action</th>                         
+							</tr>
+						</thead>
+						<tbody>
+							{if  $surveys|@count>0 }
+							{foreach from=$surveys item="survey" name="surveys"}
+							<tr>
+								<td>{$survey.ptitle}</td>
+								<td>{if $survey.product eq 'translation'} {$survey.product_name} {$survey.product_type_name} 				{$survey.language_source_name} au {$survey.language_dest_name} {else} {$survey.product_name} {$survey.product_type_name}  in {$survey.language_source_name} {/if}</td>
+								<td>{$survey.contractname}</td>
+								<td>
+									<span id="time_{$survey.expires}_{$survey.pollid}" class="alert alert-danger">
+										<i class="icon-time"></i>
+										<span id="time_{$survey.pollid}"></span>
+									</span>
+								</td>
+								<td>{if $survey.pstatus eq 'closed'}Closed{else}Not Closed{/if}</td>
+								<td><a href="/survey/followup?survey_id={$survey.pollid}">Followup</a></td>
+							</tr>
+							{/foreach}
+							{/if}
+						</tbody>
+					</table>
+					
+				</div>
+				
+				<!-- Delivery Starts -->
+				<div class="tab-pane" id="delivery">
+					Delivery
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--popup to show mission details-->
+<div class="modal container hide fade" id="mission_modal">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Missions</h3>
+    </div>
+    <div class="modal-body">
+		
+	</div>
+    <div class="modal-footer">
+    </div>
+</div>	

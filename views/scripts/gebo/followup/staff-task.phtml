@@ -1,0 +1,132 @@
+		<div class="followup-header">
+			<h3>{$viewarray.title|utf8_encode} <span class="headerdim">{$viewarray.from_date} - {$viewarray.to_date}</span></h3>
+			 <div class="row-fluid">    
+				<div class="header-info">
+					<div class="span4">
+						<span class="upper">Priority</span>
+						<span class="bottom">{$viewarray.priority}</span>
+					</div>
+					<div class="span4">
+						<span class="upper">Production Cost</span>
+						<span class="bottom">{$viewarray.production_cost|zero_cut_t:2} &{$viewarray.currency};</span>
+					</div>
+					<div class="span4">
+						<span class="upper">Turnover</span>
+						<span class="bottom">{$viewarray.turnover|zero_cut_t:2} &{$viewarray.currency};</span>
+					</div>
+				</div>
+			</div> 
+		</div>
+		
+		{if $viewarray.staff_action == 'new' || $viewarray.staff_action=='edit'}
+		<div class="row-fluid topset2">
+			<form class="form-horizontal" enctype="multipart/form-data" action="/followup/submit-stafftask" id="taskadd" method="POST">
+			
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label">Title of the Task<span class="f_req">*</span></label>
+						<div class="controls">
+							<input type="text" name="title" class="span10 validate[required]" value="{$viewarray.task_title|utf8_encode}" />
+						</div>
+					</div>
+				</div>
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label">Add a Comment<span class="f_req">*</span></label>
+						<div class="controls" style="margin-top:0">
+							<div class="media mission-comment span10">
+							<a class="pull-left imgframe">
+							<img class="media-object" width="60px" src="{$fo_path}profiles/bo/{$viewarray.updated_by}/logo.jpg">
+							</a>
+							<div class="media-body">
+								<textarea name="comment" class="span12 validate[required]">{$viewarray.comments|utf8_encode}</textarea>
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label">Attach a file</label>
+						<div class="controls">
+							<input type="file" name="mulitupload[]" accept="doc|xls|zip|docx|xlsx" class="multi" id=""/>
+						<div class="onsuccessrep">
+							{$task_files|utf8_encode}
+						</div>
+						</div>
+					</div>
+				</div>
+					<div class="control-group">
+						<div class="controls topset2 pull-center" style="margin-left:0">
+							<button  class="btn" data-dismiss="modal" type="reset">Cancel this task</button>
+							<button class="btn btn-primary" type="submit">Done</button>
+						</div>
+					</div>
+					<input type="hidden" name="cmid" value="{$viewarray.cmid}" />
+					<input type="hidden" name="contract_id" value="{$viewarray.contract_id}" />
+					<input type="hidden" name="mission_id" value="{$viewarray.mission_id}" />
+					<input type="hidden" name="task_id" value="{$viewarray.task_id}" />
+					<input type="hidden" name="quote_id" value="{$viewarray.quote_id}" />
+			</form>
+		</div>
+		{else}
+		<div class="row-fluid topset2">
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label"><strong>Title of the Task</strong></label>
+						<div class="controls">
+							{$viewarray.task_title|utf8_encode}
+						</div>
+					</div>
+				</div>
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label"><strong>Comment</strong></label>
+						<div class="controls" style="margin-top:0">
+							<div class="media mission-comment span10">
+							<a class="pull-left imgframe">
+							<img class="media-object" width="60px" src="{$fo_path}profiles/bo/{$viewarray.updated_by}/logo.jpg">
+							</a>
+							<div class="media-body">
+								{$viewarray.comments|stripslashes|htmlentities|nl2br|utf8_encode}
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="media mission-comment">
+					<div class="control-group">
+						<label class="control-label"><strong>Files</strong>{if $task_files}
+						<div class="pull-right" style="margin-bottom:5px">
+							<a href="/followup/download-document?type=task&index=-1&task_id={$viewarray.task_id}" class="btn btn-small">Download Zip</a>
+						</div>
+						{/if}</label>
+						
+						<div class="controls">
+						<table class="onsuccessrep table">
+						{if $task_files}
+							{$task_files|utf8_encode}
+						{else}
+							<tr><td align="center">No files found</td></tr>
+						{/if}
+						</table>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="controls topset2 pull-center" style="margin-left:0">
+					<a href="/followup/stafftask?tid={$viewarray.task_id}&staff_action=edit" data-toggle="modal" role="button" data-target="#edit_task">
+						<button  class="btn btn-primary" id="trig_edit" type="button">Edit</button>
+					</a>
+					</div>
+				</div>		
+		</div>
+		{/if}
+		{literal}
+		<script type="text/javascript">
+			 $("input[type=file].multi").MultiFile();
+			  $('textarea').data('promptPosition','topLeft');
+			 $("#taskadd").validationEngine();
+			
+		</script>
+		{/literal}

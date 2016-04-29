@@ -1,0 +1,422 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+
+<link rel="stylesheet" href="/BO/theme/gebo/lib/iCheck/skins/square/blue.css" type="text/css"/>
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script> 
+
+<script language="javascript">
+
+$(document).ready(function() {
+
+	$("#mission_selection").validationEngine();
+	
+	$('[id^=overview_missions_]').each(function () {
+		if(this.checked)
+		{
+			var DivId = $(this).attr('id');
+			var mission_ids=DivId.split("_");
+			var mission_id=mission_ids[2];
+			var index_id=mission_ids[3];
+			
+			var checkName=$(this).attr('name');		
+			var nameIndexes=checkName.split("_");
+			var nameIndex=nameIndexes[2].replace("[]",'');
+			
+			var current_suggested_price=parseFloat($("#price_info_"+nameIndex).text());	
+			if(isNaN(current_suggested_price))	
+				current_suggested_price=0;
+			var selected_price=parseFloat($(this).attr('rel'));
+			var currency=$("#currency_type_"+nameIndex).val();	
+					
+			//calculating current price and selected price and assiging to suggested price
+			var suggested_price=parseFloat(current_suggested_price+selected_price);
+			$("#price_info_"+nameIndex).text(suggested_price);
+			
+			$("#currency_info_"+nameIndex).html(' &'+currency+';');
+			
+			$("#mission_ca_"+nameIndex).val(suggested_price);//mission total
+			
+			//total suggested price
+			var total_suggested_price=parseFloat($("#total_suggested_price").text());	
+			if(isNaN(total_suggested_price))	
+				total_suggested_price=0;
+			else
+				total_suggested_price=parseFloat(total_suggested_price);
+		
+			total_suggested_price=parseFloat(total_suggested_price+selected_price);			
+			total_suggested_price=total_suggested_price.toFixed(2);				
+			
+			$("#total_suggested_price").text(total_suggested_price);
+			$("#total_suggested_price_hidden").val(total_suggested_price);			
+			$("#total_currency_info").html(' &'+currency+';');	
+			
+			//Added w.r.t article in left side
+			var mission_volume=parseFloat($("#mission_volume_"+index_id).text());
+			var article_price=(suggested_price/mission_volume);
+			article_price=article_price.toFixed(2);			
+			$("#single_article_price_"+index_id).val(article_price);
+			article_price=article_price.replace(".",',');
+			$("#article_price_"+index_id).text(article_price);
+			
+			//price per word
+			var price_per_word=parseFloat($(this).attr('data-price-word')).toFixed(2);
+			price_per_word=price_per_word.replace(".",',');
+			//alert(price_per_word);
+			$("#price_per_word_"+index_id).text(price_per_word);
+			
+		}	
+	 
+	 }); 
+	
+	/** activate icheck plugin **/
+	  $('input').iCheck({
+		checkboxClass: 'icheckbox_square-blue',
+		radioClass: 'iradio_square-blue',
+		//increaseArea: '20%' // optional
+	 });  
+	 
+	 
+	 
+	
+	//toggle all checkboxes of details and overview tabs 
+	$('input').on('ifChecked', function(event){
+		var DivId = $(this).attr('id');
+		var mission_ids=DivId.split("_");
+		var mission_id=mission_ids[2];	
+		var index_id=mission_ids[3];	
+		
+		var checkName=$(this).attr('name');		
+		var nameIndexes=checkName.split("_");
+		var nameIndex=nameIndexes[2].replace("[]",'');
+		
+		var current_suggested_price=parseFloat($("#price_info_"+nameIndex).text());	
+		if(isNaN(current_suggested_price))	
+			current_suggested_price=0;
+		var selected_price=parseFloat($(this).attr('rel'));
+		var currency=$("#currency_type_"+nameIndex).val();	
+		
+		//calculating current price and selected price and assiging to suggested price
+		var suggested_price=parseFloat(current_suggested_price+selected_price);
+		
+		$("#price_info_"+nameIndex).text(suggested_price);
+		$("#currency_info_"+nameIndex).html(' &'+currency+';');
+		
+		$("#mission_ca_"+nameIndex).val(suggested_price);//mission total
+		
+		//total suggested price
+		var total_suggested_price=parseFloat($("#total_suggested_price").text());			
+		if(isNaN(total_suggested_price))	
+			total_suggested_price=0;
+		else
+		total_suggested_price=parseFloat(total_suggested_price);
+		
+		total_suggested_price=parseFloat(total_suggested_price+selected_price);
+		
+		total_suggested_price=total_suggested_price.toFixed(2);
+		
+		$("#total_suggested_price").text(total_suggested_price);
+		$("#total_suggested_price_hidden").val(total_suggested_price);	
+		$("#total_currency_info").html(' &'+currency+';');		
+		
+		
+		//Added w.r.t article in left side
+			var mission_volume=parseFloat($("#mission_volume_"+index_id).text());
+			var article_price=(suggested_price/mission_volume);
+			article_price=article_price.toFixed(2);
+			$("#single_article_price_"+index_id).val(article_price);
+			article_price=article_price.replace(".",',');
+			$("#article_price_"+index_id).text(article_price); //for span
+			
+		//price per word
+			var price_per_word=parseFloat($(this).attr('data-price-word')).toFixed(2);
+			price_per_word=price_per_word.replace(".",',');
+			//alert(price_per_word);
+			$("#price_per_word_"+index_id).text(price_per_word);
+			
+		
+		if(mission_ids[0]=='overview')
+		{			
+			$('#detail_missions_'+mission_id+'_'+index_id).prop('checked', true);
+			$('#detail_missions_'+mission_id+'_'+index_id).iCheck('update');
+		}	
+		else	
+		{
+			$('#overview_missions_'+mission_id+'_'+index_id).prop('checked', true);
+			$('#overview_missions_'+mission_id+'_'+index_id).iCheck('update');
+		}	
+		
+	});
+	$('input').on('ifUnchecked', function(event){
+		var DivId = $(this).attr('id');
+		var mission_ids=DivId.split("_");
+		var mission_id=mission_ids[2];
+		var index_id=mission_ids[3];
+		
+		var checkName=$(this).attr('name');		
+		var nameIndexes=checkName.split("_");
+		var nameIndex=nameIndexes[2].replace("[]",'');
+		
+		var current_suggested_price=parseFloat($("#price_info_"+nameIndex).text());			
+		var selected_price=parseFloat($(this).attr('rel'));
+		var currency=$("#currency_type_"+nameIndex).val();	
+				
+		//calculating current price and selected price and assiging to suggested price
+		var suggested_price=parseFloat(current_suggested_price-selected_price);
+		$("#price_info_"+nameIndex).text(suggested_price);
+		$("#currency_info_"+nameIndex).html(' &'+currency+';');
+		
+		//total suggested price
+		var total_suggested_price=parseFloat($("#total_suggested_price").text());
+		if(isNaN(total_suggested_price))	
+			total_suggested_price=0;
+		else
+		total_suggested_price=parseFloat(total_suggested_price);
+				
+		total_suggested_price=parseFloat(total_suggested_price-selected_price);
+		
+		total_suggested_price=total_suggested_price.toFixed(2);
+		
+		$("#total_suggested_price").text(total_suggested_price);
+		$("#total_suggested_price_hidden").val(total_suggested_price);	
+		$("#total_currency_info").html(' &'+currency+';');		
+		
+		if(mission_ids[0]=='overview')
+		{
+			$('#detail_missions_'+mission_id+'_'+index_id).prop('checked', false);
+			$('#detail_missions_'+mission_id+'_'+index_id).iCheck('update');
+		}	
+		else	
+		{
+			$('#overview_missions_'+mission_id+'_'+index_id).prop('checked', false);
+			$('#overview_missions_'+mission_id+'_'+index_id).iCheck('update');
+		}		
+	});
+	  
+});
+</script>
+
+<style type="text/css">
+.nav-tabs > li {
+width:150px;
+text-align:center;
+}
+.w-box-content .nav-tabs > li > a {
+    font-size: 13px;
+	opacity:0.5;
+	color: #000;
+}	
+.w-box-content .nav-tabs > li.active > a{
+opacity:1;
+color: #000;
+}
+</style>
+
+{/literal}
+
+<div class="row-fluid">    
+	<div class="span12">
+		<div class="row-fluid">
+			<ul id="validate_wizard-titles" class="stepy-titles clearfix">
+				<li id="validate_wizard-title-0" class="current-step"><div>Creation</div><span class="stepNb">1</span></li>
+				<li id="validate_wizard-title-1"><div>TECH review</div><span class="stepNb">2</span></li>
+				<li id="validate_wizard-title-2"><div>SEO review</div><span class="stepNb">3</span></li>
+				<li id="validate_wizard-title-3"><div>Prod review</div><span class="stepNb">4</span></li>
+				<li id="validate_wizard-title-4"><div>Validation</div><span class="stepNb">5</span></li>
+			</ul>
+		</div>
+		<h1 class="heading topset2">{$create_mission.quote_title}</h1>
+		<form action="/quote/save-selected-mission" method="POST" id="mission_selection">
+		<div class="row-fluid">	
+			<div class="span12">
+				<div class="span12" id="quote_missions">
+				{if $quote_missions|@count gt 0}
+					{foreach from=$quote_missions item=mission name="misson"}
+					{assign var=gn_index value=$smarty.foreach.misson.index}
+					{assign var=ms_index value=$smarty.foreach.misson.index+1}					
+					<div class="w-box" id="quote_mission_{$ms_index}">
+						<div class="w-box-header">
+							<span id="box_title_{$ms_index}">Quote - {$create_mission.company_name} - Mission {$ms_index}</span>
+						</div>						
+						<div class="w-box-content">
+							<div class="tabbable clearfix">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a class="overview-tab" href="#tab1_{$ms_index}" data-toggle="tab">Overview</a></li>
+                                    <li class=""><a class="details-tab" href="#tab2_{$ms_index}" data-toggle="tab">Details</a></li>                                    
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active  mission-overview" id="tab1_{$ms_index}">
+										<div class="row-fluid">	
+											<div class="span4">
+											<div class="well">
+												<h3>{$mission.product_name}</h3>
+												<div class="mission-info-ov">
+												<ul>
+													<li><b>{$mission.language_name} {if $mission.product=='translation'} to {$mission.languagedest_name} {/if} </b></li>
+													<li><b>{$mission.producttype_name} {if $mission.producttype eq 'autre'}({$mission.producttypeother}){/if} </b></li>
+													<li>Nb mots : {$mission.nb_words} <br/>
+													<li>Volume : <span id ="mission_volume_{$ms_index}">{$mission.volume}</span> </li>
+													<li>Prix de vente th&eacute;orique/{$mission.producttype_name} : <span id ="article_price_{$ms_index}">0</span>&{$create_step1.currency};</li>
+													<li>Ajouter le prix au mot : <span id ="price_per_word_{$ms_index}">0</span>&{$create_step1.currency};
+													</ul>
+												</div>
+												</div>
+											</div>
+											<div class="span8">
+												<h2 class="heading">Historique tarifs</h2> 
+												<p class="alert alert-info">S&eacute;lectionner la mission la plus pertinente</p>
+												{if $mission.missionDetails|@count gt 0}
+													{foreach from=$mission.missionDetails item=old_mission name="old_misson"}														
+														<div class="row-fluid">
+															<div class="check-mission-block span12">										
+																<label>
+																	<div class="span2">
+																		<input name="overview_missions_{$ms_index}[]" id="overview_missions_{$old_mission.id}_{$ms_index}" value="{$old_mission.id}" data-price-word="{math equation='(v/y)' v=$old_mission.unit_price y=$old_mission.article_length format='%.2f'}" rel="{math equation='(v*(x/y)*z)' v=$old_mission.unit_price x=$mission.nb_words y=$old_mission.article_length z=$mission.volume format='%.2f'}" type="radio" class="validate[required]"{if $old_mission.id eq $select_missions.missions_selected[$gn_index]} checked {/if}>
+																		
+																	</div>	
+																	<div class="span9 mission-info-block">
+																		<h3>{$old_mission.title}
+																			{if $old_mission.simulation eq 'yes'}
+																			<span class="label label-info ">Mission simulée</span><br>
+																		{/if}
+																		</h3>
+
+																		<table class="table mission-table table-bordered table-condensed">
+																			<tr>
+																				<th>VOLUME</th>
+																				{*<!--<th>D&Eacute;LAI LIVRAISON</th>-->*}
+																				<th>P VENTE</th>
+																				<th>NB MOTS</th>
+																			</tr>
+																			<tr class="misson-details-text">
+																				<td>{$old_mission.num_of_articles}</td>
+																				{*<!--<td>{$old_mission.mission_length} JOURS</td>-->*}
+																				<td>{$old_mission.unit_price|zero_cut:2} &{$create_step1.currency};</td>
+																				<td>{$old_mission.article_length}</td>
+																			</tr>	
+																		</table>
+																	</div>
+																</label>										
+															</div>
+														</div>
+													{/foreach}	
+												{else}
+													<h3>No matched missions found</h3>
+												{/if}		
+											</div>
+										</div>										 
+									</div>
+									<div class="tab-pane mission-details" id="tab2_{$ms_index}">
+										<div class="row-fluid">	
+											<div class="span9">												
+												<div class="mission-info-ov">
+													Type : {$mission.product_name} <br/>
+													Langue : {$mission.language_name} {if $mission.product=='translation'} to {$mission.languagedest_name} {/if} <br/>
+													Produit : {$mission.producttype_name} <br/>
+													Nb mots : {$mission.nb_words} <br/>
+													Volume : {$mission.volume}<br/>
+													
+													
+												</div>
+											</div>
+											<div class="span3">	
+												<div class="w-box" id="suggested_price_{$ms_index}">
+													<div class="w-box-header">
+														<span>CA total - mission {$ms_index}</span>
+													</div>						
+													<div class="w-box-content cnt_a">
+														<div class="row-fluid">
+															<div class="span2"></div>
+															<div class="suggested-price"><span id="price_info_{$ms_index}">0</span><span id="currency_info_{$ms_index}"> </span></div>
+														</div>	
+													</div>
+												</div>	
+											</div>
+										</div>	
+										<div class="row-fluid">
+											<p class="alert alert-info">S&eacute;lectionner la mission la plus pertinente</p>
+										</div>
+										<div class="row-fluid">
+											<table class="table table-bordered table-hover">
+													<tr>
+														<th>S&eacute;lection</th>
+														<th>Client</th>
+														<th>Date</th>
+														<th>Cat&eacute;gorie</th>
+														<th>Type</th>
+														<th>Langue</th>
+														<th>Produit</th>
+														<th>Nb mots</th>
+														<th>Volume</th>
+														<th>Prix</th>
+														<th>Date lancement</th>
+														<th>Dur&eacute;e</th>
+														<th>Cout de prod</th>
+														<th>Marge en %</th>
+														<th>CA mission</th>
+														<th>CA contract</th>
+													</tr>
+													{if $mission.missionDetails|@count gt 0}
+														{foreach from=$mission.missionDetails item=old_mission name="old_misson"}												
+														<tr>
+															<td><input name="detail_missions_{$ms_index}[]" id="detail_missions_{$old_mission.id}_{$ms_index}" value="{$old_mission.id}" data-price-word="{math equation='(v/y)' v=$old_mission.unit_price y=$old_mission.article_length format='%.2f'}" rel="{math equation='(v*(x/y)*z)' v=$old_mission.unit_price x=$mission.nb_words y=$old_mission.article_length z=$mission.volume format='%.2f' }" type="radio" class="validate[required]" {if $old_mission.id eq $select_missions.missions_selected[$gn_index]} checked {/if}></td>
+															<td>{$old_mission.company_name}</td>
+															<td>{$old_mission.starting_date|date_format:"%B %Y"}</td>															
+															<td>{$old_mission.category_name}</td>
+															<td>{$old_mission.product}</td>
+															<td>{$old_mission.language1_name}</td>
+															<td>{$old_mission.producttype}</td>
+															<td>{$old_mission.article_length}</td>
+															<td>{$old_mission.num_of_articles}</td>
+															<td>{$old_mission.unit_price|zero_cut:2} &{$create_step1.currency};</td>
+															<td>{$old_mission.starting_date|date_format:"%d/%m/%Y"}</td>															
+															<td>{$old_mission.mission_length} JOURS</td>															
+															<td>
+																R&eacute;daction : {$old_mission.writing_cost_before_signature|zero_cut:2} &{$create_step1.currency}; <br/>
+																Correction : {$old_mission.correction_cost_before_signature|zero_cut:2} &{$create_step1.currency}; <br/>
+																Autre :{$old_mission.other_cost_before_signature|zero_cut:2} &{$create_step1.currency}; <br/>
+															</td>
+															<td>{$old_mission.margin_before_signature|zero_cut:2} %</td>
+															<td>{$old_mission.mission_turnover|zero_cut:2} k&{$create_step1.currency};</td>
+															<td>{$old_mission.contract_turnover|zero_cut:2} &{$create_step1.currency};</td>
+														</tr>		
+														<input type="hidden" id="currency_type_{$ms_index}" name="currency_type_{$ms_index}" value="{$create_step1.currency}">														
+													{/foreach}	
+													<input type="hidden" id="single_article_price_{$ms_index}" name="single_article_price_{$ms_index}" value="">
+														<input type="hidden" id="mission_ca_{$ms_index}" name="mission_ca_{$ms_index}" value="">
+												{else}
+													<p class="alert alert-danger">No matched missions found</p>
+												{/if}
+											</table>	
+										</div>
+									</div>																			
+								</div>	
+							</div>	
+						</div>
+					</div>
+					{/foreach}
+				{/if}	
+				</div>
+			</div>	
+			<div class="row-fluid">
+				<div class="pull-right">
+					<div class="suggested-price"><br><h1><small>Total CA potentiel</small><br> <span id="total_suggested_price">0</span><span id="total_currency_info"> </span></h1></div>
+					<input name="total_suggested_price" id="total_suggested_price_hidden" type="hidden">
+				</div>	
+				
+			</div>
+			<div class="row-fluid">
+			<br><br><br><hr>
+				<div class="span5 topset2">
+					<a class="btn btn-default" href="/quote/create-quote-mission?submenuId=ML13-SL2"><i class="icon-chevron-left"></i> Retour</a>							
+				</div>
+				<div class="pull-right topset2">
+					<button type="submit" name="select_mission" class="finish btn btn-primary">Valider ma s&eacute;lection</button>							
+				</div>
+			</div>
+			
+		</div>
+	</form>	
+	</div>
+</div>

@@ -1,0 +1,537 @@
+{literal}
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript" >
+$(document).ready(function() {
+   $("#parttime_option").chosen({ allow_single_deselect: false,search_contains: true  });
+   $("#sub_opt_time").chosen({ allow_single_deselect: false,search_contains: true  });
+   $("#sub_opt_resub").chosen({ allow_single_deselect: false,search_contains: true  });
+    $(".uni_style").uniform();
+    $("#favcontribcheck").chosen();
+   // $("#contrib_cat").chosen();
+   // $("#contrib_lang").chosen();
+   // loadEditors('scmailbody');
+   // loadEditors('allmailbody');
+	updatedBulkContribList2($("#aoId").val());
+    $('textarea').tinymce({
+        // Location of TinyMCE script
+        script_url 							: '/BO/theme/gebo/lib/tiny_mce/tiny_mce.js?' + new Date().getTime(),
+        // General options
+        theme 								: "advanced",
+        plugins 							: "autoresize,style,table,advhr,advimage,advlink,emotions,inlinepopups,preview,media,contextmenu,paste,fullscreen,noneditable,xhtmlxtras,template,advlist",
+        // Theme options
+        theme_advanced_buttons1 			: "undo,redo,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,fontsizeselect",
+        theme_advanced_buttons2 			: "forecolor,backcolor,|,cut,copy,paste,pastetext,|,bullist,numlist,link,image,media,|,code,preview,fullscreen",
+        theme_advanced_buttons3 			: "",
+        theme_advanced_toolbar_location 	: "top",
+        theme_advanced_toolbar_align 		: "left",
+        theme_advanced_statusbar_location 	: "bottom",
+        theme_advanced_resizing 			: false,
+        height                              : 300,
+        content_css                         : "/BO/theme/gebo/css/tinymce_styles.css?" + new Date().getTime(),
+        theme_advanced_font_sizes           : "8px,10px,12px,13px,14px,16px,18px,20px",
+        font_size_style_values              : "8px,10px,12px,13px,14px,16px,18px,20px",
+        init_instance_callback				: function(){
+
+            function resizeWidth() {
+                document.getElementById(tinyMCE.activeEditor.id+'_tbl').style.width='100%';
+            }
+            resizeWidth();
+            $(window).resize(function() {
+                resizeWidth();
+            })
+        }
+    });
+});
+function changeAoType(aotype, aoId, artlist) ///when directly republish
+{
+    smoke.confirm("Do you really want to change type of AO",function(e){
+        if (e)
+        {
+            var target_page = "/article-republish/changeaotype?&aoId="+aoId+"&aotype="+aotype;
+            $.post(target_page, function(data){  //alert(data);
+                var href="/article-republish/bulkrepublishpopup?nopart=no&close=no&aoId="+aoId+"&artlist="+artlist;
+                $("#republish").removeData('modal');
+                $('#republish .modal-body').load(href);
+                $("#republish").modal();
+                $(".modal-backdrop:gt(0)").remove();
+            });
+        }
+        else
+        {
+            var href="/article-republish/bulkrepublishpopup?nopart=no&close=no&aoId="+aoId+"&artlist="+artlist;
+            $("#republish").removeData('modal');
+            $('#republish .modal-body').load(href);
+            $("#republish").modal();
+            $(".modal-backdrop:gt(0)").remove();
+        }
+    });
+
+}
+function refreshModel()
+{
+    var aoId = $("#aoId").val();
+    var href="/article-republish/bulkrepublishpopup?nopart=no&close=no&aoId="+aoId;
+    $("#republish").removeData('modal');
+    $('#republish .modal-body').load(href);
+    $("#republish").modal();
+    $(".modal-backdrop:gt(0)").remove();
+}
+///when republish popup will come to upate values
+function saveRepublishPop() ///when directly republish
+{
+    var artlist = $("#artlist").val();
+    var aoId = $("#aoId").val();
+    var aotype = $("#aotype").val();
+    var selectedcontribs = $("#favcontribcheck").val();
+    if(aotype=="private")
+	{
+		var sendmailtoonlysc = $('#sendmailtoonlysc').is(":checked") ;
+		var fbpost = "";
+	}
+	else
+	{
+		var sendmailtoonlysc = "";
+		var fbpost = $("#fbpost").val();
+	}
+
+   /* var price_min = [];
+        $("input[name='price_min[]']:checked").each(function ()
+        {
+            checked.push($(this).val());
+        });
+    var price_max = [];
+        $("input[name='price_max[]']:checked").each(function ()
+        {
+            checked.push($(this).val());
+        });*/
+    var price_min = $("input[id='price_min']").map(function(){ return $(this).attr('class')+"_"+$(this).val(); }).get(); //alert(price_min);
+    var price_max = $("input[id='price_max']").map(function(){ return $(this).attr('class')+"_"+$(this).val(); }).get(); //alert(price_max);
+   /* var price_min = {};
+    $(".pricemin").each(function() {
+        price_min[$(this).attr("name")] = $(this).val();
+    }); // var price_min = $.toJSON(price_min); alert(price_min['828133844185356']);
+    var price_max = {};
+    $(".pricemax").each(function() {
+        price_max["pricemin_"+$(this).attr("name")] = $(this).val();
+    }); alert(price_max['pricemin_828133844185356']);*/
+    var checked = [];
+    $("input[name='contribtype[]']:checked").each(function ()
+    {
+        checked.push($(this).val());
+    });
+    var stage = $("#stage").val();
+    var parttime_option = $("#parttime_option").val();
+    var parttime = $("#participation_time").val();
+   // var price_min = $("#price_min").val();
+   // var price_max = $("#price_max").val();
+    var fbcomments = $("#fbcomments").val();
+    var scobject = $("#scobject").val();
+    var pubselectedlang = $("#contrib_lang").val();
+    if(aotype == "private"){
+        var allobject = $("#allobject").val();
+        var allmessage = tinyMCE.get('allmailbody').getContent();   }
+    var scmessage = tinyMCE.get('scmailbody').getContent();
+    var anouncebymail = $('#anouncebymail').is(":checked") ;
+    if($("#refusemail2").val() == 'yes')
+    {
+        var refusalmessage = tinyMCE.get('refusemessage').getContent();
+        var sendrefusalmail = "yes";
+    }
+    ///validation////
+    if(aotype == "private")
+    {
+        if(($("#maillimit").val()>60)||(parttime == '')||(selectedcontribs == null)||(price_min == '')||(price_max == ''))
+        {
+            smoke.alert("please check limit of 60 exceed OR other inputs");
+            return false;
+        }
+    }
+    else
+    {
+        if((parttime == '')||(price_min == '')||(price_max == '')||(checked == ''))
+        {
+            smoke.alert("please check inputs given");
+            return false;
+        }
+    }
+
+    var target_page = "/article-republish/bulkrepublishpopup?artlist="+artlist+"&aoId="+aoId+"&save=save&aotype="+aotype+"&view_to="+checked+"&price_min="+price_min+"&price_max="+price_max+"&selectedcontribs="+selectedcontribs+"&fbcomments="+fbcomments+"&parttime="+parttime+"&parttime_option="+parttime_option+
+            "&sendmailtoonlysc="+sendmailtoonlysc+"&scobject="+scobject+"&allobject="+allobject+"&scmessage="+escape(scmessage)+"&scmessage="+escape(allmessage);
+    $.post(target_page, function(data){  //alert(data);
+        if($("#nopartsforrepublish").val() == 'yes')
+        {
+            alert("Plus personne ne peut participer.");
+        }
+        if(stage != '')   /////////when republish pop up generated in any of stages
+        {
+            smoke.confirm("L\'article sera remis en ligne",function(e){
+                if(e)
+                {
+                    /* smoke.confirm("PREVENIR PAR EMAIL",function(e2){
+                        if(e2)
+                        {
+                            $("#sendtofo").val('yes');
+                            $("#crtsendtofo").val('yes');
+                            $("#anouncebyemail").val('yes');
+                            $("#anouncebyemail2").val('yes');
+                            $("#disapprove"+stage+"form").submit();
+                            return true;
+                        }
+                        else
+                        { */
+                            $("#sendtofo").val('yes');
+                            $("#crtsendtofo").val('yes');
+                            $("#disapprove"+stage+"form").submit();
+                            return true;
+                        /* }
+
+                    }); */
+                }
+                else
+                {
+                    $("#sendtofo").val('no');
+                    $("#crtsendtofo").val('no');
+                    $("#disapprove"+stage+"form").submit();
+                    return true;
+                }
+            });
+        }
+        else      /////////when republish pop up generated in selection profile related pages
+        {
+            smoke.confirm("L\'article sera remis en ligne",function(e){
+                if (e)
+                {
+                    window.location.href = "/article-republish/bulkpublisharticlefo?aoId="+aoId+"&artlist="+artlist+"&aoType="+aotype+"&sendtofo=yes&sendrefusalmail="+sendrefusalmail+"&scobject="+scobject+"" +
+                            "&fbpost="+fbpost+"&pubselectedlang="+pubselectedlang+"&sendmailtousertype="+checked+"&sendmailtoonlysc="+sendmailtoonlysc+"&selectedcontribs="+selectedcontribs+"&allobject="+allobject+"&anouncebymail="+anouncebymail+"&scmessage="+escape(scmessage)+"&allmessage="+escape(allmessage)+"&refusalmailcontent="+escape(refusalmessage);
+                }
+                else
+                {
+                    window.location.href = "/article-republish/bulkpublisharticlefo?aoId="+aoId+"artlist="+artlist+"&aoType="+aotype+"&sendtofo=no&sendrefusalmail="+sendrefusalmail+"&refusalmailcontent="+escape(refusalmessage);
+                }
+            });
+        }
+    });
+}
+////////intialising editors
+if (tinymce.getInstanceById('scmailbody'))
+{
+    tinymce.execCommand('mceRemoveControl', true, 'scmailbody');
+    loadEditors('scmailbody');
+}
+else  if (!tinymce.getInstanceById('scmailbody'))
+    loadEditors('scmailbody');
+
+
+if(tinymce.getInstanceById('allmailbody'))
+{
+    tinymce.execCommand('mceRemoveControl', true, 'allmailbody');
+    loadEditors('allmailbody');
+}
+else  if(!tinymce.getInstanceById('allmailbody'))
+    loadEditors('allmailbody');
+
+if(tinymce.getInstanceById('refusemessage'))
+{
+    tinymce.execCommand('mceRemoveControl', true, 'refusemessage');
+    loadEditors('refusemessage');
+}
+else  if(!tinymce.getInstanceById('refusemessage'))
+    loadEditors('refusemessage');
+////////////////////////////////
+function changeMailByContribType()
+{
+    $('#scmailbody').html();
+    var artid = $("#artId").val();
+    var checkedcontribs = [];
+    $("input[name='contribtype[]']:checked").each(function ()
+    {
+        checkedcontribs.push($(this).val());
+    });
+    var res = $.trim(checkedcontribs);
+    if(res == "senior")
+        var result =  "onlysc";
+    else
+        var result =  "all";
+    if (tinymce.getInstanceById('scmailbody'))
+    {
+        tinymce.execCommand('mceRemoveControl', true, 'scmailbody');
+        loadEditors('scmailbody');
+    }
+    else  if (!tinymce.getInstanceById('scmailbody'))
+        loadEditors('scmailbody');
+
+    var parttime_option = $("#parttime_option").val();
+    var extend_time = $("#participation_time").val();
+    var target_page = "/article-republish/changepublicmail?part_time="+extend_time+"&parttime_option="+parttime_option+"&artId="+artid+"&contribtype="+result;
+    $.get(target_page, function(data){  //alert(data);
+        var mailcontent = data.split("*");
+        $('#scmailbody').html(mailcontent[0]);
+        $("#scobject").val(mailcontent[1]);
+    });
+    //  commentBox1.show();
+}
+
+function fngetbulkmailcontent()
+{
+    var aoId = $("#aoId").val();
+    var aotype = $("#aotype").val();
+    var onlyscmail = $('#sendmailtoonlysc').is(":checked") ;
+    var scCount = $("#sc_count").val();
+    if(aotype == 'private')
+    {
+        if(tinymce.getInstanceById('allmailbody'))
+        {
+            tinymce.execCommand('mceRemoveControl', true, 'allmailbody');
+            loadEditors('allmailbody');
+        }
+        else  if(!tinymce.getInstanceById('allmailbody'))
+            loadEditors('allmailbody');
+    }
+    if(tinymce.getInstanceById('scmailbody'))
+    {
+        tinymce.execCommand('mceRemoveControl', true, 'scmailbody');
+        loadEditors('scmailbody');
+    }
+    else  if(!tinymce.getInstanceById('scmailbody'))
+        loadEditors('scmailbody');
+
+    var checkedcontribs = [];
+    $("input[name='contribtype[]']:checked").each(function ()
+    {
+        checkedcontribs.push($(this).val());
+    });
+    var selectedcontribs = $("#favcontribcheck").val();
+    var parttime_option = $("#parttime_option").val();
+    var extend_time = $("#participation_time").val();
+    var target_page = "/article-republish/getbulkdynamicselectedcontribs?part_time="+extend_time+"&parttime_option="+parttime_option+"&scCount="+scCount+"&selectedcontribs="+selectedcontribs+"&aoId="+aoId+"&onlyscmail="+onlyscmail+"&checkedcontribs="+checkedcontribs;
+    $.post(target_page, function(data){ // alert(data);
+        if(aotype == "private"){
+            var mailcontent = data.split("*");
+            $('#scmailbody').html(mailcontent[0]);
+            $('#allmailbody').html(mailcontent[1]);
+            $('#mailsenduserscount').html("("+mailcontent[2]+" contributeurs pourront participer)");
+            $('#maillimit').val(selectedcontribs.length);
+        }
+        else
+        {
+            $('#scmailbody').html(data);
+        }
+    });
+    //  commentBox1.show();
+}
+
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
+    }
+}
+function showFbPost()
+{
+    if($('#fbpost').is(':checked'))  {
+        $('#fbpostcomments').show();   }
+    else {
+        $('#fbpostcomments').hide();   }
+}
+//get all contributor based on the type, lang, cat//////
+function publicAoContribList(artId)
+{
+    var contribtype = $("input[name='contribtype[]']:checked").map(function () {return this.value;}).get().join("','");
+    var cat="";
+    // var lang=$("select#contrib_lang").val();
+    var lang="";
+    lang= $.trim(lang);
+    $.ajax({
+        type: 'GET',
+        url: '/article-republish/loadpublicaouserslist',
+        data: 'type=' + contribtype+'&category='+cat+'&language='+lang+"&artId="+artId,
+        success: function(data)
+        {         //alert(data);
+            var content = data.split("*");
+            if($("#aotype").val() == "private" && content[1] > 60)
+                smoke.alert("The limit of 60 is exceeded");
+            $('#pubcontribslist').val(content[0]);
+            $('#mailsenduserscount').html("("+content[1]+" contributeurs pourront participer)");
+            $('#maillimit').val(content[1]);
+        }
+    });
+}
+//get all contributor based on the type, lang, cat//////
+
+function privateAoContribList()
+{
+    var selectedcontribs = $("#favcontribcheck").val();
+    //var selectedcontribs = $("select.favcontribcheck option:selected").val();    alert(selectedcontribs);
+    if(selectedcontribs)
+    {
+        $('#mailsenduserscount').html("("+selectedcontribs.length+" contributeurs pourront participer)");
+        $('#maillimit').val(selectedcontribs.length);
+    }
+    else
+    {
+        $('#mailsenduserscount').html("(0 contributeurs pourront participer)");
+        $('#maillimit').val(0);
+    }
+
+}
+
+</script>
+<style type="text/css">
+    .form-horizontal .control-label {
+        float: left;
+        padding-top: 5px;
+        text-align: right;
+        width: 42%;
+        font-weight:bold;
+        cursor:default;
+    }
+    .form-horizontal .controls {
+        margin-left: 47%;
+    }
+
+</style>
+{/literal}
+<div class="alert alert-warning" ><strong>Configuration de republication - {$missiontitle}</strong></div>
+<input type="hidden" id="nopartsforrepublish" name="nopartsforrepublish" value="{$nopartsforrepublish}" >
+<!--<input type="hidden" id="refusemailcontent" name="refusemailcontent" value="{$refusemessage}" >-->
+<input id="closerepublish" name="closerepublish" value="{$close}" type="hidden">
+<input id="stage" name="stage" value="{$stage}" type="hidden"><div class="alert alert-success"><strong>Renvoyer l'article aux personnes ayant déjà participé sans être sélectionnées</strong> <span id="mailsenduserscount"> ({$createmailtobesentcount} contributeurs pourront participer)</span> </div>
+<form class="form-horizontal form_validation_ttip" >
+<fieldset>
+    <div class="control-group formSep">
+        <label class="control-label">Temps de bidding :</label>
+        <div class="controls form-inline">
+            <span style="vertical-align:top;"><input id="participation_time" name="participation_time" type="text" value="{$artdeldetails[0].participation_time}" onkeyup="fngetbulkmailcontent();"/></span>
+            <select name="parttime_option" id="parttime_option" onchange="fngetbulkmailcontent();">
+                <option value="min" selected="">Minute(s)</option>
+                <option value="hour">Heure(s)</option>
+                <option value="day">Jour(s)</option>
+            </select>
+        </div>
+    </div>
+    <div class="control-group formSep">
+        {foreach from=$pricedetials key=price_key item=price_item}
+		<div style="margin-top:10px">
+        <label class="control-label"> {$price_item.arttitle}:</label>
+        <div class="controls form-inline">
+           min : <input id="price_min" name="pricemin" class="pricemin_{$price_item.artid}" type="text"  value="{$price_item.artprice_min}"/>
+           max : <input id="price_max" name="pricemax" class="pricemax_{$price_item.artid}" type="text"  value="{$price_item.artprice_max}"/>
+        </div>
+		</div>
+        {/foreach}
+    </div>
+	{*
+	<div class="control-group formSep">
+			<label class="control-label"> Ao type :</label>
+			<div class="controls form-inline">
+				<label class="uni-radio">
+					<input type="radio" name="aotype" id="privateao" class="uni_style" value="privateao" onclick="changeAoType('private', '{$aoId}', '{$artlist}');" {if $aotype eq "private"} checked {/if} /> Private
+				</label>
+				<label class="uni-radio">
+					<input type="radio" name="aotype" id="publicao" class="uni_style"  value="publicao" onclick="changeAoType('public', '{$aoId}', '{$artlist}');" {if $aotype eq "public"} checked {/if}  /> Public
+				</label>
+			</div>
+	</div> 
+	*}
+    {if $aotype eq "private"}
+    <input id="sc_count" name="sc_count" value="{$sc_count}" type="hidden"/>
+    <div class="control-group formSep" id="privateaoset">
+        <label class="control-label">Type de contributeurs:</label>
+        <div class="controls form-inline">
+            <label class="uni-checkbox">
+                <input type="checkbox" id="contribtype1" name="contribtype[]"  value="senior" {if $sc eq 'yes'} checked {/if} class="uni_style" onClick="updatedBulkContribList2('{$aoId}');" />SC <b>({$sc_count})</b> </label>
+            <label class="uni-checkbox">
+                <input type="checkbox" id="contribtype2" name="contribtype[]"  value="junior" {if $jc eq 'yes'} checked {/if} class="uni_style" onClick="updatedBulkContribList2('{$aoId}');" />JC  <b>({$jc_count})</b></label>
+            
+			{if $artdeldetails[0].product neq 'translation'}
+			<label class="uni-checkbox">
+                <input type="checkbox"  id="contribtype3" name="contribtype[]"  value="sub-junior" {if $jc0 eq 'yes'} checked {/if} class="uni_style" onClick="updatedBulkContribList2('{$aoId}');" />SUB JUNIOR <b>({$jc0_count})</b>
+			</label>
+			{/if}
+        </div>
+        <div class="controls form-inline">
+            <select name="contrib_lang[]" id="contrib_lang" onChange="updatedBulkContribList2('{$aoId}');" data-placeholder="select language" multiple="multiple" style="width:250px;display:none">
+                {foreach from=$Contrib_langs item=langitem key=langkey}
+                <option value="{$langkey}" {if $langkey eq $language} selected {/if}>{$langitem|utf8_encode}</option>
+                {/foreach}
+            </select>
+            {html_options name=contrib_cat id=contrib_cat options=$Contrib_cats|utf8_encode selected=$contrib_cat style="width:250px;display:none" onChange=updatedBulkContribList2($aoId) }
+        </div>
+        <div class="controls form-inline" id="contribs">
+            <select name="favcontribcheck[]" id="favcontribcheck" multiple="multiple" onchange="fngetbulkmailcontent();">
+                {foreach from=$contriblistall1 item=contrib}
+                   <option value="{$contrib.identifier}"  >{$contrib.name}</option>
+                {/foreach}
+            </select>
+            <div id="favcontrib_err" style="color:red;"></div>
+        </div>
+    </div>
+   {else} 
+    <div class="control-group formSep" id="publicaoset">
+        <label class="control-label">Type de contributeurs:</label>
+        <div class="controls form-inline">
+            <label class="uni-checkbox">
+                <input type="checkbox" id="contribtype1" name="contribtype[]" onclick="publicAoContribList('{$artdeldetails[0].artId}');" value="senior" {if $sc eq 'yes'} checked {/if} class="uni_style"   />SC <b>({$sc_count})</b> </label>
+            <label class="uni-checkbox">
+                <input type="checkbox" id="contribtype2" name="contribtype[]" onclick="publicAoContribList('{$artdeldetails[0].artId}');" value="junior" {if $jc eq 'yes'} checked {/if} class="uni_style"  />JC  <b>({$jc_count})</b></label>
+			{if $artdeldetails[0].product neq 'translation'}
+		   <label class="uni-checkbox">
+                <input type="checkbox"  id="contribtype3" name="contribtype[]" onclick="publicAoContribList('{$artdeldetails[0].artId}');" value="sub-junior" {if $jc0 eq 'yes'} checked {/if} class="uni_style"  />SUB JUNIOR <b>({$jc0_count})</b>
+			</label>
+			{/if}
+            <div >  <select name="contrib_lang[]" id="contrib_lang" style="display:none" data-placeholder="select language" multiple="multiple" style="width:250px;padding-left: 50px;top:50px;position: relative;">
+                {foreach from=$language_array item=langitem key=langkey}
+                   {if $langkey == $language}
+                     <option value="{$langkey}" selected="selected">{$langitem|utf8_encode}</option>
+                   {else}
+                     <option value="{$langkey}">{$langitem|utf8_encode}</option>
+                   {/if}
+                {/foreach}
+            </select>  </div>
+        </div>
+    </div>
+	 {/if} 
+</fieldset>
+</form>
+<table class="table table-bordered">
+    <tr>
+        {if $refusemail == 'yes'}
+        <td colspan=3><div class="alert alert-danger">Email de refus envoy&eacute; aux participants de cette ench&egrave;re<strong>({$toberefusedcontribs})</strong></div><textarea rows="4" cols="50" name="refusemessage" id="refusemessage">{$refusemessage}</textarea></td>
+        {/if}
+    </tr>
+    <tr>
+        <td colspan=2>
+            {if $aotype eq "private"}
+            <div class="alert alert-danger"><label class="uni-checkbox"><input id="sendmailtoonlysc" name="sendmailtoonlysc" onclick="fngetbulkmailcontent();" type="checkbox" class="uni_style" value=""/></label>sc mail</div>
+            {/if}
+            <div class="alert alert-success">Objet de l'email : <input id="scobject" name="scobject" type="text" class="span5" value="{$scobject|utf8_encode}"/></div>
+            <textarea rows="4" cols="50" name="scmailbody" id="scmailbody">{$scmessage}</textarea></td>
+        {if $aotype eq "private"}
+        <td colspan=2><div class="alert alert-danger">all contributor mail</div><div class="alert alert-success">Objet de l'email : <input id="allobject" name="allobject" type="text" class="span5" value="{$allobject|utf8_encode}"/></div><textarea rows="4" cols="50" name="allmailbody" id="allmailbody">{$allmessage}</textarea></td>
+        {/if}
+    </tr>
+    <tr>
+        <input id="artlist" name="artlist" value="{$artlist}" type="hidden"/>
+        <input id="aoId" name="aoId" value="{$aoId}" type="hidden"/>
+        <input id="aotype" name="aotype" value="{$aotype}" type="hidden"/>
+        <input id="refusemail2" name="refusemail2" value="{$refusemail}" type="hidden"/>
+        <input id="pubcontribslist" name="pubcontribslist" value="" type="hidden"/>
+        <input id="maillimit" name="maillimit" value="{$createmailtobesentcount}" type="hidden"/>
+        <td colspan="5" class="alert alert-danger">
+            <div class="span4 pull-right">
+                <label class="uni-checkbox" style="float: left;"><input id="anouncebymail" name="anouncebymail" type="checkbox" class="uni_style " />Pr&eacute;venir par email</label>
+                {if $aotype eq "public"}
+                <label class="uni-checkbox" style="float: left;"><input id="fbpost" name="fbpost" type="checkbox" class="uni_style " value="yes" onclick="showFbPost();"/>Poster sur FB et Twitter
+                </label>
+                {/if}
+                <button type="button" id="republish" name="republish" class="btn btn-danger" onclick="saveRepublishPop();" >Re-publier</button>
+            </div>
+        </td>
+    </tr>
+    <tr id="fbpostcomments" style="display: none"><td colspan="5" class="alert alert-success">  <strong>Enter commemts for FB and Twiter Posts</strong>
+        <textarea rows="4" cols="150" name="fbcomments" id="fbcomments" style="width: 1000px;"> </textarea></td></tr>
+</table>
+

@@ -1,0 +1,244 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+
+<style type="text/css">
+.mod .error { display:none !important;	}
+.errordisp { color: #C62626; font-size: 11px; font-weight: 700; }
+.mod { background: none repeat scroll 0 0 #FFFFFF; border-color: #E4E4E4 #E4E4E4 #BBBBBB; border-image: none; border-radius: 4px; border-style: solid; border-width: 1px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086); margin-bottom: 15px; overflow: hidden; padding: 12px; }
+select { width: 300px !important; }
+</style>
+
+<script language="javascript">
+$(document).ready(function() {
+	
+   $("#create").validationEngine();   
+
+	//Add More client Contacts
+	var contact=1;
+	$("#clients").chosen({search_contains: true});
+	$("#langauge_ao").chosen({search_contains: true}); 
+	$("#delay_option").chosen({disable_search: true}); 
+});
+
+function validate_SCcreation_step1()
+{
+	var errstep1=0;
+
+		var client=$("#clients").val();
+		var lang=$("#langauge_ao").val();
+		
+		if(client==null)
+		{
+			$("#error_client").html("* Ce champs est requis");
+			errstep1++;
+		}
+		else
+			$("#error_client").html("");
+			
+		if(lang==null)
+		{
+			$("#error_lang").html("* Ce champs est requis");
+			errstep1++;
+		}
+		else
+			$("#error_lang").html("");	
+		
+		//Checkbox validation
+		//var statchecked=$('input[name="cstatus_visible[]"]:checked').val();  
+		var chkArray = [];
+		
+			$("input:checkbox[name='cstatus_visible[]']:checked").each(function() {
+				chkArray.push($(this).val());
+			});
+		
+		
+		if(chkArray.length>0)
+		{		//alert(chkArray);
+			var checkerr=0;
+			var requiredArray= new Array("writing_progress","correction_ongoing","stage2","published_client","published","closed");
+			$.each( requiredArray, function( key, value ) {
+				if(jQuery.inArray(value,chkArray)==-1)  
+				{
+					checkerr++;
+				}
+			});
+			
+			if(checkerr>0)
+				$("#error_statut").html("* Ce champs est requis");
+			else
+				$("#error_statut").html("");
+				
+			errstep1=errstep1+checkerr;
+		}
+		
+	if(errstep1>0)
+		return false;
+	else
+		return true;
+}
+
+function selectALL()
+{
+   if($("#checkallstatus").attr('checked'))
+   {
+	  var $b = $('#statuscheck input[type=checkbox]');
+	  $b.attr('checked', true);
+   }
+   else
+   {
+	   var $b = $('#statuscheck input[type=checkbox]');
+	   $b.attr('checked', false);
+   }
+}
+</script>	
+{/literal}	
+
+<div class="row-fluid">    
+	<div class="span12">
+		<h3 class="heading">CR&Eacute;ATION D'UN SUPER CLIENT</h3>
+		<form class="form_validation_reg" action="/user/superclientcreate-step2?submenuId=ML9-SL1" id="create" method="post" id="user" name="user" enctype="multipart/form-data" onSubmit="return validate_SCcreation_step1();">
+			
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span8 form-inline" >
+						<label class="span5"> Delivery title <span class="f_req">*</span></label>
+						<span><input type="text" name="reference_title" id="reference_title" value="{$reference_title}" class="validate[required]"/></span>
+					</div>					
+				</div>
+			</div>
+			<input type="hidden" id="deliveryrefernce" name="deliveryrefernce" value="{$deliveryrefernce}" />
+		
+					<div class="formSep">
+						<div class="row-fluid">
+							<div class="span8 form-inline">
+								<label class="span5">Qui g&egrave;re-t-il comme clients <span class="f_req">*</span></label>						
+								<select multiple data-placeholder="Liste des clients" name="clients[]" id="clients" class="validate[required]">
+									{html_options  options=$client_array  selected=$clients}
+								</select>
+							</div>					
+							<div id="error_client" class="errordisp"></div>
+						</div>
+					</div>	
+					<div class="formSep">
+						<div class="row-fluid">
+							<div class="span8 form-inline">
+								<label class="span5">Langue(s) affich&eacute;e(s) <span class="f_req">*</span></label>						
+								<select multiple data-placeholder="Choose a language..." class="span6"  name="langauge_ao[]" id="langauge_ao">
+									{html_options options=$language_array selected=$langauge_ao}	
+								</select>	
+							</div>	
+							<div id="error_lang" class="errordisp"></div>							
+						</div>  
+					</div>	
+					<div class="">
+						<div class="row-fluid">
+							<div class="span10">
+								<label class="span4">Affichage de la liste des statuts <span class="f_req">*</span></label>
+								<div class="span4" id="statuscheck">								
+									<label class="uni-checkbox">
+										<input type="checkbox"  value="participation_ongoing" id="uni_r1a" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('participation_ongoing',$cstatus_visible)} checked {/if} />
+										Participations en cours
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="pending_selection" id="uni_r1b" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('pending_selection',$cstatus_visible)} checked {/if} />
+										En attente de s&eacute;lection
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="writing_progress" id="uni_r1c" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('writing_progress',$cstatus_visible)} checked {/if} />
+										R&eacute;daction en cours <span class="f_req">*</span>
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="time_out" id="uni_r1d" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('time_out',$cstatus_visible)} checked {/if} />
+										Article non envoy&eacute;
+									</label> 
+									<label class="uni-checkbox">
+										<input type="checkbox" value="plag_exec" id="uni_r1e" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('plag_exec',$cstatus_visible)} checked {/if} />
+										V&eacute;rification du non plagiat
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="disapproved" id="uni_r1e" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('disapproved',$cstatus_visible)} checked {/if} />
+										Article en reprise
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="correction_ongoing" id="uni_r1f" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('correction_ongoing',$cstatus_visible)} checked {/if} />
+										Correction en cours <span class="f_req">*</span>
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="stage2" id="uni_r1g" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('stage2',$cstatus_visible)} checked {/if} />
+										En attente de validation (EP) <span class="f_req">*</span>  
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="published_client" id="uni_r1h" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('published_client',$cstatus_visible)} checked {/if} />
+										En attente de validation (Client) <span class="f_req">*</span>
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="published" id="uni_r1i" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('published',$cstatus_visible)} checked {/if} />
+										Valid&eacute; <span class="f_req">*</span>
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="refused_client" id="uni_r1i" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('refused_client',$cstatus_visible)} checked {/if} />
+										Refused by Client
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="closed" id="uni_r1j" name="cstatus_visible[]" class="uni_style validate[minCheckbox[1]]" {if in_array('closed',$cstatus_visible)} checked {/if} />
+										Close <span class="f_req">*</span>
+									</label>
+								</div>
+								<div class="span2" style="vertical-align:top;"><input type="checkbox" name="checkallstatus" id="checkallstatus" onClick="selectALL();" value="checkallpermissions"/>&nbsp;<strong>Checkall</strong></div>
+							</div>	
+							<div id="error_statut" class="errordisp"></div>			
+						</div>
+					</div>
+					<div class="formSep">  
+						<div class="row-fluid">
+							<div class="span8">
+								<label class="span5">Affichage des noms des contributeurs <span class="f_req">*</span></label>						
+								<div class="span6">
+									<label class="uni-radio">
+										<input type="radio" value="full_name"  name="user_visible" class="uni_style" {if $user_visible=='full_name'} checked {elseif !$user_visible} checked {/if} />
+										Full name
+									</label>
+									<!--<label class="uni-radio">
+										<input type="radio" value="first_name"  name="user_visible" class="uni_style" {if $user_visible=='first_name'} checked {/if} />
+										Pr&eacute;nom seulement
+									</label>
+									<label class="uni-radio">
+										<input type="radio" value="last_name"  name="user_visible" class="uni_style" {if $user_visible=='last_name'} checked {/if} />
+										Nom complet
+									</label>-->
+									<label class="uni-radio">
+										<input type="radio" value="anonymous"  name="user_visible" class="uni_style" {if $user_visible=='anonymous'} checked {/if} />
+										Anonyme
+									</label>
+								</div>
+							</div>					
+						</div> 
+					</div>
+					<div class="formSep topset1">
+						<div class="row-fluid">
+							<div class="span8 form-inline">  
+								<label class="span5">D&eacute;lai avant validation automatique d'un article </label>						
+								<input type="text" style="vertical-align:top;" name="delay_validation" id="delay_validation" value="{$delay_validation}" class="span2"/>
+								<select name="delay_option" id="delay_option" style="width:100px !important;">
+									<option value="days" {if $delay_option=='days'} selected="selected" {/if}>Jour(s)</option>
+									<option value="weeks" {if $delay_option=='weeks'} selected="selected" {/if}>Semaine(s)</option>
+								</select>
+								
+							</div>					
+						</div>
+					</div>		
+			
+				
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span5 form-inline">
+						<button type="submit" name="superclient_create" value="create" class="btn btn-success pull-right">Aller en &eacute;tape 2</button>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" name="modify" id="modify" value="{$modval}" />
+		</form>
+	</div>
+</div>	

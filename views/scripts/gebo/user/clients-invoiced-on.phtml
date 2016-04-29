@@ -1,0 +1,108 @@
+{literal}
+<script type="text/javascript">
+
+
+    function changeInvoiceUser(client_id,id)
+	{	//alert(id);
+		var invoice= $("#"+id).val();//document.getElementById(id).value();
+		//alert(invoice);
+		//$('.status').html('<img src="/FO/images/loading.gif" />');
+		var data = {user_id:client_id,invoiced:invoice};
+		$.ajax({
+			url:"/user/change-invoiced-on",
+			type: 'POST',
+            data: data,
+            cache: false,
+            dataType: 'json',
+            
+			success:function(result){
+				if(result.success){
+					//alert('Hurrey');
+					if(invoice=='no'){
+						 $("#"+id).val('yes');
+					}else{
+						  $("#"+id).val('no');
+					}
+				}
+				if(result.error){
+					//alert('ohhh no');
+				}
+		  }});
+
+	   
+	}
+</script>
+{/literal}
+<div class="row-fluid">
+  <div class="span12" style="">
+   <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+      <div class="tabbable">
+          <ul class="nav nav-tabs">
+              <li ><a href="#permissionstab" data-toggle="tab" class="lable-info"><strong>Client Invoice Status</strong></a></li>
+          </ul>
+          <div class="tab-content">
+             <div id="permissionstab" class="tab-pane active" >
+                 
+                  <form method='post' action='/user/change-invoiced-on' name='invoiced_form'>
+                  <table id="linkpermissionsgrid" class="table table-bordered table-striped table_vam">
+                      <thead>
+                      <tr>
+
+                          <th>Client</th>
+                          <th>Invoiced On</th>
+                        
+                         <!-- <th>Menu Description</th>-->
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {if $clientList neq 'No'}
+                      {foreach from=$clientList key=clientkey item=client name=rights}
+                      <tr>
+						  <td>({$client.email}){$client.company_name}</td>
+                          <td >
+                              <label class="uni-checkbox class="pull-left">
+                              <span> <input type="checkbox" id="chk_{$clientkey}" name="chk_{$clientkey}" value="{$client.invoiced}" class="uni_style" onclick="changeInvoiceUser('{$client.identifier}','chk_{$clientkey}');" {if $client.invoiced neq 'no'}  checked  {/if} ></input></span>
+                              </label>
+                          </td>
+                         
+                      </tr>
+                      {/foreach}
+
+                      
+                      {/if}
+                      </tbody>
+                  </table>
+                  <div style="height: 10px;"></div>
+                     </form>
+                  
+              </div>
+
+          </div>
+      </div>
+
+  </div>
+</div>
+
+
+<div style="visibility:hidden" >
+    <form id="user_login_form" name="user_login_form" method="post" action="" target="_blank">
+        <input type="text" id="login_name" name="login_name" value="">
+        <input type="password" id="login_password" name="login_password" value="{$user_detail[0].password}" >
+        <input type="submit" value="Login" />
+    </form>
+</div>
+
+
+{literal}
+<script type="text/javascript" >
+    function connect_fo(user,email,pwd)
+    {
+        document.forms["user_login_form"].action="http://mmm-new.edit-place.com/index/userfologin";
+        $('#login_name').val(email);
+        $('#login_password').val(pwd);
+        document.forms["user_login_form"].submit();
+    }
+</script>
+{/literal}
+
+

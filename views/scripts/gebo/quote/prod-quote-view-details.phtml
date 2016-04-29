@@ -1,0 +1,1302 @@
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<style type="text/css">
+.table th, .table-bordered th, .table thead th,.table td {
+    text-align: left;    
+}.mission-prod-product .misson-details-text td, th{	text-align: left !important;}
+</style>
+<link rel="stylesheet" href="/BO/theme/gebo/lib/iCheck/skins/square/blue.css" type="text/css"/>
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script>
+<script language="javascript">
+$(document).ready(function() {
+	
+	$(".uni_style").uniform();	
+	
+	$('.icheck').iCheck({
+		checkboxClass: 'icheckbox_square-blue',
+		radioClass: 'iradio_square-blue',
+		//increaseArea: '20%' // optional
+	 });
+	
+	//tech missions
+	//$("[id^=delivery_time_]").spinner({ disabled: true });
+	$("[id^=delivery_option_]").prop('disabled', true).trigger("liszt:updated");
+	
+	//SEO missions
+	//$("[id^=sdelivery_time_]").spinner({ disabled: true });
+	$("[id^=sdelivery_option_]").prop('disabled', true).trigger("liszt:updated");
+	$("[id^=product_]").prop('disabled', true).trigger("liszt:updated");
+	$("[id^=language_]").prop('disabled', true).trigger("liszt:updated");
+	$("[id^=producttype_]" ).prop('disabled', true).trigger("liszt:updated");
+	$("[id^=related_mission_]").prop('disabled', true).trigger("liszt:updated");
+		
+	$("#auto_match_missions").on('hidden', function() {
+		//alert('test');
+		$(this).removeData("modal");
+		$("#auto_match_missions .modal-body").html('');
+	});	
+	
+	fnCalculateProdTotal();
+});
+
+// To remove other elements
+function removeOther()
+{
+	$(".showother").each(function(){
+	if($(this).css("display")=="none")
+		$(this).closest(".displayOther").remove();
+	})
+	//return false;
+}
+
+//calculate total staff,total internal cost and total delivery
+function fnCalculateProdTotal()
+{
+	
+	var total_staff=0;
+	var total_delivery_time=0;
+	var total_staff_time=0;
+	var total_cost=0;
+	
+	//calculating total cost
+	$("[id^=pmission_cost_]" ).each(function(z) {
+		var missionPrice=parseFloat($(this).val());
+		if(isNaN(missionPrice))
+			missionPrice=0;
+		total_cost=total_cost+missionPrice;
+	});
+	//calculating total delivery time	
+	total_delivery_time_writer=0;
+	total_delivery_time_proofreader=0;
+	$("[id^=pdelivery_time_]" ).each(function(z) {
+		var deliveryTime=parseFloat($(this).val());
+		
+		var time_id = $(this).attr('id');
+		var time_split=time_id.split("_");
+		var time_option='pdelivery_option_'+time_split[2]+'_'+time_split[3];
+		var delivery_option=$("#"+time_option).val();
+		if(isNaN(deliveryTime))
+			deliveryTime=0;
+		if(delivery_option=='hours')
+		{
+			deliveryTime=deliveryTime/24;
+			deliveryTime=deliveryTime.toFixed(2);
+		}	
+		
+		if(time_split[3]==1)
+		{
+			if(deliveryTime>total_delivery_time_writer)	
+				total_delivery_time_writer=deliveryTime;
+		}
+		if(time_split[3]==2)
+		{
+			if(deliveryTime>total_delivery_time_proofreader)	
+				total_delivery_time_proofreader=deliveryTime;
+		}	
+		
+	});
+	total_delivery_time=(total_delivery_time_writer+total_delivery_time_proofreader);
+	
+	
+	
+	//calculating total staff time
+	total_staff_time_write=0;
+	total_staff_time_proofread=0;
+	$("[id^=staff_]" ).each(function(z) {
+		var div_id = $(this).attr('id');
+		var div_numbers=div_id.split("_");
+		if(div_numbers[1]!='time')
+		{
+			var staff=parseFloat($(this).val());
+			if(isNaN(staff))
+				staff=0;
+			total_staff=total_staff+staff;
+		}
+		
+		if(div_numbers[1]=='time' && div_numbers[2]!='option')
+		{
+			var staffTime=parseFloat($(this).val());
+			var stime_option='staff_time_option_'+div_numbers[2]+'_'+div_numbers[3];
+			var sdelivery_option=$("#"+stime_option).val();
+			if(isNaN(staffTime))
+				staffTime=0;
+			if(sdelivery_option=='hours')
+			{
+				staffTime=staffTime/24;
+				staffTime=staffTime.toFixed(2);
+			}	
+			
+			if(div_numbers[3]==1)
+			{
+				if(staffTime>total_staff_time_write)	
+					total_staff_time_write=staffTime;
+			}
+			if(div_numbers[3]==2)
+			{
+				if(staffTime>total_staff_time_proofread)	
+					total_staff_time_proofread=staffTime;
+			}			
+		}
+	});
+	//alert(total_staff_time_write+'--'+total_staff_time_proofread);
+	
+	//adding staff time to total time
+	total_delivery_time=(total_delivery_time+total_staff_time_write+total_staff_time_proofread);
+	
+	$("#total_staff").val(total_staff);
+	$("#total_delivery_time").val(total_delivery_time);
+	$("#total_mission_cost").val(total_cost);
+	
+}
+
+//recalculate the delivery time based on writers
+function fnCalculateDeliveryTime(mission_id,mission_type,nbwriters)
+{
+	var target_page='/quote/ajax-calculate-delivery-time?mission_id='+mission_id+'&mission_type='+mission_type+'&nbwriters='+nbwriters;
+	//alert(target_page);
+	$.post(target_page,function(response){
+		//alert(response);
+			var obj = $.parseJSON(response);
+			var staff_length=obj.staff_length;
+			var mission_length=obj.mission_length;
+			var time_option=obj.time_option;
+			
+			if(mission_type=='proofreading')
+			{
+				$('#staff_time_'+mission_id+'_2').val(staff_length);
+				$('#pdelivery_time_'+mission_id+'_2').val(mission_length);
+			}
+			else
+			{
+				$('#staff_time_'+mission_id+'_1').val(staff_length);
+				$('#pdelivery_time_'+mission_id+'_1').val(mission_length);
+			}	
+			
+		fnCalculateProdTotal();			
+	});
+}
+
+</script>
+{/literal}
+<div class="row-fluid" style="overflow:hidden">    
+	<div class="span12">		
+		{if $quoteDetails|@count gt 0}
+		{foreach from=$quoteDetails item=quote name="quote"}			
+			<div class="row-fluid">
+			{*<form action="/quote/save-prod-review" method="POST" id="challenge_quote" enctype="multipart/form-data">*}
+				{if $quote.prod_review eq 'challenged' || $quote.prod_review eq 'validated'}
+					<div class="w-box">
+						<div class="w-box-header">Co&ucirc;ts de prod</div>
+						<div class="w-box-content  cnt_a">
+						{if $quote.mission_details|@count gt 0}
+						{foreach from=$quote.mission_details item=mission name="misson"}
+							{assign var=gn_index value=$smarty.foreach.misson.index}
+							{assign var=ms_index value=$smarty.foreach.misson.index+1}	
+							<div class="row-fluid">	
+								<div class="mission-details">
+									{if $mission.previousMissionDetails|@count eq 0 && $quote.version gt 1 }
+										<div class="new-mission-product">Mission {$ms_index} : {$mission.product_name} <label class="label label-warning">Mission ajout&eacute;e</label></div>
+									{else}
+										<div class="prod-mission-product"> Mission {$ms_index} : {$mission.product_name}</div>
+									{/if}									
+									
+									<table class="table mission-table">
+										<tr>
+											<th style="width:30%">LANGUE</th>
+											<th style="width:30%">PRODUIT</th>
+											<th style="width:20%">VOLUME</th>
+											<th style="width:20%">NB MOTS</th>
+										</tr>
+										<tr class="misson-details-text">
+											<td>
+											{if $mission.language_difference eq 'yes'}
+												<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.language_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+											{/if}	
+												{if $mission.product eq 'translation'}															
+													{$mission.language_source_name} > 	{$mission.language_dest_name} 
+												{else}
+													{$mission.language_source_name}
+												{/if}
+											{if $mission.language_difference eq 'yes'}
+												</span>
+											{/if}	
+											</td>
+										<td>
+											{if $mission.product_type_difference eq 'yes'}
+												<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.product_type_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+											{/if}														
+												{if $mission.product_type_name} 
+													{$mission.product_type_name}
+												{else}
+													{$mission.product_name}
+												{/if}
+											{if $mission.product_type_difference eq 'yes'}
+												</span>
+											{/if}	
+										</td>
+										<td>
+											{if $mission.volume_difference eq 'yes'}
+												<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.volume_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i>
+											{/if}
+												{$mission.volume}
+											{if $mission.volume_difference eq 'yes'}
+												</span>
+											{/if}	
+												
+										</td>										
+										<td>
+											{if $mission.nb_words_difference eq 'yes'}
+												<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.nb_words_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> 
+											{/if}
+												{$mission.nb_words}
+											{if $mission.nb_words_difference eq 'yes'}
+												</span>
+											{/if}
+										</td>
+										</tr>	
+									</table>
+									<!--Tempo details-->
+									{include file="gebo/quote/tempo-details.phtml"}
+									
+									<div class="row-fluid" id="prod_missions_{$mission.identifier}">
+										{if $mission.prod_mission_details|@count gt 0}
+										{assign var="other" value="true"}
+											{foreach from=$mission.prod_mission_details item=prod_misson name="prod_mission"}
+												{assign var=pr_index value=$smarty.foreach.prod_mission.index+1}
+												{if $prod_misson.product eq 'autre'}
+												<div class="displayOther">
+													<div class="row-fluid showother" id="prod_missions_{$prod_misson.identifier}_{$pr_index}">
+													{else}
+													<div class="row-fluid" id="prod_missions_{$prod_misson.identifier}_{$pr_index}">
+													{/if}
+												
+													<div class="mission-details">
+														<div class="mission-prod-product">
+														<span id="box_title_{$pr_index}">
+														{if $prod_misson.product eq 'redaction'}
+															R&eacute;daction
+														{elseif $prod_misson.product eq 'translation'}
+															Traduction 	
+														{elseif $prod_misson.product eq 'proofreading'}
+															Correction 	
+														{elseif $prod_misson.product eq 'autre'}
+															Autre 		
+															{assign var="other" value="false"}
+														{/if}		
+														{if $prod_misson.previousMissionDetails|@count eq 0 && $quote.version gt 1 }<label class="label label-warning">New</label> {/if}</span>														
+														</span>															
+														</div>
+														<input type="hidden" name="prod_product_{$mission.identifier}[]" value="{$prod_misson.product}">
+														<input type="hidden" name="prod_mission_id_{$mission.identifier}[]" value="{$prod_misson.identifier}">
+														<table class="table mission-table">
+															<tr>
+																<th style="width:15%;">Nb r&eacute;dacteurs</th>
+																<th>Co&ucirc;t/{$mission.product_type_name} (&{$quote.sales_suggested_currency };)</th>
+															</tr>				
+															<tr>
+																<td>
+																	{if $prod_misson.staff_difference eq 'yes'}
+																		<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" 	data-content="{$prod_misson.staff_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> </span>
+																	{/if}
+																	<input type="text" id="staff_{$mission.identifier}_{$pr_index}" name="staff_{$mission.identifier}[]" class="span9 validate[required]"  value="{$prod_misson.staff}" onkeyup="fnCalculateProdTotal();" disabled/>
+																	{*{if $prod_misson.product neq 'autre'}
+																	<button type="button" class="btn btn-info" onclick="fnCalculateDeliveryTime('{$mission.identifier}','{$prod_misson.product}',$('#staff_{$mission.identifier}_{$pr_index}').val())">Apply</button>
+																	{/if}*}
+																</td>
+																<td>
+																	{if $prod_misson.cost_difference eq 'yes'}
+																		<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" 	data-content="{$prod_misson.price_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> </span>
+																	{/if}
+																	<input type="text" id="pmission_cost_{$mission.identifier}_{$pr_index}" name="pmission_cost_{$mission.identifier}[]" class="span3 validate[required]"  value="{$prod_misson.cost|zero_cut:2}" onkeyup="fnCalculateProdTotal();" disabled/>
+																</td>
+															</tr>
+														</table>
+														{if $mission.comments}
+														<div class="media mission-comment">
+															<a class="pull-left imgframe">
+																<img width="60px" src="{$fo_path}/profiles/bo/{$mission.created_by}/logo.jpg" class="media-object">
+															</a>
+															<div class="media-body">
+																<h4 class="media-heading">								
+																	<a>{$quote.quote_user_name}</a> {$mission.comment_time}
+																</h4>
+																<span>{$mission.comments|stripslashes|htmlentities|nl2br}</span>
+															</div>
+														</div>
+														{/if}
+														{if $prod_misson.comments}
+														<div class="media mission-comment">
+															<a class="pull-left imgframe">
+																<img width="60px" src="{$fo_path}/profiles/bo/{$prod_misson.created_by}/logo.jpg" class="media-object">
+															</a>
+															<div class="media-body">														
+																{$prod_misson.comments|stripslashes|htmlentities|nl2br}
+															</div>												
+														</div>
+														{/if}
+													</div>
+													{if $prod_misson.product eq 'autre'}													
+														</div>
+													{/if}	
+												</div>												
+												{if $smarty.foreach.prod_mission.last && $other=="true"}
+												<div class="displayOther">
+													<div class="row-fluid showother" id="prod_missions_{$mission.identifier}_3" style="display:none">
+													 <div class="mission-details">
+														<div class="mission-prod-product"><span id="box_title_3">Autre</span>
+															<div class="pull-right">												
+																<a class="btn close-seo" rel="{$mission.identifier}" id="pmission_close_{$mission.identifier}_3">&times;</a>
+															</div>
+														
+														</div>
+														<input type="hidden" name="prod_product_{$mission.identifier}[]" value="autre">
+														<table class="table mission-table">
+															<tr>
+																<th style="width:15%">Nb r&eacute;dacteurs</th>					
+																<th style="width:33%">D&eacute;lai de set up</th>														
+																<th style="width:30%">D&eacute;lai livraison</th>						
+																<th style="width:21%">Co&ucirc;t/{$mission.product_type_name} (&{$quote.sales_suggested_currency };)</th>														
+															</tr>				
+															<tr>
+																<td>
+																	<input type="text" id="staff_{$mission.identifier}_3" name="staff_{$mission.identifier}[]" class="span11 validate[required]"  value="" onkeyup="fnCalculateProdTotal();" disabled/>
+																</td>
+																<td>															
+																	<div class="span4">
+																		<input type="text" id="staff_time_{$mission.identifier}_3" name="staff_time_{$mission.identifier}[]" class="span12 validate[required]" value="" disabled/>
+																	</div>
+																	<div class="span5">
+																		<select name="staff_time_option_{$mission.identifier}[]" id="staff_time_option_{$mission.identifier}_3" class="span12" disabled>					
+																			<option value="days" {if $mission.staff_time_option eq 'days'} selected {/if}>Jours</option>
+																			<option value="hours" {if $mission.staff_time_option eq 'hours'} selected {/if}>Hours</option>								
+																		</select>
+																	</div>	
+																</td>
+																<td>															
+																	<div class="span4">
+																		<input type="text" id="pdelivery_time_{$mission.identifier}_3" name="pdelivery_time_{$mission.identifier}[]" class="span12 validate[required]" value="" onkeyup="fnCalculateProdTotal();" disabled/>
+																	</div>
+																	<div class="span5">
+																		<select name="pdelivery_option_{$mission.identifier}[]" id="pdelivery_option_{$mission.identifier}_3" class="span12" onchange="fnCalculateProdTotal();" disabled>					
+																			<option value="days" {if $mission.pdelivery_option eq 'days'} selected {/if}>Jours</option>
+																			<option value="hours" {if $mission.pdelivery_option eq 'hours'} selected {/if}>Hours</option>									
+																		</select>
+																	</div>	
+																</td>
+																<td>
+																	<input type="text" id="pmission_cost_{$mission.identifier}_3" name="pmission_cost_{$mission.identifier}[]" class="span11 validate[required]"  value="" onkeyup="fnCalculateProdTotal();" disabled/>
+																</td>
+															</tr>
+														</table>
+														<div class="media mission-comment">
+															<a class="pull-left imgframe">
+																<img width="60px" src="{$fo_path}/profiles/bo/{$userId}/logo.jpg" class="media-object">
+															</a>
+															<div class="media-body">														
+																<textarea name="prodcomments_{$mission.identifier}[]{$mission.identifier}[]" placeholder="ins&eacute;rer un commentaire" id="prodcomments_{$mission.identifier}_3" class="span12"></textarea>
+															</div>												
+														</div>
+													</div>	
+												</div>											
+											</div>
+												{/if}
+											{/foreach}
+										{else}
+											{if $mission.suggested_mission_details[0].writing_cost_before_signature}
+												<div class="row-fluid" id="prod_missions_{$mission.identifier}_1">
+													<div class="mission-details">
+														<div class="mission-prod-product"><span id="box_title_1">
+														{if $mission.product eq 'redaction'}
+															R&eacute;daction
+														{else}
+															Traduction 
+														{/if}												
+														</span></div>
+														<input type="hidden" name="prod_product_{$mission.identifier}[]" value="{$mission.product}">
+														<table class="table mission-table">
+															<tr>
+																<th style="width:15%">Nb r&eacute;dacteurs</th>					
+																<th style="width:33%">D&eacute;lai de set up</th>														
+																<th style="width:30%">D&eacute;lai livraison</th>						
+																<th style="width:21%">Co&ucirc;t/{$mission.product_type_name} (&{$quote.sales_suggested_currency };)</th>														
+															</tr>				
+															<tr>
+																<td>
+																	<input type="text" id="staff_{$mission.identifier}_1" name="staff_{$mission.identifier}[]" class="span11 validate[required]"  value="{$mission.suggested_mission_details[0].writing_staff}" onkeyup="fnCalculateProdTotal();" disabled/>
+																	{*<button type="button" class="btn btn-info" onclick="fnCalculateDeliveryTime('{$mission.identifier}','{$mission.product}',$('#staff_{$mission.identifier}_1').val())">Apply</button>*}
+																</td>
+																<td>															
+																	<div class="span4">
+																		<input type="text" id="staff_time_{$mission.identifier}_1" name="staff_time_{$mission.identifier}[]" class="span12 validate[required]" value="{$mission.suggested_mission_details[0].staff_setup_length}" disabled/>
+																	</div>
+																	<div class="span5">
+																		<select name="staff_time_option_{$mission.identifier}[]" id="staff_time_option_{$mission.identifier}_1" class="span12" disabled>					
+																			<option value="days" {if $mission.staff_time_option eq 'days'} selected {/if}>Jours</option>
+																			<option value="hours" {if $mission.staff_time_option eq 'hours'} selected {/if}>Hours</option>									
+																		</select>
+																	</div>	
+																</td>
+																<td>															
+																	<div class="span4">
+																		<input type="text" id="pdelivery_time_{$mission.identifier}_1" name="pdelivery_time_{$mission.identifier}[]" class="span12 validate[required]" value="{$mission.suggested_mission_details[0].mission_length}" onkeyup="fnCalculateProdTotal();" disabled/>
+																	</div>
+																	<div class="span5">
+																		<select name="pdelivery_option_{$mission.identifier}[]" id="pdelivery_option_{$mission.identifier}_1" class="span12" onchange="fnCalculateProdTotal();" disabled>					
+																			<option value="days" {if $mission.pdelivery_option eq 'days'} selected {/if}>Jours</option>
+																			<option value="hours" {if $mission.pdelivery_option eq 'hours'} selected {/if}>Hours</option>									
+																		</select>
+																	</div>	
+																</td>
+																<td>
+																	<input type="text" id="pmission_cost_{$mission.identifier}_1" name="pmission_cost_{$mission.identifier}[]" class="span11 validate[required]"  value="{math equation='((x/y)*z)' x=$mission.nb_words y=$mission.suggested_mission_details[0].article_length z=$mission.suggested_mission_details[0].writing_cost_before_signature format='%.2f' }" onkeyup="fnCalculateProdTotal();" disabled/>
+																</td>
+																
+															</tr>
+														</table>
+														{if $mission.comments}
+														<div class="media mission-comment">
+															<a class="pull-left imgframe">
+																<img width="60px" src="{$fo_path}/profiles/bo/{$mission.created_by}/logo.jpg" class="media-object">
+															</a>
+															<div class="media-body">
+																<h4 class="media-heading">								
+																	<a>{$quote.quote_user_name}</a> {$mission.comment_time}
+																</h4>
+																<span>{$mission.comments|stripslashes|htmlentities|nl2br}</span>
+															</div>
+														</div>
+														{/if}
+														<div class="media mission-comment">
+															<a class="pull-left imgframe">
+																<img width="60px" src="{$fo_path}/profiles/bo/{$userId}/logo.jpg" class="media-object">
+															</a>
+															<div class="media-body">														
+																<textarea name="prodcomments_{$mission.identifier}[]" placeholder="ins&eacute;rer un commentaire" id="prodcomments_{$mission.identifier}_1" class="span12"></textarea>
+															</div>												
+														</div>
+													</div>	
+												</div>
+											{/if}	
+											{if $mission.suggested_mission_details[0].correction_cost_before_signature}
+												<div class="row-fluid" id="prod_missions_{$mission.identifier}_2">
+													<div class="mission-details">
+														<div class="mission-prod-product"><span id="box_title_2">Correction</span></div>
+														<input type="hidden" name="prod_product_{$mission.identifier}[]" value="proofreading">
+														<table class="table mission-table">
+															<tr>
+																<th style="width:15%">Nb r&eacute;dacteurs</th>					
+																<th style="width:33%">D&eacute;lai de set up</th>														
+																<th style="width:30%">D&eacute;lai livraison</th>						
+																<th style="width:21%">Co&ucirc;t/{$mission.product_type_name} (&{$quote.sales_suggested_currency };)</th>														
+															</tr>				
+															<tr>
+																<td>
+																	<input type="text" id="staff_{$mission.identifier}_2" name="staff_{$mission.identifier}[]" class="span11 validate[required]"  value="{$mission.suggested_mission_details[0].proofreading_staff}" onkeyup="fnCalculateProdTotal();" disabled/>
+																	{*<button type="button" class="btn btn-info" onclick="fnCalculateDeliveryTime('{$mission.identifier}','proofreading',$('#staff_{$mission.identifier}_2').val())">Apply</button>*}
+																</td>
+																<td>															
+																	<div class="span4">
+																		<input type="text" id="staff_time_{$mission.identifier}_2" name="staff_time_{$mission.identifier}[]" class="span12 validate[required]" value="{$mission.suggested_mission_details[0].staff_setup_length}" disabled/>
+																	</div>
+																	<div class="span5">
+																		<select name="staff_time_option_{$mission.identifier}[]" id="staff_time_option_{$mission.identifier}_2" class="span12" disabled>					
+																			<option value="days" {if $mission.staff_time_option eq 'days'} selected {/if}>Jours</option>
+																			<option value="hours" {if $mission.staff_time_option eq 'hours'} selected {/if}>Hours</option>									
+																		</select>
+																	</div>	
+																</td>
+																<td>															
+																	<div class="span4">
+																		<input type="text" id="pdelivery_time_{$mission.identifier}_2" name="pdelivery_time_{$mission.identifier}[]" class="span12 validate[required]" value="{$mission.suggested_mission_details[0].mission_length}" onkeyup="fnCalculateProdTotal();" disabled/>
+																	</div>
+																	<div class="span5">
+																		<select name="pdelivery_option_{$mission.identifier}[]" id="pdelivery_option_{$mission.identifier}_2" class="span12" onchange="fnCalculateProdTotal();" disabled>					
+																			<option value="days" {if $mission.pdelivery_option eq 'days'} selected {/if}>Jours</option>
+																			<option value="hours" {if $mission.pdelivery_option eq 'hours'} selected {/if}>Hours</option>									
+																		</select>
+																	</div>	
+																</td>
+																<td>
+																	<input type="text" id="pmission_cost_{$mission.identifier}_2" name="pmission_cost_{$mission.identifier}[]" class="span11 validate[required]"  value="{math equation='((x/y)*z)' x=$mission.nb_words y=$mission.suggested_mission_details[0].article_length z=$mission.suggested_mission_details[0].correction_cost_before_signature format='%.2f' }" onkeyup="fnCalculateProdTotal();" disabled/>
+																</td>
+																
+															</tr>
+														</table>												
+														<div class="media mission-comment">
+															<a class="pull-left imgframe">
+																<img width="60px" src="{$fo_path}/profiles/bo/{$userId}/logo.jpg" class="media-object">
+															</a>
+															<div class="media-body">														
+																<textarea name="prodcomments_{$mission.identifier}[]" placeholder="ins&eacute;rer un commentaire" id="prodcomments_{$mission.identifier}_2" class="span12"></textarea>
+															</div>												
+														</div>
+													</div>	
+												</div>
+											{/if}	
+											{if $mission.suggested_mission_details[0].other_cost_before_signature eq 0 OR $mission.suggested_mission_details[0].other_cost_before_signature gt 0}
+												<div class="displayOther">
+												 <div class="row-fluid showother" id="prod_missions_{$mission.identifier}_3" {if $mission.suggested_mission_details[0].other_cost_before_signature eq 0 }style="display:none"{/if}>
+													 <div class="mission-details">
+														<div class="mission-prod-product"><span id="box_title_3">Autre</span>
+															<div class="pull-right">												
+																<a class="btn close-seo" rel="{$mission.identifier}" id="pmission_close_{$mission.identifier}_3">&times;</a>
+															</div>
+														
+														</div>
+														<input type="hidden" name="prod_product_{$mission.identifier}[]" value="autre">
+														<table class="table mission-table">
+															<tr>
+																<th style="width:15%">Nb r&eacute;dacteurs</th>					
+																<th style="width:33%">D&eacute;lai de set up</th>														
+																<th style="width:30%">D&eacute;lai livraison</th>						
+																<th style="width:21%">Co&ucirc;t/{$mission.product_type_name} (&{$quote.sales_suggested_currency };)</th>														
+															</tr>				
+															<tr>
+																<td>
+																	<input type="text" id="staff_{$mission.identifier}_3" name="staff_{$mission.identifier}[]" class="span11 validate[required]"  value="" onkeyup="fnCalculateProdTotal();" disabled/>
+																</td>
+																<td>															
+																	<div class="span4">
+																		<input type="text" id="staff_time_{$mission.identifier}_3" name="staff_time_{$mission.identifier}[]" class="span12 validate[required]" value="{$mission.suggested_mission_details[0].staff_setup_length}" disabled/>
+																	</div>
+																	<div class="span5">
+																		<select name="staff_time_option_{$mission.identifier}[]" id="staff_time_option_{$mission.identifier}_3" class="span12" disabled>					
+																			<option value="days" {if $mission.staff_time_option eq 'days'} selected {/if}>Jours</option>
+																			<option value="hours" {if $mission.staff_time_option eq 'hours'} selected {/if}>Hours</option>									
+																		</select>
+																	</div>	
+																</td>
+																<td>															
+																	<div class="span4">
+																		<input type="text" id="pdelivery_time_{$mission.identifier}_3" name="pdelivery_time_{$mission.identifier}[]" class="span12 validate[required]" value="{$mission.suggested_mission_details[0].mission_length}" onkeyup="fnCalculateProdTotal();" disabled/>
+																	</div>
+																	<div class="span5">
+																		<select name="pdelivery_option_{$mission.identifier}[]" id="pdelivery_option_{$mission.identifier}_3" class="span12" onchange="fnCalculateProdTotal();" disabled>					
+																			<option value="days" {if $mission.pdelivery_option eq 'days'} selected {/if}>Jours</option>
+																			<option value="hours" {if $mission.pdelivery_option eq 'hours'} selected {/if}>Hours</option>									
+																		</select>
+																	</div>	
+																</td>
+																<td>
+																	<input type="text" id="pmission_cost_{$mission.identifier}_3" name="pmission_cost_{$mission.identifier}[]" class="span11 validate[required]"  value="{math equation='((x/y)*z)' x=$mission.nb_words y=$mission.suggested_mission_details[0].article_length z=$mission.suggested_mission_details[0].other_cost_before_signature format='%.2f' }" onkeyup="fnCalculateProdTotal();" disabled/>
+																</td>
+																
+															</tr>
+														</table>
+														<div class="media mission-comment">
+															<a class="pull-left imgframe">
+																<img width="60px" src="{$fo_path}/profiles/bo/{$userId}/logo.jpg" class="media-object">
+															</a>
+															<div class="media-body">														
+																<textarea name="prodcomments_{$mission.identifier}[]{$mission.identifier}[]" placeholder="ins&eacute;rer un commentaire" id="prodcomments_{$mission.identifier}_3" class="span12"></textarea>
+															</div>												
+														</div>
+													</div>	
+												</div>
+											</div>
+											{/if}	
+										{/if}	
+									</div>		
+								</div>
+							</div>
+							<!-- SEO proposals for a mission-->
+								{if $mission.seoMissions|@count gt 0}
+								{foreach from=$mission.seoMissions item=seo_mission name="seo_misson"}	
+									{assign var=sms_index value=$smarty.foreach.misson.total+$smarty.foreach.seo_misson.index+1}		
+									<div class="row-fluid">	
+										<div class="mission-details">
+											<div class="prod-mission-product">Mission {$sms_index} : {$mission.product_name} <label class="label label-warning">Proposition seo</label></div>
+											<table class="table mission-table">
+												<tr>
+													<th style="width:30%">LANGUE</th>
+													<th style="width:30%">PRODUIT</th>
+													<th style="width:20%">VOLUME</th>
+													<th style="width:20%">NB MOTS</th>
+												</tr>
+												<tr class="misson-details-text">
+													<td>{$mission.language_source_name} {if $mission.product eq 'translation'}>{$mission.language_dest_name}{/if}</td>
+													<td>{$seo_mission.product_type_name}</td>
+													<td>{$seo_mission.volume}</td>
+													<td>{$seo_mission.nb_words}</td>
+												</tr>	
+											</table>
+											<div class="row-fluid">
+												{assign var="_tempo_value" value=$seo_mission.tempo}
+												{assign var="_delivery_volume_option" value=$seo_mission.delivery_volume_option}
+												{assign var="_tempo_length_option" value=$seo_mission.tempo_length_option}
+												<div class="mission-details">
+													<div class="mission-prod-product">
+														<span>Tempo Details</span>
+													</div>
+													<div class="row-fluid">								
+														<label class="span3 moveright">Staffing set up</label>
+														<div class="span3">
+															<div class="span4">
+																<h4> {$seo_mission.staff_time} {if $seo_mission.staff_time_option eq 'days'} Jours {else} Heures {/if}</h4>
+															</div>
+														</div>	
+													</div>	
+													{if $seo_mission.oneshot}
+														<div class="row-fluid">								
+															<label class="span3 moveright">One shot</label>
+															<div class="span3">
+																<h4>
+																{if $seo_mission.oneshot eq 'yes'}
+																	OUI
+																{else if $seo_mission.oneshot eq 'no'}
+																	NON
+																{/if}
+																</h4>
+															</div>
+														</div>
+													{/if}
+													<div class="row-fluid">								
+														<label class="span3 moveright">Dur&eacute;e la mission</label>
+														<div class="span3">
+															<div class="span4">
+																<h4>{$seo_mission.mission_length} {if $seo_mission.mission_length_option eq 'days'} Jours {else} Heures {/if}</h4>
+															</div>													
+														</div>
+														{if $seo_mission.duration_dont_know eq 'yes'} 															
+															<div class="span4" style="margin-left: 0px">
+																* Duration not specified by sales																
+															</div>
+														{/if}
+													</div>
+													{if $seo_mission.oneshot eq 'no'}
+														<div class="row-fluid">								
+															<label class="span3 moveright">Volume</label>														
+															<div class="span9" id="tempo_details_{$seo_mission.identifier}" {if $seo_mission.oneshot eq 'yes'} style="display:none" {/if}>
+																<div class="span4">		
+																	<h4>
+																		{$seo_mission.volume_max} {$tempo_array.$_tempo_value} {$volume_option_array.$_delivery_volume_option} {$seo_mission.tempo_length} {$tempo_duration_array.$_tempo_length_option}
+																	</h4>	
+																</div>														
+															</div>
+														</div>
+													{/if}	
+												</div>
+											</div>
+											{if $seo_mission.prod_mission_details|@count gt 0}
+											{assign var="other" value="true"}
+												{foreach from=$seo_mission.prod_mission_details item=prod_misson name="prod_misson"}
+													{assign var=pr_index value=$smarty.foreach.prod_misson.index+1}
+													
+												<div class="row-fluid" id="prod_missions_{$seo_mission.identifier}">
+												<div class="row-fluid" id="prod_missions_{$seo_mission.identifier}_{$pr_index}">
+												
+														
+															<div class="mission-details">
+																<div class="mission-prod-product"><span id="box_title_{$pr_index}">
+																{if $prod_misson.product eq 'redaction'}
+																	R&eacute;daction
+																{elseif $prod_misson.product eq 'translation'}
+																	Traduction 
+																{elseif $prod_misson.product eq 'proofreading'}
+																	Correction 	
+																{elseif $prod_misson.product eq 'autre'}
+																	Autre 		
+																	
+																{/if}
+																</span>
+																{if $prod_misson.product eq 'autre'}
+																<div class="pull-right">												
+																	<a class="btn close-seo edit" rel="{$prod_misson.identifier}" id="pmission_close_{$mission.identifier}_{$pr_index}">&times;</a>
+																</div>
+															{/if}
+																
+																</div>
+																<input type="hidden" name="prod_mission_id_{$seo_mission.identifier}[]" value="{$prod_misson.identifier}">
+																<input type="hidden" name="prod_product_{$seo_mission.identifier}[]" value="{$seo_mission.product}">
+																<table class="table mission-table">
+																	<tr>
+																		<th style="width:15%">Nb r&eacute;dacteurs</th>
+																		<th>Co&ucirc;t/{$mission.product_type_name} (&{$quote.sales_suggested_currency };)</th>
+																		
+																	</tr>				
+																	<tr>
+																		<td>
+																			<input type="text" id="staff_{$seo_mission.identifier}_{$pr_index}" name="staff_{$seo_mission.identifier}[]" class="span11 validate[required]"  value="{$prod_misson.staff}" onkeyup="fnCalculateProdTotal();" disabled />
+																		</td>																			
+																		<td>
+																			<input type="text" id="pmission_cost_{$seo_mission.identifier}_{$pr_index}" name="pmission_cost_{$seo_mission.identifier}[]" class="span3 validate[required]" value="{$prod_misson.cost|zero_cut:2}" onkeyup="fnCalculateProdTotal();"disabled />
+																		</td>
+																	</tr>
+																</table>
+																{if $seo_mission.comments}
+																<div class="media mission-comment">
+																	<a class="pull-left imgframe">
+																		<img width="60px" src="{$fo_path}/profiles/bo/{$seo_mission.created_by}/logo.jpg" class="media-object">
+																	</a>
+																	<div class="media-body">
+																		<h4 class="media-heading">								
+																			<a>{$seo_mission.seo_user_name}</a> {$seo_mission.comment_time}
+																		</h4>
+																		<span>{$seo_mission.comments|stripslashes|htmlentities|nl2br}</span>
+																	</div>
+																</div>
+																{/if}
+																{if $prod_misson.comments}
+																<div class="media mission-comment">
+																	<a class="pull-left imgframe">
+																		<img width="60px" src="{$fo_path}/profiles/bo/{$prod_misson.created_by}/logo.jpg" class="media-object">
+																	</a>
+																	<div class="media-body">														
+																		<textarea name="prodcomments_{$seo_mission.identifier}[]" placeholder="ins&eacute;rer un commentaire" id="prodcomments_{$pr_index}" class="span12">{$prod_misson.comments|stripslashes|htmlentities}</textarea>
+																	</div>												
+																</div>
+																{/if}
+																<div class="row-fluid topset2" style="padding:0 10px">
+																		{$mission.files}
+																</div>
+															</div>	
+														</div>
+													</div>	
+													
+													
+												{/foreach}	
+											{else}	
+												<div class="row-fluid" id="prod_missions_{$seo_mission.identifier}">
+													<div class="row-fluid" id="prod_missions_{$seo_mission.identifier}_1">
+														<div class="mission-details">
+															<div class="mission-prod-product"><span id="box_title_1">{$mission.product_name}</span></div>
+															<input type="hidden" name="prod_product_{$seo_mission.identifier}[]" value="{$seo_mission.product}">
+															<table class="table mission-table">
+																<tr>
+																	<th style="width:15%">Nb r&eacute;dacteurs</th>					
+																	<th style="width:33%">D&eacute;lai de set up</th>														
+																	<th style="width:30%">D&eacute;lai livraison</th>						
+																	<th style="width:21%">Co&ucirc;t/{$mission.product_type_name} (&{$quote.sales_suggested_currency };)</th>														
+																</tr>				
+																<tr>
+																	<td>
+																		<input type="text" id="staff_{$seo_mission.identifier}_{$ms_index}" name="staff_{$seo_mission.identifier}[]" class="span11 validate[required]"  value="{$seo_mission.suggested_mission_details[0].writing_staff}" onkeyup="fnCalculateProdTotal();" disabled/>
+																	</td>
+																	<td>															
+																		<div class="span4">
+																			<input type="text" id="staff_time_{$seo_mission.identifier}_{$ms_index}" name="staff_time_{$seo_mission.identifier}[]" class="span12 validate[required]" value="{$seo_mission.suggested_mission_details[0].staff_setup_length}"disabled/>
+																		</div>
+																		<div class="span5">
+																			<select name="staff_time_option_{$seo_mission.identifier}[]" id="staff_time_option_{$seo_mission.identifier}_{$ms_index}" class="span12" disabled>					
+																				<option value="days" {if $seo_mission.staff_time_option eq 'days'} selected {/if}>Jours</option>
+																				<option value="hours" {if $seo_mission.staff_time_option eq 'hours'} selected {/if}>Hours</option>									
+																			</select>
+																		</div>	
+																	</td>
+																	<td>															
+																		<div class="span4">
+																			<input type="text" id="pdelivery_time_{$seo_mission.identifier}_{$ms_index}" name="pdelivery_time_{$seo_mission.identifier}[]" class="span12 validate[required]" value="{$seo_mission.suggested_mission_details[0].mission_length}" onkeyup="fnCalculateProdTotal();" disabled/>
+																		</div>
+																		<div class="span5">
+																			<select name="pdelivery_option_{$seo_mission.identifier}[]" id="pdelivery_option_{$seo_mission.identifier}_{$ms_index}" class="span12" onchange="fnCalculateProdTotal();" disabled>					
+																				<option value="days" {if $seo_mission.pdelivery_option eq 'days'} selected {/if}>Jours</option>
+																				<option value="hours" {if $seo_mission.pdelivery_option eq 'hours'} selected {/if}>Hours</option>									
+																			</select>
+																		</div>	
+																	</td>
+																	<td>
+																		<input type="text" id="pmission_cost_{$seo_mission.identifier}_{$ms_index}" name="pmission_cost_{$seo_mission.identifier}[]" class="span11 validate[required]" {if $seo_mission.sales_suggested_missions}  value="{math equation='((x/y)*z)' x=$seo_mission.nb_words y=$seo_mission.suggested_mission_details[0].article_length z=$seo_mission.suggested_mission_details[0].correction_cost_before_signature format='%.2f' }" {/if} onkeyup="fnCalculateProdTotal();" disabled/>
+																	</td>
+																	
+																</tr>
+															</table>
+															<div class="media mission-comment">
+																<a class="pull-left imgframe">
+																	<img width="60px" src="{$fo_path}/profiles/bo/{$seo_mission.created_by}/logo.jpg" class="media-object">
+																</a>
+																<div class="media-body">
+																	<h4 class="media-heading">								
+																		<a>{$seo_mission.seo_user_name}</a> {$seo_mission.comment_time}
+																	</h4>
+																	<span>{$seo_mission.comments|stripslashes|htmlentities|nl2br}</span>
+																</div>
+															</div>
+															<div class="media mission-comment">
+																<a class="pull-left imgframe">
+																	<img width="60px" src="{$fo_path}/profiles/bo/{$userId}/logo.jpg" class="media-object">
+																</a>
+																<div class="media-body">														
+																	<textarea name="prodcomments_{$seo_mission.identifier}[]" placeholder="ins&eacute;rer un commentaire" id="prodcomments_1" class="span12"></textarea>
+																</div>												
+															</div>
+														</div>	
+													</div>
+												</div>	
+											{/if}	
+										</div>
+									</div>
+								{/foreach}
+								{/if}
+						{/foreach}
+						{/if}		
+						<!--Deleted Missions-->
+						{if $quote.deletedMissionVersions|@count gt 0}
+							{foreach from=$quote.deletedMissionVersions item=dmission name="dmission"}	
+								{assign var=sms_index value=$smarty.foreach.misson.total+$smarty.foreach.dmission.index+1}		
+								<div class="row-fluid">	
+									<div class="mission-details">
+										<div class="delete-mission-product">{$dmission.product_name} <label class="label">Mission supprim&eacute;e</label></div>
+										<table class="table mission-table">
+											<tr>
+												<th style="width:30%">LANGUE</th>
+												<th style="width:30%">PRODUIT</th>
+												<th style="width:20%">VOLUME</th>
+												<th style="width:20%">NB MOTS</th>
+											</tr>
+											<tr class="misson-details-text">
+												<td>{$dmission.language_source_name} {if $dmission.product eq 'translation'}>{$dmission.language_dest_name}{/if}</td>
+												<td>{$dmission.product_type_name}</td>
+												<td>{$dmission.volume}</td>
+												<td>{$dmission.nb_words}</td>
+											</tr>	
+										</table>
+										{if $dmission.prod_mission_details|@count gt 0}
+										{assign var="other" value="true"}
+											{foreach from=$dmission.prod_mission_details item=prod_misson name="prod_misson"}
+												{assign var=pr_index value=$smarty.foreach.prod_misson.index+1}
+												
+											<div class="row-fluid" id="prod_missions_{$dmission.identifier}">
+											<div class="row-fluid" id="prod_missions_{$dmission.identifier}_{$pr_index}">
+											
+													
+														<div class="mission-details">
+															<div class="mission-prod-product"><span id="box_title_{$pr_index}">
+															{if $prod_misson.product eq 'redaction'}
+																R&eacute;daction
+															{elseif $prod_misson.product eq 'translation'}
+																Traduction 
+															{elseif $prod_misson.product eq 'proofreading'}
+																Correction 	
+															{elseif $prod_misson.product eq 'autre'}
+																Autre 		
+																
+															{/if}
+															</span>															
+															
+															</div>																
+															<table class="table mission-table">
+																<tr>
+																	<th style="width:15%">Nb r&eacute;dacteurs</th>					
+																	<th style="width:33%">D&eacute;lai de set up</th>														
+																	<th style="width:30%">D&eacute;lai livraison</th>						
+																	<th style="width:21%">Co&ucirc;t/{$dmission.product_type_name} (&{$quote.sales_suggested_currency };)</th>														
+																</tr>				
+																<tr class="misson-details-text">
+																	<td>{$prod_misson.staff}</td>
+																	<td>{$prod_misson.staff_time} {$prod_misson.staff_time_option|upper}</td>
+																	<td>{$prod_misson.delivery_time} {$prod_misson.delivery_option|upper}</td>
+																	<td>{$prod_misson.cost|zero_cut:2}</td>
+																	
+																</tr>
+															</table>
+															{if $dmission.comments}
+															<div class="media mission-comment">
+																<a class="pull-left imgframe">
+																	<img width="60px" src="{$fo_path}/profiles/bo/{$dmission.created_by}/logo.jpg" class="media-object">
+																</a>
+																<div class="media-body">
+																	<h4 class="media-heading">								
+																		<a>{$dmission.seo_user_name}</a> {$dmission.comment_time}
+																	</h4>
+																	<span>{$dmission.comments|stripslashes|htmlentities|nl2br}</span>
+																</div>
+															</div>
+															{/if}
+															{if $prod_misson.comments}
+															<div class="media mission-comment">
+																<a class="pull-left imgframe">
+																	<img width="60px" src="{$fo_path}/profiles/bo/{$prod_misson.created_by}/logo.jpg" class="media-object">
+																</a>
+																<div class="media-body">{$prod_misson.comments|stripslashes|htmlentities|nl2br}</div>												
+															</div>
+															{/if}
+														</div>	
+													</div>
+												</div>	
+											{/foreach}
+										{/if}	
+									</div>
+								</div>	
+							{/foreach}
+						{/if}
+						</div>						
+					</div>
+				{/if}				
+				<div class="w-box">
+					<div class="w-box-header">Commentaire g&eacute;n&eacute;ral</div>
+					<div class="w-box-content  cnt_a">
+						<div class="media">
+							<a class="pull-left imgframe">
+								<img width="60px" src="{$fo_path}/profiles/bo/{$quote.quote_by}/logo.jpg" class="media-object">
+							</a>
+							<div class="media-body">
+								<h4 class="media-heading">								
+									<a>{$quote.quote_user_name}</a> {$quote.comment_time}
+								</h4>								
+								<span>{$quote.sales_comment}</span>
+							</div>
+						</div>
+						<h2 class="heading">&Eacute;changes de mails avec le client</h2>
+						<textarea rows="10" disabled class="span12">{$quote.client_email_text}</textarea>
+						{if $quote.related_files}
+							<div class="row-fluid">
+								<div class="span3">Documents &agrave; t&eacute;l&eacute;charger :</div>
+							</div>
+							<div class="row-fluid">
+								<div class="">{$quote.related_files}</div>
+							</div>
+						{/if}	
+						{if $quote.client_aims_text}
+							<div class="row-fluid">
+								<br>
+								<h4>Besoin(s) du client :</h4>
+								{$quote.client_aims_text}
+								{if $quote.client_aims_comments}
+									<b>Commentaire :</b> {$quote.client_aims_comments} <br><br>
+								{/if}
+								<b>Projet urgent :</b> 
+								{if $quote.urgent eq 'yes'}	
+										OUI
+									{else}
+										NON
+									{/if}
+								<br>
+								{if $quote.content_ordered_agency}
+									<b>Le client a-t-il command&eacute; du contenu dans une  autre agence ?</b>
+									{if $quote.content_ordered_agency eq 'yes'}	
+										OUI
+									{else}
+										NON
+									{/if}	
+									<br>	
+									{if $quote.content_ordered_agency eq 'yes'}
+										<b>Nom de l'agence ? </b>
+										{if  $quote.agency_name}
+											{$quote.agency_name}
+										{else}
+											Je ne sais pas
+										{/if}
+										<br><br>
+									{/if}
+								{/if}							
+								<b>Le client souhaite-t-il conna&icirc;tre les r&eacute;dacteurs  qui vont travailler pour lui ?</b> 
+									{if $quote.client_know_writers eq 'yes'}	
+										OUI
+									{else}
+										NON
+									{/if}
+								<br><br>
+								
+								{* <b>Fr&eacute;quence de livraison :</b> 
+								{if $quote.volume_option eq 'one'}
+									One shot
+								{elseif $quote.volume_option eq 'per'}
+									Per {$quote.volume_option_multi}
+								{elseif $quote.volume_option eq 'every'}
+									Every {$quote.volume_every} {$quote.volume_option_multi}(s)
+								{/if} <br><br> *}
+								
+								<b>Son budget 2015 pour le contenu marketing :</b>
+								{if !$quote.budget_marketing}
+									{$quote.budget|zero_cut_t:2} {$quote.budget_currency|ucfirst}
+								{else}
+									Je ne sais pas
+								{/if}<br>
+							</div>
+						{/if}
+					</div>	
+				</div>	
+											
+					{if $quote.prod_review eq 'challenged' || $quote.prod_review eq 'validated'}
+						{if $techMissionDetails|@count gt 0}						
+						<div class="w-box">
+							<div class="w-box-header">Tech Mission</div>
+							<div class="w-box-content  cnt_a">
+							{foreach from=$techMissionDetails item=mission name="mission"}
+							{assign var=gn_index value=$smarty.foreach.mission.index}
+							{assign var=ms_index value=$smarty.foreach.mission.index+1}								
+								<div class="row-fluid">	
+									<div class="mission-details">
+										<div class="mission-tech-product">{$mission.title} {if $mission.previousMissionDetails|@count eq 0 && $quote.version gt 1 }<label class="label label-warning">New</label> {/if}</span>
+										</div>
+										<table class="table mission-table">
+											<tr>
+												<th style="width:33%">Mission</th>
+												<th style="width:33%">D&eacute;lai de livraison</th>
+												<th style="width:33">Co&ucirc;t (&{$quote.sales_suggested_currency };)</th>
+											</tr>
+											<tr class="misson-details-text">
+												<td>
+													{if $mission.title_difference eq 'yes'}
+														<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.title_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span>
+													{/if}
+													<input type="text" name="mission_title[]" id="mission_title_{$ms_index}" value="{$mission.title}" class="span10 validate[required]" placeholder="enter a mission" disabled>
+												</td>
+												<td>													
+													<div class="span1">																
+														{if $mission.mission_length_difference eq 'yes'}
+															<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.mission_length_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents" style="top:5px"></i> </span>
+														{/if}
+													</div>
+													<div class="span4">
+														<input type="text" id="delivery_time_{$ms_index}" name="delivery_time[]" class="span12 validate[required]" disabled value="{$mission.delivery_time}"/>
+													</div>
+													<div class="span6">
+														<select name="delivery_option[]" id="delivery_option_{$ms_index}" class="span12">					
+															<option value="days" {if $mission.delivery_option eq 'days'} selected{/if} >Jours</option>
+															<option value="hours" {if $mission.delivery_option eq 'hours'} selected{/if}>Hours</option>									
+														</select>
+													</div>	
+												</td>
+												<td>
+													{if $mission.cost_difference eq 'yes'}
+														<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.price_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span>
+													{/if}
+													<input type="text" id="mission_cost_{$ms_index}" name="mission_cost[]" class="span4 validate[required]" value="{$mission.cost|zero_cut:2}" disabled />
+												</td>														
+											</tr>	
+										</table>
+										<div class="row-fluid" style="margin-left: 15px;">
+											<div class="span12">
+												<input type="checkbox" class="uni_style"{if $mission.before_prod eq 'yes'} checked {/if} disabled
+												> Doit &ecirc;tre r&eacute;alis&eacute; avant de lancer la mission
+											</div>	
+										</div>
+										{if $mission.comments}
+										<div class="media mission-comment">
+											<a class="pull-left imgframe">
+												<img width="60px" src="{$fo_path}/profiles/bo/{$mission.created_by}/logo.jpg" class="media-object">
+											</a>
+											<div class="media-body">
+												<h4 class="media-heading">								
+													<a>{$mission.tech_user_name}</a> {$mission.comment_time}
+												</h4>
+												<span>{$mission.comments|stripslashes|htmlentities|nl2br}</span>
+											</div>
+										</div>
+										{/if}	
+										<div class="row-fluid topset2" style="padding:0 10px">	
+											
+												{$mission.files}
+											
+										</div>
+									</div>
+								</div>
+								
+							{/foreach}
+							</div>						
+						</div>
+						{/if}	
+					{/if}
+					{if $quote.prod_review eq 'challenged' || $quote.prod_review eq 'validated'}
+						{if $seoMissionDetails|@count gt 0}	
+						<div class="w-box">
+							<div class="w-box-header">SEO mission setup</div>
+							<div class="w-box-content  cnt_a">
+								<div class="row-fluid" id="seo_missions">
+									
+									{foreach from=$seoMissionDetails item=mission name="tmisson"}
+									{assign var=gn_index value=$smarty.foreach.tmisson.index}
+									{assign var=ms_index value=$smarty.foreach.tmisson.index+1}		
+									<div class="row-fluid" id="seo_mission_{$ms_index}">									
+										<div class="mission-details">
+											<div class="mission-seo-product">
+												<span id="box_title_{$ms_index}">
+												{if $mission.product eq 'redaction' || $mission.product eq 'translation'}
+													{$mission.product_name} Mission
+												{else}	
+													Proposition seo {$ms_index}													
+												{/if}	
+												{if $mission.previousMissionDetails|@count eq 0 && $quote.version gt 1 }<label class="label label-warning">New</label> {/if}</span>												
+											</div>
+											<table class="table mission-table">
+												<tr>
+													<th style="width:25%">Type</th>
+													<th style="width:25%">Langue</th>
+													<th {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="width:30%" {else} style="display:none;width:30%"{/if}  id="thead_dtime_{$ms_index}">D&eacute;lai de livraison</th>														
+													<th {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="width:20%" {else} style="display:none;width:20%"{/if} id="thead_cost_{$ms_index}">Co&ucirc;t (&{$quote.sales_suggested_currency };)</th>
+													<th {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="display:none;width:35%"{else} style="width:35%" {/if} id="thead_ptype_{$ms_index}">Produit</th>
+													<th {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="display:none;width:15%"{else} style="width:15%" {/if} id="thead_nwords_{$ms_index}">Nb de mots</th>
+												</tr>
+												<tr class="misson-details-text">
+													<td>
+														{if $mission.product_difference eq 'yes'}
+															<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.product_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span>
+														{/if}
+														<select name="product[]" id="product_{$ms_index}" onchange="fnCheckProduct(this);" class="span10 validate[required]" data-placeholder="Select product">
+															<option value="seo_audit" {if $mission.product=='seo_audit'} selected{/if}>SEO audit</option>
+															<option value="smo_audit" {if $mission.product=='smo_audit'} selected{/if}>SMO audit</option>
+															<option value="redaction" {if $mission.product=='redaction'} selected{/if}>R&eacute;daction</option>
+															<option value="translation" {if $mission.product=='translation'} selected{/if}>Traduction</option>
+															<option value="autre" {if $mission.product=='autre'} selected{/if}>Autre</option>
+														</select>
+														
+													
+													</td>
+													<td>
+														{if $mission.language_difference eq 'yes'}
+															<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.language_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span>
+														{/if}
+														<select name="language[]" id="language_{$ms_index}" class="span10 validate[required]" data-placeholder="Select language">
+															<option></option>
+															{html_options  options=$ep_language_list selected=$mission.language_source}
+														</select>
+														<select name="languagedest[]" id="languagedest_{$ms_index}" style="display:none" class="span10 validate[required]" data-placeholder="Select language">
+															{html_options  options=$ep_language_list selected=$mission.language_dest}
+														</select>	
+													
+													</td>
+													<td id="td_dtime_{$ms_index}" {if $mission.product neq 'seo_audit' && $mission.product neq 'smo_audit' } style="display:none;"{/if}>
+														{if $mission.mission_length_difference eq 'yes'}					
+															<span style="float:left" class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.mission_length_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents" style="top:8px"></i></span>
+														{/if}
+														<div class="span4">
+															<input type="text" id="sdelivery_time_{$ms_index}" name="sdelivery_time[]" class="span12 validate[required]" disabled value="{$mission.mission_length}"/>
+														</div>
+														<div class="span5">
+															<select name="sdelivery_option[]" id="sdelivery_option_{$ms_index}" class="span12">					
+																<option value="days" {if $mission.mission_length_option eq 'days'} selected {/if}>Jours</option>
+																<option value="hours" {if $mission.mission_length_option eq 'hours'} selected {/if}>Hours</option>									
+															</select>
+														</div>	
+													</td>
+													<td id="td_cost_{$ms_index}" {if $mission.product neq 'seo_audit' && $mission.product neq 'smo_audit' } style="display:none;"{/if}>
+														{if $mission.unit_price_difference eq 'yes'}
+															<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" 	data-content="{$mission.price_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i> </span>
+														{/if}
+														<input type="text" id="smission_cost_{$ms_index}" name="smission_cost[]" class="span10 validate[required]" onkeyup="fnCalculateProdTotal();" value="{$mission.cost|zero_cut:2}" disabled />
+													</td>
+													<td {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="display:none;"{/if} id="td_ptype_{$ms_index}">
+														{if $mission.product_type_difference eq 'yes'}
+															<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.product_type_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span> 
+														{/if}
+														<select name="producttype[]" id="producttype_{$ms_index}" class="validate[required]" data-placeholder="Select product type">
+															<option></option>
+															<option value="article_de_blog" {if $mission.product_type=='article_de_blog'} selected{/if}>Brand content</option>
+															<option value="descriptif_produit" {if $mission.product_type=='descriptif_produit'} selected{/if}>Product description</option>
+															<option value="article_seo" {if $mission.product_type=='article_seo'} selected{/if}>SEO articles</option>
+															<option value="guide" {if $mission.product_type=='guide'} selected{/if}>Guides</option>
+															<option value="news" {if $mission.product_type=='news'} selected{/if}>News</option>
+														</select>
+													</td>
+													<td {if $mission.product eq 'seo_audit' || $mission.product eq 'smo_audit' } style="display:none;"{/if} id="td_nwords_{$ms_index}">
+														{if $mission.nb_words_difference eq 'yes'}
+															<span class="version-change pop_over" data-placement="top" data-original-title="Historique devis" data-content="{$mission.nb_words_versions|escape|stripslashes}" data-html="true"> <i class="splashy-documents"></i></span> 
+														{/if}
+														
+														<input type="text" name="nb_words[]" id="nb_words_{$ms_index}" class="span10 validate[required,custom[number]]" value="{$mission.nb_words}" disabled >
+													</td>
+																											
+												</tr>	
+											</table>
+											{if $mission.product neq 'redaction'}
+												<div class="row-fluid" style="margin-left: 15px;">
+													<div class="span12">
+														<input type="checkbox" class="uni_style"{if $mission.before_prod eq 'yes'} checked {/if} disabled
+														> Doit &ecirc;tre r&eacute;alis&eacute; avant de lancer la mission
+													</div>	
+												</div>
+											{/if}	
+											{if $mission.comments}
+											<div class="media mission-comment">
+												<a class="pull-left imgframe">
+													<img width="60px" src="{$fo_path}/profiles/bo/{$mission.created_by}/logo.jpg" class="media-object">
+												</a>
+												<div class="media-body">														
+													<h4 class="media-heading">								
+													<a>{$mission.seo_user_name}</a> {$mission.comment_time}
+												</h4>
+												<span>{$mission.comments|stripslashes|htmlentities|nl2br}</span>
+												</div>												
+											</div>
+											{/if}
+											
+											<div class="row-fluid topset2" style="padding:0 10px">	
+												{if $mission.product=='redaction' || $mission.product=='translation'}
+												<div class="span7 pull-right form-inline">
+													<span class="span5"><label style="padding-top: 5px;"><b>Lier cette proposition &agrave; : </b></label></span>
+													<select name="related_mission[]" id="related_mission_{$ms_index}" class="span7 validate[required]">
+															{html_options  options=$quote.missions_list selected=$mission.related_to}
+													</select>
+												</div>
+												{/if}
+											</div>
+											<div class="row-fluid">
+												<div class="">													
+													{$mission.files}																									
+												</div>
+											</div>
+										</div>	
+									</div>									
+									{/foreach}									
+								</div>								
+							</div>
+						</div>
+						{/if}	
+					{/if}	
+					
+					<div class="w-box">
+					<div class="w-box-header">Editorial information form the client</div>
+					<div class="w-box-content  cnt_a">
+					<div class="row-fluid">
+						<div class="span12">
+						<div class="span6">
+							<label>
+								<span class="error_placement">Avez-vous besoin de recevoir des &eacute;l&eacute;ments du client (sujets, brief) pour d&eacute;marrer la mission ?</span>
+							</label>
+						</div>
+						<div class="span6">
+							<label class="radio inline">
+								<input type="radio" class="icheck" disabled='disabled' name="prod_extra_info" {if $quote.prod_extra_info=='yes'}checked='checked'{/if} value="yes">
+								Oui 
+							</label>
+							<label class="radio inline">
+								<input type="radio" class="icheck" disabled='disabled' name="prod_extra_info" {if $quote.prod_extra_info=='no'}checked='checked'{/if} value="no">
+								Non
+							</label>
+						</div>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="control-group extra_comments" style="{if $quote.prod_extra_info=='no'}display:none{/if}">
+							<div class="span12">
+								<div class="span2">
+								<label for="" class="control-label">Commentaire:</label>
+								</div>
+								<div class="span10">
+									<textarea name="prod_extra_comments" disabled placeholder="ins&eacute;rer un commentaire" id="" class="span12">{$quote.prod_extra_comments}</textarea>
+								</div>	
+							</div>
+						</div>
+						</div>
+					</div>	
+				</div>	
+					
+						{*<input type="hidden" name="quote_id" id="quote_id" value="{$quote.identifier}">
+						<input type="hidden" name="currency" value="{$quote.sales_suggested_currency}">
+						<div class="formSep topset2">						
+							<div class="row-fluid">
+								<div class="span4"></div>
+								<div class="span6">
+									{if $quote.prod_review eq 'not_done'}
+										<button type="submit" name="review_skip" class="btn">Skip</button>							
+										<button type="submit" name="review_challenge" class="btn btn-primary">Challenge</button>		
+									{elseif $quote.prod_review eq 'challenged' || $quote.prod_review eq 'validated'}
+										
+										{if $quote.prod_review eq 'challenged'}
+											<button type="submit" name="review_save" onclick="return removeOther()" class="btn btn-success">Sauvegarder</button>							
+											<button type="submit" name="review_validate" onclick="return removeOther()" class="btn btn-primary">Valider</button>
+										{elseif $quote.prod_review eq 'validated'}
+											<button type="button" id="quote_save" name="review_save" class="btn btn-success">Sauvegarder</button>
+											<button type="button" id="quote_validate" name="review_validate" class="btn btn-primary">Valider</button>
+										{/if}	
+									{/if}
+								</div>
+							</div>
+						</div>*}
+					{*</form>*}
+				</div>				
+			</div>
+		{/foreach}
+		{/if}
+</div>

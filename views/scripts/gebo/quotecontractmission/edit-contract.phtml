@@ -1,0 +1,1414 @@
+{literal}
+<script src="/BO/theme/gebo/lib/tinymce_4.2.5/js/tinymce/tinymce.min.js"></script>
+<link href="/BO/theme/gebo/css/mission-followup.css" rel="stylesheet" />
+<link rel="stylesheet" href="/BO/theme/gebo/lib/iCheck/skins/square/blue.css" type="text/css"/>
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script>
+
+	<style>
+	/*	#missionTable tr:nth-child(even)
+		{
+			background-color:#F5F5F5;
+			border-bottom:1px solid #ddd;
+			text-align:center;
+			font-weight:bold;
+		}
+		.padd td
+		{
+			padding:15px 5px;
+		}
+		
+		#missionTable tr:nth-child(odd)
+		{
+			text-align:center;
+		} */
+		
+		
+	.turnover {
+		background: #666666 none repeat scroll 0 0;
+		color: white;
+		font-size: 25px;
+		font-weight: bold;
+		padding: 20px;
+	}
+	.turnover-more {
+		background: #009e0f none repeat scroll 0 0;
+		color: white;
+		padding: 0px 8px;
+		margin: 0 0 0 5px;
+		float:left;
+	}
+		#missionTable td
+		{
+			font-size:13px;
+		}
+		
+		.w-box-content.cnt_a
+		{
+			min-height: 0px;
+		}
+		
+		#invoices i
+		{
+			margin-right:5px;
+		}
+		
+		#invoices td
+		{
+			font-size:13px;
+		}
+		
+		.cursor
+		{
+			cursor:pointer;
+		}
+		
+		.xdsoft_today_button
+		{
+			display:none !important;
+		}
+		
+				
+		input[readonly]
+		{
+			background-color:#fff !important;
+			border: 1px solid #ccc !important;
+			box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset !important;
+			cursor:initial !important;
+		}
+		
+		.txterror
+		{
+			color: #b94a48;
+			margin-top: 4px;
+		}
+	</style>
+	<link href="/BO/theme/gebo/css/jquery.datetimepicker.css" rel="stylesheet">
+	<script src="/BO/theme/gebo/js/jquery.datetimepicker.js" type="text/javascript" charset="utf-8"></script>
+	<link href="/BO/theme/gebo/lib/iCheck/skins/line/blue.css" rel="stylesheet">
+	<link rel="stylesheet" href="/BO/theme/gebo/lib/x-editable/bootstrap-editable/css/bootstrap-editable.css">
+	<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script> 
+	<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+	<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-en.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/BO/theme/gebo/js/jquery.MultiFileQuote.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/BO/theme/gebo/lib/x-editable/bootstrap-editable/js/bootstrap-editable.min.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var final_end_date = "";
+		function changefield()
+		{
+			$(".splitvaltxt").toggleClass('hide');
+			$(".splitfield").toggleClass('hide');
+			if($(".splitfield").css('display')=="none")
+			$(".splitfield").attr('disabled',true);
+			else
+			{
+				$(".splitfield").each(function(){
+					$(this).val(function() {
+					return this.defaultValue;
+				});
+				});
+				$(".splitfield").attr('disabled',false);
+			}
+			return false;
+		}
+		
+		 function checkExtension(field, rules, i, options)
+		 {
+			 var file = field.val();
+			 var file = field.val();
+			 var exts = ['xls','xlsx'];
+			 if(file) 
+			 {
+				var get_ext = file.split('.');
+				get_ext = get_ext.reverse();
+				if ($.inArray(get_ext[0].toLowerCase(),exts) > -1 ){
+				
+				} else {
+				  return "Upload only xls or xlsx file";
+				}
+			 }
+		 }
+	
+		function removeDisabled(){	setTimeout(function(){$(".MultiFile-applied").removeAttr("disabled");}, 1000);	}
+		$(document).ready(function(){
+			$('.icheck').iCheck({
+				radioClass: 'iradio_square-blue'
+			}); 
+		  $("#contractsource").chosen({  allow_single_deselect:false,disable_search: true });
+		  $(".select").chosen({  allow_single_deselect:false,disable_search: true });
+		  $(".paymenttype").chosen({  allow_single_deselect:false,disable_search: true });
+		  $(".uni_style").uniform();
+		$("#qlinked").css('height',$("#cprofile").height());
+		  $("#editcname").click(function(e){
+			e.stopPropagation();
+			$('#contractname').editable('toggle');
+		 })
+		 
+		 $("#marktreated").click(function(){
+			var ids = $(".invoiceids:checked").map(function()
+            {
+				$(this).closest("tr").find(".treated").html("<i class='splashy-check'></i>");
+                return $(this).val();
+            }).get();
+			if($.trim(ids))
+			{
+			$.post('/contractmission/mark-treated',{'ids':ids},function(data){});
+			}
+		 })
+		 
+		 $("#markuntreated").click(function(){
+			var ids = $(".invoiceids:checked").map(function()
+            {
+				$(this).closest("tr").find(".treated").html("-");
+                return $(this).val();
+            }).get();
+			if($.trim(ids))
+			{
+				$.post('/contractmission/mark-untreated',{'ids':ids},function(data){});
+			}
+		 })
+		 
+		 /* start of Datepickers */
+		 
+		  jQuery('#sigdate').datetimepicker({
+			  format:'d/m/Y',
+			  formatDate:'d/m/Y',
+			  //minDate:{/literal}'{$quotedetails.signed_at|date_format:"%d/%m/%Y"}'{literal},
+			  minDate:'01/01/2014',
+			  timepicker:false,
+			  closeOnDateSelect:true
+		  });
+		 
+		 jQuery('#launchdate').datetimepicker({
+			  format:'d/m/Y',
+			  formatDate:'d/m/Y',
+			  timepicker:false,
+			  //minDate:$("#sigdate").val(),
+			  minDate:'01/01/2014',
+			  closeOnDateSelect:true,
+			  onSelectDate:function(ct,$i){
+				if($i.val() == edate)
+				cid = contract_id;
+				else
+				cid = "";
+			    loadsplitvalues($i.val(),cid,true);
+			 }
+		  });
+			
+		  $("#enddate").datetimepicker({ 
+			format:'d/m/Y',
+			formatDate:'d/m/Y',
+		    timepicker:false,
+			//mindate:$("#enddate").val(),
+		    closeOnDateSelect:true,
+			onSelectDate:function(ct,$i){
+			// loadsplitvalues($i.val());
+			  var split_final_date = final_end_date.split("/");
+			  var date1 = split_final_date[2]+"-"+split_final_date[1]+"-"+split_final_date[0];
+			  var current_date = $i.val().split("/");
+			  var date2 = current_date[2]+"-"+current_date[1]+"-"+current_date[0];
+			  if(date2<date1)
+				$("#enderror").show();
+			  else
+				$("#enderror").hide();
+			 }
+		  });
+			
+		  $("#enddate").blur(function(){
+			  var split_final_date = final_end_date.split("/");
+			  var date1 = split_final_date[2]+"-"+split_final_date[1]+"-"+split_final_date[0];
+			  var current_date = $(this).val().split("/");
+			  var date2 = current_date[2]+"-"+current_date[1]+"-"+current_date[0];
+			  if(date2<date1)
+				$("#enderror").show();
+			  else
+				$("#enderror").hide();
+		  })
+		 /* End of Datepickers */
+			/*tinymce initialization*/
+			tinymce.init({
+				selector: "#txtarea_sp",
+				setup : function(ed)
+				{
+					ed.on('init', function() 
+					{
+						this.getDoc().body.style.fontSize = '14px';
+						this.getDoc().body.style.fontFamily = 'arial';
+					});
+				},
+				theme: "modern",
+				statusbar:false,
+				menubar: false,
+				plugins: [
+					 "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
+					 "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+					 "save table contextmenu directionality emoticons template paste textcolor"
+			   ],
+			   content_css: "css/content.css",
+			   toolbar: "bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link emoticons", 
+			   style_formats: [
+					{title: 'Bold text', inline: 'b'},
+					{title: 'Red text', inline: 'span', styles: {color: '#ff0000'}},
+					{title: 'Red header', block: 'h1', styles: {color: '#ff0000'}},
+					{title: 'Example 1', inline: 'span', classes: 'example1'},
+					{title: 'Example 2', inline: 'span', classes: 'example2'},
+					{title: 'Table styles'},
+					{title: 'Table row 1', selector: 'tr', classes: 'tablerow1'}
+				]
+			});
+		 
+		});
+    </script>
+{/literal}
+<form class="form-horizontal" action="/contractmission/save-contract" name="createContract" id="createcontract" method="POST" enctype='multipart/form-data'>
+<div class="row-fluid">
+	<div class="followup-header">
+	{if $user_type == 'superadmin' || $user_type == 'facturation'}
+		<h1 class="heading" id=""><i style="margin:5px;cursor:pointer" id="editcname" class="splashy-pencil"></i><a data-original-title="" data-placeholder="Required" data-placement="right" data-pk="{$smarty.get.contract_id}" data-type="text" style="margin-right:5px" id="contractname" href="#">{$contractDetials.contractname}</a><span class="headerdim">{$contractDetials.expected_launch_date|date_format:"%d %b %Y"} - {$contractDetials.expected_end_date|date_format:"%d %b %Y"}</span></h1>
+	{else}
+		<h1 class="heading" id="">{$contractDetials.contractname}
+		<span class="headerdim">{$contractDetials.expected_launch_date|date_format:"%d %b %Y"} - {$contractDetials.expected_end_date|date_format:"%d %b %Y"}</span></h1>
+	{/if}
+		<div class="row-fluid">    
+			<div class="header-info">
+				<div class="span3" style="padding-top:20px">
+					<div class="span10" style="padding:0">
+					<div class="sepH_b progress progress-success">
+						<div class="bar" style="width: 0%"></div> 
+					</div>
+					</div>
+					<div>&nbsp;&nbsp;<strong>0%</strong></div>
+				</div>
+				<div class="span3" style="padding-left:0">
+					<span class="upper">Status</span>
+					<span class="bottom">{if $contractDetials.status == 'sales'}Pending{elseif $contractDetials.status == 'validated'}Validated{/if}</span>
+				</div>
+				<div class="span3">
+					<span class="upper">Production Cost</span>
+					<span class="bottom">-</span>
+				</div>
+				<div class="span3">
+					<span class="upper">Turnover</span>
+					<span class="bottom">{$contractDetials.turnover|zero_cut_t:2} &{$quotedetails.sales_suggested_currency};</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span3">
+
+<h4><i class="icon-user"></i> Client Profile</h4>
+<div class="media">
+			
+				{if $client_info !="no"}					
+					<a href="/quote/create-client?uaction=view&client_id={$client_info.identifier}&submenuId=ML13-SL1" target="_blank" class="pull-left">
+						<img class="media-object" title="{$client_info.company_name}" src="{$fo_path}/profiles/clients/logos/{$client_info.user_id}/{$client_info.user_id}_global.png?12345" alt="{$client_info.company_name}" >
+					</a>
+					<div class="media-body">			
+						<h4><a href="/quote/create-client?uaction=view&client_id={$client_info.identifier}&submenuId=ML13-SL1" target="_blank">{$client_info.company_name}</a></h4>
+						<ul class="unstyled">
+						<li>{$client_info.initial} {$client_info.first_name} {$client_info.last_name}</li>
+						{if $client_info.client_code}
+						<li>Client code: {$client_info.client_code}</li>
+						{/if}
+						{if $client_info.ca_number}
+						<li>Turnover: {$client_info.ca_number|zero_cut_t:2}</li>
+						{/if}
+						<!--li>Category: {$quotedetails.category_name}</li--> 
+					</ul>	
+					</div>
+				{else}
+				<div class="media-body">
+					{$client_info}
+					</div>
+				{/if}
+		 
+			 
+		</div>	
+	</div>
+	
+	<div class="span3">
+	<h4><i class=" icon-info-sign"></i> From the Quote</h4>
+		<p>
+			<br>
+			{if $quotedetails.is_new_quote eq '1'}
+				<a href="/quote-new/sales-final-validation?qaction=briefing&quote_id={$quotedetails.identifier}" target="_blank"><b>{$quotedetails.title}</b></a>
+			{else}
+				<a href="/quote/quote-followup?quote_id={$quotedetails.identifier}&submenuId=ML13-SL2" target="_blank"><b>{$quotedetails.title}</b></a>
+			{/if}	
+		</p>
+	</div>
+	
+	<div class="span2">
+	<h4>Sales</h4>
+		<a href="mailto:{$contractDetials.mailto}" class="hint--left" data-hint="{$contractDetials.sales_owner}"><img src="{$fo_path}/profiles/bo/{$contractDetials.sales_creator_id}/logo.jpg" class="image rd_30" width="50" height="50"></a>
+	</div>
+    <div class="span4">
+        <h4>Contacts (<a href="/quote/create-client?uaction=view&client_id={$client_info.identifier}&submenuId=ML13-SL1" target="_blank">Update</a>)</h4>
+        <div style="overflow: auto; max-height: 80px; margin-top: 10px;overflow-x: hidden;">
+            {if $clientContacts|@count gt 0}
+				{foreach  from=$clientContacts item="clientContact" name="clientContacts" }
+				 <div class="media" id="{$clientContact.identifier}">
+					<div class="span2">	
+						<input type="radio" style="margin-top:50%;position:relative" class="icheck validate[required]" {if $contractDetials.contact_client eq $clientContact.identifier} checked{/if} name="contact_client"  value="{$clientContact.identifier}">
+					</div>
+					 <div class="media-body">						
+						 <p><strong>{$clientContact.first_name}</strong><br />
+							{$clientContact.job_title}<br />
+							{if $clientContact.office_phone}{$clientContact.office_phone}<br />{/if}
+							{if $clientContact.email}<a href="mailto:{$clientContact.email}">{$clientContact.email}</a>{/if}
+							 
+						 </p>
+					 </div>
+				 </div>
+				 <hr>
+				{/foreach}
+			{else}
+				<strong>No Contacts Available</strong>
+			{/if}
+        </div>
+    </div>
+		
+</div>
+
+
+<div class="row-fluid">	
+
+			 <div class="well wbg well-large clearfix">
+			 <h3>PO & Mission Launch Information</h3><hr>
+			 <div class="span7">
+			 
+				{* <div class="control-group">
+					<label class="control-label">PO Name</label>
+					<div class="controls">
+						<input type="text" name="contract_name" value="{$contractDetials.contractname}" class="span4 validate[required]" />
+					</div>
+					</div> *}
+				<div class="control-group">
+					<label class="control-label">PO Status</label>
+					<div class="controls">
+						<label class="radio inline">
+							<input type="radio" class="uni_style" {if $contractDetials.contractstatus eq "New"}checked="checked"{/if} value="New" id="optionsRadios1" name="status" />
+							New
+						</label>
+						<label class="radio inline">
+							<input type="radio" class="uni_style" value="Renew" {if $contractDetials.contractstatus eq "Renew"}checked="checked"{/if} id="optionsRadios2" name="status" />
+							Renew
+						</label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Signed PO</label>
+					<div class="controls">
+                        <input type="checkbox" id="signed_PO" name="signed_PO" {if $contractDetials.signed_PO  eq 'yes'}checked="checked"{/if}/>
+                    </div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">PO Source</label>
+					<div class="controls">
+						<div class="span6">
+							{html_options options=$csarray name="contractsource" selected=$contractDetials.sourceofcontract class="validate[required]" id="contractsource" } 
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="controls">
+						<div class="span10">
+						<h4>PO,Editorial & technical documents</h4><br>
+							<input type="file" name="mulitupload[]" class="multi" />
+						</div>
+					</div>
+				</div>
+				<div>
+					<div class="onsuccessrep">
+							{$related_files}
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Signature Date</label>
+					<div class="controls">
+							<input class="validate[required]" id="sigdate" value='{$contractDetials.signaturedate|date_format:"%d/%m/%Y"}' name="signature_date" type="text" readonly="readonly" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Expected Launch Date</label>
+					<div class="controls">
+						<!-- <div class="input-append date" id="expdate" data-date-format="dd/mm/yyyy" data-date='{$contractDetials.expected_launch_date|date_format:"%d/%m/%Y"}'> -->
+							<input class="validate[required]" id="launchdate" value='{$contractDetials.expected_launch_date|date_format:"%d/%m/%Y"}' name="expected_launch_date" type="text" readonly="readonly" />
+						<!-- </div> -->
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Expected End Date</label>
+					<div class="controls">
+						<input class="validate[required]" name="expected_end_date" value='{$contractDetials.expected_end_date|date_format:"%d/%m/%Y"}' id="enddate" type="text" />
+						<div id="enderror" class="hide txterror">Lesser than calculated date</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Contract overview</label>
+					<div class="controls">
+						<textarea name="comment" id="txtarea_sp" class="span12" rows="8" placeholder="Please describe the context of the contract + invoicing specifities if needed (Upfront payment..) 
+">{$contractDetials.comment}</textarea>
+						<span class="help-block">
+							Please describe the context of the contract + invoicing specifities if needed (Upfront payment..) 
+						</span>
+					</div>
+				</div>			
+
+				{* Sales mission *}
+				{if $quotedetails.prod_extra_info eq 'yes' && ($user_type == 'superadmin' || $user_type == 'facturation') &&  $contractDetials.status=='validated'}
+				<div class="control-group">
+					<label class="control-label"></label>
+					<div class="controls">
+						<a href="" data-toggle="modal" role="button" data-target="#new_sales" id="" class=""><i class="icon-hand-right"></i> Cr&eacute;er new sales mission</a>
+					</div>
+				</div>
+				{/if}
+				
+				</div>
+				
+				<div class="span3 offset1">
+				<div class="well" id="showepfiles" {if $contractDetials.sourceofcontract eq "Edit Place"}style="display:block"{else}style="display:none"{/if}>
+				<h4 class="heading">Related documents</h4>
+								<a href="/BO/dowload-source-contract.php?filename=CGV-Edit-Place-2016-JAN-16.pdf"><i class="icon-download"></i> CGV EditPlace 2016</a>
+								<hr>
+								<a href="/quote/download-quote-xls?quote_id={$quotedetails.identifier}"><i class="icon-download"></i> Quote XLS</a>
+							</div>
+				</div>	
+	</div>
+
+</div>
+
+<div class="row-fluid">
+	<div class="span12">
+			<div class="well wbg well-large">
+				<div class="row-fluid">
+				<h3>
+					Turnover & Payment
+				{*
+				<a href="/contractmission/add-mission?contract_id={$smarty.get.contract_id}"  data-toggle="modal" role="button" data-target="#add_mission"><span class="pull-right btn btn-primary">Add Mission</span></a>
+				*}
+				</h3><hr>
+				<div class="span3 offset1">	
+				<h2>
+					<small>Total turnover</small>
+					<br>
+					<div style="float:left">
+						{$contractDetials.turnover|zero_cut_t:2} &{$quotedetails.sales_suggested_currency}; 
+					</div>
+					{if $contractDetials.old_turnover}
+						{*
+							<div class="turnover-more">
+								{$contractDetials.old_turnover|zero_cut_t:2} &{$quotedetails.sales_suggested_currency};
+							</div> 
+						*}
+						<a class="pop_over" href="#" data-content="{$contractDetials.old_turnover|zero_cut_t:2} &{$quotedetails.sales_suggested_currency};" data-original-title="Old turnover" data-html="true" data-placement="right"><i class="splashy-information" style="margin:8px 0 0 5px"></i>
+						</a>
+					{/if}
+				</h2>
+				<div style="clear:both"></div>
+				<label class="checkbox inline">
+				<input type="checkbox" name="indicative_turnover" id="indicative_turnover" {if $contractDetials.indicative_turnover=='yes'}checked='checked'{/if} value="yes">Indicative Turnover
+				</label>
+				<br>
+				</div>
+					<div class="span6">	
+						<div class="control-group">
+							<label class="control-label">Minimum turnover</label>
+							<div class="controls">
+							<div class="span3">
+								<div id="normal-toggle-button">
+                                    <input type="checkbox" value="1" {if $contractDetials.mini_turnover_status} checked='checked'{/if} name="mini_turn">
+                                </div>
+							</div>
+							<div class="span4 offset1 {if $contractDetials.mini_turnover_status==0}hide{/if}" id="minimum_turnover">
+								<input type="text" name="minimum_turnover" id="" class="span6 validate[required,custom[number],max[{$quotedetails.turnover}]]" value="{$contractDetials.minimum_turnover}" />&nbsp;&{$quotedetails.sales_suggested_currency};
+							</div>
+							</div>
+						</div>
+						<div class="control-group">
+						<label class="control-label">Type of Payment</label>
+						<div class="controls">
+							<div class="span6">
+							{if $user_type=='superadmin'}
+								{html_options options=$typeofpayment selected=$contractDetials.type_of_payment name="paymenttype" class="paymenttype validate[required]" } 
+							{else}
+								{html_options options=$typeofpayment selected=$contractDetials.type_of_payment name="paymenttype" class="paymenttype" } 
+							{/if}
+							</div>
+						</div>
+						
+						</div>
+					<!--	<div class="control-group">
+						<label class="control-label">Expected End Date :</label>
+						<div class="controls">							
+							<div style="margin-top: 8px" id="repldate"  class="text-warning">{$expected_end_date|date_format:"%d/%m/%Y"}</div>
+						</div>
+						</div> -->
+					
+					</div></div>
+					<br><br>
+					<h4 class="text-center"> <i class="icon-th"></i>Split/Month
+					{*
+					<a onclick="return changefield()"><i id="editcname" class="splashy-pencil" style="margin:0 5px 10px;cursor:pointer"></i> Modify</a> *}
+					</h4>
+					<br>
+					
+					<div class="w-box">
+						<div class="replace">
+						<div class="w-box-content cnt_a">
+							{* <table>
+								<tr>
+									{foreach from=$months item=value}
+										<th>{$value}</th>
+									{/foreach}
+								</tr>
+								<tr>
+									{foreach from=$turnovers item=value}
+										<td><input type="text" class="span12" title="{$value|zero_cut:2} &{$quotedetails.sales_suggested_currency};" value='{$value|zero_cut:2} &{$quotedetails.sales_suggested_currency};' disabled /></td>
+									{/foreach}
+								</tr>
+							</table> *}
+						</div>
+						
+					</div>
+				   </div>
+			 </div>
+		</div>
+	</div>
+
+{if $missiondetails|@count > 0}
+<br>
+<h2 class="heading">Invoice</h2>
+<div class="row-fluid">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#invoice_types" data-toggle="tab">Invoicing Types</a></li>
+		{if $contractDetials.status=='validated'}
+		<li class=""><a href="#invoices" data-toggle="tab">Invoices</a></li>
+		{/if}
+	</ul>
+	<div class="tab-content" style="overflow:hidden">
+	<div class="tab-pane active" id="invoice_types" style="padding-bottom:100px">
+			<table width="" class="table table-striped table-bordered" id="missionTable">
+				<tr>
+					<th>Mission</th>
+					<th>Type</th>
+					<th>Language</th>
+					<th>Words</th>
+					<th>Price/art</th>
+					<th>Volume</th>
+					<th>Tempo</th>
+					<th>Invoice per</th>
+					<th>Turnover</th>
+					<th>History Quote BO</th>
+					<th>History Quote FO</th>
+					<th>Action</th>
+				</tr>
+			{foreach from=$missiondetails item="mission" name="missionDetails"}
+
+                <tr class="" {if $mission.cm_status eq 'deleted' || $mission.cm_status eq 'closed'}style="opacity: 0.5;"{/if}>
+					<td><a style="cursor:pointer" onclick="{if $mission.contractmissionid}freezeview({$mission.contractmissionid},{$mission.identifier});{else}freezeview('',{$mission.identifier});{/if}">{$mission.product_type_converted}</a></td>
+					<td>{$mission.product_type_name}  {$mission.product_type_other}</td>
+					<td>
+						{if $mission.product eq 'translation'}{$mission.language_source_converted}&nbsp;>&nbsp;{$mission.language_dest_converted}{else}{$mission.language_source_converted}
+						{/if}
+					</td>
+					<td>{$mission.nb_words}</td>
+					<td>{$mission.unit_price|zero_cut_t:2}&nbsp;&{$quotedetails.sales_suggested_currency};</td>
+					<td>{$mission.volume}</td>
+					<td>
+						{if $mission.oneshot eq 'yes'} 
+							One shot 
+						{elseif  $mission.oneshot eq 'no'} 
+							{assign var="_tempo_value" value=$mission.tempo}
+							{assign var="_delivery_volume_option" value=$mission.delivery_volume_option}
+							{assign var="_tempo_length_option" value=$mission.tempo_length_option}
+								<span class="version-change pop_over" data-placement="top" data-original-title="Recurring" data-content="{$mission.volume_max} ( {$tempo_array.$_tempo_value}) articles {$volume_option_array.$_delivery_volume_option}  {$mission.tempo_length}  {$tempo_duration_array.$_tempo_length_option}" data-html="true">Recurring</span> 
+						{else}
+							{if $user_type =="superadmin"}
+								<a href="/followup/add-tempo?qmid={$mission.identifier}&cid={$smarty.get.contract_id}" class="" data-toggle="modal" role="button" data-target="#add_tempo">Add Tempo</a>
+							{else}
+							-
+							{/if}
+						{/if}
+						{if $user_type =="superadmin" && $mission.oneshot neq ""}
+							<br>
+							<a href="/followup/add-tempo?qmid={$mission.identifier}&cid={$smarty.get.contract_id}" class="" data-toggle="modal" role="button" data-target="#add_tempo">Edit Tempo</a>
+						{/if}
+					</td>
+					{if $mission.contractmissionid}
+						<td>
+							<select name="invoice_per[{$mission.contractmissionid}]" class="select span10" style="width:90px" {if $mission.cm_status eq 'deleted' || $mission.cm_status eq 'closed'}disabled{/if}>
+								<option value='month' {if $mission.cminvoiceper == 'month'} selected="selected"{/if}>Month</option>
+								<option value='mission' {if $mission.cminvoiceper == 'mission'} selected='selected' {/if}>Mission</option>
+								<option value='delivery' {if $mission.cminvoiceper == 'delivery'} selected='selected'{/if}>Delivery</option>
+							</select>
+						</td>
+						<td>
+                        {if $mission.free_mission eq 'yes'}Free{else}{if $mission.cm_turnover !='0.00' && $mission.cm_turnover!='0' && $mission.cm_turnover!=''}{$mission.cm_turnover|zero_cut_t:2}{else}{$mission.turnover|zero_cut_t:2}{/if}&nbsp;&{$quotedetails.sales_suggested_currency};{/if}
+							<br />
+							<label class="checkbox inline">
+								<input type='checkbox' class=" indicative" name="inductive[{$mission.contractmissionid}]" {if $mission.cmindicative_turnover}checked='checked'{/if}{if $mission.cm_status eq 'deleted' || $mission.cm_status eq 'closed'}disabled{/if} value='1'/>
+								<span class="checkbox_text">Indicative</span>
+							</label>
+							<input type='hidden' name="missiontable[{$mission.contractmissionid}]" value='cm'/>
+						</td>	
+						<td>
+							<input type='checkbox' class="indicative" name="history_bo[{$mission.contractmissionid}]" {if $mission.cmhistory_bo eq 'yes'}checked='checked'{/if} value='yes'/>								
+						</td>
+						<td>
+							<input type='checkbox' class="indicative" name="history_fo[{$mission.contractmissionid}]" {if $mission.cmhistory_fo eq 'yes'}checked='checked'{/if} value='yes'/>								
+						</td>						
+						<td>
+							<table border="0" width="100%" class="status_table">
+								<tr>
+									<td>
+										{if $mission.cm_status eq 'deleted'}
+										<strong  class="text-error">Deleted</strong>
+										{elseif $mission.cm_status eq 'closed'}
+										<strong class=" text-error">Closed</strong>
+										{elseif $mission.cm_status eq 'validated'}
+										<strong>Validated</strong>
+										{elseif $mission.cm_status eq 'ongoing' && $mission.freeze eq 'yes'}
+										<strong>Freezed till <br/>{$mission.freeze_end_date}</strong>
+										{elseif $mission.edited eq 'yes'}
+										<strong>Edited by<br/>{$mission.edited_by_name}</strong><br/>{$mission.edited_at|date_format:"%d-%m-%Y"}
+										{elseif $mission.from_contract eq '1'}
+										<strong>Added by<br/>{$mission.created_by_name}</strong><br/>{$mission.created_at|date_format:"%d-%m-%Y"}
+										{else}
+										<strong>Ongoing</strong>
+										{/if}
+									</td>
+									<td align="right">
+										<div class="btn-group">
+
+											<a type="button" class="dropdown-toggle" data-toggle="dropdown" >
+												<i class="icon-pencil"></i>
+											</a>
+											<ul class="dropdown-menu" role="menu"  style="left:-125px;">
+												{if $mission.cm_status neq 'deleted' && $mission.cm_status neq 'closed' && $mission.cm_status neq 'validated'}
+												<li><a class="mission_action" href="javascript:void(0);" onclick="mission_action('freeze','{$mission.contractmissionid}','{$mission.identifier}');" tabindex="999" role="menuitem">Freeze Mission</a></li>
+												<li><a class="mission_action" href="javascript:void(0);" onclick="mission_action('delete','{$mission.contractmissionid}','{$mission.identifier}');" tabindex="999" role="menuitem">Delete Mission</a></li>
+												{/if}
+												<li><a class="mission_action" href="javascript:void(0);" onclick="mission_action('add','{$mission.contractmissionid}','{$mission.identifier}');" tabindex="999" role="menuitem">Duplicate Mission</a></li>
+												<li><a class="mission_action" href="javascript:void(0);" onclick="mission_action('edit','{$mission.contractmissionid}','{$mission.identifier}');" tabindex="999" role="menuitem">Edit Mission</a></li>
+											</ul>
+										</div>
+									</td>
+								</tr>
+							</table>
+
+
+
+									{*<select name="mission_action[{$mission.contractmissionid}]" rel="{$mission.contractmissionid}" id="{$mission.identifier}" class="span10 cselect mission_action" style="width:130px">
+											<option value="">Select</option>
+											{if $mission.cm_status neq 'deleted' && $mission.cm_status neq 'closed' && $mission.cm_status neq 'validated'}
+											<option value='freeze'>Freeze Mission</option>
+											<option value='delete'>Delete Mission</option>
+											{/if}
+											<option value='add'>Duplicate Mission</option>
+											<option value='edit'>Edit Mission</option>
+										</select>*}
+
+						{* <button type="button" class="duplicate btn btn-primary">Duplicate</button>
+							<button type="button" class="delete btn btn-danger">Delete</button> *}
+
+
+						</td>
+					{else}
+						<td>
+							<select name="invoice_per[{$mission.identifier}]" class="select span10" style="width:90px">
+								<option value='month' {if $mission.invoice_per == 'month'} selected="selected"{/if}>Month</option>
+								<option value='mission' {if $mission.invoice_per == 'mission'} selected='selected' {/if}>Mission</option>
+								<option value='delivery' {if $mission.invoice_per == 'delivery'} selected='selected'{/if}>Delivery</option>
+							</select>
+						</td>
+						<td>
+                        {if $mission.free_mission eq 'yes'}Free{else}{$mission.turnover|zero_cut_t:2}&nbsp;&{$quotedetails.sales_suggested_currency};{/if}
+							<br />
+							<label class="checkbox inline">
+								<input type='checkbox' class="indicative" name="inductive[{$mission.identifier}]" {if $mission.indicative_turnover}checked='checked'{/if} value='1'/>
+								<span class="checkbox_text">Indicative</span>
+							</label>
+							<input type='hidden' name="missiontable[{$mission.identifier}]" value='qm'/>
+						</td>
+						<td>
+							<input type='checkbox' class="indicative" name="history_bo[{$mission.identifier}]" {if $mission.history_bo eq 'yes'}checked='checked'{/if} value='yes'/>								
+						</td>
+						<td>
+							<input type='checkbox' class="indicative" name="history_fo[{$mission.identifier}]" {if $mission.history_fo eq 'yes'}checked='checked'{/if} value='yes'/>								
+						</td>
+						{*<!--<td>
+						<input type='checkbox' class="indicative" name="inductive[{$mission.identifier}]" {if $mission.indicative_turnover}checked='checked'{/if} value='1'/>
+						<input type='hidden' name="missiontable[{$mission.identifier}]" value='qm'/>
+						</td>-->*}
+						<td>
+							{if $mission.from_contract eq '1'}
+								<strong>Added by<br/>{$mission.created_by_name}</strong><br/>{$mission.created_at|date_format:"%d-%m-%Y"}
+							{else}
+								Not Assigned
+							{/if}
+						</td>
+					{/if}
+				</tr>
+			{/foreach}
+			</table>
+
+	</div>
+	{if $contractDetials.status=='validated'}
+	<div class="tab-pane" id="invoices">
+		{if $invoices|@count>0}
+		<div class="row-fluid">
+			<div class="pull-left" style="margin-top:5px"><strong>GENERATED INVOICES</strong></div>
+			<div class="pull-right">
+				<a href="/contractmission/download-invoice?cid={$smarty.get.contract_id}"><button class="btn btn-primary" type="button"><i class="splashy-download"></i>All</button></a>
+				<button class="btn btn-inverse" id="marktreated" type="button"><i class="splashy-check"></i>Mark as Treated</button>
+				<button class="btn" id="markuntreated" type="button">Untreat</button>
+			</div>
+		</div>
+		<table class="table topset2 table-bordered">
+		{foreach from=$invoices item="invoice" name="invoiceDetails"}	
+			<tr>
+				<td><input type="checkbox" class="invoiceids" name="invoices[{$invoice.invoice_id}]" value="{$invoice.invoice_id}" /></td>
+				<td class="treated">{if $invoice.is_treated}<i class="splashy-check"></i>{else}-{/if}</td>
+				<td><strong>{$invoice.invoice_number}</strong></td>
+				<td><strong>Invoice {if $invoice.invoice_type eq 'month'}Monthly{elseif $invoice.invoice_type eq 'mission'}Mission{else}Delivery{/if}</strong>&nbsp;-&nbsp;{$invoice.title}</td>
+				<td><strong>{$invoice.created_at|date_format:"%d %b %Y"}</strong></td>
+				<td><strong>{$invoice.total_turnover|zero_cut_t:2}&nbsp;&{$quotedetails.sales_suggested_currency};</strong></td>
+				<td><a href="/contractmission/download-invoice?fname={$invoice.file_path}"><i class="splashy-download cursor"></i></a></td>
+			</tr>
+		{/foreach}
+		</table>
+		{else}
+			<div class="pull-center"><strong>No Invoice Found</strong></div>
+		{/if}
+		
+		{if $invoices|@count>0}
+		<div class="row-fluid topset2">
+			<div class="pull-left" style="margin-top:5px"><strong>FINAL	INVOICES</strong></div>
+			<div class="pull-right">
+				<button class="btn " id="deletefinalinvoice" type="button"><i class="icon-adt_trash" style="margin:0"></i></button>
+				<a href="/contractmission/download-invoice?cid={$smarty.get.contract_id}&final=yes"><button class="btn btn-primary" type="button"><i class="splashy-download"></i>All</button></a>
+				<a class="" href="/contractmission/final-invoice?cid={$smarty.get.contract_id}" data-toggle="modal" role="button" data-target="#upload_final_invoice" id=""><button class="btn btn-info" id="" type="button">Upload New Invoice</button></a>
+			</div>
+		</div>
+		<table class="table topset2 table-bordered">
+		{if $finalinvoices|@count > 0}
+		{assign var=total value=0}
+		{foreach from=$finalinvoices item="invoice" name="invoiceDetails"}	
+			<tr>
+				<td><input type="checkbox" class="finalinvoiceids" name="invoices[{$invoice.invoice_id}]" value="{$invoice.invoice_id}" /></td>
+				<td><strong>{$invoice.invoice_number}</strong></td>
+				<td>{$invoice.comment}</td>
+				<td><strong>{$invoice.created_at|date_format:"%d %b %Y"}</strong></td>
+				<td><strong>{$invoice.total_turnover|zero_cut_t:2}&nbsp;&{$quotedetails.sales_suggested_currency};</strong></td>
+				{math equation="x + y" x=$total y=$invoice.total_turnover format="%.2f" assign=total }
+			</tr>
+		{/foreach}
+		<tfoot>
+			<tr>
+				<td colspan="4" align="right" style="text-align:right"><strong>Total Invoice</strong></td>
+				<td align="right"><strong>{$total|zero_cut_t:2}&nbsp;&{$quotedetails.sales_suggested_currency};</strong></td>
+			</tr>
+		</tfoot>
+		{else}
+			<tr><td colspan="5"><strong>No Final Invoice Found</strong></td></tr>
+		{/if}
+		</table>
+		{/if}
+	</div>
+	{/if}
+	</div>
+	{*<div class="w-box">
+	<div class="w-box-header">
+		Type of invoice
+	</div>
+	<div class="w-box-content cnt_a">
+		<div class="row-fluid">
+			<div class="span12">
+				<table width="" class="table table-striped table-bordered" id="missionTable">
+					<tr>
+						<th>Mission</th>
+						<th>Type</th>
+						<th>Language</th>
+						<th>Words</th>
+						<th>Price/art</th>
+						<th>Volume</th>
+						<th>Invoice per</th>
+						<th>Turnover</th>
+						<th>Indicative Turnover</th>						
+					</tr>
+				{foreach from=$missiondetails item="mission" name="missionDetails"}		
+					<tr class="">
+						<td>{$mission.product_type_converted}</td>
+						<td>{$mission.product_type_name} {$mission.product_type_other}</td>
+						<td>
+							{if $mission.product eq 'translation'}{$mission.language_source_converted}&nbsp;>&nbsp;{$mission.language_dest_converted}{else}{$mission.language_source_converted}
+							{/if}
+						</td>
+						<td>{$mission.nb_words}</td>
+						<td>{$mission.unit_price|zero_cut_t:2}&nbsp;&{$quotedetails.sales_suggested_currency};</td>
+						<td>{$mission.volume}</td>
+						{if $mission.contractmissionid}
+						<td>
+							<select name="invoice_per[{$mission.contractmissionid}]" class="select span10" style="width:90px">
+								<option value='month' {if $mission.cminvoiceper == 'month'} selected="selected"{/if}>Month</option>
+								<option value='mission' {if $mission.cminvoiceper == 'mission'} selected='selected' {/if}>Mission</option>
+								<option value='delivery' {if $mission.cminvoiceper == 'delivery'} selected='selected'{/if}>Delivery</option>
+							</select>
+							<br>
+							{$mission.cm_status}
+							{if $mission.cm_status eq 'deleted'}
+							Deleted
+							{/if}
+						</td>
+						<td>{$mission.turnover}&nbsp;&{$quotedetails.sales_suggested_currency};</td>
+						<td>
+							<input type='checkbox' class="indicative" name="inductive[{$mission.contractmissionid}]" {if $mission.cmindicative_turnover}checked='checked'{/if} value='1'/>
+							<input type='hidden' name="missiontable[{$mission.contractmissionid}]" value='cm'/>
+						</td>						
+						{else}
+						<td>
+							<select name="invoice_per[{$mission.identifier}]" class="select span10" style="width:90px">
+								<option value='month' {if $mission.invoice_per == 'month'} selected="selected"{/if}>Month</option>
+								<option value='mission' {if $mission.invoice_per == 'mission'} selected='selected' {/if}>Mission</option>
+								<option value='delivery' {if $mission.invoice_per == 'delivery'} selected='selected'{/if}>Delivery</option>
+							</select>
+						</td>
+						<td>{if $mission.free_mission eq 'yes'}Free{else}{$mission.turnover|zero_cut_t:2}&nbsp;&{$quotedetails.sales_suggested_currency};{/if}</td>
+						<td>
+							<input type='checkbox' class="indicative" name="inductive[{$mission.identifier}]" {if $mission.indicative_turnover}checked='checked'{/if} value='1'/>
+							<input type='hidden' name="missiontable[{$mission.identifier}]" value='qm'/>
+						</td>						
+						{/if}
+					</tr>
+				{/foreach}
+				</table>
+			</div>
+		</div>
+		
+	</div>
+	</div> *}
+</div>
+{/if}
+<input type="hidden" name="contract_id" value="{$smarty.get.contract_id}" />
+<input type="hidden" name="quote_logs_id" value="{$quotedetails.identifier}" />
+
+{if $user_type == 'superadmin' || $user_type == 'facturation' || $user_type == 'salesuser' || $user_type == 'salesmanager'}
+<div class="row-fluid topset2"  style="margin-top:-80px">
+	<div class="span12 row-centered" style="text-align:center">
+		
+		{if ($contractDetials.status=='validated' && ($user_type == 'salesuser' || $user_type == 'salesmanager')) || $user_type == 'superadmin' || $user_type == 'facturation'}
+			<button class="btn btn-default" onclick="return removeDisabled()" value="modify" name="modify" type="submit">Update my changes</button>
+		{/if}
+		
+		{if $user_type == 'superadmin' || $user_type == 'facturation'}		
+			{if $contractDetials.status=='validated' || $contractDetials.status=='closed' || $contractDetials.status=='deleted'}
+			<a href='/contractmission/contract-list?active=&submenuId=ML13-SL3'><button class="btn btn-primary" value="Close" name="close" type="button">Cancel</button></a>
+			<input type="hidden" name="activetab" value="" />
+			{else}
+			<button class="btn btn-primary" onclick="return removeDisabled()" value="validate" name="validate" type="submit"><i	style="margin-right:5px" class="icon-ok icon-white"></i>Validate Contract</button>
+			<input type="hidden" name="activetab" value="validate" />
+			{/if}
+		{/if}	
+	</div>
+</div>
+{/if}
+</div>
+</form>
+
+<!-- Popup to upload final invoice  -->
+<div class="modal fullscreen hide fade" id="upload_final_invoice">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>Upload Final Invoice</h3>		
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+
+<!--///for the add tempo popup///-->
+<div class="modal container hide fade" id="add_tempo">
+    <div class="modal-header">        
+		<button class="close" data-dismiss="modal">&times;</button>
+        <h3>Add tempo</h3>		
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+
+<!--popup to show new tech mission details-->
+<div class="modal hide fade" id="new_sales" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Sales Mission</h3>
+    </div>
+    <div class="modal-body">
+		<form action="/contractmission/add-new-salesmission" method="post" id="newstaff" enctype="multipart/form-data">
+			<input type="hidden" name="contractid" value="{$smarty.get.contract_id}" />
+			<input type="hidden" name="quote_id" value="{$quotedetails.identifier}" />
+			<input type="hidden" name="sales_creator_id" value="{$contractDetials.sales_creator_id}" />
+			<input type="hidden" name="sales_owner" value="{$contractDetials.sales_owner}" />
+			<section>
+				<p>You are about to create a new sales mission, thank you confirm your choice below</p>
+				<div class="control-group">
+					<div class="pull-center">
+						<button  class="btn" data-dismiss="modal" type="reset">Annuler</button>
+						<button class="btn btn-primary" name="submit" value="no" type="submit">Validate</button>
+					</div>
+				</div>		
+			</section>
+		</form>
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!-- popup to show add mission -->
+<div class="fullscreen modal hide fade" id="add_mission" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Duplicate mission</h3>
+    </div>
+    <div class="modal-body">
+	
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!-- popup to show edit mission -->
+<div class="fullscreen modal hide fade" id="edit_mission" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Edit mission</h3>
+    </div>
+    <div class="modal-body">
+	
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!-- popup to show freeze mission -->
+<div class="fullscreen modal hide fade" id="freeze_mission" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Freeze mission</h3>
+    </div>
+    <div class="modal-body">
+	
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+{literal}
+	<script>
+		var salesdtime = {/literal}{$quotedetails.final_mission_length}{literal};
+		var salesdtimeo = {/literal}"{$quotedetails.final_mission_length_option}"{literal};
+		var scurrency = {/literal}"{$quotedetails.sales_suggested_currency}"{literal};
+		var peinfo = {/literal}"{$quotedetails.prod_extra_info}"{literal};
+		var turnover = {/literal}{$quotedetails.turnover}{literal};
+		var prod_extra_launch_days = {/literal}"{$quotedetails.prod_extra_launch_days}"{literal};
+		var quote_id = {/literal}"{$quotedetails.identifier}"{literal};
+		var utype = {/literal}"{$user_type}"{literal};
+		var edate = {/literal}"{$contractDetials.expected_launch_date|date_format:'%d/%m/%Y'}"{literal};
+		var contract_id = {/literal}"{$smarty.get.contract_id}"{literal};
+		
+		utype = $.trim(utype);
+		$("#contractsource").change(function(){
+			if($(this).val()=="Edit Place")
+				$("#showepfiles").css("display","block");
+			else
+				$("#showepfiles").css("display","none");
+		});
+		
+		function loadsplitvalues(date,cid,status)
+		{
+			$.ajax({
+			url:'/contractmission/get-split-month',
+			type:'POST',
+			data:{'quote_id':quote_id,'expected_launch_date':date,'contract_id':cid,'turnover':turnover,'salesdtime':salesdtime,'salesdtimeo':salesdtimeo,"scurrency":scurrency,'pdays':prod_extra_launch_days,'peinfo':peinfo,'edit_status':status},
+			beforeSend:function()
+			{
+				$(".displaysplit").css("display","block");
+				$(".replace").html("<b style='text-align:center'>Please Wait Loading...</b>");
+			},
+			success:function(html){
+			$(".replace").html(html);
+			//$("#repldate").text($("#explaunchdate").val());
+			final_end_date = setdate = $("#explaunchdate").val();
+			/* $("#enddate").datetimepicker({ 
+					format:'d/m/Y',
+					formatDate:'d/m/Y',
+					timepicker:false,
+					minDate:setdate
+				});
+				$("#enddate").val(setdate); */
+				//alert(setdate);
+			}
+			});
+		}
+		
+		
+	/* 	$("#expdate").datepicker().on("changeDate",function(e){
+		var date = $(this).data('date');
+		loadsplitvalues(date);
+				/* $.ajax({
+				url:'/contractmission/get-split-month',
+				type:'POST',
+				data:{'quote_id':quote_id,'expected_launch_date':date,'turnover':turnover,'salesdtime':salesdtime,'salesdtimeo':salesdtimeo,"scurrency":scurrency,'pdays':prod_extra_launch_days,'peinfo':peinfo},
+				beforeSend:function()
+				{
+					$(".replace").html("<b style='text-align:center'>Please Wait Loading...</b>");
+				},
+				success:function(html){
+				$(".replace").html(html);
+				$("#repldate").text($("#explaunchdate").val());
+				}
+			}); */
+		/* }); */
+		
+		$(document).ready(function(){
+			$("#createcontract").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+			
+			$('#normal-toggle-button').toggleButtons(
+			{
+			label:{enabled: "Yes",disabled: "No"},
+			onChange: function () {
+				if($("input[name='mini_turn']:checked").val()=="1")
+					$("#minimum_turnover").show();
+				else
+					$("#minimum_turnover").hide();		
+			}
+			});
+			
+			$("#indicative_turnover").click(function(){
+				if($("#indicative_turnover:checked").length)
+				$(".indicative").addClass('validate[minCheckbox[1]]');
+				else
+				$(".indicative").removeClass('validate[minCheckbox[1]]');
+			});
+			
+			loadsplitvalues(edate,contract_id,0);
+			
+			$('body').on('hidden', '#freeze_mission, #add_mission, #edit_mission', function (){        
+				$(this).removeData('modal');				
+				$('.modal-body',this).html('');		 
+				$(".mission_action").val('');
+			});
+			
+		})
+		
+		if(utype=='superadmin' || utype=='facturation')
+		{
+		$(document).on("click",".delete",function(){
+		var id_identifier = $(this).attr("rel");
+		/*	if(confirm("Are you sure? Want to delete this File"))
+			{
+				$(this).closest(".topset2").remove();
+				$(".onsuccessrep").html("Please Wait Deleting File.");
+				$.post("/contractmission/delete-document",{"identifier":id_identifier},function(result){
+						$(".onsuccessrep").html(result);
+				}); 
+			}	*/
+			
+			smoke.confirm("Are you sure? Want to delete this File",function(e)
+			{
+				if(e)
+				{
+					$(this).closest(".topset2").remove();
+					$(".onsuccessrep").html("Please Wait Deleting File.");
+					$.post("/contractmission/delete-document",{"identifier":id_identifier},function(result){
+							$(".onsuccessrep").html(result);
+					}); 
+				}
+			})
+		});
+
+		$("#deletefinalinvoice").click(function(){
+		if($(".finalinvoiceids:checked").length)
+		{
+			smoke.confirm("Are you sure? Want to delete the Invoice",function(e)
+			{
+					if(e)
+					{
+						var ids = $(".finalinvoiceids:checked").map(function()
+						{
+							$(this).closest("tr").remove();
+							return $(this).val();
+						}).get();
+						if($.trim(ids))
+						{
+						$.post('/contractmission/delete-invoice',{'ids':ids},function(data){});
+						}
+					}
+			})
+		}
+		})
+		
+		$('#contractname').editable({
+            url: '/contractmission/update-contractname',
+            type: 'text',
+            name: 'contract_name',
+            title: '',
+			validate: function(value) {
+               if($.trim(value) == '') return 'This field is required';
+            }
+        });	
+		}
+		
+		//show destination if product is translation
+		function fnCheckProduct(element)
+		{
+			var product=element.value;
+			var mission_details=(element.id).split("_");
+			var mission_id=mission_details[1];
+			if(product=='autre')
+			{
+				$("#other_info_"+mission_id).hide();
+			}
+			else if(product=='translation')
+			{
+				$("#other_info_"+mission_id).show();		
+				//$("#languagedest_"+mission_id).show();
+				$("#languagedest_"+mission_id).chosen({ allow_single_deselect: false,search_contains: true});
+				
+			}
+			else
+			{
+				$("#other_info_"+mission_id).show();
+				
+				$("#languagedest_"+mission_id).hide();
+				$("#languagedest_"+mission_id).removeClass("chzn-done" ).addClass("");
+				$("#languagedest_"+mission_id+"_chzn").remove();
+				$("#other_info").hide();
+			}
+			$("#box_title").text(element.options[element.selectedIndex].text);
+		}
+		
+		//show other category if product type is autre
+		function fnCheckProductType(element)
+		{	
+			var productType=element.value;
+			var mission_details=(element.id).split("_");
+			var mission_id=mission_details[1];
+			if(productType=='autre')
+			{
+				$("#producttypeotherdiv_"+mission_id).show();
+			}
+			else{
+				$("#producttypeotherdiv_"+mission_id).hide();
+			}
+			$(".product_type").text(element.options[element.selectedIndex].text);
+		}
+		
+		//$(".cselect").chosen({ allow_single_deselect: false,disable_search: true});
+        /*added by naseer on 17-11-2015 */
+        function mission_action(val,cmid,mid){
+            var option = val;
+            var cmid = cmid;//$(this).closest("select").attr("rel");
+            var mid = mid;//$(this).closest("select").attr("id");
+            if(option=="delete")
+            {
+                smoke.confirm("Are you sure? Want to delete this mission",function(e)
+                {
+                    if(e)
+                    {
+                        $.post("/contractmission/delete-mission",{"cmid":cmid,'maction':"delete"},function(result){
+                            location.reload();
+                        });
+                    }
+                });
+            }
+            else if(option=="freeze")
+            {
+                $('#freeze_mission').modal('show');
+                $('#freeze_mission .modal-header h3').html('Freeze Mission');
+                $('#freeze_mission .modal-body').html('Please wait loading...');
+                $.post('/contractmission/freeze-mission',{"cmid":cmid},function(data){
+                    $("#freeze_mission .modal-body").html(data);
+                });
+            }
+            else if(option=="add")
+            {
+                $('#add_mission').modal('show');
+                $('#add_mission .modal-body').html('Please wait loading...');
+                $.post('/contractmission/add-mission',{"reqaction":"add","cmid":cmid,'mid':mid,'contract_id':contract_id},function(data){
+                    $("#add_mission .modal-body").html(data);
+                });
+            }
+            else if(option=="edit")
+            {
+                $('#edit_mission').modal('show');
+                $('#edit_mission .modal-body').html('Please wait loading...');
+                $.post('/contractmission/add-mission',{"reqaction":"edit","cmid":cmid,'mid':mid,'contract_id':contract_id},function(data){
+                    $("#edit_mission .modal-body").html(data);
+                });
+            }
+        }
+        /* end of added by naseer on 17-11-2015 */
+        /* not in use */
+		$(".mission_action").change(function(){
+			var option = $(this).val();
+			var cmid = $(this).closest("select").attr("rel");
+			var mid = $(this).closest("select").attr("id");
+			if(option=="delete")
+			{
+				smoke.confirm("Are you sure? Want to delete this mission",function(e)
+				{
+					if(e)
+					{
+						$.post("/contractmission/delete-mission",{"cmid":cmid,'maction':"delete"},function(result){
+								location.reload();
+						}); 
+					}
+				});
+			}
+			else if(option=="freeze")
+			{
+				$('#freeze_mission').modal('show');
+				$('#freeze_mission .modal-header h3').html('Freeze Mission');
+				$('#freeze_mission .modal-body').html('Please wait loading...');
+				$.post('/contractmission/freeze-mission',{"cmid":cmid},function(data){
+					$("#freeze_mission .modal-body").html(data);	
+					});
+			}
+			else if(option=="add")
+			{
+				$('#add_mission').modal('show');
+				$('#add_mission .modal-body').html('Please wait loading...');
+				$.post('/contractmission/add-mission',{"reqaction":"add","cmid":cmid,'mid':mid,'contract_id':contract_id},function(data){
+					$("#add_mission .modal-body").html(data);	
+					});
+			}
+			else if(option=="edit")
+			{
+				$('#edit_mission').modal('show');
+				$('#edit_mission .modal-body').html('Please wait loading...');
+				$.post('/contractmission/add-mission',{"reqaction":"edit","cmid":cmid,'mid':mid,'contract_id':contract_id},function(data){
+					$("#edit_mission .modal-body").html(data);	
+					});
+			}
+		});
+		
+		function updatesplitval()
+		{
+			/* var splitvalues  = $('.splitfield').map(function() {
+				return this.value;
+			}).get(); */
+			smoke.confirm("Are you sure? Want to Update Split values",function(e)
+			{
+				if(e)
+				{
+					$("#createcontract").submit();
+				}
+			});
+		}
+		
+	//calculate total internal cost and total delivery
+	function fnCalTotalCosts()
+	{
+		var total_price_contract = {/literal}{$contractDetials.turnover}{literal};
+		var total_internalcost=0;
+		var total_unitprice=0;
+		var total_price = parseFloat(total_price_contract);
+		var actual_turnover = parseFloat($("#actual_mission_turnover").val());
+		var volume= parseFloat($("#volume").val().replace(",","."));
+		var internalcost=parseFloat($("#writer_cost").val().replace(",","."))+parseFloat($("#corrector_cost").val().replace(",","."));
+		margin_percentage = parseFloat($("#margin_percentage").val().replace(",","."));
+		var unit_price=(internalcost/(1-margin_percentage/100));
+		unit_price=unit_price.toFixed(2);
+		var packageval = $("#package").val();
+		if(packageval=="team")
+		{
+			$(".fpack").hide();
+			$(".fpackteam").show();
+			var team_ca = parseFloat($("#team_packs").val())*parseFloat($("#team_fee").val());
+			var turnover =(volume*unit_price+team_ca).toFixed(2);
+		}
+		else if(packageval=="user")
+		{
+			$(".fpack").hide();
+			$(".fpackuser").show();
+			var turnover =(parseFloat($("#user_fee").val())).toFixed(2);
+		}
+		else
+		{
+			$(".fpack").hide();
+			var turnover =(volume*unit_price).toFixed(2);
+		}
+		
+		//added w.r.t price diminish
+		/* $("#cost_diminish_"+mission_id).attr('data-price',unit_price);
+		$("#cost_diminish_"+mission_id).val(0); */
+		
+		
+		if($("[name='free_mission']:checked").val()=="yes")
+		{
+			actual_turnover = turnover = 0;
+			var turnover_text= 0;
+		}
+		else
+		{
+			var turnover_text=turnover.replace(".",",");
+		}
+		var unit_price_text=unit_price.replace(".",",");
+		//alert(internalcost+'--'+volume+'--'+margin_percentage+'--'+unit_price);
+		$("#mission_turnover").val(turnover);
+		$("#mission_turnover_text").html("<b>"+turnover_text+"</b>");
+		
+		$("#unit_price").val(unit_price);
+		$("#internalcost").val(internalcost);
+		$("#unit_price_text").html("<b>"+unit_price_text+"</b>");
+		if($("#reqaction").val()=="add")
+		{
+			total_price += parseFloat(turnover);
+		}
+		else
+		{
+			//console.log(total_price);
+			//console.log(actual_turnover);
+			//console.log(turnover);
+			total_price = total_price - actual_turnover;
+			total_price += parseFloat(turnover); 
+		}
+		//console.log(total_price);
+		var total_price_text=total_price.toFixed(2);	
+		total_price_text=total_price_text.replace(".",",");
+		$("#total_turnover").val(total_price);
+		$("#total_turnover_text").html("<b>"+total_price_text+"</b>");
+	}
+		
+	function freezeview(cmid,mid)
+	{
+		//if(cmid)
+		{
+			$('#freeze_mission').modal('show');
+			$('#freeze_mission .modal-header h3').html('Mission Details');
+			$('#freeze_mission .modal-body').html('Please wait loading...');
+			$.post('/contractmission/freeze-mission',{"cmid":cmid,"freeze_action":"view","mid":mid},function(data){
+				$("#freeze_mission .modal-body").html(data);	
+			});
+		}
+	}
+	</script>
+    <!--added by naseer on 17-11-2015-->
+    <style>
+        input[type="checkbox"] {
+            border-radius: 2px;;
+            cursor:pointer;
+        }
+        .checkbox_text{
+            display: inline;
+            color:#919B9C;
+        }
+        .status_table td{
+            border: none;
+            border-left: 0px;
+        }
+    </style>
+{/literal}

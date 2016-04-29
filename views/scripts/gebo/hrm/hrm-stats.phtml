@@ -1,0 +1,180 @@
+<link rel="stylesheet" href="/BO/theme/gebo/lib/fullcalendar/fullcalendar_gebo.css" />
+
+<!--<script src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css" />-->
+{literal}
+
+<script type="text/javascript" >
+$(document).ready(function() {
+    $('#publicholidaysgrid').dataTable( {
+        "sPaginationType": "bootstrap",
+        "aaSorting": [ [0,'asc'] ],
+        "iDisplayLength": 10,
+        "bLengthChange": false,
+        "aoColumns": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ]
+    } );
+    $('#userleavesgrid').dataTable( {
+        "sPaginationType": "bootstrap",
+        "aaSorting": [ [0,'asc'] ],
+        "iDisplayLength": 10,
+        "bLengthChange": false,
+        "aoColumns": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ]
+    } );
+
+});
+
+</script>
+{/literal}
+
+<h3 class="heading">Leave Statistics</h3>
+{if $viewdetials neq 'yes'}
+<table id="publicholidaysgrid" class="table table-bordered table-striped table_vam ">
+    <thead>
+    <tr>
+        <th>Sl.no</th>
+        <th>Name</th>
+        <th>Total SL</th>
+        <th>Taken SL</th>
+        <th>Available SL</th>
+        <th>Total PL</th>
+        <th>Taken PL</th>
+        <th>Available PL</th>
+        <th>Total CO</th>
+        <th>Taken CO</th>
+        <th>Available CO</th>
+        <th>LOP</th>
+        <th>Carry</th>
+        <th>Country</th>
+        <th>View</th>
+    </tr>
+    </thead>
+    <tbody>
+    {if $userleaves neq 'NO'}
+    {foreach from=$userleaves key=userleave_key item=userleave_item name=userleave_loop}
+    <tr>
+        <td>{$smarty.foreach.userleave_loop.index+1}</td>
+        <td>{$userleave_item.username|stripslashes|wordwrap:20:"\n":true}</td>
+        <td>{$userleave_item.sltotal}</td>
+        <td>{$userleave_item.slapproved}</td>
+        <td>{$userleave_item.slavailable}</td>
+        <td>{$userleave_item.pltotal}</td>
+        <td>{$userleave_item.plapproved}</td>
+        <td>{$userleave_item.plavailable}</td>
+        <td>{$userleave_item.compofftotal}</td>
+        <td>{$userleave_item.compoffapproved}</td>
+        <td>{$userleave_item.compoffavailable}</td>
+        <td>{$userleave_item.lop}</td>
+        <td>{$userleave_item.carryforward}</td>
+        <td>{$userleave_item.countrycode}</td>
+        <td><a  href="/hrm/hrm-stats?submenuId=ML12-SL4&userid={$userleave_item.userid}&view=show" ><i class="splashy-calendar_week_edit"></i></a></td>
+    </tr>
+    {/foreach}
+    {/if}
+    </tbody>
+</table>
+{else}
+<table id="userleavesgrid" class="table table-bordered table-striped table_vam">
+    <thead>
+    <tr>
+        <th>Leave</th>
+        <th>Type</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Status</th>
+        <th>Total days</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {if $userleavesdetials neq 'NO'}
+    {foreach from=$userleavesdetials key=userleave_key item=userleave_item name=userleave_loop}
+    <tr>
+        <td>{$userleave_item.leave|stripslashes|wordwrap:20:"\n":true}</td>
+        <td>
+			{if $userleave_item.type=="vacation"}
+				Vacances
+			{elseif $userleave_item.type=="sick"}
+				Maladie
+			{elseif $userleave_item.type=="maternity"}	
+				Materite
+            {elseif $userleave_item.type=="compoff"}
+                CompOff
+			{elseif $userleave_item.type=="rdv"}
+				RDV
+            <a id="rdvdetials" class="editable editable-click" data-target="#rdvdetails_modal" role="button" data-toggle="modal" href="/hrm/rdv-details?leaveId={$userleave_item.id}"><i class="splashy-information"></i></a>
+
+            {/if}
+		</td>
+        <td><div style="display:none">{$userleave_item.start}</div>{$userleave_item.start|date_format:"%d/%m/%Y"|upper}</td>
+
+        <td><div style="display:none">{$userleave_item.end}</div>{$userleave_item.end|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{$userleave_item.status}</td>
+        <td>{$userleave_item.days}</td>
+    </tr>
+    {/foreach}
+    {/if}
+    </tbody>
+</table>
+{/if}
+<!--///for the group profiles popup///-->
+<div class="modal hide fade" id="publicholiday">
+    <div class="modal-header">
+        <button  class="close" onclick="closePopup('publicholiday');">&times;</button>
+        <h3>PUbLIC LEAVES</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--///for the group profiles popup///-->
+<div class="modal4 hide fade" id="leavepopup">
+    <div class="modal-header">
+        <button  class="close" onclick="closePopup('leavepopup');">&times;</button>
+        <h3>Manage your Leave</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<script src="/BO/theme/gebo/lib/fullcalendar/fullcalendar.min.js"></script>
+<script src="/BO/theme/gebo/lib/fullcalendar/gcal.js"></script>
+
+<!--///for displaying the rdv detials///-->
+<div class="modal hide fade" id="rdvdetails_modal">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('rdvdetails_modal');">&times;</button>
+        <h3>Rdv Details</h3>
+    </div>
+    <div class="modal-body">
+        <textarea name="acceptmailcontent" class="textarea" id="acceptmailcontent"></textarea>
+    </div>
+    <div class="modal-footer">
+
+    </div>
+</div>

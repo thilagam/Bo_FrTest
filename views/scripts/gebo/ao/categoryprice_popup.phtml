@@ -1,0 +1,28 @@
+<form name="" action="/ao/categoryprice?submenuId=ML2-SL12" method="post">
+	<table cellpadding="4" cellspacing="4" align="center">
+		<tr>
+			<td>Category</td>
+			<td><b>{$categories_array|utf8_encode}</b></td>
+		</tr>
+		<tr>
+			<td>Char price</td>
+			<td><input type="text" name="charprice" id="charprice" value="{$PriceList[0].charprice}"/></td>
+		</tr>
+		<tr>
+			<td>Word price</td>
+			<td><input type="text" name="wordprice" id="wordprice" value="{$PriceList[0].wordprice}"/></td>
+		</tr>
+		<tr>	
+			<td>Sheet price</td>
+			<td><input type="text" name="sheetprice" id="sheetprice" value="{$PriceList[0].sheetprice}"/></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<input type="submit" name="submit_price" value="Submit" class="btn btn-info"/>
+				<input type="button" name="cancel" value="Fermer" data-dismiss="modal" class="btn btn-info"/>
+			</td>	
+		</tr>
+	</table>	
+    <input type="hidden" name="category_id" id="category_id" value="{$PriceList[0].category_id}"/>
+</form>

@@ -1,0 +1,49 @@
+{if $request.cstatus eq 'add'}
+<form action="/contractmission/save-closed-comments/" class="form-horizontal" method="post" id="closed-comments">
+	<input type="hidden" name="contract_id" id="" value="{$request.contract_id}" />
+	<input type="hidden" name="quote_id" id="" value="{$request.quote_id}" />
+	<input type="hidden" name="ccomment" id="" value="{$request.comment}" />
+	<section>
+		<div class="row-fluid topset2">
+			<div class="control-group">
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">Commentaire <span class="f_req">*</span></label>
+						<div class="controls">
+							<textarea cols="30" id="comments" name="comments" rows="5" class="span12 validate[required]"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="control-group pull-center">
+				<div class="controls">
+					<button id="valid-sign-old" class="btn btn-primary" type="submit">Add</button>
+					<button  class="btn" data-dismiss="modal" type="reset">Annuler</button>
+				</div>
+			</div>
+		</div>
+	</section>
+</form>
+{literal}
+<script>
+	$("#closed-comments").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+	$('textarea').attr('data-prompt-position','topLeft');
+</script>
+{/literal}
+{else}
+	
+	{foreach from=$closed_comments item=closedcomment}
+		<div class="media mission-comment">
+			<a class="pull-left imgframe">
+				<img class="media-object rd_30" width="50" src="{$fo_path}profiles/bo/{$closedcomment.user_id}/logo.jpg">
+			</a>
+			<div class="media-body">
+				{if $closedcomment.first_name || $closedcomment.last_name}
+					<a>{$closedcomment.first_name} {$closedcomment.last_name}</a> {$closedcomment.created_time}<br>
+				{/if}
+				{$closedcomment.comments|stripslashes|htmlentities|nl2br|utf8_encode}
+			</div>
+		</div>
+		<hr>
+	{/foreach}
+{/if}

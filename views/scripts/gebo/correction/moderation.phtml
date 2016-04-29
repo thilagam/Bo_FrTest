@@ -1,0 +1,432 @@
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+{literal}
+<script language="javascript">
+$(document).ready(function() {
+    $('textarea').tinymce({
+        // Location of TinyMCE script
+        script_url 							: '/BO/theme/gebo/lib/tiny_mce/tiny_mce.js?' + new Date().getTime(),
+        // General options
+        theme 								: "advanced",
+        plugins 							: "autoresize,style,table,advhr,advimage,advlink,emotions,inlinepopups,preview,media,contextmenu,paste,fullscreen,noneditable,xhtmlxtras,template,advlist",
+        // Theme options
+        theme_advanced_buttons1 			: "undo,redo,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,fontsizeselect",
+        theme_advanced_buttons2 			: "forecolor,backcolor,|,cut,copy,paste,pastetext,|,bullist,numlist,link,image,media,|,code,preview,fullscreen",
+        theme_advanced_buttons3 			: "",
+        theme_advanced_toolbar_location 	: "top",
+        theme_advanced_toolbar_align 		: "left",
+        theme_advanced_statusbar_location 	: "bottom",
+        theme_advanced_resizing 			: false,
+        height                              : 300,
+        content_css                         : "/BO/theme/gebo/css/tinymce_styles.css?" + new Date().getTime(),
+        theme_advanced_font_sizes           : "8px,10px,12px,13px,14px,16px,18px,20px",
+        font_size_style_values              : "8px,10px,12px,13px,14px,16px,18px,20px",
+        init_instance_callback				: function(){
+
+            function resizeWidth() {
+                document.getElementById(tinyMCE.activeEditor.id+'_tbl').style.width='100%';
+            }
+            resizeWidth();
+            $(window).resize(function() {
+                resizeWidth();
+            })
+        }
+    });
+    $(".uni_style").uniform();
+    $('#moderationgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" }
+        ]
+    });
+
+
+    $("#bouser").chosen({ allow_single_deselect: false,search_contains: true  });
+
+});
+
+function fnloaduser()
+{
+    var bouser=$('#bouser').val();
+    window.location="/correction/moderation?submenuId=ML3-SL10&bouser="+bouser;
+}
+/////// moderation correciton page////////
+function getModerateCorrection(artId)
+{
+    var target_page = "/correction/moderationcorrection?articleid="+artId; //
+    $.post(target_page, function(data){   alert(data);
+        //$("#commentsRefuse_"+userid).val(data);
+    });
+
+}
+//////to select all check boxes/////////////
+function CheckALL(mode)
+{
+    if(mode == 1)  /// for the refused_temp
+    {
+        $("input:checkbox[name=1]").attr("checked", true);
+        $("input:checkbox[name=1]").attr("disabled", false);
+        $("input:checkbox[name=2]").attr("disabled", true);
+        var artarray = new Array();
+        $("input:checkbox[name=1]:checked").each(function()
+        {
+            artarray.push($(this).val());
+            $("#artlist").val(artarray);
+        });
+        $("#status").val("disapproved_temp");
+        $("#temp_valid").show();
+        $("#close_valid").hide();
+        if(artarray != '')  {
+            $("#actionbuttons_temp").show();
+            $("#actionbuttons_definit").hide();
+        }else {
+            $("#actionbuttons_temp").hide();
+        }
+    }
+    else if(mode == 2)  /// for the closed_temp
+    {
+        $("input:checkbox[name=2]").attr("checked", true);
+        $("input:checkbox[name=2]").attr("disabled", false);
+        $("input:checkbox[name=1]").attr("disabled", true);
+        var artarray = new Array();
+        $("input:checkbox[name=2]:checked").each(function()
+        {
+            artarray.push($(this).val());
+        });
+        $("#artlist").val(artarray);
+        $("#status").val("closed_temp");
+        $("#close_valid").show();
+        $("#temp_valid").hide();
+        if(artarray != ''){
+            $("#actionbuttons_definit").show();
+            $("#actionbuttons_temp").hide();
+        }else {
+            $("#actionbuttons_definit").hide();
+        }
+    }
+    else
+    {
+        if(validCheckBox() === false)
+            return false;
+        if($("#decision_temp").is(":checked"))
+        {
+            var artarray = new Array();
+            $("input:checkbox[name=1]:checked").each(function()
+            {
+                artarray.push($(this).val());
+                $("#artlist").val(artarray);
+            });
+        }
+        else if($("#decision_definit").is(":checked"))
+        {
+            var artarray = new Array();
+            $("input:checkbox[name=2]:checked").each(function()
+            {
+                artarray.push($(this).val());
+                $("#artlist").val(artarray);
+            });
+        }
+    }
+}
+/////// when a Ep go with corrector's choice////////
+function getAcceptCrtChoice(artId, mode)
+{
+    if(validCheckBox() === false)
+        return false;
+    if (tinymce.getInstanceById('Moderator_crtwindow'))
+    {
+        //tinymce.execCommand('mceFocus', true, 'acceptmailcontent');
+        tinymce.execCommand('mceRemoveControl', true, 'Moderator_crtwindow');
+        //tinymce.triggerSave();
+        loadEditors('Moderator_crtwindow');
+    }
+    else if (!tinymce.getInstanceById('Moderator_crtwindow'))
+    {
+        loadEditors('Moderator_crtwindow');
+    }
+
+    var buttonmode = mode;
+    if(buttonmode == 'disapproved_temp')
+    {
+        var crtmailid = 58;
+    }
+    else
+    {
+        var crtmailid = 61;
+    }
+    $("#mail_id").val(crtmailid);
+    $("#moderatemails").show();
+    $("#refusearea").hide();
+    $("#Moderator_comment").hide();
+    $("#acceptarea").show();
+    $("#directvalid").hide();
+    $("#acceptmailid").val(crtmailid);
+}
+/////// when a Ep refused to go with corrector's choice////////
+function getRefuseCrtChoice(artId, mode)
+{
+    if(validCheckBox() === false)
+        return false;
+    if (tinymce.getInstanceById('Moderator_comment'))
+    {
+        //tinymce.execCommand('mceFocus', true, 'acceptmailcontent');
+        tinymce.execCommand('mceRemoveControl', true, 'Moderator_comment');
+        //tinymce.triggerSave();
+        loadEditors('Moderator_comment');
+    }
+    else if (!tinymce.getInstanceById('Moderator_comment'))
+    {
+        loadEditors('Moderator_comment');
+    }
+
+    var buttonmode = mode;
+    if(buttonmode == 'disapproved_temp')
+        var crtmailid = 54;
+    else
+        var crtmailid = 55;
+        $("#mail_id").val(crtmailid);
+        $("#moderatemails").css("display","block");
+        $("#refusearea").show();
+        $("#acceptarea").hide();
+        $("#directvalid").hide();
+        $("#refusemailid").val(crtmailid);
+}
+/////// when a Ep refused to go with corrector's choice and validate the article directly which appears in s2 correction stage////////
+function getDirectVlidate(artId)
+{
+    if(validCheckBox() === false)
+        return false;
+    if (tinymce.getInstanceById('Moderator_dirvalcomment'))
+    {
+        //tinymce.execCommand('mceFocus', true, 'acceptmailcontent');
+        tinymce.execCommand('mceRemoveControl', true, 'Moderator_dirvalcomment');
+        //tinymce.triggerSave();
+        loadEditors('Moderator_dirvalcomment');
+    }
+    else if (!tinymce.getInstanceById('Moderator_dirvalcomment'))
+    {
+        loadEditors('Moderator_dirvalcomment');
+    }
+
+    $("#mail_id").val(105);
+    $("#moderatemails").css("display","block");
+    $("#refusearea").hide();
+    $("#acceptarea").hide();
+    $("#directvalid").show();
+}
+function validCheckBox()
+{
+    var artarray2 = new Array();
+    $("input:checkbox[name=2]:checked").each(function()
+    {
+        artarray2.push($(this).val());
+    });
+    var artarray1 = new Array();
+    $("input:checkbox[name=1]:checked").each(function()
+    {
+        artarray1.push($(this).val());
+    });
+    if(artarray2 == '' && artarray1 == '')
+    {  smoke.alert("Atleast one should be selected");
+        return false; drop();
+    }
+}
+function confirmAction()
+{
+    if(validCheckBox() === false)
+        return false;
+    var r=confirm("Confirmez-votre choix!");
+    if (r==true)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+function sendToFo()
+{
+    if(validCheckBox() === false)
+        return false;
+    var r=confirm("L'article sera remis en ligne");
+    if (r==true)
+    {
+        var r1=confirm("Announcement by email");
+        if (r1==true)
+        {
+            $("#sendtofo").val('yes');
+            $("#anouncebyemail").val('yes');
+            return true;
+        }
+
+        $("#sendtofo").val('yes');
+        return true;
+    }
+    else
+    {
+        $("#sendtofo").val('no');
+        return true;
+    }
+}
+
+</script>
+{/literal}
+<div class="row-fluid">
+    <div class="span12" >
+        <h3 class="heading">Correction Moderation </h3><div >
+            <form action="/correction/moderation?submenuId={$submenuId}" method="post" id="moderation" name="moderation">
+                <strong style="position:relative;top:-10px;padding-left:30%;">Bo Users :</strong> <select name="bouser" id="bouser" onchange="fnloaduser();"  >
+                <option value="0" >S&eacute;lectionnez un user</option>
+                {foreach from=$userList item=user key=uk name=users}
+                <option value={$user->identifier} {if $user->identifier eq $smarty.get.bouser || $user->identifier eq $loginuser} selected{/if}>{$user->login}</option>
+                {/foreach}
+            </select>
+            </form>
+        </div>
+
+    <form action="/correction/moderationbulk?submenuId={$submenuId}" method="post" id="valstage2arts" name="valstage2arts" >
+        <table id="moderationgrid" class="table table-bordered table-striped table_vam">
+	  	   	<thead>
+				<tr>
+                  <th></th>
+				  <th>Article</th>
+				  <th>Mission</samp></th>
+				  <th>R&eacute;dacteur</th>
+                  <th>Correcteur</th>
+                  <th>D&eacute;cision</th>
+                  <th>Date</th>
+				  <th>D&eacute;cision EP</th>
+				  <!--<th><samp id="841">{$nodes[841]}</samp></th>
+				  <th><samp id="842">{$nodes[842]}</samp></th>-->
+				</tr>
+			</thead>
+			<tbody>
+			 {foreach from=$paginator key=moderation_key item=moderation_item name=moderation_loop}
+				<tr>
+                    <td>
+                        <input type="checkbox" id="artchk_{$moderation_item.artId}" value="{$moderation_item.artId}" {if $moderation_item.status == 'disapproved_temp'} name="1" {else} name="2" {/if} onclick="CheckALL(3);" /></td>
+					<td>
+						{$moderation_item.title|stripslashes|escape:'htmlall'|wordwrap:20:"\n":true}</td>
+					<td>
+						<a href="/ongoing/ao-details?submenuId=ML2-SL4&client_id={$moderation_item.owner}&ao_id={$moderation_item.delivery_id}">{$moderation_item.deliveryTitle|stripslashes|escape:'htmlall'}</a>
+					</td>
+					<td> <a href="/user/contributor-edit?submenuId=ML2-SL7&tab=viewcontrib&userId={$moderation_item.contributor}">{$moderation_item.contributor_name}</a></td>
+					<!-- <div class="col-two">CAT&Eacute;GORIE</div>-->
+                    <td><a href="/user/contributor-edit?submenuId=ML2-SL7&tab=viewcontrib&userId={$moderation_item.corrector}">{$moderation_item.corrector_name}</a> </td>
+                    <td> {if $moderation_item.status == 'disapproved_temp'} Refus resoumission {else} Refus d&eacute;finitif {/if}</td>
+                    <td> {$moderation_item.updated_at|date_format:"%d/%m/%Y"}</td>
+
+					<td>
+                        <!--<a  style="cursor: pointer;text-decoration: underline" onclick="return getAcceptCrtChoice('{$moderation_item.artId}','{$moderation_item.status}');">accept</a> /
+                        <a  style="cursor: pointer;text-decoration: underline" onclick="return getRefuseCrtChoice('{$moderation_item.artId}','{$moderation_item.status}');">refuse</a>-->
+                        <a  style="cursor: pointer;text-decoration: underline" href="/correction/moderation-correction?submenuId={$submenuId}&articleid={$moderation_item.artId}&status={$moderation_item.status}">
+                            <i class='splashy-application_windows_edit'></i></a>
+                    </td>
+                 </tr>
+              {/foreach}
+	         </tbody>
+	    </table>
+        <div class="span6 form-inline">
+            <label class="span5"><strong>BULK VALIDATION : DECISION :</strong> </label>
+            <label class="uni-radio"><input type="radio" id="decision_temp" name="decision" value="permrefuse" class="uni_style" onclick="CheckALL(1);" />Refus resoumission </label>
+            <label class="uni-radio"><input type="radio" id="decision_definit" name="decision" value="refuse" class="uni_style"  onclick="CheckALL(2);" />Refus d&eacute;finitif </label>
+        </div>
+    </div>
+    <div class="pull-right span7 hide" id="actionbuttons_temp" >
+        <button type="button" class="btn btn-success"  onclick="return getAcceptCrtChoice('{$smarty.get.articleid}','disapproved_temp');" value="Valider" >Valider</button>
+        <button type="button" class="btn btn-warning" onclick="return getRefuseCrtChoice('{$smarty.get.articleid}','disapproved_temp');" value="Refuser" >Refuser</button>
+        <button type="button" class="btn btn-danger" onclick="return getDirectVlidate('{$smarty.get.articleid}');" value="Directvalid" >Direct Valider</button>
+    </div>
+    <div class="pull-right span7 hide" id="actionbuttons_definit" >
+        <button type="button" class="btn btn-success"  onclick="return getAcceptCrtChoice('{$smarty.get.articleid}','closed_temp');" value="Valider" >Valider</button>
+        <button type="button" class="btn btn-warning" onclick="return getRefuseCrtChoice('{$smarty.get.articleid}','closed_temp');" value="Refuser" >Refuser</button>
+        <button type="button" class="btn btn-danger" onclick="return getDirectVlidate('{$smarty.get.articleid}');" value="Directvalid" >Direct Valider</button>
+    </div>
+</div>
+    <div id="moderatemails" style="display: none;width: 95%;float:left;">
+        <div>
+            <div id="acceptarea">
+                <table width="100%">
+                    <tr><td></td></tr>
+                    <tr><td><b>  Validation du choix du correcteur :</b></td></tr>
+                    <tr><td></td></tr>
+                    <!-- <tr >
+                         <td width="100%"><textarea id="Moderator_contribwindow" name="Moderator_contribwindow" cols="100" rows="5"></textarea>
+                             <input type="hidden" id="Contribmailobject" name="Contribmailobject" value="{$Contribmailobject}"></td>
+                     </tr>-->
+                    <tr><td></td></tr>
+                    <tr >
+                        <td width="100%"><textarea id="Moderator_crtwindow" name="Moderator_crtwindow" cols="100" rows="5">{$Correctormailcontent}</textarea>
+                            <input type="hidden" id="Correctormailobject" name="Correctormailobject" value="{$Correctormailobject}">
+                            <input type="hidden" id="acceptmailid" name="acceptmailid" value="">
+                        </td>
+                    </tr>
+                </table>
+                <button id="temp_valid" type="submit" class="btn btn-success"  name="moderate_approve" style="display: none" onclick="return confirmAction();">Valider</button>
+                <button id="close_valid" type="submit" class="btn btn-success" name="moderate_approve" style="display: none" onclick="return sendToFo();">Valider</button>
+                <input type="hidden" id="sendtofo" name="sendtofo" value="">
+                <input type="hidden" id="anouncebyemail" name="anouncebyemail" value="">
+            </div>
+            <div id="refusearea">
+                <table width="100%" id="magic">
+                    <tr><td></td></tr>
+                    <tr><td><b> Refus du choix du correcteur :</b></td></tr>
+                    <tr><td></td></tr>
+                    <tr >
+                        <td width="100%"><textarea id="Moderator_comment" name="Moderator_comment" cols="100" rows="5"></textarea>
+                            <input type="hidden" id="onlycorrectorobject" name="onlycorrectorobject" value="{$onlycorrectorobject}">
+                            <input type="hidden" id="refusemailid" name="refusemailid" value="">
+                        </td>
+                    </tr>
+                </table>
+                <button type="submit" class="btn btn-warning" id="moderate_disapprove" name="moderate_disapprove" onclick="return confirmAction();">Refuser</button>
+            </div>
+            <div id="directvalid">
+                <table width="100%" id="magic2">
+                    <tr><td></td></tr>
+                    <tr><td><b> Refus du choix du correcteur and direct validate :</b></td></tr>
+                    <tr><td></td></tr>
+                    <tr >
+                        <td width="100%"><textarea id="Moderator_dirvalcomment" name="Moderator_dirvalcomment" cols="100" rows="5"></textarea>
+                            <input type="hidden" id="dirvalidmailid" name="dirvalidmailid" value="105">
+                        </td>
+                    </tr>
+                </table>
+                <button type="submit" class="btn btn-warning" id="moderate_dirvalidate" name="moderate_dirvalidate" onclick="return confirmAction();">Direct Validate</button>
+            </div>
+        </div>
+        <div align="right" class="">
+            <div class="buttontwo" >
+                <input type="hidden" id="latestmarks" name="latestmarks" value="{php} echo $latestmarks; {/php}">
+                <input type="hidden" id="correctorId" name="correctorId" value="{$correctorId}">
+                <input type="hidden" id="contributorId" name="contributorId" value="{$contributorId}">
+                <input type="hidden" id="artsentdate" name="artsentdate" value="{php} echo $artsentdate; {/php}">
+                <input type="hidden" id="actionmode" name="actionmode" value="{php} echo $_GET['actionmode']; {/php}" />
+                <input type="hidden" id="status" name="status" value="" />
+                <input type="hidden" id="mail_id" name="mail_id" value="" />
+                <input type="hidden" id="artlist" name="artlist" value="">
+            </div>
+        </div>
+    </form>
+</div>
+<!--///for the correction moderate popup///-->
+<div class="modal2 hide fade" id="moderate">
+    <div class="modal-header">
+        <button class="close" onclick="closePopup('moderate');">&times;</button>
+        <h3>Moderate</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+

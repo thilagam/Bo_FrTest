@@ -1,0 +1,18 @@
+/*.row-fluid .span7
+{
+	width:98%;
+	padding-left:20px;
+}*/
+
+.modal.fade.in {
+    top: 350px; 
+}
+.error { 
+	padding:0px; 
+	color:red; 
+	margin:0; 
+}
+
+.container-field select {
+    font-size: 14px;
+}

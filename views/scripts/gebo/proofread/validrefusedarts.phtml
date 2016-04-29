@@ -1,0 +1,103 @@
+{literal}
+<script language="javascript">
+	$(document).ready(function(){
+		$("#artname").chosen({ allow_single_deselect: true });	
+
+		$('#start_date').datepicker({language: 'fr'}).on('changeDate', function(ev){
+			var dateText = $(this).val();//data('date');
+			
+			var endDateTextBox = $('#end_date');
+			if (endDateTextBox.val() != '') {
+				var testStartDate = new Date(dateText);
+				var testEndDate = new Date(endDateTextBox.val());
+				if (testStartDate > testEndDate) {
+					endDateTextBox.val(dateText);
+				}
+			}
+			else {
+				endDateTextBox.val(dateText);
+			};
+			$('#end_date').datepicker('setStartDate', dateText);
+			$('#start_date').datepicker('hide');
+		});
+		
+		$('#end_date').datepicker({language: 'fr'}).on('changeDate', function(ev){
+			var dateText = $(this).val();//data('date');
+			var startDateTextBox = $('#start_date');				
+			if (startDateTextBox.val() != '') {
+				var testStartDate = new Date(startDateTextBox.val());
+				var testEndDate = new Date(dateText);
+				if (testStartDate > testEndDate) {
+					startDateTextBox.val(dateText);
+				}
+			}
+			else {
+				startDateTextBox.val(dateText);
+			};
+			$('#start_date').datepicker('setEndDate', dateText);
+			$('#end_date').datepicker('hide');
+		});
+		$('#mission_table').dataTable({
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/proofread/loadvalidrefusedarts"  ,
+            "aoColumnDefs": [{ "bSortable": false, "aTargets": [ 5,6 ] }]
+        });
+        $("#mission_table_length").css("float","left");
+	});
+
+	function clearAll()
+    {
+        $('#start_date').attr('value', '');
+        $('#end_date').attr('value', '');
+		$("#artname option").removeAttr("selected");
+        $('#artname').val('').trigger("liszt:updated");
+    }
+</script>
+
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+		<h3 class="heading">Published Articles</h3>
+
+
+		<table class="table table-bordered table-striped table_vam" id="mission_table">
+			<thead>
+				<tr>
+					  <th>S no.</th>
+					  <th>TITRE ARTICLE</th>
+					  <th>TITRE AO</th>
+					  <th>CONTRIBUTEUR</th>
+					  <th>DATE D' ENVOI</th>
+					  <th>Details</th>
+					  <th>Download</th>
+				</tr>
+			</thead>
+			<tbody>
+			<!--{foreach from=$publishedmissions item=pubmission name=pubmission_loop}
+				<tr>
+				   <td>{$smarty.foreach.pubmission_loop.index+1}</td>
+				   <td>{$pubmission.title|stripslashes|escape:'htmlall'|wordwrap:20:"\n":true}</td>
+				   <td>
+						<a href="/ongoing/ao-details?submenuId=ML2-SL4&client_id={$pubmission.owner}&ao_id={$pubmission.delivery_id}">{$pubmission.deliveryTitle|stripslashes|escape:'htmlall'|wordwrap:20:"\n":true}</a>
+				   </td>
+				   <td>{$pubmission.first_name} {$pubmission.last_name}</td>
+				   <td>{if $pubmission.delivery_date!="0000-00-00"}{$pubmission.delivery_date|date_format:"%d/%m/%Y"}{else}-{/if}</td>
+				   <td>{$pubmission.created_at|date_format:"%d/%m/%Y"}</td>
+				   <td align="center">
+						<a href="/proofread/archivecorrection?submenuId={$submenuId}&articleId={$pubmission.artId}" class="hint--left hint--info" data-hint="Archive Details">
+						<i class="splashy-information"></i></a>
+					</td> 
+				   <td><a class="hint--left hint--info" data-hint="Download Article" href="/proofread/downloadarticle?path={$pubmission.downloadpath[0].id}" ><i class="splashy-document_small_download"></i></a></td>
+				</tr>
+			{/foreach}-->
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+
+
+

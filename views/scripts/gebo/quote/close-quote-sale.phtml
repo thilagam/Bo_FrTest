@@ -1,0 +1,41 @@
+<form action="/quote/save-close-quote-sale/" class="form-horizontal" method="post" id="closequote">
+			<input type="hidden" name="quote_id" id="closequoteid" value="{$qid}" />
+			<section>
+				<div class="row-fluid topset2">
+					<div class="control-group">
+						<label class="control-label">Reason<span class="f_req">*</span></label>
+						<div class="controls">
+							<select name="reason" id="reason" class="validate[required] span6" placeholder="Select Reason" readonly>
+								<option>Select Reason</option>
+								
+								<option selected value="refusal_to_answer_EP">refus de r&eacute;pondre EP</option>				
+							</select>
+						</div>
+					</div>
+					
+				</div>
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">Commentaire concernant la fermeture du devis<span class="f_req">*</span></label>
+						<div class="controls">
+							<textarea cols="30" id="closetxt" name="closetxt" rows="5" class="span12 validate[required]"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="control-group">
+						<div class="controls">
+							<button class="btn btn-primary" type="submit">Valider</button>
+							<button  class="btn" data-dismiss="modal" type="reset">Annuler</button>
+						</div>
+					</div>
+				</div>
+			</section>
+</form>
+{literal}
+<script>
+	$("#reason").chosen({ allow_single_deselect: false,disable_search: true});
+	$("#closequote").validationEngine({prettySelect : true,useSuffix: "_chzn"});
+	$('textarea').attr('data-prompt-position','topLeft');
+</script>
+{/literal}

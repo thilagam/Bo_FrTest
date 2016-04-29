@@ -1,0 +1,474 @@
+{literal}
+<script type="text/javascript" charset="utf-8" src="/BO/theme/gebo/js/jQuery.fileinput.js"></script>
+
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+
+<style type="text/css">
+.mod .error
+{
+	display:none !important;		
+}
+.error {
+    color: #C62626;    
+    font-size: 11px;
+    font-weight: 700;
+}
+.mod {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+    border-image: none;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+    margin-bottom: 15px;
+    overflow: hidden;
+    padding: 12px;
+}
+</style>
+{/literal}
+{literal}
+<script language="javascript">
+$.extend({
+  password: function (length, special) {
+    var iteration = 0;
+    var password = "";
+    var randomNumber;
+    if(special == undefined){
+        var special = false;
+    }
+    while(iteration < length){
+        randomNumber = (Math.floor((Math.random() * 100)) % 94) + 33;
+        if(!special){
+            if ((randomNumber >=33) && (randomNumber <=47)) { continue; }
+            if ((randomNumber >=58) && (randomNumber <=64)) { continue; }
+            if ((randomNumber >=91) && (randomNumber <=96)) { continue; }
+            if ((randomNumber >=123) && (randomNumber <=126)) { continue; }
+        }
+        iteration++;
+        password += String.fromCharCode(randomNumber);
+    }
+    return password;
+  }
+});
+
+$(document).ready(function() {
+	
+    $("#create").validationEngine(); 
+	
+	
+	//Automatic suggestion of super client agency name
+	$( "#email" ).on('input',function(e){
+		var email=$(this).val();
+		var agency=email.split("@");		
+		$("#agency_name").val(agency[0]);
+	});	
+	
+	//$(".uni_style").uniform();
+	
+	$('#generate').click(function(e){
+	
+		var password = $.password(8,false);
+		$('#password').val(password);
+		 e.preventDefault();
+        
+    });  
+	
+	//generating password buttons code
+	$("[id^=cgenerate_]").each(function(i){
+		var id=$(this).attr('id').split("_");
+		var contact=id[1];
+		$('#cgenerate_'+contact).click(function(e){				
+			var password = $.password(8,false);			
+			$('#client_contact_'+contact+' input[name="cpassword[]"]').val(password);	
+			e.preventDefault();			
+		});	
+	});
+		
+	$("#delay_option").chosen({ allow_single_deselect: false,search_contains: true});
+	$("#clients").chosen({search_contains: true});
+	
+	//Add More client Contacts
+	var contact=1;
+	
+	$("[id^=contact_close_]").live('click', function() {
+			var DivId = $(this).attr('id');
+			var parentDiv=$(this).parents("div:first").attr('id');
+			var client_identifier=$(this).attr('rel');
+			var closeDiv=$("#"+parentDiv).children(".close").attr('id');
+			if(!client_identifier)
+				$("#"+parentDiv).remove();
+			else
+			{	
+				smoke.confirm("Do you really want to delete this contact ?",function(e){
+					if (e)
+					{
+						if($("[id^=client_contact_]").size()>1)
+						{
+							$("#"+parentDiv).html('<center><img alt="" src="/BO/theme/gebo/img/ajax_loader.gif"> Deleting Contact... </center>');
+							ajaxProfileUpdate('sccontact',client_identifier,parentDiv,'');
+						}	
+						else
+						{
+							$("#"+parentDiv).html('<center><img alt="" src="/BO/theme/gebo/img/ajax_loader.gif"> Deleting Contact... </center>');
+							ajaxProfileUpdate('sccontact',client_identifier,parentDiv,'final');	
+							
+						}
+					}
+					else
+					{
+						return false;
+					}
+				});				
+			}	
+				
+		});	
+	
+	$("[id^=client_contact_]" ).each(function(z) {
+			contact=++z;
+	});
+	$("#addmore_cc_link").click(function(){
+			
+		var cloned =$("#addmore_cc_link");		
+		$("#client_contact_1").clone().attr('id', 'client_contact_'+(++contact) ).insertBefore( cloned );	
+		$('#client_contact_'+contact+' .btn').attr('id','cgenerate_'+contact);	
+		
+		$('#client_contact_'+contact+' input[name="clast_name[]"]').attr('id','clast_name_'+contact);	
+		$('#client_contact_'+contact+' input[name="cfirst_name[]"]').attr('id','cfirst_name_'+contact);
+		$('#client_contact_'+contact+' input[name="cemail[]"]').attr('id','cemail_'+contact);
+		$('#client_contact_'+contact+' input[name="cpassword[]"]').attr('id','cpassword_'+contact);
+
+		$('#client_contact_'+contact+' .close').attr('id','contact_close_'+contact);
+		$('#client_contact_'+contact+' .close').show();
+		$('#client_contact_'+contact+' .close').attr('rel','');	
+		
+		$('#client_contact_'+contact+' .uni_style').attr('name','cstatus_visible['+(contact-1)+'][]');	
+		
+		
+		
+		$('#cgenerate_'+contact).click(function(e){
+			
+			var password = $.password(8,false);	
+			var id=$(this).attr('id').split("_");
+			var generated_id=id[1];			
+			$('#client_contact_'+generated_id+' input[name="cpassword[]"]').val(password);
+			 e.preventDefault();
+		});
+		
+		
+		clearChildren(document.getElementById('client_contact_'+contact));		
+		
+	});	
+	
+});
+/** ajax function to delete super client contact data**/
+function ajaxProfileUpdate(type,identifier,divid,last)
+{
+        var target_page = "/user/delete-sc-contact?type="+type+"&identifier="+identifier;		
+		$.post(target_page, function(data){					
+				//alert(data);
+				sleep(4000);
+				$("#"+divid).remove();
+				if(last=='final')
+					location.reload();
+			});
+}
+function sleep(ms)
+{
+	var dt = new Date();
+	dt.setTime(dt.getTime() + ms);
+	while (new Date().getTime() < dt.getTime());
+}
+/*reset all childs of a div**/	
+function clearChildren(element) {
+   for (var i = 0; i < element.childNodes.length; i++) {
+      var e = element.childNodes[i];
+      if (e.tagName) switch (e.tagName.toLowerCase()) {
+         case 'input':
+            switch (e.type) {
+               case "radio":
+               case "checkbox": e.checked = false; break;
+               case "button":
+               case "submit":
+               case "image": break;
+               default: e.value = ''; break;
+            }
+            break;
+         case 'select': e.selectedIndex = 0; break;
+         case 'textarea': e.innerHTML = ''; break;
+         default: clearChildren(e);
+      }
+   }
+}
+ 
+</script>	
+{/literal}	
+<div class="row-fluid">    
+	<div class="span12">
+		<h3 class="heading">CR&Eacute;ATION D'UN SUPER CLIENT</h3>
+		<form class="form_validation_reg" action="/user/save-session-super-client" id="create" method="post" id="user" name="user" enctype="multipart/form-data">
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span8 form-inline">
+						<label class="span4">Adresse email du client <span class="f_req">*</span></label>
+						{if $super_client.client_id}
+							<label class="span4"><b>{$super_client.email}</b></label>
+							<input type="hidden" name="edit_client" id="edit_client" value="{$super_client.agency_name}">
+							
+						{else}
+							<span><input type="text" name="email" id="email" value="{$super_client.email}" class="validate[required,custom[email],ajax[ajaxEmailValidate]]"/></span>
+						{/if}						
+					</div>					
+				</div>
+			</div>
+
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span8 form-inline">
+						<label class="span4"> Nom d'affichage du client <span class="f_req">*</span></label>
+						<span><input type="text" name="agency_name" id="agency_name" value="{$super_client.agency_name}" class="validate[required,ajax[ajaxClientValidate]]"/></span>
+					</div>					
+				</div>
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span8 form-inline">
+						<label class="span4">Password <span class="f_req">*</span></label>
+						<span><input type="text" name="password" id="password" value="{$super_client.password}" class="validate[required]" /></span>
+						<a  class="btn" id="generate">G&eacute;n&eacute;rer mot de passe</a>
+					</div>					
+				</div>
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span8 form-inline">
+						<label class="span4">Qui g&egrave;re-t-il comme clients <span class="f_req">*</span></label>						
+						<select multiple data-placeholder="Liste des clients" name="clients[]" id="clients" class="span4 validate[required]">
+							{html_options  options=$client_array  selected=$super_client.clients}
+						</select>	
+					</div>					
+				</div>
+			</div>
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span8 form-inline">
+						<label class="span4"> Upload picture </label>
+						<div data-provides="fileupload" class="span3 fileupload fileupload-new"><input type="hidden" value="" name="">
+                                      <span class="btn btn-file"><span class="fileupload-new">Select logo</span><span class="fileupload-exists">Change</span>
+                                          <input type="file" name="logo_super_client" id="filePJ" /></span>
+							<span class="fileupload-preview"></span>
+							<a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>
+							<div id="file_name"></div>							
+						</div>
+						{if $super_client.superclient_logo}
+							<div class="span2">
+								<img style="padding:5px;" id="clientlogo" src="{$super_client.superclient_logo}">
+							</div>	
+						{/if}	
+					</div>					
+				</div>
+			</div>		
+			<div class="">
+				<div class="row-fluid">
+					<div class="span8 form-inline">
+						<label class="span4"> <b>Contact(s) chez le client</b> </label>
+					</div>
+				</div>					
+			</div>
+			<div id="client_contacts">
+			{if $sc_contacts|@count gt 0}
+				{foreach from=$sc_contacts item=contact name="sc_contacts"}
+				{assign var=gn_index value=$smarty.foreach.sc_contacts.index}
+				{assign var=sc_index value=$smarty.foreach.sc_contacts.index+1}
+				<div class="mod" id="client_contact_{$sc_index}">		
+					<button  class="close" type="button" id="contact_close_{$sc_index}" rel="{$contact.contact_id}"  {if $sc_contacts|@count lt 1} style="display:none"{/if}>&times;</button>
+					<input type="hidden" name="sc_contact_id[]" value="{$contact.contact_id}">
+					<div class="formSep">
+						<div class="row-fluid">
+							<div class="span4 form-inline">
+								<label class="span4">Nom </label>
+								<span><input type="text" name="clast_name[]" id="clast_name_{$sc_index}" class="validate[required]" value="{$contact.clast_name}" /></span>
+							</div>	
+							<div class="span7 form-inline">
+								<label class="span2">Pr&eacute;nom </label>
+								<span><input type="text" name="cfirst_name[]" id="cfirst_name_{$sc_index}" class="validate[required]" value="{$contact.cfirst_name}"/></span>
+							</div>						
+							
+						</div>
+					</div>				
+					<div class="formSep">
+						<div class="row-fluid">
+							<div class="span4 form-inline">
+								<label class="span4">Adresse email</label>
+								<span><input type="text" name="cemail[]" id="cemail_{$sc_index}" class="validate[required,custom[email]]" value="{$contact.cemail}"/></span>
+							</div>
+							<div class="span7 form-inline">
+								<label class="span2">Password </label>
+								<span><input type="text" name="cpassword[]" id="cpassword_{$sc_index}" class="validate[required]" value="{$contact.cpassword}" /></span>
+								<a  class="btn" id="cgenerate_{$sc_index}">G&eacute;n&eacute;rer mot de passe</a>
+							</div>	
+							
+						</div>
+					</div>
+					<div class="">
+						<div class="row-fluid">
+							<div class="span12">
+								<label class="span4">Affichage de la liste des statuts</label>
+								<div class="span6">								
+									<label class="uni-checkbox">
+										<input type="checkbox"  value="participation_ongoing" id="uni_r1a" name="cstatus_visible[{$sc_index-1}][]" class="uni_style" {if in_array('participation_ongoing',$super_client.cstatus_visible[$gn_index])} checked {/if} />
+										Participations en cours
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="pending_selection" id="uni_r1b" name="cstatus_visible[{$sc_index-1}][]" class="uni_style"{if in_array('pending_selection',$super_client.cstatus_visible[$gn_index])} checked {/if} />
+										En attente de s&eacute;lection
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="writing_progress" id="uni_r1c" name="cstatus_visible[{$sc_index-1}][]" class="uni_style" {if in_array('writing_progress',$super_client.cstatus_visible[$gn_index])} checked {/if} />
+										R&eacute;daction en cours
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="time_out" id="uni_r1d" name="cstatus_visible[{$sc_index-1}][]" class="uni_style" {if in_array('time_out',$super_client.cstatus_visible[$gn_index])} checked {/if} />
+										Article non envoy&eacute;
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="disapproved" id="uni_r1e" name="cstatus_visible[{$sc_index-1}][]" class="uni_style" {if in_array('disapproved',$super_client.cstatus_visible[$gn_index])} checked {/if} />
+										Article en reprise
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="correction_ongoing" id="uni_r1f" name="cstatus_visible[{$sc_index-1}][]" class="uni_style" {if in_array('correction_ongoing',$super_client.cstatus_visible[$gn_index])} checked {/if} />
+										Correction en cours
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="stage2" id="uni_r1g" name="cstatus_visible[{$sc_index-1}][]" class="uni_style" {if in_array('stage2',$super_client.cstatus_visible[$gn_index])} checked {/if} />
+										En attente de validation (EP)
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="published_client" id="uni_r1h" name="cstatus_visible[{$sc_index-1}][]" class="uni_style" {if in_array('published_client',$super_client.cstatus_visible[$gn_index])} checked {/if} />
+										En attente de validation (Client)
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="published" id="uni_r1i" name="cstatus_visible[{$sc_index-1}][]" class="uni_style" {if in_array('published',$super_client.cstatus_visible[$gn_index])} checked {/if} />
+										Valid&eacute;
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="closed" id="uni_r1j" name="cstatus_visible[{$sc_index-1}][]" class="uni_style" {if in_array('closed',$super_client.cstatus_visible[$gn_index])} checked {/if} />
+										Close
+									</label>
+								</div>
+								<div id="status_error" class="span8 pull-right"></div>
+							</div>					
+						</div>
+					</div>
+					
+				</div>	
+				{/foreach}
+			{else}
+				<div class="mod" id="client_contact_1">		
+					<button  class="close" type="button" id="contact_close_1" rel=""   style="display:none">&times;</button>
+					<div class="formSep">
+						<div class="row-fluid">
+							<div class="span4 form-inline">
+								<label class="span4">Nom </label>
+								<span><input type="text" id="clast_name_1" name="clast_name[]" class="validate[required]" /></span>
+							</div>	
+							<div class="span7 form-inline">
+								<label class="span2">Pr&eacute;nom </label>
+								<span><input type="text" id="cfirst_name_1" name="cfirst_name[]" class="validate[required]"/></span>
+							</div>						
+							
+						</div>
+					</div>				
+					<div class="formSep">
+						<div class="row-fluid">
+							<div class="span4 form-inline">
+								<label class="span4">Adresse email</label>
+								<span><input type="text" name="cemail[]" id="cemail_1" class="validate[required,custom[email],ajax[ajaxEmailValidate]]" /></span>
+							</div>
+							<div class="span7 form-inline">
+								<label class="span2">Password </label>
+								<span><input type="text" name="cpassword[]" id="cpassword_1" class="validate[required]" /></span>
+								<a  class="btn" id="cgenerate_1">G&eacute;n&eacute;rer mot de passe</a>
+							</div>	
+							
+						</div>
+					</div>
+					<div class="">
+						<div class="row-fluid">
+							<div class="span12">
+								<label class="span4">Affichage de la liste des statuts</label>						
+								<div class="span6">
+									<label class="uni-checkbox">
+										<input type="checkbox"  value="participation_ongoing" id="uni_r1a" name="cstatus_visible[0][]" class="uni_style validate[minCheckbox[1]]" {if in_array('participation_ongoing',$super_client.cstatus_visible)} checked {/if} />
+										Participations en cours
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="pending_selection" id="uni_r1b" name="cstatus_visible[0][]" class="uni_style validate[minCheckbox[1]]"{if in_array('pending_selection',$super_client.cstatus_visible)} checked {/if} />
+										En attente de s&eacute;lection
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="writing_progress" id="uni_r1c" name="cstatus_visible[0][]" class="uni_style validate[minCheckbox[1]]" {if in_array('writing_progress',$super_client.cstatus_visible)} checked {/if} />
+										R&eacute;daction en cours
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="time_out" id="uni_r1d" name="cstatus_visible[0][]" class="uni_style validate[minCheckbox[1]]" {if in_array('time_out',$super_client.cstatus_visible)} checked {/if} />
+										Article non envoy&eacute;
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="disapproved" id="uni_r1e" name="cstatus_visible[0][]" class="uni_style validate[minCheckbox[1]]" {if in_array('disapproved',$super_client.cstatus_visible)} checked {/if} />
+										Article en reprise
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="correction_ongoing" id="uni_r1f" name="cstatus_visible[0][]" class="uni_style validate[minCheckbox[1]]" {if in_array('correction_ongoing',$super_client.cstatus_visible)} checked {/if} />
+										Correction en cours
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="stage2" id="uni_r1g" name="cstatus_visible[0][]" class="uni_style validate[minCheckbox[1]]" {if in_array('stage2',$super_client.cstatus_visible)} checked {/if} />
+										En attente de validation (EP)
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="published_client" id="uni_r1h" name="cstatus_visible[0][]" class="uni_style validate[minCheckbox[1]]" {if in_array('published_client',$super_client.cstatus_visible)} checked {/if} />
+										En attente de validation (Client)
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="published" id="uni_r1i" name="cstatus_visible[0][]" class="uni_style validate[minCheckbox[1]]" {if in_array('published',$super_client.cstatus_visible)} checked {/if} />
+										Valid&eacute;
+									</label>
+									<label class="uni-checkbox">
+										<input type="checkbox" value="closed" id="uni_r1j" name="cstatus_visible[0][]" class="uni_style validate[minCheckbox[1]]" {if in_array('closed',$super_client.cstatus_visible)} checked {/if} />
+										Close
+									</label>
+								</div>
+								<div id="status_error" class="span8 pull-right"></div>
+							</div>					
+						</div>
+					</div>
+				</div>
+			{/if}	
+				<div class="addmore-button" id="addmore_cc_link"><a class="btn"><i class="icon-plus"></i></a></div> 
+			</div>
+			<div class="formSep topset1">
+				<div class="row-fluid">
+					<div class="span8 form-inline">
+						<label class="span4">D&eacute;lai avant validation automatique d'un article </label>						
+						<input type="text" style="vertical-align:top;" name="delay_validation" id="delay_validation" value="{$super_client.delay_validation}" />
+						<select name="delay_option" id="delay_option" class="span2">
+							<option value="days" {if $super_client.delay_option=='days'} selected="selected" {/if}>Jour(s)</option>
+							<option value="weeks" {if $super_client.delay_option=='weeks'} selected="selected" {/if}>Semaine(s)</option>
+						</select>
+						
+					</div>					
+				</div>
+			</div>			
+			<div class="formSep">
+				<div class="row-fluid">
+					<div class="span5 form-inline">
+						<button type="submit" name="superclient_create" class="btn btn-success pull-right">Aller en &eacute;tape 2</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>	

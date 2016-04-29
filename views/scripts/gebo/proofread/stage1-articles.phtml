@@ -1,0 +1,98 @@
+{literal}
+<script type="text/javascript" >
+$(document).ready(function() {
+	$('#s1artsgrid').dataTable({
+		"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+		"sPaginationType": "bootstrap",
+		"aaSorting": [[ 1, "asc" ]],
+		"aoColumns": [
+
+			{ "sType": "formatted-num" },
+			{ "sType": "string" },
+			{ "sType": "string" },
+			{ "sType": "formatted-num" },
+			{ "sType": "formatted-num" }
+        ]
+	});
+});
+
+</script>
+{/literal}
+<form action="/proofread/validatestage1arts?submenuId={$submenuId}" method="post" id="valstage1arts" name="valstage1arts" >
+
+<div class="row-fluid">
+  <div class="span12">
+    <h3 class="heading">Relecture phase 1<a data-toggle="modal"  href="#searchpopup" ></a></h3>
+	 <table id="tabledetails" class="table" >
+        <tr>
+            <td><b>Delivery : </b>{$delDetails[0].aotitle}</td>
+            <td><b>Client : </b>{$delDetails[0].company_name}</td>
+            <td><b>Category : </b>{$delDetails[0].fav_category}</td>
+        </tr>
+        <tr>
+            <td><b>Total Articles : </b>{$delDetails[0].noofarts}</td>
+            <td><b>Created At : </b>{$delDetails[0].delcreatedat|date_format:"%d/%m/%Y"}</td>
+            <td><b>Created By : </b>{$delDetails[0].created_user}</td>
+        </tr>
+     </table>
+
+        <table id="s1artsgrid" class="table table-bordered table-striped table_vam">
+            <thead>
+            <tr>
+                <th>Sl.no</th>
+                <th>Article Titre</th>
+                <th>Contributeur</th>
+                <th>Date d'envoi</th>
+                <th>Lock / unlock</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach from=$paginator key=s1arts_key item=s1arts_item name=s1arts_loop}
+            <tr>
+                <td>{$smarty.foreach.s1arts_loop.index+1}</td>
+                <td>{if $s1arts_item.lock_status eq 'yes'}
+                       {if $s1arts_item.lockedUser eq $userId}
+                          <a href="/proofread/stage1-correction?submenuId=ML3-SL2&articleId={$s1arts_item.artId}" id="stagelink{$smarty.foreach.s1arts_loop.index}">{$s1arts_item.title|stripslashes|wordwrap:20:"\n":true}</a>
+                       {else}
+                          <a id="stagelink{$smarty.foreach.s1arts_loop.index}">{$s1arts_item.title|stripslashes|wordwrap:20:"\n":true}</a>
+                       {/if}
+                    {else}
+                        <a id="stagelink{$smarty.foreach.s1arts_loop.index}">{$s1arts_item.title|stripslashes|wordwrap:20:"\n":true}</a>
+                    {/if}
+                </td>
+                <td>{if $s1arts_item.first_name neq ''}{$s1arts_item.first_name}{else}{$s1arts_item.email}{/if}</td>
+                <td>{if $s1arts_item.article_sent_at eq 'NO'}Not submited{else}{$s1arts_item.article_sent_at[0].article_date|date_format:"%d/%m/%Y"}{/if}</td>
+                <td><div id="lock{$s1arts_item.artId}">
+					{if $s1arts_item.lock_status eq 'yes'}
+						{if $s1arts_item.lockedUser eq $userId}
+						   <a href="/proofread/stage1-correction?submenuId={$submenuId}&articleId={$s1arts_item.artId}" ><i class="splashy-application_windows_edit"></i></a>&nbsp;&nbsp;
+						   <a onclick="stagesLinklockSystem('{$s1arts_item.artId}', 'unlock', 'stage1', '{$smarty.foreach.s1arts_loop.index}', '{$smarty.get.submenuId}');"><i class="splashy-lock_large_unlocked"></i></a>
+						{else}
+						   <div>Lock&eacute; par {$s1arts_item.locked_by[0].login}</div>
+						{/if}
+					{else}
+						 <a onclick="stagesLinklockSystem('{$s1arts_item.artId}', 'lock', 'stage1', '{$smarty.foreach.s1arts_loop.index}', '{$smarty.get.submenuId}');"><i class="splashy-lock_large_locked"></i></a>
+					{/if}
+                    </div>
+				</td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+  </div>
+</div>
+    <input type="hidden" id="hide_total" name="hide_total"  />
+</form>
+<!--///for the article profiles popup///-->
+<div class="modal4 hide fade" id="artprofile">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">&times;</button>
+        <h3>Contributors Details</h3>
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer"></div>
+</div>
+
+
+
+

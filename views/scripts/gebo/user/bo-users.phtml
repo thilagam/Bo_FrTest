@@ -1,0 +1,168 @@
+{literal}
+<script type="text/javascript">
+
+
+$(document).ready(function() {
+    $("#bouserstab").addClass('active');
+    $(".uni_style").uniform();
+
+    $('#bousersgrid').dataTable({
+        "sPaginationType": "bootstrap",
+        "iDisplayLength" : 25,
+        "sDom": "<'row'<'span4'l><'span4'T><'span4'f>r>t<'row'<'span6'i><'span6'p>>",
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "formatted-num" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "natural"}
+        ],
+        "aaSorting": [[ 0, "asc" ]],
+        "oTableTools": {
+            "aButtons": [
+                "copy",
+                "print",
+                {
+                    "sExtends":    "collection",
+                    "sButtonText": 'Sauvegarder <span class="caret" />',
+                    "aButtons":    [ "csv", "xls", "pdf" ]
+                }
+            ],
+            "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+        }
+    });
+
+});
+function checkEmailExist()
+{
+    var email = $("#email").val();
+    var target_page = "/user/email-exits?email="+email;
+    $.post(target_page, function(data){ //alert(data);
+        var data1 = data.trim();
+        if(data1 == "yes")
+        {
+            smoke.alert("email id is already exist");
+            $("#emai").val('');
+            return false;
+        }
+        else
+        {
+
+            return true;
+        }
+    });
+}
+//* bootstrap datepicker
+gebo_datepicker = {
+    init: function() {
+        $('#dp1').datepicker();
+        $('#dp2').datepicker();
+        $('#actdp1').datepicker();
+        $('#actdp2').datepicker();
+    }};
+function changeStatusUser(userid, status)
+{
+    if(status == 'Inactive')
+        var statusmsg = 'Active';
+    else
+        var statusmsg = 'Inactive';
+    smoke.confirm("Do you really want to make user "+statusmsg,function(e){
+        if (e)
+        {
+           // window.location.href="users-list?submenuId=ML2-SL7&tab="+tab+"&delete=yes&userId="+userid;
+            var target_page = "/user/changeuserstatus?status="+statusmsg+"&user_id="+userid;
+            $.post(target_page, function(data){ //alert(data);
+                $('#userstatus_'+userid).html("<a onclick=\"changeStatusUser('"+userid+"', '"+statusmsg+"');\">"+statusmsg+"</a>");
+                window.location.reload();
+            });
+        }
+        else
+        {
+            return false;
+        }
+    });
+
+}
+</script>
+{/literal}
+<div class="row-fluid">
+  <div class="span12" style="">
+   <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+      <div class="tabbable">
+          <ul class="nav nav-tabs">
+             <li {if $smarty.get.tab == 'correctorstats'} class="active" {/if}><a href="#bouserstab" data-toggle="tab" class="lable-success"><strong>Utilisateurs Bo</strong></a></li>
+          </ul>
+          <div class="tab-content">
+              <div id="bouserstab" class="tab-pane" >
+
+                  <table id="bousersgrid" class="table table-bordered table-striped table_vam tdleftalign">
+                      <thead>
+                      <tr>
+                          <th>SL.NO</th>
+                          <th>Nom</th>
+                          <th>Profile Picture</th>
+                          <th>Pays</th>
+                          <th>T&eacute;l&eacute;phone</th>
+                          <th>Type</th>
+                          <th>Statut</th>
+                          <th>cr&eacute;&eacute; le</th>
+                          <th>Email</th>
+                          <th>Actions</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {if $bouserdetails neq 'No Messages Found'}
+                      {foreach item=bouser from=$bouserdetails name=usergrid}
+                      <tr>
+                          <td>{$smarty.foreach.usergrid.index+1}</td>
+                          <td>{$bouser.first_name} {$bouser.last_name}</td>
+                          <td><img src="{$bouser.picture}" class="image rd_30" width="50px"/></td>
+                          <td>{$bouser.country}</td>
+                          <td>{$bouser.phone_number}</td>
+                          <td><label class="label label-info">{$bouser.type}</label></td>
+                          <td id="userstatus_{$bouser.identifier}"><a href="#"  onclick="return changeStatusUser('{$bouser.identifier}', '{$bouser.status}')" >{$bouser.status}</a></td>
+                          <td><div style="display:none;">{$bouser.created_at}</div>{$bouser.created_at|date_format:"%d/%m/%Y"}</td>
+                          <td>{$bouser.email}</td>
+                          <td><a href="user-edit?submenuId={$submenuId}&tabblock=edituser&userId={$bouser.identifier}" class="hint--left hint--info" data-hint="edit profile"><i class="icon-pencil"></i> </a>
+                              <!--<a href="#" onclick="return deleteUser('bouserstab', '{$bouser.identifier}')" class="hint--left hint--info" data-hint="delet profile"><i class="icon-trash"></i></a>-->
+                          </td>
+                      </tr>
+                      {/foreach}
+                      {/if}
+                      </tbody>
+                  </table>
+              </div>
+
+          </div>
+      </div>
+
+  </div>
+</div>
+
+<div style="visibility:hidden" >
+    <form id="user_login_form" name="user_login_form" method="post" action="" target="_blank">
+        <input type="text" id="login_name" name="login_name" value="">
+        <input type="password" id="login_password" name="login_password" value="{$user_detail[0].password}" >
+        <input type="submit" value="Login" />
+    </form>
+</div>
+
+
+{literal}
+<script type="text/javascript" >
+    function connect_fo(user,email,pwd)
+    {
+        document.forms["user_login_form"].action="http://mmm-new.edit-place.com/index/userfologin";
+        $('#login_name').val(email);
+        $('#login_password').val(pwd);
+        document.forms["user_login_form"].submit();
+    }
+</script>
+{/literal}
+
+

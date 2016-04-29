@@ -1,0 +1,56 @@
+<section class="gray">
+    <div class="container padding pull-top">
+		<div class="center-block">
+			<h1>Jobs</h1>
+		</div>
+		<div class="page-inner">
+	{foreach from=$joblist item=job_item}		
+				<hr>  
+				<h3>{$job_item.title}</h3>  
+				<hr>  
+				
+				{if $job_item.summary!=""}
+					{$job_item.summary}
+				{/if}
+				
+				{if $job_item.aboutep_title!="" && $job_item.aboutep_desc!=""}
+					<h4>{$job_item.aboutep_title}</h4>
+					{$job_item.aboutep_desc}
+				{/if}
+				
+				{if $job_item.mission_title!="" && $job_item.mission_desc!=""}
+					<h4>{$job_item.mission_title}</h4>
+					{$job_item.mission_desc}
+				{/if}
+				
+				{if $job_item.team_title!="" && $job_item.team_desc!=""}
+					<h4>{$job_item.team_title}</h4>
+					{$job_item.team_desc}
+				{/if}
+				
+				{if $job_item.willdo_title!="" && $job_item.willdo_desc!=""}
+					<h4>{$job_item.willdo_title}</h4>
+					{$job_item.willdo_desc}
+				{/if}
+				
+				{if $job_item.willnotdo_title!="" && $job_item.willnotdo_desc!=""}
+					<h4>{$job_item.willnotdo_title}</h4>
+					{$job_item.willnotdo_desc}
+				{/if}
+				
+				{if $job_item.profile_title!="" && $job_item.profile_desc!=""}
+					<h4>{$job_item.profile_title}</h4>
+					{$job_item.profile_desc}
+				{/if}
+				
+				{if $job_item.skills_title!="" && $job_item.skills_desc!=""}
+					<h4>{$job_item.skills_title}</h4>
+					{$job_item.skills_desc}
+				{/if}
+				
+			{/foreach}
+			 <p>&nbsp; </p>	
+			 
+		</div>	 
+	</div>   
+</section>

@@ -1,0 +1,137 @@
+<section id="status">
+	<div class="row-fluid">
+		<div class="profilehead-mod">
+			<div class="span2">
+				<div class="editor-container">
+					<a class="imgframe-large" href="#"><img src="{$profile_image}" title="{$client_email}"></a>
+				</div>
+			</div>
+			<div class="span7 profile-name">
+				<h3>{$ep_contrib_profile_fname} {$ep_contrib_profile_lname}</h3>
+				<p class="" style="">{$ep_contrib_age} ans  <span class="muted">&bull;</span>  {$allCategories}  <span class="muted">&bull;</span> {$ep_language} , {$allLanguages}</p>
+				<blockquote>
+						<i class="icon-leaf"></i> {$ep_contrib_profile_self_details}
+				</blockquote>
+			</div>
+			<div class="span3 stat contact-info">
+			<!-- 
+			* display the contact details only if :
+			- the contributor is checking out his own public profile
+			-  the client has already worked with this contributor
+			* to hide this block, add the class "hide" : <div class="span3 stat contact-info hide">  
+			-->
+				<h4><i class="icon-user"></i> Contact Details</h4>
+				<!--<address>
+					<i class="icon-phone"></i> {$ep_contrib_profile_telephone}<br>
+					<a href="mailto:#"><i class="icon-email"></i> {$email}</a>
+				</address>-->
+				{if $smarty.get.user_id}
+					<address>
+						/
+					</address>	
+				{else}
+					<address>
+						Published only to the client who has selected you
+					</address>
+					<a class="btn btn-small" href="#">Contact {$ep_contrib_profile_fname}</a>
+				{/if}	
+				
+			</div>
+		</div>
+	</div>
+</section>
+<!-- end, contributor status --> 
+ 
+<div class="row-fluid"> 
+	<div class="span8">
+		<section id="skills">
+			<div class="mod">
+				<h4>Languages</h4>
+				<strong>{$ep_language}</strong> (mother tongue)
+				{if $language_more|@count gt 0}
+					{foreach from=$language_more item=lang}
+						<div class="skillstat row-fluid">
+							<div class="span6">
+								<p><strong>{$lang.name}</strong>  {$lang.percent}%</p>
+								<div class="progress">
+									<div class="bar" style="width: {$lang.percent}%"></div>
+								</div>
+								<span class="pull-left legend muted">Beginner</span> <span class="pull-right legend muted">Bilingual</span>
+							</div>
+						</div>
+					{/foreach}
+				{/if}	
+			</div>
+
+			<div class="mod">
+				<h4>Skills/Areas of Expertise</h4>
+
+				{if $category_more|@count gt 0}
+					{foreach from=$category_more item=category}
+						<div class="skillstat row-fluid">
+							<div class="span6">
+								<p><strong data-original-title="{$category.name}" rel="tooltip">{$category.name}</strong>  {$category.percent}%</p>
+								<div class="progress">
+									<div class="bar" style="width: {$category.percent}%"></div>
+								</div>
+								<span class="pull-left legend muted">Beginner</span> <span class="pull-right legend muted">Expert</span>
+							</div>
+						</div>		
+					{/foreach}
+				{/if}			
+			</div>
+			<div class="mod">
+				<h4>Work Experience</h4>
+				{if $jobDetails|@count gt 0}
+				<dl>
+					{foreach from=$jobDetails item=job name="job_details"}
+						<dt>{$job.title}</dt>
+						<dd class="company">{$job.institute}</dd>
+						<dd class="muted">
+							Type de contrat : {if $job.contract=='cdi'}Full-time{elseif $job.contract=='cdd'}Part-time{elseif $job.contract=='freelance'}Freelance{elseif $job.contract=='intern'}Placement/Training{elseif $job.contract=='stage'}Placement/Training{/if}
+						</dd>
+						<dd class="muted">
+							<time datetime="{$job.start_date}">{$job.start_date}</time> - <time datetime="{$job.end_date}">{$job.end_date}</time>
+						</dd>
+					{/foreach}							
+				</dl>
+				{/if}
+			</div>
+			<div class="mod">
+				<h4>Training/Education</h4>
+				{if $educationDetails|@count gt 0}
+				<dl>	
+					{foreach from=$educationDetails item=education name="edu_details"}
+						<dt>{$education.title}</dt>
+						<dd class="company">{$education.institute}</dd>
+						<dd class="muted">
+							<time datetime="{$education.start_date}">{$education.start_date}</time> - <time datetime="{$education.end_date}">{$education.end_date}</time>
+						</dd>
+						{/foreach}
+				</dl>
+				{/if}
+
+			</div>				
+		</section>
+	</div>
+
+	<div class="span4">
+	<!--  right column  -->
+		<aside>
+			<div class="aside-bg">
+				<div class="aside-block" id="we-trust">
+					<h4>Your Work</h4>
+					{if $publishedClients | @count gt 0}
+						<ul class="unstyled">
+							{foreach item=pclient from=$publishedClients}
+								<li><img title="{$pclient.company_name}" src="{$pclient.client_pic}"></li>
+							{/foreach}
+							
+						</ul>
+					{/if}
+				</div>
+			</div>
+		</aside>  
+	</div>
+</div>
+        <a class="pull-right btn btn-small disabled anchor-top" href="#brand"><i class="icon-arrow-up"></i></a>

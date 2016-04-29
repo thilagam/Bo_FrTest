@@ -1,0 +1,50 @@
+{literal}
+    <script type="text/javascript" >
+        $('#participationtable').dataTable({
+			"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+			"sPaginationType": "bootstrap",
+			"aaSorting": [[ 0, "asc" ]],
+			"aoColumns": [
+				{ "sType": "formatted-num" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "string" }
+			]
+		});
+     </script>
+{/literal}
+<div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">Participation list</h3>
+        <table class="table table-bordered table-striped table_vam"  id="participationtable" >
+	  		<thead>
+				<tr>
+				   <th>S.NO</th>
+				   <th>Participant</th>
+				   <th>Number of questions</th>
+				   <th>Number of correct answers</th>
+                   <th>Percentage</th>
+                   <th>Date</th>
+				</tr>
+			</thead>
+			<tbody>
+			{foreach from=$participantslist item=participants_item name=participants_loop}
+				<tr>
+					<td align="center">{$smarty.foreach.participants_loop.index+1}</td>
+					<td><a href="/user/contributor-edit-new?submenuId=ML2-SL7&tab=viewcontrib&userId={$participants_item.user_id}">{$participants_item.last_name}&nbsp;{$participants_item.first_name}</a></td>
+					<td align="center">{$participants_item.num_total}</td>
+					<td align="center">{$participants_item.num_correct}</td>
+					<td align="center">{$participants_item.percent}</td>
+					<td align="center">{$participants_item.created_at|date_format:"%e/%m/%Y"}</td>
+				</tr>
+			{/foreach}
+			</tbody>
+        </table>
+	</div>
+</div>	
+
+
+
+

@@ -1,0 +1,351 @@
+{literal}
+<script language="javascript">
+	$("#menu_profile").addClass("active");
+	
+	(function($,W,D)
+	{
+		var JQUERY4U = {};
+
+		JQUERY4U.UTIL =
+		{
+			setupFormValidation: function()
+			{
+				//form validation rules
+				$("#profileform").validate({
+					onkeyup:false,
+					rules: {
+						first_name: "required",
+						last_name: "required",
+						phone_number: "required",
+						company_name: "required",
+						address: "required",
+						city: "required",
+						zipcode: "required",
+						country: "required",
+						rcs: "required",
+						vat: "required",
+					},
+					messages: {
+						first_name: "Nom obligatoire",
+						last_name: "Pr&eacute;nom obligatoire",
+						phone_number: "Num&eacute;ro de t&eacute;l&eacute;phone obligatoire",
+						company_name: "Merci d'indiquer le nom de votre entreprise",
+						address: "Adresse obligatoire",
+						city: "Ville obligatoire",
+						zipcode: "Code postal obligatoire",
+						country: "Choix du pays obligatoire",
+						rcs: "RCS obligatoire",
+						vat: "Merci d'indiquer votre num&eacute;ro de TVA",
+					},
+					
+				});
+			}
+		}
+
+		//when the dom has loaded setup form validation rules
+		$(D).ready(function($) {
+			JQUERY4U.UTIL.setupFormValidation();
+		});
+
+	})(jQuery, window, document); 
+	
+	//upload twitter
+	function uploadtwitterlogo()
+	{
+		var twt=$("#twitterid").val(); 
+		
+		if(twt!="")
+		{
+			$("#fileloading").html('<div align="center"><img src="/FO/images/loading-b.gif" /></div>');
+		$.ajax({
+				url: "/client/twitterlogo",
+				global: false,
+				type: "POST",
+				data: ({twitter : twt}),
+				dataType: "html",
+				async:false,
+				success: function(msg){ 
+					if(msg=="nofile")
+					{
+						$("#fileloading").html("Invalid Twitter id");
+					}
+					else
+					{
+						msg1=msg.split("#");
+						var profilepic="/FO/profiles/clients/logos/"+msg1[0]+"/"+msg1[0]+"_h.jpg"+'?'+ (new Date()).getTime();
+						$("#clientlogo").attr("src",profilepic);
+						$("#fileloading").html('');
+					}
+					return false;
+				}
+			});
+		}
+		else
+		{
+			$("#fileloading").html("Merci d'ins&eacute;rer un compte twitter valide");
+			return false;
+		}	
+		
+	}
+	
+
+		
+</script>
+
+{/literal}	 
+
+<div class="container">
+	<div class="row">
+		<div class="span12">
+			<h1>Mes param&egrave;tres</h1>
+		</div>
+	</div>
+
+	<div class="row">   
+		<form name="profileform" id="profileform" method="POST" action="/client/profile"  enctype="multipart/form-data" >
+		<div class="span9">
+			<section id="profile-form">
+				<div class="mod">
+					<div class="row-fluid">
+						<div class="control-group">
+							<label for="" class="control-label span3 offset1"><strong>Informations de contact</strong></label>    
+							<div class="controls span8">
+								<label><input type="text" placeholder="Nom" name="first_name" id="first_name"  value="{$user_details[0].first_name}" class="span6"></label>
+								<label><input type="text" placeholder="Pr&eacute;nom" name="last_name" id="last_name" value="{$user_details[0].last_name}" class="span6"></label>
+								<label><input type="text" placeholder="T&eacute;l&eacute;phone" name="phone_number" id="phone_number" value="{$user_details[0].phone_number}" class="span6"></label>
+								<label><input type="text" name="email" id="email" class="span6" disabled value="{$user_details[0].email}"></label>
+								<a onclick="modifyusersetting('{$user_details[0].user_id}}');" role="button" data-toggle="modal" data-target="#useSettingModal" style="cursor:pointer;" >Modifier mon mot de passe</a>
+							</div>
+						</div> 
+					</div>
+				</div>
+				<div class="mod">
+					<div class="row-fluid">
+						<div class="control-group">
+							<label for="" class="control-label span3 offset1"><strong>D&eacute;tails de la soci&eacute;t&eacute;</strong></label>    
+							<div class="controls span8">
+								<label><input type="text" name="company_name" id="company_name" value="{$user_details[0].company_name}" class="span6" placeholder="" value="Topito"></label>
+								<div class="row-fluid" id="company-logo">
+									<div class="span6">
+										<label>
+											<select name="logotype" id="logotype" class="span12" onChange="switchbrowse(this.value)">
+												<option value="twt" >logo du compte twitter</option>
+												<option value="file" {if $user_details[0].logotype=="file"}selected{/if}>Fichier sur mon poste</option> 
+											</select>
+										</label>
+										<label>
+											<div id="twitterupload" {if $user_details[0].logotype=="file"}style="display:none;"{/if}>
+												<input type="text" class="span8 twitter-input" name="twitterid" id="twitterid" value="{$user_details[0].twitterid}">
+												<div style="display:inline-block;vertical-align:top;margin-top:-2px"><button class="btn btn-small" type="button" onClick="return uploadtwitterlogo();">Actualiser</button></div>  
+												<span id="fileloading" class="error"></span> 
+											</div>
+											<div id="fileupload" {if $user_details[0].logotype!="file"}style="display:none;"{/if}>  
+												<input type="file" class="span9" name="file" id="file">
+												<span class="help-block" id="file_name"></span>  
+											</div>
+										</label>
+									</div>
+									<div class="span3 offset3">
+										<img src="{$user_details[0].logopath}" id="clientlogo" style="margin-top:20px;padding:5px;">
+									</div> 
+								</div>
+								<label><textarea type="text" placeholder="Adresse" name="address" id="address" class="span6">{$user_details[0].address}</textarea></label>
+								<label><input type="text" placeholder="Ville" name="city" id="city" value="{$user_details[0].city}" class="span6"></label>
+								<label><input type="text" placeholder="Code postal" name="zipcode" id="zipcode" value="{$user_details[0].zipcode}" class="span6"></label>
+								<label>
+									<select name="country" id="country" class="span6">
+										 {html_options  options=$country_array selected=$user_details[0].country}
+									</select>
+								</label>
+								<label><input type="text" placeholder="RCS" name="rcs" id="rcs" value="{$user_details[0].rcs}" class="span6"></label>
+								<label><input type="text" placeholder="TVA Intracommunautaire" name="vat" id="vat" value="{$user_details[0].vat}" class="span6"></label>
+								<label><input type="text" placeholder="Fax" name="fax_number" id="fax_number" value="{$user_details[0].fax_number}" class="span6"></label>
+							</div>
+						</div> 
+					</div>
+				</div>
+
+			<div class="mod">
+				<div class="pull-right">
+					<button class="btn inline">Annuler</button> 
+					<button type="submit" name="update_profile" value="update" class="btn btn-primary inline"><i class="icon-refresh icon-white"></i> Enregistrer</button>
+				</div>
+			</div>
+			</section>
+		</div>
+		
+		<div class="span3">
+			<!--  right column  -->
+			<aside>
+				<div class="aside-bg">
+					<div id="quote-ongoing" class="aside-block">
+						<h4>Vos devis en cours</h4>
+						<ul class="nav nav-tabs nav-stacked {if $quotes|@count>9}pre-scrollable{/if}"> 
+							{if $quotes|@count>0}
+								{foreach from=$quotes item=quote}
+									<li>
+										{if $quote.title|@strlen > 30}
+											<a href="/client/quotes?id={$quote.id}" rel="tooltip" data-original-title="{$quote.title}" data-placement="left">
+												{if $quote.valid=='yes'}
+													<span class="badge pull-right badge-warning">1</span>
+												{else}	
+													<span class="badge pull-right">{$quote.participations}</span>
+												{/if}
+											{$quote.title|truncate:30:"...":true}
+											</a>
+										{else}
+											<a href="/client/quotes?id={$quote.id}">	
+												{if $quote.valid=='yes'}
+													<span class="badge pull-right badge-warning">1</span>
+												{else}	
+													<span class="badge pull-right">{$quote.participations}</span>
+												{/if}
+
+											{$quote.title}</a>
+										{/if}	
+									</li>
+								{/foreach}
+							{else} 
+								<li><b>Pas de devis en cours</b></li>
+							{/if}
+						</ul>
+						<ul class="nav nav-tabs nav-stacked">
+							<li><a href="/client/liberte1"><i class="icon-edit"></i> <strong>Demander un nouveau devis</strong></a></li>
+						</ul>
+					</div>
+					<div class="aside-block" id="garantee">
+						<h4>Vos garanties</h4>
+						<dl>
+							<dt><span class="umbrella"></span>edit-place est votre m&eacute;diateur</dt>
+							<dd>En cas de contestation (d&eacute;lai de livraison, reprise d�articles, remboursement...)</dd>
+							<dt><span class="locked"></span>Paiement s&eacute;curis&eacute;</dt>
+							<dd>Notre solution de paiement en ligne vous garantit une transaction en toute tranquillit&eacute;</dd>
+						</dl>
+					</div>
+				</div>
+			</aside>  
+		</div>
+		</form>
+	</div>
+</div>
+
+
+	{if $writerscount>0}
+	<section id="known-users">
+		<div class="container">
+			<div class="row">
+				<h3 class="sectiondivider pull-center"><span>Ils ont d&eacute;j&agrave; collabor&eacute; avec vous !</span></h3>
+				
+				{foreach from=$writers item=writer}
+					<div class="span3">
+						<div class="editor-container">
+							<a  class="imgframe-large" onclick="loadcontribprofile('{$writer.user_id}');" role="button" data-toggle="modal" data-target="#viewContribProfile" style="cursor:pointer;">
+								<img src="{$writer.profileimage}">
+							</a>
+							<p class="editor-name"><a onclick="loadcontribprofile('{$writer.user_id}');" role="button" data-toggle="modal" data-target="#viewContribProfile" style="cursor:pointer;">{$writer.name|ucfirst}</a></p>
+						</div>
+					</div>
+				{/foreach} 
+			</div>
+		</div>
+	</section>
+	{/if}
+ 
+	<!-- Image profile -->
+	<div id="cropprofile" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<form method="POST" name="loginform" id="loginform" action="" >
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3 id="myModalLabel">IMAGE PROFIL</h3>
+		</div>
+		<div class="modal-body">
+			{include file="Client/Client_Popup_ProfilePic.phtml"}
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Annuler</button>
+		</div>
+		</form>	
+	</div>
+
+	<!-- contrib profile -->
+	<div id="viewContribProfile" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3 id="myModalLabel">Profil du r&eacute;dacteur</h3> 
+		</div>
+		<div class="modal-body">
+			<div id="userprofile">
+		
+			</div>
+		</div>
+	</div>
+	
+	<!-- profile settings modify--> 
+	<div id="useSettingModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	</div>
+	
+	
+{literal}
+<script language="javascript">
+ $(function(){
+		var btnUpload=$('#fileupload'); 
+		var status=$('#file_name');
+		new AjaxUpload(btnUpload, {
+			action: 'uploadclientlogo',
+			name: 'uploadfile',
+			onSubmit: function(file, ext){
+				 if (! (ext && /^(jpg|jpeg|png|gif)$/.test(ext))){ 
+                    // extension is not allowed 
+					status.text('Only JPG, GIF or PNG files are allowed').css('color','#FF0000');
+					return false;
+				}
+				
+				status.html('<div align="center"><img src="/FO/images/loading-b.gif" /></div>'); 
+			},
+			onComplete: function(file, response){//alert(response); 
+			//On completion clear the status
+				status.text('');
+				$('#file_name').html('');
+				
+				//Add uploaded file to list
+				var obj = $.parseJSON(response);
+				var approot="/FO/";
+				
+				if(obj.status=="success"){
+					$('#spec_file_name').val(file);
+					
+					$("#cropprofile").modal();
+					$("#cropbox").attr("src","");
+					$("#cropbox").attr("src",approot+obj.path+obj.identifier+"_crop."+obj.ext+ '?' + (new Date()).getTime());
+					$("#cropbox").hide();
+					$('#cropbox').Jcrop({
+						aspectRatio: 5/2,
+						setSelect: [ 60, 110, 210, 170 ],
+						onSelect: updateCoords
+					});
+			
+					var profilepic=approot+obj.path+obj.identifier+"_h."+obj.ext+ '?' + (new Date()).getTime();
+					$("#clientlogo").attr("src",profilepic);
+					
+					$('.customfile-feedback').val(file.substr(0,25)+" Uploaded");
+				}
+				else if(obj.status=="smallfile"){
+				
+					$('#file_name').html("Error in upload, image too small. L\'image est trop petite, merci d\'en uploader une autre.").css('color','#FF0000');
+				}
+				else{
+					$('#file_name').html('Error in upload').css('color','#FF0000');
+				}
+			}
+		});
+		jQuery('img').each(function(){
+			jQuery(this).attr('src',jQuery(this).attr('src')+ '?' + (new Date()).getTime());
+		});	
+		});
+	 
+			//image file upload
+	$('#file').customFileInput({ 
+        button_position : 'left'
+    });
+</script>
+{/literal}

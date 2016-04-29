@@ -1,0 +1,147 @@
+{literal}
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jquery.validate.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#delivery_date').datepicker({
+            language: 'fr'
+        });
+        $("#editor_list").chosen({
+            allow_single_deselect: true,
+            search_contains: true
+        });
+        $("#contract_list").chosen({
+            allow_single_deselect: true,
+            search_contains: true
+        });
+        $("#create_delivery").validate({
+            onkeyup: false,
+            errorClass: 'error',
+            validClass: 'valid',
+            messages: {},
+            highlight: function(element) {
+                $(element).closest('div').addClass("f_error");
+            },
+            unhighlight: function(element) {
+                $(element).closest('div').removeClass("f_error");
+            },
+            errorPlacement: function(error, element) {
+                $(element).closest('div').append(error);
+                $('.error').css("font-size", "10px");
+                $('.error').css("padding-top", "5px");
+            },
+            rules: {
+                delivery_name: {
+                    required: true,
+                    minlength: 3
+                },
+                client_id: "required",
+                contract_id: "required",
+                editor_id: "required",
+                delivery_date: "required"
+            },
+            invalidHandler: function(form, validator) {
+                $.sticky("There are some errors. Please corect them and submit again.", {
+                    autoclose: 5000,
+                    position: "top-center",
+                    type: "st-error"
+                });
+            }
+        });
+    }); //contracts of client
+    function fngetcontracts(clientId) {
+        if (typeof clientId != "undefined" && clientId != '') {
+            var loader = '<img src="/BO/theme/gebo/img/ajax_loader.gif">';
+            $('#contract_div').html(loader);
+            var target_page = "/contract/ajax-get-contracts?clientId=" + clientId;
+            $.get(target_page, function(data) {
+                data = ($.trim(data));
+                if (data != 'NO') {
+                    //alert(data);
+                    $('#contract_div').html(data);
+                    $("#contract_list").chosen({
+                        allow_single_deselect: true,
+                        search_contains: true
+                    });
+                    $('#submit_div').show();
+                } else {
+                    $('#contract_div').html('No Contracts');
+                    $('#submit_div').hide();
+                }
+            });
+        }
+    }
+</script>{/literal}<!--Bread Crumbs-->
+<nav>
+    <div id="jCrumbs" class="breadCrumb module">
+        <ul>
+            <li>				<a href="/index"><i class="icon-home"></i></a>			</li>
+            <li>				<a>Boursorama</a>			</li>
+            <li>				<a href="/contract/delivery-list?submenuId=ML7-SL2">Delivery list</a>			</li>
+            <li>				Cr&eacute;er delivery			</li>
+        </ul>
+    </div>
+</nav>
+<div class="row-fluid">
+    <div class="span12">
+        {if $delivery_id}
+        <h3 class="heading">Update delivery :: {$delivery_name} </h3>
+        {else}
+        <h3 class="heading">Cr&eacute;er delivery</h3>
+        {/if}
+        <div class="row-fluid">
+            <div class="span3"></div>
+            <div class="span6">
+                <form class="stepy-wizzard form-horizontal" action="" name="create_delivery" id="create_delivery" method="post" enctype="multipart/form-data">
+                    <fieldset>
+                        <div class="sepH_c control-group">
+                            <label for="clients" class="control-label">Client <span class="f_req">*</span></label>
+                            <div class="controls">								<select name="client_id" id="clients" data-placeholder="S&eacute;lectionner client" onchange="fngetcontracts(this.value)">									{html_options  options=$client_array selected=$clientid}								</select>							</div>
+                        </div>
+                        <div class="sepH_c control-group">
+                            <label for="contract_list" class="control-label">Titre du contrat <span class="f_req">*</span></label>
+                            <div class="controls" id="contract_div">
+                                <select name="contract_id" id="contract_list" data-placeholder="S&eacute;lectionner contract">
+                                    <option value=''></option>
+                                    {$contract_list}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="sepH_c control-group">
+                            <label for="editor_list" class="control-label">Chief Editor <span class="f_req">*</span></label>
+                            <div class="controls">
+                                <select name="editor_id" id="editor_list" data-placeholder="S&eacute;lectionner chied editor">
+                                    <option value=''></option>
+                                    {html_options  options=$ceditor_list selected=$editorId}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="sepH_c control-group">
+                            <label for="delivery_name" class="control-label">Titre de la livraison <span class="f_req">*</span></label>
+                            <div class="controls">								<input type="text" name="delivery_name" id="delivery_name" value="{$delivery_name}" />							</div>
+                        </div>
+                        <div class="sepH_c control-group">
+                            <label for="delivery_date" class="control-label">Date de livraison <span class="f_req">*</span></label>
+                            <div class="controls">								<input type="text" id="delivery_date" name="delivery_date" readonly data-date-format="dd-mm-yyyy" value="{$delivery_date}"/>							</div>
+                        </div>
+                        <div class="sepH_c control-group">
+                            <label for="spec1" class="control-label">Specifications clients </label>
+                            <div class="controls">
+                                <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" value="" name="">									<span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input type="file" name="spec1" id="spec1"/></span>									<span class="fileupload-preview"></span>									<a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>									{if $spec1}<a href="/contract/download-file?type=spec&did={$delivery_id}&index=1">Download</a>{/if}								</div>
+                            </div>
+                        </div>
+                        <div class="sepH_c control-group">
+                            <label for="spec2" class="control-label">Guide de r&eacute;daction </label>
+                            <div class="controls">
+                                <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" value="" name="">									<span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input type="file" name="spec2" id="spec2"/></span>									<span class="fileupload-preview"></span>									<a style="float: none" data-dismiss="fileupload" class="close fileupload-exists" href="#">&times;</a>									{if $spec2}<a href="/contract/download-file?type=spec&did={$delivery_id}&index=2">Download</a>{/if}								</div>
+                            </div>
+                        </div>
+                        <div class="sepH_c control-group">
+                            <div class="controls" id="submit_div">								<button type="submit" class="btn btn-gebo">{if $delivery_id}Update{else}Cr&eacute;er{/if}</button>							</div>
+                        </div>
+                    </fieldset>
+                    {if $delivery_id}						<input type="hidden" name="delivery_id" value="{$delivery_id}">					{/if}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

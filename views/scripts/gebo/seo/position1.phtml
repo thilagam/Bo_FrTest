@@ -1,0 +1,296 @@
+<form class="form_validation_reg" method="POST" action="/seotool/posssh2_upload235" name="importcsv" id="seo" ENCTYPE="multipart/form-data">
+        <div class="span10">
+
+            <h3 class="heading">Outil de calcul de ranking google</h3>
+                        
+            <div class="control-group formSep" id="seotool-notify" style="display: none;">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                            <div id="seo-message">{$msg}</div>
+                    </div>
+                </div>
+            </div>   
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Title</label>
+                        <div class="span8 form-inline no-margin-first">
+                            <input type="text" name="title" class="span5"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Type </label>
+                        <label class="uni-radio"><input type="radio" name="word_type" class="uni_style"  value="1" {if $word_type neq '2'} checked {/if}>CSV / XLS</label>
+                            <label class="uni-radio"><input type="radio" name="word_type" class="uni_style"  value="2" {if $word_type eq '2'} checked {/if}>Text</label>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="csv" {if $word_type eq '2'} style="display:none"{/if}>
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">URL & Keywords<span class="f_req">*</span></label>
+                        <span class="help-block syntax">Syntax : <span id="load_syntax_file">url;kw</span></span>
+                        
+                        <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" />
+                            <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden" />
+                                <div class="input-append">
+                                    <div class="uneditable-input span2"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input name="keyword_file" id="keyword_file" type="file" /></span><a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="urlRow" {if $word_type neq '2'} style="display:none" {/if} >
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="span3 control-label">Url<span class="f_req">*</span></label>
+                        <div class="span8 controls">
+                            <input type="text" id="url_text" name="url_text" class="span5"> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="compRow" style="display:none;">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="span3 control-label">Comp url<span class="f_req">*</span></label>
+                        <div class="span8 controls">
+                            <input type="text" id="comp_url_text" name="comp_url_text" class="span5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep" id="kwRow" {if $word_type neq '2'} style="display:none" {/if} >
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="span3 control-label">Keywords<span class="f_req">*</span></label>
+                        <div class="span8 controls">
+                            <textarea name="kw" id="txtarea_sp" cols="1" rows="4" class="span10"  placeholder="Merci de pr&#233;enter vos &#233;l&#233;ments de cette fa&#231;on: Input : url;kw url1;kw1 url2;kw2...etc sans finir par un ;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3"><span class="error_placement">Site</label>
+                        <select name="site" id="chosen_b" class="chzn_b span3">
+                            <option value="1">google.fr</option>
+                            <option value="2">google.com</option>
+                            <option value="3">google.pt</option>
+                            <option value="4">google.co.in</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Result limit</label>
+                         <select name="limit" id="chosen_c" class="chzn_c span3">
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
+                         </select>
+                    </div>
+                </div>
+            </div> 
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <label class="span3">Type</label>
+                        <div class="span8 form-inline no-margin-first">
+                            <label class="uni-radio"><input type="radio" name="type" class="uni_style" value="1" checked>Position Google sur une url donn&eacute;e &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                <a href="javascript:void(0);" class="pop_over" data-content="Merci de pr&#233;enter vos &#233;l&#233;ments de cette fa&#231;on:
+Input :
+url;kw
+url1;kw1
+url2;kw2...etc sans finir par un ;" data-original-title="Position Google sur une url donn&eacute;e" data-placement="right"><span class="splashy-information"></span></a>
+                            </label>
+                            <label class="uni-radio"><input type="radio" name="type" class="uni_style" value="2" >Meilleure position Google sur un nom de domaine
+                                <a href="javascript:void(0);" class="pop_over" data-content="En dessous de url;kw
+Input :
+Merci de pr&#233;senter vos &#233;l&#233;ments de cette fa&#231;on:
+url;kw
+url1;kw1
+url2;kw2...etc sans finir par un ; " data-original-title="Meilleure position Google sur un nom de domaine" data-placement="right"><span class="splashy-information"></span></a>
+                            </label>
+                            <label class="uni-radio"><input type="radio" name="type" class="uni_style" value="3" >Position Google sur une url donn&eacute;e VS meilleure position Google sur le nom de domaine
+                                <a href="javascript:void(0);" class="pop_over" data-content="En dessous de url;kw
+Input :
+Merci de pr&#233;senter vos &#233;l&#233;ments de cette fa&#231;on:
+url;kw
+url1;kw1
+url2;kw2...etc sans finir par un ;" data-original-title="Position Google sur une url donn&eacute;e VS meilleure position Google sur le nom de domaine" data-placement="left"><span class="splashy-information"></span></a></label>
+                            <label class="uni-radio"><input type="radio" name="type" class="uni_style" value="4" >Position Google sur une url donn&eacute;e et comparatif avec la meilleure url du concurrent
+                                <a href="javascript:void(0);" class="pop_over" data-content="En dessous de url;kw;urlcomp
+Input :
+Merci de pr&#233;senter vos &#233;l&#233;ments de cette fa&#231;on:
+url;kw;compurl
+url1;kw1;compurl
+...etc sans finir par un ;
+Pour plusieurs mots cl&#233;s, vous pouvez indiquer: url;kw;kw1;compurl" data-original-title="Position Google sur une url donn&eacute;e et comparatif avec la meilleure url du concurrent" data-placement="left"><span class="splashy-information"></span></a></label>
+                            <label class="uni-radio"><input type="radio" name="type" class="uni_style" value="5" >Meilleure position Google d'un domaine par rapport &agrave; un concurrent
+                                <a href="javascript:void(0);" class="pop_over" data-content="En dessous de url;kw;urlcomp
+Input
+Merci de pr&#233;senter vos &#233;l&#233;ments de cette fa&#231;on:
+url;kw;compurl
+url1;kw1;compurl1
+...etc sans finir par un ;
+Pour plusieurs mots cl&#233;s, vous pouvez indiquer: url;kw;kw1;compurl" data-original-title="Meilleure position Google d'un domaine par rapport &agrave; un concurrent" data-placement="right"><span class="splashy-information"></span></a></label>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <div class="control-group formSep">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <label class="span3">Output</label>
+                        <label class="uni-radio"><input type="radio" name="op_type" class="uni_style"  value="1" checked>csv</label>
+                        <label class="uni-radio"><input type="radio" name="op_type" class="uni_style"  value="2">xls</label>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="row-fluid">
+                    <div class="span12 form-inline">
+                        <button class="btn btn-gebo" name="submit" type="submit">Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+</form>
+
+<div id="data">
+    
+</div>
+
+{literal}
+    <script type="text/javascript">
+	$.validator.addMethod("csvextension", function(value, element, param) {
+		param = typeof param === "string" ? param.replace(/,/g, '|') : "xls|csv";
+		return this.optional(element) || value.match(new RegExp(".(" + param + ")$", "i"));
+	}, $.format("Please use only csv/xls file."));
+
+        $(document).ready(function() {
+            $(".uni_style").uniform();
+            gebo_validation.reg();
+            gebo_chosen.init();
+        });
+        
+        $("input[name='word_type']").change(function() {
+            var type=$('input[name=word_type]:checked').val();
+            if(type==1)
+            {
+              $("#urlRow").hide();
+              $("#compRow").hide();
+              $("#kwRow").hide();
+              $("#csv").show();
+            }
+            else
+            {
+              $("#urlRow").show();
+              $("#kwRow").show();
+              $("#csv").hide();
+              
+              $('input:radio[name=type][value=1]').click();
+            }
+        });
+
+        $("input[name='type']").change(function() {
+             var type=$('input[name=type]:checked').val() ;
+             if(type==1){
+                 var phText = "Merci de préenter vos éléments de cette façon: Input : url;kw url1;kw1 url2;kw2...etc sans finir par un ;" ;
+             } else if(type==2){
+                 var phText = "En dessous de url;kw Input : Merci de présenter vos éléments de cette façon: url;kw url1;kw1 url2;kw2...etc sans finir par un ;" ;
+             } else if(type==3){
+                 var phText = "En dessous de url;kw Input : Merci de présenter vos éléments de cette façon: url;kw url1;kw1 url2;kw2...etc sans finir par un ; " ;
+             } else if(type==4){
+                 var phText = "En dessous de url;kw;urlcomp Input : Merci de présenter vos éléments de cette façon: url;kw;compurl url1;kw1;compurl ...etc sans finir par un ; Pour plusieurs mots clés, vous pouvez indiquer: url;kw;kw1;compurl" ;
+             } else if(type==5){
+                 var phText = "En dessous de url;kw;urlcomp Input Merci de pr&#233;senter vos &#233;l&#233;ments de cette fa&#231;on: url;kw;compurl url1;kw1;compurl1 ...etc sans finir par un ; Pour plusieurs mots cl&#233;s, vous pouvez indiquer: url;kw;kw1;compurl" ;
+             }
+             $("#txtarea_sp").attr("placeholder", phText);
+             var wordtype=$('input[name=word_type]:checked').val() ;
+             if((type==4 || type==5) && wordtype==2)
+             {
+              $("#compRow").show() ;
+             }   
+             else
+             {
+              $("#compRow").hide() ;
+             }
+        }) ;
+
+    gebo_chosen = {
+        init: function(){
+            $(".chzn_b").chosen({
+                allow_single_deselect: true
+            });
+            $(".chzn_c").chosen({
+                allow_single_deselect: true,
+                disable_search: true
+            });
+        }
+    };
+
+        gebo_validation = {
+            reg: function() {
+                reg_validator = $('.form_validation_reg').validate({
+                    onkeyup: false,
+                    errorClass: 'error',
+                    validClass: 'valid',
+                    highlight: function(element) {
+                        $(element).closest('div').addClass("f_error");
+                        $(element).closest('div').css("color", "black");
+                    },
+                    unhighlight: function(element) {
+                        $(element).closest('div').removeClass("f_error");
+                    },
+                    submitHandler: function(element) {
+                        $('#seotool-notify').show();
+                    },
+                    errorPlacement: function(error, element) {
+                        $('#seotool-notify').hide();
+                        $(element).closest('div').append(error);
+                        $('.error').css("font-size", "10px");
+                        $('.error').css("padding-top", "5px");
+                    },
+                    rules: {
+                               kw: {required: function(element) {
+                                  return $('input:radio[name=word_type]:checked').val()==2;
+                                 }
+                              },
+                     keyword_file: {required: function(element) {
+                                  return $('input:radio[name=word_type]:checked').val()==1;
+                                 },
+				 csvextension: "xls|csv"
+                              },
+                          url_text: {required: function(element) {
+                                  return $('input:radio[name=word_type]:checked').val()==2;
+                                 }
+                              },
+                          comp_url_text: {required: function(element) {
+                                  return (($('input:radio[name=word_type]:checked').val()==2) && ($('input[name=type]:checked').val()==4 || $('input[name=type]:checked').val()==5));
+                                 }
+                              }
+                    },
+                    messages: {
+                              kw: "Please enter keyword(s).",
+                    keyword_file: {required: "Please selects csv/xls file.", accept: "Accept only xls or csv."},
+                    url_text: "Please enter url.",
+                    comp_url_text: "Please enter competitive url."
+                    },
+                    invalidHandler: function(form, validator) {
+                        $.sticky("There are some errors. Please corect them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
+                    }
+                })
+            }
+        };
+    </script>
+{/literal}

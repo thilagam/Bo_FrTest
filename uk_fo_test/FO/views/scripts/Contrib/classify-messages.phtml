@@ -1,0 +1,115 @@
+{literal}
+<script type="text/javascript">
+
+ $(document).ready(function() {	
+	
+	$("#menu_classifybox").addClass("active");
+	$("#menu_compose").addClass("disabled");
+	
+	// call write email function
+	$('#mail_message').wysihtml5({locale: "fr-FR"});
+	
+});
+</script>
+{/literal}	
+	
+<div class="container">
+	<section id="maibox">
+		<form  method="post" action="/contrib/send-reply" enctype="multipart/form-data">
+			<div class="row">    
+				<div class="span12">
+					<h1>Messagerie priv&eacute;e</h1>
+					<hr>
+				</div>
+
+				{include file="Contrib/pattern/mail_leftmenu.phtml"}
+
+				<div class="span9">
+					<section id="emailView">
+						<div class="btn-toolbar">
+							<div class="btn-group">
+								<a href="#goback" class="backnow btn btn-small"><i class="icon-arrow-left"></i></a>
+							</div>							
+						</div>
+						
+						{foreach item=message from=$archieve_messages}
+							<div class="mod">
+								<div class="row-fluid">
+									<div id="print_mail">
+										<h3>{$message.Subject}</h3>
+										<div class="status clearfix">
+											<div class="span10"><strong>De: {$message.sendername}</strong> <span class="date">, 
+											{if $smarty.now|date_format:"%d/%m/%Y" eq $message.receivedDate|date_format:"%d/%m/%Y"}
+												{$message.receivedDate|date_format:"%Hh%M"}
+											{elseif $smarty.now|date_format:"%Y" eq $message.receivedDate|date_format:"%Y"}
+												{$message.receivedDate|date_format:"%d %b %R"}
+											{else}
+												{$message.receivedDate|date_format:"%d/%m/%y %R"}
+											{/if}
+											</span>
+											</div>											
+										</div>									
+										<div class="mailcontent">
+											{$message.content}
+											{if $message.attachment_name!=''}
+												
+												<div ><strong>Pi&egrave;ce jointe : </strong></div>
+												{foreach item=attachment_file from=$attachments name=files}
+											
+													<div>
+														{$attachment_file} 		
+														<a href="/contrib/download-file?type=viewattachment&index={$smarty.foreach.files.index}&attachment={$message.id}">T&eacute;l&eacute;charger</a>
+													</div>
+												{/foreach}
+
+											{/if}
+										</div>
+									</div>	
+									<hr>
+									{if $smarty.get.type == 'inbox' && $message.auto_mail!='yes'}
+									<div class="well clearfix" id="replybox">
+										<div class="span1">
+											<a href="/contrib/modify-profile"><img src="{$profile_picture}" title="{$client_email}"></a>
+										</div>
+										<div class="span11">
+											<div class="muted">A : <strong>{$message.sendername}</strong>
+											<!--, <a href="#" class="muted">Ajouter</a>-->
+											</div>
+											<hr>
+											<textarea id="mail_message" name="mail_message" class="textarea" placeholder="Votre message..."></textarea>
+											<label for="mail_message" class="error" id="mail_message_error"></label>
+											<br>
+											<button class="btn btn-small btn-primary" id="send_message">Envoyer</button>
+										</div>
+									</div>
+									<input type="hidden" name="ticket_id" value="{$message.ticket_id}"/>
+									{/if}
+								</div>
+							</div>	
+							{/foreach}	
+							<div class="mod">
+								<div class="row-fluid">
+									<div class="well clearfix" id="replybox">
+										<div class="span1">
+											<a href="/contrib/modify-profile"><img src="{$profile_picture}" title="{$client_email}"></a>
+										</div>
+										<div class="span11">
+											<!--<div class="muted">A : <strong>{$message.sendername}</strong>											
+											</div>-->
+											<hr>
+											<textarea id="mail_message" name="mail_message" class="textarea" placeholder="Votre message..."></textarea>
+											<label for="mail_message" class="error" id="mail_message_error"></label>
+											<br>
+											<button class="btn btn-small btn-primary" id="send_message">Envoyer</button>
+										</div>
+									</div>
+									<input type="hidden" name="ticket_id" value="{$smarty.get.ticket}"/>
+								</div>
+							</div>	
+						
+					</section>
+				</div>
+			</div>
+		</form>
+	</section>
+</div>

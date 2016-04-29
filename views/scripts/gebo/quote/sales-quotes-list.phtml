@@ -1,0 +1,1377 @@
+<div class="row-fluid">
+		<div class="span2">
+			<h1 class="heading">All quotes</h1>
+			{if $user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type 	=='ceouser' || $user_type =='facturation'}	
+				<div style="margin-top: -15px"><a href="/quote/create-quote-step1?qaction=new&submenuId=ML13-SL2" class="btn btn-warning">Create a new quote</a></div>
+				
+				<div style="margin-top: 15px"><a href="/quote-new/create-step1?qaction=new" class="btn btn-primary">Create quote(History)</a></div>							
+			{/if}	
+		</div>
+			
+		<div class="span2">En cours <h2 class="muted">{$total_ongoing_turnover|zero_cut_t:2} &euro;</h2></div>
+		<div class="span2">Envoy&eacute; <h2>{$validated_turnover|zero_cut_t:2} &euro;</h2></div>
+		<div class="span2">A relancer <h2>{$relancer_turnover|zero_cut_t:2} &euro;</h2></div>
+		<div class="span2">Sign&eacute; <h2>{$signed_turnover|zero_cut_t:2} &euro;</h2></div>
+		<div class="span2">Temps moyen de signature <h2>{$day_difference|zero_cut_t:2} jours</h2></div>
+		
+		</div>
+		
+		<div class="row-fluid">
+			<div class="span12">
+				<ul class="nav nav-tabs">
+					<li class="{if $smarty.get.active eq ''} active {/if}"><a href="#ongoing" data-toggle="tab">En cours</a></li>
+					<li class="{if $smarty.get.active eq 'validated'} active {/if}"><a href="#validated" data-toggle="tab">Envoy&eacute;</a></li>
+					<li class="{if $smarty.get.active eq 'signed'} active {/if}"><a href="#signed" data-toggle="tab">Sign&eacute;</a></li>					
+					<li class="{if $smarty.get.active eq 'closedrelancer'} active {/if}"><a href="#relancer" data-toggle="tab">Relance</a></li>	
+					<li class="{if $smarty.get.active eq 'closed'} active {/if}"><a href="#closedQuotes" data-toggle="tab">Perdu</a></li>
+					<li class="{if $smarty.get.active eq 'deleted'} active {/if}"><a href="#deleted" data-toggle="tab">Supprim&eacute;</a></li>					
+									
+				</ul>	
+				<div class="tab-content">
+					<div class="tab-pane fade {if $smarty.get.active eq ''} in active {/if}" id="ongoing">
+						 <table class="table table-bordered table-hover table_vam" id="ong_quotesList" >
+							<thead>
+								<tr>								  
+								   <th>Client</th>
+								   <th>Cat&eacute;gorie</th>
+								   <th>Nom devis</th>
+								   <th>Date cr&eacute;ation</th>
+								   <th>Cr&eacute;&eacute; par</th>
+								   <th>Equipe</th>
+								   <th>Statut</th>
+								   <th>CA</th>                   
+								   <th>Estimation</th>                   
+								   <th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+							{if $quote_list|@count>0}								
+								{assign var=ongoing_quotes value=0}
+								{foreach from=$quote_list item=quote_item name=oquote_loop}
+									{if $quote_item.sales_review eq 'not_done' || $quote_item.sales_review eq 'challenged' || $quote_item.sales_review eq 'briefing' || ($quote_item.sales_review eq 'to_be_approve' && ($user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser' || $user_type =='facturation'))}
+										{assign var=ongoing_quotes value=$ongoing_quotes+1}										
+									<tr>
+										<td>{$quote_item.company_name}</td>
+										<td>{$quote_item.category_name}</td>						
+										<td><a href="/quote/quote-followup?quote_id={$quote_item.identifier}&submenuId=ML13-SL2" target="_followup">{$quote_item.title}</a></td>									
+										<td>
+										<span {if $quote_item.version_dates} data-original-title='Historique devis' data-html="true" class="version-change	pop_over" data-placement="right" data-content="{$quote_item.version_dates}"{/if}>				{$quote_item.created_at|date_format:"%d/%m/%Y"}
+										</span>
+										</td>
+										<td>{$quote_item.owner}</td>
+										<td>{$quote_item.team}</td>
+										<td>
+													
+												{if $quote_item.sales_review eq 'to_be_approve'}
+													{*<!--Pour &ecirc;tre valid&eacute; par le gestionnaire -->*}
+													En attente de validation -Head of sales
+												{elseif $quote_item.sales_review eq 'briefing'}
+													Briefing
+												{elseif $quote_item.tec_review eq 'challenged' || $quote_item.seo_review eq 'challenged'}
+													
+														Seo or tech challenge v{$quote_item.version} - <br>
+														{if $quote_item.tech_challenge_time && $quote_item.tec_review eq 'challenged' }
+														 <span id="time_techchallenge{$quote_item.identifier}_{$quote_item.tech_challenge_time}" class="challenge">
+																<i class="icon-time"></i> <span id="text_techchallenge{$quote_item.identifier}_{$quote_item.tech_challenge_time}"></span>
+															</span>
+															{if $quote_item.tech_challenge_time < $smarty.now}<label class="label label-warning">Retard</label>{/if} tech <br> <br>
+														{/if}													
+														{if $quote_item.seo_challenge_time && $quote_item.seo_review eq 'challenged'}
+															<span id="time_seochallenge{$quote_item.identifier}_{$quote_item.seo_challenge_time}" class="challenge">
+																<i class="icon-time"></i> <span id="text_seochallenge{$quote_item.identifier}_{$quote_item.seo_challenge_time}"></span>
+															</span>
+															{if $quote_item.seo_challenge_time < $smarty.now}<label class="label label-warning">Retard</label>{/if} seo
+														{/if}
+														{if $quote_item.prod_review eq 'challenged'}
+															<br>La prod est en train d'&eacute;tudier le devis v{$quote_item.version} <br>
+															<span id="time_prodchallenge{$quote_item.identifier}_{$quote_item.prod_timeline}">
+																<i class="icon-time"></i> <span id="text_prodchallenge{$quote_item.identifier}_{$quote_item.prod_timeline}"></span>
+															</span>
+															{if $quote_item.prod_timeline < $smarty.now}<label class="label label-warning">Retard</label>{/if}
+														{/if}
+
+														
+												{elseif $quote_item.tec_review eq 'not_done' || $quote_item.seo_review eq 'not_done'}
+													
+														Quote v{$quote_item.version} - En attente du retour {if $quote_item.tec_review eq 'not_done'}tech{/if}
+														{if $quote_item.tec_review eq 'not_done' && $quote_item.seo_review eq 'not_done'}
+														and 
+														{/if}
+														{if $quote_item.seo_review eq 'not_done'} seo{/if} answer <br>
+														{if $quote_item.response_time > $smarty.now}
+															<span id="time_{$quote_item.identifier}_{$quote_item.response_time}">
+																<i class="icon-time"></i> <span id="text_{$quote_item.identifier}_{$quote_item.response_time}"></span>
+															</span>
+														{/if}
+														
+														{if $quote_item.prod_review eq 'challenged'}
+															<br>La prod est en train d'&eacute;tudier le devis v{$quote_item.version} <br>
+															<span id="time_prodchallenge{$quote_item.identifier}_{$quote_item.prod_timeline}">
+																<i class="icon-time"></i> <span id="text_prodchallenge{$quote_item.identifier}_{$quote_item.prod_timeline}"></span>
+															</span>
+															{if $quote_item.prod_timeline < $smarty.now}<label class="label label-warning">Retard</label>{/if}
+														{/if}	
+															
+												{elseif ($quote_item.seo_review eq 'skipped' || $quote_item.seo_review eq 'auto_skipped' || $quote_item.seo_review eq 'validated') && ($quote_item.tec_review eq 'skipped' || $quote_item.tec_review eq 'auto_skipped' || $quote_item.tec_review eq 'validated') && ($quote_item.prod_review eq 'challenged')}
+														
+													La prod est en train d'&eacute;tudier le devis v{$quote_item.version} <br>
+														
+															<span id="time_{$quote_item.identifier}_{$quote_item.prod_timeline}">
+																<i class="icon-time"></i> <span id="text_{$quote_item.identifier}_{$quote_item.prod_timeline}"></span>
+															</span>
+															{if $quote_item.prod_timeline < $smarty.now}<label class="label label-warning">Retard</label>{/if}
+														
+													
+												{elseif ($quote_item.prod_review eq 'auto_skipped'|| $quote_item.prod_review eq 'skipped' || $quote_item.prod_review eq 'validated') && ($quote_item.sales_review neq 'validated' && $quote_item.sales_review neq 'closed' && $quote_item.sales_review neq 'briefing')}
+													 Quote is ready to be validated by sales 
+													{if $smarty.now lt $quote_item.sales_validation_expires}
+														<p>
+															<span id="time_{$quote_item.identifier}_{$quote_item.sales_validation_expires}">
+																<i class="icon-time"></i> <span id="text_{$quote_item.identifier}_{$quote_item.sales_validation_expires}"></span>
+															</span>
+														</p>
+													{else}
+														<p>En retard : 
+														<span id="time_{$quote_item.identifier}_{$quote_item.sales_validation_expires}" class="enretard">
+																<i class="icon-time"></i> <span id="text_{$quote_item.identifier}_{$quote_item.sales_validation_expires}"></span>
+															</span>
+														</p>
+													{/if}
+													{if $user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser' || $user_type =='facturation'}	
+														<div>												
+															<a class="btn btn-small btn-primary" href="/quote/sales-final-validation?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">
+															Voir le devis final
+															</a>
+														</div>		
+													{/if}	
+												{elseif $quote_item.sales_review eq 'validated'}
+													<i class="icon-ok icon-black"></i> Devis valid&eacute; par le commercial
+												{elseif $quote_item.sales_review eq 'closed'}
+													<i class="icon-ok icon-black"></i> Quote has closed by sales
+												{/if}
+											
+											
+											{*{if $quote_item.prod_review eq 'auto_skipped'|| $quote_item.prod_review eq 'skipped' || $quote_item.prod_review eq 'validated'}
+												 
+												{if $user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser' || $user_type =='facturation'}
+													<b><a href="/quote/sales-final-validation?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">Sales </a></b>
+												{else}
+													Sales
+												{/if}											
+												to validate
+												
+											{else}
+												{if $quote_item.tec_review eq 'not_done' || $quote_item.tec_review eq 'challenged'}
+													{if $user_type == 'superadmin' || $user_type =='techuser' || $user_type =='techmanager' }	
+														<b><a href="/quote/tech-quote-review?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">Tech </a></b>
+													{else}	
+														Tech
+													{/if}
+												{/if}	
+												
+												{if $quote_item.seo_review eq 'not_done' || $quote_item.seo_review eq 'challenged'}
+												{if $quote_item.seo_review eq 'not_done' || $quote_item.seo_review eq 'challenged'}
+													{if $user_type == 'superadmin' || $user_type =='seouser' || $user_type =='seomanager'}	
+														<b><a href="/quote/seo-quote-review?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">SEO </a></b>
+													{else}
+														SEO
+													{/if}	
+												{/if}
+												{if ($quote_item.seo_review eq 'skipped' || $quote_item.seo_review eq 'auto_skipped' || $quote_item.seo_review eq 'validated') && ($quote_item.tec_review eq 'skipped' || $quote_item.tec_review eq 'auto_skipped' || $quote_item.tec_review eq 'validated') && ($quote_item.prod_review eq 'not_done' || $quote_item.prod_review eq 'challenged')} 
+													{if $user_type == 'superadmin' || $user_type =='produser' || $user_type =='multilingue' || $user_type =='prodsubmanager' }	
+														<b><a href="/quote/prod-quote-review?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">Prod </a></b>
+													{else}
+														Prod
+													{/if}	
+												{/if}
+												to reply
+											{/if}*}
+											
+										</td>
+										<td style="text-align: right">
+											{if $quote_item.turnover > 0}
+												<b>{$quote_item.turnover|zero_cut_t:2} &{$quote_item.sales_suggested_currency};</b>
+											{else}
+												-
+											{/if}	
+										</td>
+										<td>
+											{if $quote_item.estimate_sign_percentage}
+												{if $user_type=='superadmin' || $userId==$quote_item.quote_by}
+													<a href="/quote/estimate-sign-details-popup?quote_id={$quote_item.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#estimate_sign">
+														{$quote_item.estimate_sign_percentage}% / {$quote_item.estimate_sign_date|date_format:"%d/%m/%Y"}
+													</a>	
+												{else}
+													<a {if $quote_item.estimate_sign_comments} data-original-title='Commentaire(s)' data-html="true" class="pop_over" data-placement="left" data-content="{$quote_item.estimate_sign_comments}"{/if}>{$quote_item.estimate_sign_percentage}% / {$quote_item.estimate_sign_date|date_format:"%d/%m/%Y"}
+													</a>
+												{/if}
+											{else}
+												{if $user_type=='superadmin' || $userId==$quote_item.quote_by}
+													<a href="/quote/estimate-sign-details-popup?quote_id={$quote_item.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#estimate_sign">
+														- %
+													</a>	
+												{else}
+													-
+												{/if}
+											{/if}	
+										</td>
+										<td>
+											{if $user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser' || $user_type =='facturation'}
+												{if $quote_item.sales_review eq 'to_be_approve'}
+													{if $user_type =='salesuser'}
+														{* <!--Pour &ecirc;tre valid&eacute; par le gestionnaire -->*}
+														En attente de validation -Head of sales
+													{else}
+														<a href="/quote/create-quote-step1?qaction=edit&quote_id={$quote_item.identifier}&submenuId=ML13-SL2" tabindex="-1" role="menuitem"><i class="splashy-okay"></i> Accepter</a>
+													{/if}
+												{elseif $quote_item.sales_review eq 'briefing'}	
+													<a href="/quote-new/client-brief?qaction=briefing&quote_id={$quote_item.identifier}"><i class="splashy-check"></i> Edit</a>
+												{else}
+													<!-- Single button -->
+													<div class="btn-group">
+														  <button type="button" class="btn btn-small dropdown-toggle" data-toggle="dropdown">More 
+															<span class="caret"></span>
+														</button>
+													  <ul class="dropdown-menu" role="menu">
+														<li><a class="check_quote_edit" href="/quote/create-quote-step1?qaction=edit&quote_id={$quote_item.identifier}&submenuId=ML13-SL2" tabindex="-1" role="menuitem"><i class="splashy-pencil"></i> Editer</a></li>
+														{if $quote_item.prod_review eq 'auto_skipped'|| $quote_item.prod_review eq 'skipped' || $quote_item.prod_review eq 'validated'}
+														<li><a href="/quote/sales-final-validation?quote_id={$quote_item.identifier}&submenuId=ML13-SL2" tabindex="-1" role="menuitem"><i class="splashy-check"></i> Valider</a></li>
+														{/if}
+														<li><a href="/quote/create-quote-step1?qaction=duplicate&quote_id={$quote_item.identifier}&submenuId=ML13-SL2" tabindex="-1" role="menuitem"><i class="splashy-document_copy"></i> Dupliquer</a></li>	
+														{if $user_type=='superadmin'}
+															<li><a class="delete-quote" href="/quote/delete-quote?quote_id={$quote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-remove_outline"></i> Delete</a></li>
+														{/if}
+														<!-- showing rech/seo/prod reviews links-->
+														{if $user_type == 'superadmin'}
+															{if  ($quote_item.tec_review eq 'validated' || $quote_item.tec_review eq 'not_done' || $quote_item.tec_review eq 'challenged' )}
+															<li>
+																<a href="/quote/tech-quote-review?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">Tech review :
+																	{if $quote_item.tec_review eq 'not_done'}
+																		<i class="splashy-thumb_up"></i>Skip/Challenge
+																	{elseif $quote_item.tec_review eq 'validated'}	
+																		Valid&eacute;
+																	{else}
+																		<i class="splashy-check"></i> Edit/Valider
+																	{/if}
+																</a>
+															</li>	
+															{/if}	
+															{if  ($quote_item.seo_review eq 'validated' || $quote_item.seo_review eq 'not_done' || $quote_item.seo_review eq 'challenged' )}
+																<li><a href="/quote/seo-quote-review?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">SEO review :
+																	{if $quote_item.seo_review eq 'not_done'}
+																		<i class="splashy-thumb_up"></i>Skip/Challenge
+																	{elseif $quote_item.seo_review eq 'validated'}	
+																		Valid&eacute;					
+																	{else}
+																		<i class="splashy-check"></i> Edit/Valider
+																	{/if}	
+																</a>
+																</li>
+															{/if}
+															{if ($quote_item.prod_review eq 'validated' || $quote_item.prod_review eq 'challenged')}
+																<li>
+																	<a href="/quote/prod-quote-review?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">Prod review :
+																	{if $quote_item.prod_review eq 'challenged'}
+																			<i class="splashy-check"></i> Edit/Valider
+																	{elseif $quote_item.prod_review eq 'validated'}	
+																			Valid&eacute;
+																	{/if}
+																	</a>
+																</li>
+															{/if}
+														{/if}
+													  </ul>
+													</div>
+												{/if}	
+											{elseif $user_type == 'seouser' || $user_type =='seomanager'}
+												<a href="/quote/seo-quote-review?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">
+													{if $quote_item.seo_review eq 'not_done'}
+														<i class="splashy-thumb_up"></i>Skip/Challenge
+													{elseif $quote_item.seo_review eq 'validated'}	
+														Valid&eacute;
+													{elseif $seoManager_holiday eq 'no' && $user_type == 'seouser'}
+														<i class="splashy-check"></i> Edit
+													{else}
+														<i class="splashy-check"></i> Edit/Valider
+													{/if}	
+												</a>
+											{elseif $user_type == 'techuser' || $user_type =='techmanager'}
+												<a href="/quote/tech-quote-review?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">
+													{if $quote_item.tec_review eq 'not_done'}
+														<i class="splashy-thumb_up"></i>Skip/Challenge
+													{elseif $quote_item.tec_review eq 'validated'}	
+														Valid&eacute;
+													{elseif $techManager_holiday eq 'no' && $user_type == 'techuser'}
+														<i class="splashy-check"></i> Edit	
+													{else}
+														<i class="splashy-check"></i> Edit/Valider
+													{/if}
+												</a>	
+											{elseif $user_type == 'produser' || $user_type =='multilingue' || $user_type =='prodsubmanager' || $user_type =='prodmanager'}
+												{if ($quote_item.prod_review eq 'validated' || $quote_item.prod_review eq 'challenged')}
+												<a href="/quote/prod-quote-review?quote_id={$quote_item.identifier}&submenuId=ML13-SL2">
+													{if $quote_item.prod_review eq 'challenged'}
+														<i class="splashy-check"></i> Edit/Valider
+													{elseif $quote_item.prod_review eq 'validated'}	
+														Valid&eacute;
+													{/if}
+													
+												</a>
+												{else}
+													-
+												{/if}
+											{/if}	
+										</td>									                       
+									</tr>
+									{/if}
+								{/foreach}
+							{/if}						
+							</tbody>
+						</table>
+					</div>
+					
+					<div class="tab-pane fade {if $smarty.get.active eq 'closedrelancer'} in active {/if}" id="relancer">
+						 <table class="table table-bordered table-hover table_vam" id="cls_quotesrelacerList" >
+							<thead>
+								<tr>								   
+								   <th>Client</th>
+								   <th>Cat&eacute;gorie</th>
+								   <th>Nom devis</th>
+								   <th>Date cr&eacute;ation</th>
+								   <th>Cr&eacute;&eacute; par</th>
+								   <th>Equipe</th>
+								   <th>Relancer client</th>
+								   <th>Raison</th>
+								   <th>CA</th>
+								   <th>Estimation</th>
+								   <th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+							{if $quote_list|@count>0}
+								{assign var=closed_quotes value=0}
+								{foreach from=$quote_list item=rquote_item name=rquote_loop}
+									{if $rquote_item.relancer_status eq '1'}				
+										{assign var=closed_quotes value=$closed_quotes+1}
+									<tr>										
+										<td>{$rquote_item.company_name}</td>
+										<td>{$rquote_item.category_name}</td>						
+										<td>
+										<a href="/quote/quote-followup?quote_id={$rquote_item.identifier}&submenuId=ML13-SL2" target="_followup">
+										{$rquote_item.title}
+										</a>
+										</td>
+										<td>
+										<span {if $rquote_item.version_dates} data-original-title='Historique devis' data-html="true" class="version-change pop_over" data-placement="right" data-content="{$rquote_item.version_dates}"{/if}>				{$rquote_item.created_at|date_format:"%d/%m/%Y"}
+										</span>
+										</td>
+										<td>{$rquote_item.owner}</td>
+										<td>{$rquote_item.team}</td>
+										<td>{if $rquote_item.boot_customer  && $rquote_item.relancer_commet!="" }
+										<span class="hidden">{$rquote_item.boot_customer|date_format:"%Y/%m/%d"}</span>
+										<a data-content="{$rquote_item.relancer_commet}" data-placement="left" class="pop_over" data-html="true" data-original-title="Relanc&eacute; Commentaire(s)">A relancer le {$rquote_item.boot_customer|date_format:"%d/%m/%Y"}</a>	</td>
+										 {else}
+											<a href="/quote/relance-quote-popup?qid={$rquote_item.identifier}" class="relance-qu btn btn-small btn-primary" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#programmer-relance">Programmer relance</a>	</td>
+											{/if}
+										<td>
+                                        {if $user_type=='superadmin' || $userId==$cquote_item.quote_by}																			
+										{if $rquote_item.closed_reason eq ''}
+										<a href="/quote/close-relance-view?qid={$rquote_item.identifier}" data-content="{$rquote_item.closed_comments}" data-placement="right" class="pop_over" data-html="true" data-original-title="Commentaire(s)" data-toggle="modal" tabindex="-1" role="menuitem"  data-target="#close_quote" class="closequote" >Select Reason</a>
+										{elseif $rquote_item.closed_reason eq 'refusal_to_answer_EP'}
+										<a href="/quote/close-relance-view?qid={$rquote_item.identifier}" data-content="{$rquote_item.closed_comments}" data-placement="right" class="pop_over" data-html="true" data-original-title="Commentaire(s)" data-toggle="modal" tabindex="-1" role="menuitem"  data-target="#close_quote" class="closequote" >refus de r&#233;pondre EP</a>
+										{else}
+										<a href="/quote/close-relance-view?qid={$rquote_item.identifier}" data-content="{$rquote_item.closed_comments}" data-placement="right" class="pop_over" data-html="true" data-original-title="Commentaire(s)" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#close_quote" class="closequote" >{$closedreasons[$rquote_item.closed_reason]}</a>
+										{/if}
+										{else}
+											{$rquote_item.closed_reason_txt}
+										{/if}
+										</td>
+										<td style="text-align: right">
+											<b>{$rquote_item.turnover|zero_cut_t:2} &{$rquote_item.sales_suggested_currency};</b>
+										</td>
+										<td>
+											{if $rquote_item.estimate_sign_percentage}
+												{if $user_type=='superadmin' || $userId==$rquote_item.quote_by}
+													<a href="/quote/estimate-sign-details-popup?quote_id={$rquote_item.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#estimate_sign">
+														{$rquote_item.estimate_sign_percentage}% / {$rquote_item.estimate_sign_date|date_format:"%d/%m/%Y"}
+													</a>	
+												{else}
+													<a {if $rquote_item.estimate_sign_comments} data-original-title='Commentaire(s)' data-html="true" class="pop_over" data-placement="left" data-content="{$rquote_item.estimate_sign_comments}"{/if}>{$rquote_item.estimate_sign_percentage}% / {$rquote_item.estimate_sign_date|date_format:"%d/%m/%Y"}
+													</a>
+												{/if}
+											{else}
+												{if $user_type=='superadmin' || $userId==$rquote_item.quote_by}
+													<a href="/quote/estimate-sign-details-popup?quote_id={$rquote_item.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#estimate_sign">
+														- %
+													</a>	
+												{else}
+													-
+												{/if}
+											{/if}	
+										</td>
+										<td>
+										{if $user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser' || $user_type =='facturation'}
+												<div class="btn-group">
+													<button type="button" class="btn btn-small dropdown-toggle" data-toggle="dropdown">More
+														<span class="caret"></span>
+													</button>
+													 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+													 <li><a class="newversion" href="/quote/create-quote-step1?qaction=edit&quote_id={$rquote_item.identifier}&submenuId=ML13-SL2" tabindex="-1" role="menuitem"><i class="splashy-pencil"></i>Reactivate Quote</li>
+													 <li><a href="/quote/edit-quote-final-step?quote_id={$rquote_item.identifier}"  data-toggle="modal" tabindex="-1" role="menuitem" data-target="#edit_quote_files" ><i class="splashy-pencil"></i> Ajouter des infos</a></li>
+													 <li><a href="/quote/download-quote-xls?quote_id={$rquote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-arrow_large_down_outline"></i> T&eacute;l&eacute;charger xls</a></li>
+													{if $user_type=='superadmin'}
+														<li><a class="delete-quote" href="/quote/delete-quote?quote_id={$rquote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-remove_outline"></i> Delete</a></li>
+													 {/if}
+													 <li><a href="/quote/close-relance-view?qid={$rquote_item.identifier}&closed_type=perdu" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#close_quote" class="closequote"><i class="splashy-remove_outline"></i> Perdu</a></li>
+													 </ul>
+												</div>
+										{else}
+											<a href="/quote/download-quote-xls?quote_id={$rquote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-arrow_large_down_outline"></i> T&eacute;l&eacute;charger xls</a>
+										{/if}
+										</td>	
+									</tr>
+									{/if}
+								{/foreach}
+							{/if}						
+							</tbody>
+						</table>
+					</div>
+					
+					
+					
+					
+					
+					
+					<div class="tab-pane fade {if $smarty.get.active eq 'closed'} in active {/if}" id="closedQuotes">
+						 <table class="table table-bordered table-hover table_vam" id="cls_quotesList" >
+							<thead>
+								<tr>								   
+								   <th>Client</th>
+								   <th>Cat&eacute;gorie</th>
+								   <th>Nom devis</th>
+								   <th>Date cr&eacute;ation</th>
+								   <th>Cr&eacute;&eacute; par</th>
+								   <th>Equipe</th>
+								  <th>Relancer client</th>
+								   <th>Raison</th>
+								   <th>CA</th>
+								   <th>Estimation</th>
+								   <th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+							{if $quote_list|@count>0}
+								{assign var=closed_quotes value=0}
+								{foreach from=$quote_list item=cquote_item name=cquote_loop}
+									{if $cquote_item.closed_status eq '1'}				
+										{assign var=closed_quotes value=$closed_quotes+1}
+									<tr>										
+										<td>{$cquote_item.company_name}</td>
+										<td>{$cquote_item.category_name}</td>						
+										<td>
+										<a href="/quote/quote-followup?quote_id={$cquote_item.identifier}&submenuId=ML13-SL2" target="_followup">
+										{$cquote_item.title}
+										</a>
+										</td>
+										<td>
+										<span {if $cquote_item.version_dates} data-original-title='Historique devis' data-html="true" class="version-change pop_over" data-placement="right" data-content="{$cquote_item.version_dates}"{/if}>				{$cquote_item.created_at|date_format:"%d/%m/%Y"}
+										</span>
+										</td>
+										<td>{$cquote_item.owner}</td>
+										<td>{$cquote_item.team}</td>
+										<td>
+											{if $cquote_item.boot_customer}
+											<a data-content="{$cquote_item.relancer_commet}" data-placement="left" class="pop_over" data-html="true" data-original-title="Relanc&eacute; Commentaire(s)">A relancer le {$cquote_item.boot_customer|date_format:"%d/%m/%Y"}</a>	
+											{elseif $cquote_item.closed_reason eq 'quote_permanently_lost'}
+											 <a href="/quote/relance-quote-popup?qid={$cquote_item.identifier}&active=closequote" class="relance-qu btn btn-small btn-primary" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#programmer-relance">Programmer relance</a>	
+											 {else}
+											 <a href="/quote/relance-quote-popup?qid={$cquote_item.identifier}" class="relance-qu btn btn-small btn-primary" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#programmer-relance">Programmer relance</a>	
+											 <!--	<button class="btn btn-primary btn-mini bootcustomer" rel="{$cquote_item.identifier}">Relancer client</button>  -->
+											{/if}
+											</td> 
+										<td>
+										{if $user_type=='superadmin' || $userId==$cquote_item.quote_by}
+											{if $cquote_item.closed_reason eq ''}
+												<a data-content="{$cquote_item.closed_comments}" data-placement="right" class="pop_over" data-html="true" data-original-title="Commentaire(s)" >Select Reason</a>
+											{elseif $cquote_item.closed_reason eq 'quote_permanently_lost'}
+												<a  data-content="{$cquote_item.closed_comments}" data-placement="right" class="pop_over" data-html="true" data-original-title="Commentaire(s)"  >Devis d&#233;finitivement perdu</a>
+											{elseif $cquote_item.closed_reason eq 'refusal_to_answer_EP'}
+												<a  data-content="{$cquote_item.closed_comments}" data-placement="right" class="pop_over" data-html="true" data-original-title="Commentaire(s)"  >refus de r&#233;pondre EP</a>
+											{else}
+												<a data-content="{$cquote_item.closed_comments}" data-placement="right" class="pop_over" data-html="true" data-original-title="Commentaire(s)">{$closedreasons[$cquote_item.closed_reason]}</a>
+											{/if}
+										{*<!--*<select name="reason" onchange="changestatus(this,{$cquote_item.identifier})" class="validate[required] span6 reason" style="width:150px" placeholder="Select Reason">
+											<option value="">Select Reason</option>
+											{html_options  options=$closedreasons selected=$cquote_item.closed_reason}
+										</select>-->*}
+										{else}
+											{$cquote_item.closed_reason_txt}
+										{/if}
+										</td>
+										<td style="text-align: right">
+											<b>{$cquote_item.turnover|zero_cut_t:2} &{$cquote_item.sales_suggested_currency};</b>
+										</td>
+										<td>
+											{if $cquote_item.estimate_sign_percentage}
+												{if $user_type=='superadmin' || $userId==$cquote_item.quote_by}
+													<a href="/quote/estimate-sign-details-popup?quote_id={$cquote_item.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#estimate_sign">
+														{$cquote_item.estimate_sign_percentage}% / {$cquote_item.estimate_sign_date|date_format:"%d/%m/%Y"}
+													</a>	
+												{else}
+													<a {if $cquote_item.estimate_sign_comments} data-original-title='Commentaire(s)' data-html="true" class="pop_over" data-placement="left" data-content="{$cquote_item.estimate_sign_comments}"{/if}>{$cquote_item.estimate_sign_percentage}% / {$cquote_item.estimate_sign_date|date_format:"%d/%m/%Y"}
+													</a>
+												{/if}
+											{else}
+												{if $user_type=='superadmin' || $userId==$cquote_item.quote_by}
+													<a href="/quote/estimate-sign-details-popup?quote_id={$cquote_item.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#estimate_sign">
+														- %
+													</a>	
+												{else}
+													-
+												{/if}
+											{/if}	
+										</td>
+										<td>
+										{if $user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser' || $user_type =='facturation'}
+												<div class="btn-group">
+													<button type="button" class="btn btn-small dropdown-toggle" data-toggle="dropdown">More
+														<span class="caret"></span>
+													</button>
+													 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+													 <li><a class="newversion" href="/quote/create-quote-step1?qaction=edit&quote_id={$cquote_item.identifier}&submenuId=ML13-SL2" tabindex="-1" role="menuitem"><i class="splashy-pencil"></i>Reactivate Quote</li>
+													 <li><a href="/quote/edit-quote-final-step?quote_id={$cquote_item.identifier}"  data-toggle="modal" tabindex="-1" role="menuitem" data-target="#edit_quote_files" ><i class="splashy-pencil"></i> Ajouter des infos</a></li>
+													 <li><a href="/quote/download-quote-xls?quote_id={$cquote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-arrow_large_down_outline"></i> T&eacute;l&eacute;charger xls</a></li>
+													{if $user_type=='superadmin'}
+														<li><a class="delete-quote" href="/quote/delete-quote?quote_id={$cquote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-remove_outline"></i> Delete</a></li>
+													 {/if}
+													 </ul>
+												</div>
+										{else}
+											<a href="/quote/download-quote-xls?quote_id={$cquote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-arrow_large_down_outline"></i> T&eacute;l&eacute;charger xls</a>
+										{/if}
+										</td>	
+									</tr>
+									{/if}
+								{/foreach}
+							{/if}						
+							</tbody>
+						</table>
+					</div>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					<div class="tab-pane fade {if $smarty.get.active eq 'validated'} in active {/if}" id="validated">
+						 <table class="table table-bordered table-hover table_vam" id="val_quotesList" >
+							<thead>
+								<tr>
+								   {*<th>
+										<input class="vselect_rows" type="checkbox" data-tableid="val_quotesList" name="vselect_rows">
+								   </th>*}
+								   <th>Client</th>
+								   <th>Cat&eacute;gorie</th>
+								   <th>Nom devis</th>
+								   <th>Date cr&eacute;ation</th>
+								   <th>Cr&eacute;&eacute; par</th>
+								   <th>Equipe</th>
+								   <th>Statut</th>
+								   <th>CA</th>                   
+								   <th>Estimation</th>                   
+								   <th>Action</th>
+								   
+								</tr>
+							</thead>
+							<tbody>
+							{if $quote_list|@count>0}
+								{assign var=validated_quotes value=0}
+								{foreach from=$quote_list item=vquote_item name=vquote_loop}
+									{if $vquote_item.validated_status eq '1'}
+									{assign var=validated_quotes value=$validated_quotes+1}
+									<tr>
+										 {*<td><input name="vquote_select[]" value="{$vquote_item.identifier}" type="checkbox"></td>*}
+										<td>{$vquote_item.company_name}</td>
+										<td>{$vquote_item.category_name}</td>						
+										<td><a href="/quote/quote-followup?quote_id={$vquote_item.identifier}&submenuId=ML13-SL2" target="_followup">{$vquote_item.title}</a></td>
+										<td><span {if $vquote_item.version_dates} data-original-title='Historique devis' data-html="true" class="version-change pop_over" data-placement="right" data-content="{$vquote_item.version_dates}"{/if}>				{$vquote_item.created_at|date_format:"%d/%m/%Y"}
+										</span></td>
+										<td>{$vquote_item.owner}</td>
+										<td>{$vquote_item.team}</td>
+										<td>
+										 Quote will be considered as relance in
+										<div>
+										<span id="time_{$vquote_item.identifier}_{$vquote_item.sign_expire_timeline}" >
+											<i class="icon-time"></i> <span id="text_{$vquote_item.identifier}_{$vquote_item.sign_expire_timeline}"></span>
+										</span>
+										</div>
+										</td>
+										<td align="right">{$vquote_item.turnover|zero_cut_t:2} &{$vquote_item.sales_suggested_currency};</td>
+										<td>
+											{if $vquote_item.estimate_sign_percentage}
+												{if $user_type=='superadmin' || $userId==$vquote_item.quote_by}
+													<a href="/quote/estimate-sign-details-popup?quote_id={$vquote_item.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#estimate_sign">
+														{$vquote_item.estimate_sign_percentage}% / {$vquote_item.estimate_sign_date|date_format:"%d/%m/%Y"}
+													</a>	
+												{else}
+													<a {if $vquote_item.estimate_sign_comments} data-original-title='Commentaire(s)' data-html="true" class="pop_over" data-placement="left" data-content="{$vquote_item.estimate_sign_comments}"{/if}>{$vquote_item.estimate_sign_percentage}% / {$vquote_item.estimate_sign_date|date_format:"%d/%m/%Y"}
+													</a>
+												{/if}
+											{else}
+												{if $user_type=='superadmin' || $userId==$vquote_item.quote_by}
+													<a href="/quote/estimate-sign-details-popup?quote_id={$vquote_item.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#estimate_sign">
+															- %
+													</a>	
+												{else}
+													-
+												{/if}
+											{/if}
+										</td>
+										<td>
+											{if $user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser' || $user_type =='facturation'}
+												<div class="btn-group">
+														
+														  <button type="button" class="btn btn-small dropdown-toggle" data-toggle="dropdown">More 
+															<span class="caret"></span>
+														</button>
+													 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+													  {if $vquote_item.new_quote eq 1} 
+													  <li><a class="newversion" href="/quote-new/create-step1?qaction=edit&quote_id={$vquote_item.identifier}&submenuId=ML13-SL2" tabindex="-1" role="menuitem"><i class="splashy-pencil"></i> Modifier mission</a></li>
+													  {else}
+														<li><a class="newversion" href="/quote/create-quote-step1?qaction=edit&quote_id={$vquote_item.identifier}&submenuId=ML13-SL2" tabindex="-1" role="menuitem"><i class="splashy-pencil"></i> Modifier mission</a></li>
+														<li><a  tabindex="-1" href="/quote/sales-final-validation?quote_id={$vquote_item.identifier}&submenuId=ML13-SL2" role="menuitem"><i class="splashy-pencil"></i>Modifier la marge</a></li>
+														<li><a href="/quote/edit-quote-final-step?quote_id={$vquote_item.identifier}"  data-toggle="modal" tabindex="-1" role="menuitem" data-target="#edit_quote_files" ><i class="splashy-pencil"></i> Ajouter des infos</a></li>
+														<li class="divider"></li>
+														<li>
+														<a href="/quote/close-quote-view?qid={$vquote_item.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#close_quote" class="closequote"><i class="splashy-remove_outline"></i> Perdu</a>
+														</li>
+														<li>
+														<a href="/quote/sign-quote-view?qid={$vquote_item.identifier}" data-toggle="modal" tabindex="-1" role="menuitem" data-target="#sign_quote" class="signquote"><i class="splashy-document_a4_edit"></i> Signer</a></li>
+														{if $user_type=='superadmin'}
+															<li><a class="delete-quote" href="/quote/delete-quote?quote_id={$vquote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-remove_outline"></i> Delete</a></li>
+														{/if}	
+														<li><a href="/quote/download-quote-xls?quote_id={$vquote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-arrow_large_down_outline"></i> T&eacute;l&eacute;charger xls</a></li>
+														{/if}
+													</ul>
+													</div>
+											{else}
+												-
+											{/if}
+										</td>									                       
+									</tr>
+									{/if}
+								{/foreach}
+							{/if}						
+							</tbody>
+						</table>
+						
+					</div>
+					<div class="tab-pane fade {if $smarty.get.active eq 'signed'} in active {/if}" id="signed">
+					
+					{if $user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser' || $user_type =='facturation'}
+					<div class="row-fluid">
+						    <div class="alert alert-info">
+   Please select a quote to be able to create a contract
+    </div><br>
+						</div>
+						{/if}
+						 <table class="table table-bordered table-hover table_vam" id="sign_quotesList" >
+							<thead>
+								<tr>
+								   <th>&nbsp;
+										{*<input class="sselect_rows" type="checkbox" data-tableid="sign_quotesList" name="sselect_rows">*}
+								   </th>
+								   <th>Client</th>
+								   <th>Cat&eacute;gorie</th>
+								   <th>Nom devis</th>
+								   <th>Date cr&eacute;ation</th>
+								   <th>Cr&eacute;&eacute; par</th>
+								   <th>Equipe</th>
+								{* <th>Comments</th> *}
+								   <th>CA</th>								   
+								   <th>Action</th>
+								   
+								</tr>
+							</thead>
+							<tbody>
+							{if $quote_list|@count>0}
+							
+								{assign var=signed_quotes value=0}
+								{foreach from=$quote_list item=squote_item name=squote_loop}
+									{if $squote_item.sales_review eq 'signed'}				
+										{assign var=signed_quotes value=$signed_quotes+1}
+									<tr>
+										<td>{if $squote_item.signed_exist eq '1'}
+										<a class="pop_clickover" data-toggle="popover" data-html="true" data-placement="right" data-content="<a href='/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$squote_item.signed_contractid}'>{$squote_item.signed_contract}<a>" data-original-title="Related contract"><i class="splashy-check"></i></span></a>
+										{else}
+										<input name="squote_select[]" class="changewarning {$squote_item.signed_exist}" value="{$squote_item.identifier}" type="radio" >
+										{/if}</td>
+										<td>{$squote_item.company_name}</td>
+										<td>{$squote_item.category_name}</td>						
+										<td><a href="/quote/quote-followup?quote_id={$squote_item.identifier}&submenuId=ML13-SL2" target="_followup">{$squote_item.title}</a></td>
+										<td><span {if $squote_item.version_dates} data-original-title='Historique devis' data-html="true" class="version-change pop_over" data-placement="right" data-content="{$squote_item.version_dates}"{/if}>				{$squote_item.created_at|date_format:"%d/%m/%Y"}
+										</span></td>
+										<td>{$squote_item.owner}</td>
+										<td>{$squote_item.team}</td>
+										{*<td>{$squote_item.signed_comments}</td>*}
+										<td style="text-align: right">
+											<b>{$squote_item.turnover|zero_cut_t:2} &{$squote_item.sales_suggested_currency};</b>
+										</td>										
+										<td>
+											<div class="btn-group">
+												<a class="btn" href="/quote/download-quote-xls?quote_id={$squote_item.identifier}"><i class="icon-download"></i> Quote xls</a>
+												<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+												<ul class="dropdown-menu">
+												 {if $user_type=='superadmin'}
+													<li><a class="delete-quote" href="/quote/delete-quote?quote_id={$squote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-remove_outline"></i> Delete</a></li>
+												{/if}	
+												</ul>
+											</div>
+										</td>	
+									</tr>
+									{/if}
+								{/foreach}
+							{/if}						
+							</tbody>
+						</table>
+						{if $user_type == 'superadmin' || $user_type =='salesuser' || $user_type =='salesmanager' || $user_type =='ceouser' || $user_type =='facturation'}
+					<div class="row-fluid">
+						<hr><a class="btn btn-primary" href="" id="generateQuoteId" onclick="return generateQuoteId()">Cr&eacute;er contract</a>
+						</div>
+						{/if}
+					</div>					
+					<div class="tab-pane {if $smarty.get.active eq 'deleted'} active {/if}" id="deleted">
+						 <table class="table table-bordered table-hover table_vam" id="deleted_quotesList" >
+							<thead>
+								<tr>
+								   <th>Client</th>
+								   <th>Cat&eacute;gorie</th>
+								   <th>Nom devis</th>
+								   <th>Date cr&eacute;ation</th>
+								   <th>Cr&eacute;&eacute; par</th>
+								   <th>Equipe</th>
+								   <th>CA</th>                   
+								   <th>Date de suppression</th>                   
+								   <th>Supprim&eacute; par</th>   
+								   <th>Action</th>                
+								</tr>
+							</thead>
+							<tbody>
+							{if $quote_list|@count>0}
+								{assign var=signed_quotes value=0}
+								{foreach from=$quote_list item=dquote_item name=dquote_loop}
+									{if $dquote_item.sales_review eq 'deleted'}				
+										{assign var=signed_quotes value=$signed_quotes+1}
+									<tr>
+										<td>{$dquote_item.company_name}</td>
+										<td>{$dquote_item.category_name}</td>						
+										<td><a href="/quote/quote-followup?quote_id={$dquote_item.identifier}&submenuId=ML13-SL2" target="_followup">{$dquote_item.title}</a></td>
+										<td><span {if $dquote_item.version_dates} data-original-title='Historique devis' data-html="true" class="version-change pop_over" data-placement="right" data-content="{$dquote_item.version_dates}"{/if}>				{$dquote_item.created_at|date_format:"%d/%m/%Y"}
+										</span></td>
+										<td>{$dquote_item.owner}</td>
+										<td>{$dquote_item.team}</td>
+										<td style="text-align: right"><b>{$dquote_item.turnover|zero_cut_t:2} &{$dquote_item.sales_suggested_currency};</b></td>
+										<td>{$dquote_item.deleted_at|date_format:"%d/%m/%Y"}</td>
+										<td>{$dquote_item.deleted_user}</td>
+										<td>
+											<div class="btn-group">
+												 <button type="button" class="btn btn-small dropdown-toggle" data-toggle="dropdown">More 
+													<span class="caret"></span></button>
+												 <ul class="dropdown-menu">
+													{if $user_type == 'superadmin'} 
+												<li><a class="delete-quote-permenent" href="/quote/delete-quote-permenent?quote_id={$dquote_item.identifier}" tabindex="-1" role="menuitem"><i class="splashy-remove_outline"></i> Delete</a></li>
+												{/if}
+												</ul>
+											</div>
+										</td>
+									</tr>
+									{/if}
+								{/foreach}
+							{/if}						
+							</tbody>
+						</table>
+					</div>
+				</div>	
+				<p></p>
+			</div>
+		</div>
+	</div>
+</div>	
+
+
+
+<!--popup to show after quote created-->
+<div class="modal hide fade" id="quote_created" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        
+    </div>
+    <div class="modal-body">
+		<section>
+			<div class="row-fluid">
+				<div class="pull-center span10 offset1">
+					<div><img src="/BO/theme/gebo/img/gCons/email.png" alt="" /></div>
+					<p class="help-block">Devis envoy&eacute;<br/><br/></p>
+					
+					{if $actionmessages[1] eq 'Onlyprod'}
+						<p>Merci! Vous aurez une r&eacute;ponse de l'equipe  Prod sous {$prod_timeline} heures</p>
+					{elseif $actionmessages[1] eq 'Onlytech'}
+						<p>Merci! Vous aurez une r&eacute;ponse de l'equipe  Tech sous {$quote_sent_timeline} heures</p>	
+					{elseif $actionmessages[1] eq 'Onlyseo'}
+						<p>Merci! Vous aurez une r&eacute;ponse de l'equipe  SEO sous {$quote_sent_timeline} heures</p>						
+					{else}
+						<p>Merci! Vous aurez une r&eacute;ponse de l'equipe  Tech,SEO et Prod sous {$quote_sent_timeline} heures</p>
+					{/if}	
+					
+				</div>
+			</div>
+		</section>
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<div class="modal hide fade" id="close_quote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Fermer devis</h3>
+    </div>
+    <div class="modal-body">
+		
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<div class="modal hide fade" id="sign_quote" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Signer devis</h3>
+    </div>
+    <div class="modal-body">
+		
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+
+<!--Estimated sign details -->
+<div class="modal hide fade" id="estimate_sign" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Estimation</h3>
+    </div>
+    <div class="modal-body">
+		
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!--Edit Quote files/comments-->
+<div class="modal container  hide fade" id="edit_quote_files" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Estimation</h3>
+    </div>
+    <div class="modal-body">
+		
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+<!--Relance Quote files/comments-->
+<div class="modal hide fade" id="programmer-relance" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Relance</h3>
+    </div>
+    <div class="modal-body">
+		
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/countdown.js"></script>
+<script src="/BO/theme/gebo/js/jquery.MultiFileQuote.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">	
+$(document).ready(function() {
+	
+		function upTime(countTo,identy,statetime) {
+			var message = "";
+			currnttime=(new Date).getTime();
+			  difference = (currnttime-countTo);
+
+			  days=Math.floor(difference/(60*60*1000*24)*1);
+			  hours=Math.floor((difference%(60*60*1000*24))/(60*60*1000)*1);
+			  mins=Math.floor(((difference%(60*60*1000*24))%(60*60*1000))/(60*1000)*1);
+			  secs=Math.floor((((difference%(60*60*1000*24))%(60*60*1000))%(60*1000))/1000*1);
+				if(days >0 )message += days + " jours "  +"  ";
+				if(hours >0 )message += hours + " h ";
+				if(mins >0 )message += mins + " min ";
+				message += secs + " sec ";
+				alert(message);
+              $("#text_"+identy+"_"+statetime).html(message);		
+              		 
+			 
+}
+	////////////to show the timer of tech time line///////
+      var cur_date={/literal}{$smarty.now}{literal};
+      var js_date=(new Date().getTime())/ 1000;
+      var diff_date=Math.floor(js_date-cur_date);
+      
+     //////////show timer//////////
+	$("[id^=time_]").each(function(i) {
+		var article=$(this).attr('id').split("_");
+		var ts=article[2];
+		if($(this).attr('class') !== undefined && $(this).attr('class')=='enretard'){
+		
+			$("#text_"+article[1]+"_"+article[2]).countup({
+				timestamp   : ts,
+				diff_date  : diff_date,
+				callback    : function(days, hours, minutes, seconds){
+					var message = "";
+					if(days >0 )message += days + " jours"  +"  ";
+					if(hours >0 )message += hours + " h ";
+					if(minutes >0 )message += minutes + " min ";
+					message += seconds+" sec ";
+					$("#text_"+article[1]+"_"+article[2]).html(message);
+					if(days==0 && hours==0 && minutes==0 && seconds==0)
+					{
+						//window.location.reload();
+					}
+				}	
+			});			  
+        
+		}else{
+			
+		$("#time_"+article[1]+"_"+article[2]).countdown({
+			timestamp   : ts,
+            diff_date  : diff_date,
+			callback    : function(days, hours, minutes, seconds){
+				var message = "";
+				if(days >1 )message += days + " jours"+"  ";
+				if(hours >0 )message += hours + ":";
+				if(minutes >0 )message += minutes + ":";
+				message += seconds;
+				$("#text_"+article[1]+"_"+article[2]).html(message);
+				if(days==0 && hours==0 && minutes==0 && seconds==0)
+				{
+					//window.location.reload();
+				}
+			}
+		});
+		}
+	});
+
+	$(".reason").chosen({ allow_single_deselect: false,disable_search: true});
+	
+	$('#ong_quotesList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+			"iDisplayLength" : 50,
+            "aaSorting": [[ 3, "desc" ]],
+            "aoColumns": [               
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+                { "sType": "natural" },
+				{ "sType": "string" },				
+				{ "sType": "string" }
+				
+            ]
+        });
+		
+	$('#val_quotesList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+			"iDisplayLength" : 50,
+            "aaSorting": [[ 3, "desc" ]],
+            "aoColumns": [               
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+                { "sType": "natural" },
+				{ "sType": "string" },
+				{ "sType": "string" }
+				
+            ]
+        });
+	
+	$('#sign_quotesList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+			"iDisplayLength" : 50,
+            "aaSorting": [[ 4, "desc" ]],
+            "aoColumns": [
+                { "sType": "html","bSortable":false},
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+                { "sType": "natural" },								
+				{ "sType": "string" }
+				
+            ]
+        });
+	
+	$('#cls_quotesList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+			"iDisplayLength" : 50,
+            "aaSorting": [[ 3, "desc" ]],
+            "aoColumns": [               
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+			    { "sType": "string" },
+				{ "sType": "string" },
+                { "sType": "natural" },	
+				{ "sType": "string" },				
+				{ "sType": "string" }
+				
+            ]
+        });
+        
+	$('#cls_quotesrelacerList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+			"iDisplayLength" : 50,
+            "aaSorting": [[ 6, "desc" ]],
+            "aoColumns": [               
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+				{ "sType": "natural" },
+				{ "sType": "string" },
+                { "sType": "natural" },	
+				{ "sType": "string" },				
+				{ "sType": "string" }
+				
+            ]
+        });
+		
+	$('#deleted_quotesList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+			"iDisplayLength" : 50,
+            "aaSorting": [[ 3, "desc" ]],
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string" },
+                { "sType": "natural" },				
+				{ "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string" }
+            ]
+        });
+		
+/* Pop click funciton*/
+		$('.pop_clickover').popover({trigger:'click'});
+
+	var flash_message="{/literal}{$actionmessages[0]}{literal}";	
+	var flash_message1="{/literal}{$actionmessages[1]}{literal}";
+	
+	if(flash_message=='Devis cr&eacute;e avec succ&egrave;s' && flash_message1!='Onlysales')
+	{	
+		$("#quote_created").modal('show');
+		$("#quote_created").removeClass( "hide" ).addClass("in");
+	}
+	
+	$('.oselect_rows').click(function () {
+		var tableid = $(this).data('tableid');
+		//alert(tableid)
+		$('#'+tableid).find('input[name="oquote_select[]"]').attr('checked', this.checked);
+	});
+	$('.oselect_rows').click(function () {
+		var tableid = $(this).data('tableid');		
+		$('#'+tableid).find('input[name="oquote_select[]"]').attr('checked', this.checked);
+	});
+	$('.cselect_rows').click(function () {
+		var tableid = $(this).data('tableid');		
+		$('#'+tableid).find('input[name="cquote_select[]"]').attr('checked', this.checked);
+	});
+	$('.vselect_rows').click(function () {
+		var tableid = $(this).data('tableid');		
+		$('#'+tableid).find('input[name="vquote_select[]"]').attr('checked', this.checked);
+	});
+	$('.sselect_rows').click(function () {
+		var tableid = $(this).data('tableid');		
+		$('#'+tableid).find('input[name="squote_select[]"]').attr('checked', this.checked);
+	});
+	
+	$( ".newversion" ).click(function( event ) {
+				event.preventDefault();
+				var href=$(this).attr("href");
+				var msg = "Souhaitez-vous cr&eacute;er une nouvelle version de devis?";
+				
+				smoke.confirm(msg,function(e){
+					if (e){
+							window.location.href =href;
+						}					
+				},{"ok":"Oui","cancel":"Non"});
+	});
+	
+	
+	
+	$(".bootcustomer").click(function(){
+		var quote_id = $(this).attr('rel');
+		var thisvar = $(this);
+		thisvar.html('<img alt="" src="/BO/theme/gebo/img/ajax_loader.gif">');
+		$.post('/quote/boot-customer',{"qid":quote_id},function(data){
+			thisvar.closest("td").html(data);
+		})
+	})
+	
+	$(".check_quote_edit").click(function(e){
+		e.preventDefault();
+		var quote_id = $(this).closest("tr").find("input").val();
+		var href=$(this).attr("href");
+
+		 $.ajax({
+              url: "/quote/check-edit-quote",
+              data: {"qid":quote_id},
+              type: "POST",
+              async: false,
+              success: function(data) {
+				var msg = "Already another Quote is Opened and not submitted still want to proceed?";
+				
+				if($.trim(data))
+				{
+					smoke.confirm(msg,function(e){
+					if (e){
+							window.location.href =href;
+						}
+					},{"ok":"Oui","cancel":"Non"});
+				}
+				else
+				window.location.href =href;
+              }
+        });
+			
+	});
+	
+	/* To delete Quote */
+	$(".delete-quote").click(function(e){
+		e.preventDefault();
+		var href=$(this).attr("href");
+		var msg = "Are you sure want to delete this Quote?";
+		
+		smoke.confirm(msg,function(e){
+			if (e){
+					window.location.href =href;
+				}					
+		},{"ok":"Oui","cancel":"Non"});
+	})
+	
+	$(function ()  {	
+			$('a[rel=popover]').popover({ html: true, trigger: 'hover',placement:'right'});
+	});
+	$(".changewarning").click(function(){
+		$(".changewarning").closest("tr").removeClass("warning");
+		$(this).closest("tr").addClass("warning");
+	});
+	
+	
+	$(".delete-quote-permenent").click(function(e){
+		
+		e.preventDefault();
+		var href=$(this).attr("href");
+		var msg = "Souhaitez-vous vraiment supprimer cet Quote?";
+		
+		smoke.confirm(msg,function(e){
+			if (e){
+					window.location.href =href;
+				}					
+		},{"ok":"Oui","cancel":"Non"});
+	})
+	
+});	
+
+function changestatus(current,quote_id)
+{
+	$.post('/quote/change-reason',{'quote_id':quote_id,'reason':current.value},function(data){$.sticky('Updated reason successfully', {autoclose : 2000, position: "top-center", type: 'st-success'});});
+}
+
+/* //edit QUote in validated quotes
+function fneditQuote(quote_id,version)
+{
+	smoke.confirm("Vous souhaitez &eacute;diter le devis",function(e){
+					if (e)
+					{						
+						window.location='/quote/sales-final-validation?quote_id='+quote_id+'&submenuId=ML13-SL2';
+					}
+					else
+					{
+						var msg = "Souhaitez-vous cr&eacute;er une nouvelle version de devis?";
+						smoke.confirm(msg,function(e){
+							if (e){
+									window.location='/quote/create-quote-step1?qaction=edit&quote_id='+quote_id+'&submenuId=ML13-SL2';
+								}					
+						},{"ok":"Oui","cancel":"Non"});						
+						//return false;
+					}
+				}, {ok:"En phase finale", cancel:"En &eacute;tape 1"});
+
+
+} */
+
+	/* Pop up to Close Quote */
+
+$(document).on("click",".closequote",function(){
+/* 		$("#closequote").validationEngine();
+		$('textarea').attr('data-prompt-position','topLeft');
+		$('textarea').data('promptPosition','topLeft');
+		
+		$('#closetxt').val('');
+		var quote_id = $(this).closest("tr").find("input").val();
+		$("#closequoteid").val(quote_id); */
+		$("#close_quote").modal('show');
+		$("#close_quote").removeClass( "hide" ).addClass("in");
+	})
+	
+	$(document).on("click",".relance-qu",function(){
+/* 		$("#closequote").validationEngine();
+		$('textarea').attr('data-prompt-position','topLeft');
+		$('textarea').data('promptPosition','topLeft');
+		
+		$('#closetxt').val('');
+		var quote_id = $(this).closest("tr").find("input").val();
+		$("#closequoteid").val(quote_id); */
+		$("#programmer-relance").modal('show');
+		$("#programmer-relance").removeClass( "hide" ).addClass("in");
+	})
+	/*popover click hide*/
+	$('body').on('click', function (e) 
+	{
+		$('a[data-toggle=popover]').each(function () {
+        // hide any open popovers when the anywhere else in the body is clicked
+        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+            $(this).popover('hide');
+        }
+    	});
+	 });
+	/* Pop up to Sign Quote */
+	
+	$(document).on("click",".signquote",function(){
+		/* $("#signquote").validationEngine();
+		$('textarea').attr('data-prompt-position','topLeft');
+		$('textarea').data('promptPosition','topLeft');
+		
+		$('#signtxt').val('');
+		var quote_id = $(this).closest("tr").find("input").val();
+		$("#signquoteid").val(quote_id); */
+		$("#sign_quote").modal('show');
+		$("#sign_quote").removeClass( "hide" ).addClass("in");
+	})
+	
+	function generateQuoteId()
+	{
+		if($("input[name='squote_select[]']:checked").length==1)
+		{
+			var url = '/contractmission/create-contract?quote_id=';
+			var quote_id = $("input[name='squote_select[]']:checked").val();
+			$("#generateQuoteId").attr("href",url+quote_id+'&submenuId=ML13-SL3');
+			return true;
+		}
+		else
+			smoke.alert("Please select one Quote");
+		
+		return false;
+	}
+	
+
+	
+	
+</script>
+<style type="text/css">
+.main_content .dropdown-menu
+{
+right:0;
+left: auto;
+}
+.turnover
+{
+font-size:18px;
+font-weight: 500;
+}
+.dataTables_wrapper
+{
+	/*padding-bottom:195px;*/
+	position:inherit;
+}
+.icon-time
+{
+top:0px;
+}
+.alert{
+margin:3px;
+padding:3px;
+}
+
+.btn-group
+{
+	position:static;
+}
+
+.dropdown-menu
+{
+	top:auto;
+}
+
+.version-change
+{
+	cursor: pointer;
+}
+
+.dataTables_wrapper .top, .dataTables_wrapper .bottom
+{
+	padding:0;
+	background:#fff;
+}
+
+.popover-content td
+{
+	border-left:none;
+}
+
+#cls_quotesList_wrapper
+{
+	padding-bottom:140px;
+}
+</style>
+{/literal}

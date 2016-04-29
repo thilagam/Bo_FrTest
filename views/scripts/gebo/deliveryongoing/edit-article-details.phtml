@@ -1,0 +1,691 @@
+{literal}
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/jquery.validate.min.js"></script>
+<!--/BO/theme/gebo/lib/validation/jquery.validate.min.js-->
+<script type="text/javascript" >
+var upload_spec=true;
+var maxval = {/literal}"{$ArticleDetails[0].price_max}"{literal};
+var max2val = {/literal}"{$ArticleDetails[0].correction_pricemax}"{literal};
+var ao_type = {/literal}"{$ArticleDetails[0].AOtype}"{literal};
+var artid = {/literal}"{$ArticleDetails[0].id}"{literal};
+var ctype = {/literal}"{$ArticleDetails[0].correction_type}"{literal};
+var writing_cost = {/literal}"{$ArticleDetails[0].writing}"{literal};
+var files_pack = {/literal}"{$ArticleDetails[0].files_pack}"{literal};
+var correction_cost = {/literal}"{$ArticleDetails[0].proofreading}"{literal};
+/*edited by naseer on 04.12.2015 */
+var product = {/literal}"{$ArticleDetails[0].product}"{literal};
+
+
+   $(document).ready(function() {
+	   
+		if(ao_type=="private")
+		{
+			var viewtovalue = "";
+			$('input[name="view_to[]"]:checked').each(function(){
+				viewtovalue += $(this).val()+",";			
+			});	
+			if(product=='translation')
+				var sourcecheck=$("input[name='sourcelang_nocheck']:checked").val();
+			else
+				var sourcecheck='';
+				
+			$.ajax({
+				url:'/deliveryongoing/loadusers',
+				data:{'artid':artid,'type':"contributors",'product':product,'profiletype':viewtovalue,'sourcecheck':sourcecheck},
+				 beforeSend: function() {
+					$("#writers_filter").html('Please wait loading ...');
+				},
+				success:function(data)
+				{
+					$("#writers_filter").html(data);
+					$("#favcontribcheck").chosen({ allow_single_deselect: true,search_contains: true });
+					/* $("#favcontribcheck").multiselect({
+						includeSelectAllOption: true,
+						nonSelectedText:'Select contributors',
+						numberDisplayed: 1,
+						buttonWidth:'360px',
+						maxHeight: 200,
+						enableCaseInsensitiveFiltering: true
+					}); */
+				}
+			})
+		}
+		
+		if(ctype=="private")
+		{
+			var correctorviewto = "";
+			$('input[name="corrector_list[]"]:checked').each(function(){
+				correctorviewto += $(this).val()+",";			
+			});		
+			
+			if(product=='translation')
+				var sourcecorrectioncheck=$("input[name='sourcelang_nocheck_correction']:checked").val();
+			else
+				var sourcecorrectioncheck='';
+				
+				
+			$.ajax({
+				url:'/deliveryongoing/loadusers',
+				data:{'artid':artid,'type':"correctors",'product':product,'profiletype':correctorviewto,'sourcecorrectioncheck':sourcecorrectioncheck},
+				beforeSend: function() {
+					$("#correctors_filter").html('Please wait loading ...');
+				},
+				success:function(data)
+				{
+					$("#correctors_filter").html(data);
+					$("#favcorrectorcheck").chosen({ allow_single_deselect: true,search_contains: true });
+					/* $("#favcorrectorcheck").multiselect({
+						includeSelectAllOption: true,
+						nonSelectedText:'Select correctors',
+						numberDisplayed: 1,
+						buttonWidth:'360px',
+						maxHeight: 200,
+						enableCaseInsensitiveFiltering: true
+					}); */
+				}
+			})
+		}
+   
+		$("#language").chosen({ allow_single_deselect: true,search_contains: true });
+		$("#language_filter").chosen();
+		$("#clanguage_filter").chosen();
+		
+		$("#category").chosen({ allow_single_deselect: true,search_contains: true });
+		$("#type").chosen({disable_search: true });
+		$("#signtype").chosen({disable_search: true });
+		//$("#favcontribcheck").chosen();
+		//$("#favcorrectorcheck").chosen();
+		
+		$('#nomoderation_check').toggleButtons({label:{enabled: "Oui",disabled: "Non"}}); 
+		
+		$(".uni_style").uniform();	
+		$(".cselect").chosen({ allow_single_deselect: true,search_contains: true });
+		
+		$('#correctioncheck').toggleButtons({
+			label:{enabled: "Oui",disabled: "Non"},
+			onChange: function () {
+				var type=$("input[name='correction']:checked").val();
+				if(type=="on")
+				{
+					$("#correction_details").show();
+					if(!$("#correction_file").val())
+					{
+						upload_spec = false;
+						$("#editao").removeClass("hide");
+					}						
+				}
+				else
+				{
+					$("#correction_details").hide();
+					$("#editao").addClass("hide");
+				}
+			}
+		}); 
+		if(maxval=="")
+			maxval = 0;
+		if(max2val=="")
+			max2val = 0;
+		$("#edit_articleform").validate({
+				onkeyup: false,
+				message:false,
+				errorClass: 'error',
+				validClass: 'valid',
+				highlight: function(element) {
+					$(element).closest('span').addClass("f_error");
+				},
+				unhighlight: function(element) {
+					$(element).closest('span').removeClass("f_error");
+				},
+				rules: {
+						title: {
+								required: true,
+								minlength: 6
+								},
+						num_min:"required",	
+						num_max:"required",	
+						price_min:{
+								required: true,
+								max: maxval
+								},	
+						price_max:{
+								required: true,
+								max: (parseFloat(files_pack)*parseFloat(writing_cost)).toFixed(2)
+								},
+                        correction_pricemin:{
+								required: true,
+								max: max2val
+								},	
+                        correction_pricemax:{
+								required: true,
+								max: parseFloat(files_pack)*parseFloat(correction_cost).toFixed(2)
+								},
+						participation_time:"required",
+						correction_jc_submission:{
+							min:0.1
+						},
+						correction_sc_submission:{
+							min:0.1
+						},
+						correction_sc_resubmission:{
+							min:0.1
+						},
+						correction_jc_resubmission:{
+							min:0.1
+						},
+						subjunior_time:{
+							min:0.1
+						},junior_time:{
+							min:0.1
+						},senior_time:{
+							min:0.1
+						},jc0_resubmission:{
+							min:0.1
+						},
+						jc_resubmission:{
+							min:0.1
+						},
+						sc_resubmission:{
+							min:0.1
+						},
+						selection_time:"required",
+						correction_selection_time:"required",
+						files_pack:"required",
+						contrib_percentage:"required"
+					},
+				submitHandler: function(form) {
+					if($("input[name='correction']:checked").val()=="on")
+					{
+						if(upload_spec)
+						form.submit();
+					}
+					else
+						form.submit();
+				}
+		});
+		
+		$('#correction_pricemax').blur(function() {
+		   var mx = parseInt($(this).val());
+		   $("#correction_pricemin").rules("add", {
+			   max: mx
+		   });  
+		});
+		
+		$('#price_max').blur(function() {
+		   var mx = parseInt($(this).val());
+		   $("#price_min").rules("add", {
+			   max: mx
+		   });  
+		});
+		
+		$("#files_pack").keyup(function(){
+			var files_pack = $(this).val();
+			var max_writer_price = files_pack*parseFloat(writing_cost);	
+			max_writer_price = max_writer_price.toFixed(2);	
+			$("#price_max").val(max_writer_price);
+			if(parseFloat($("#price_min").val())>max_writer_price)
+				$("#price_min").val('0');
+			$("#price_min").rules("add", {
+			   max: max_writer_price
+		   });
+		   $("#price_max").rules("add", {
+			   max: max_writer_price
+		   });  
+			var max_corrector_price = files_pack*parseFloat(correction_cost);	
+			max_corrector_price = max_corrector_price.toFixed(2);	
+			$("#correction_pricemax").val(max_corrector_price);
+			 $("#correction_pricemin").rules("add", {
+			   max: max_corrector_price
+		   });  
+		   if(parseFloat($("#correction_pricemin").val())>max_corrector_price)
+				$("#correction_pricemin").val('0');
+		   $("#correction_pricemax").rules("add", {
+			   max: max_corrector_price
+		   });  
+		});
+		
+		if($("#correction_pricemax").val()==0)
+			$("#correction_pricemax").val(files_pack*parseFloat(correction_cost));
+
+		$('#sourcelang_nocheckbox').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			clickviewto();
+		}
+		});
+      // $('#sourcelang_nocheckbox').toggleButtons({label:{enabled: "Oui",disabled: "Non"}});
+	  $('#sourcelang_nocheckbox_correction').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			clickcorrectorlist();
+		}
+		});
+      // $('#sourcelang_nocheckbox_correction').toggleButtons({label:{enabled: "Oui",disabled: "Non"}});
+	   
+	   
+		
+   });
+   
+   function clickviewto()
+   {
+			var value = "";
+			$('input[name="view_to[]"]:checked').each(function(){
+				value += $(this).val()+",";			
+			});		
+			
+			if(product=='translation')
+				var sourcecheck=$("input[name='sourcelang_nocheck']:checked").val();
+			else
+				var sourcecheck='';
+				
+			$.ajax({
+				url:'/deliveryongoing/loadusers',
+				data:{'artid':artid,'type':"contributors",'product':product,'profiletype':value,'sourcecheck':sourcecheck},
+				 beforeSend: function() {
+					$("#writers_filter").html('Please wait loading ...');
+				},
+				success:function(data)
+				{
+					$("#writers_filter").html(data);
+					$("#favcontribcheck").chosen({ allow_single_deselect: true,search_contains: true });
+				}
+			});
+   }
+   
+   function clickcorrectorlist()
+   {
+			var corrvalue = "";
+			$('input[name="corrector_list[]"]:checked').each(function(){
+				corrvalue += $(this).val()+",";			
+			});		
+			
+			if(product=='translation')
+				var sourcecorrectioncheck=$("input[name='sourcelang_nocheck_correction']:checked").val();
+			else
+				var sourcecorrectioncheck='';
+				//alert(corrvalue);
+			$.ajax({
+				url:'/deliveryongoing/loadusers',
+				data:{'artid':artid,'type':"correctors",'product':product,'profiletype':corrvalue,'sourcecorrectioncheck':sourcecorrectioncheck},
+				beforeSend: function() {
+					$("#correctors_filter").html('Please wait loading ...');
+				},
+				success:function(data)
+				{
+					$("#correctors_filter").html(data);
+					$("#favcorrectorcheck").chosen({ allow_single_deselect: true,search_contains: true });
+				}
+			});
+   }
+
+</script>	
+<style type="text/css">
+.form-horizontal .control-label {
+    float: left;
+    padding-top: 5px;
+    text-align: right;
+    width: 42%;
+	font-weight:bold;
+	cursor:default;
+}
+.form-horizontal .controls {
+    margin-left: 47%;
+}
+.popover-title{
+	padding: 8px 14px;
+}
+.popover-content
+{
+    padding: 9px 14px;
+}
+.error {  display: none !important;}
+</style>
+{/literal}
+
+{if $ArticleDetails |@count gt 0}
+{foreach item=article from=$ArticleDetails name="ArticleDetails"}
+	<div class="row-fluid">
+		<div class="span12">		
+			<form class="form-horizontal form_validation_ttip" enctype="multipart/form-data" method="POST" name="edit_articleform" id="edit_articleform" action="/deliveryongoing/save-article">
+				<fieldset>
+					<div class="control-group formSep">
+						<label class="control-label">Titre de l&rsquo;article<span class="f_req">*</span></label>
+						<div class="controls">
+							<span><input type="text" name="title" style="text-transform: none;" id="title" class="input-xlarge" value="{$article.title|escape|utf8_encode|stripslashes}" /></span>
+						</div>
+					</div>
+					<div class="control-group formSep">
+					{* checking is participation ongoing if yes then setting disabled *}
+						<label class="control-label">Type de contributeurs <span class="f_req">*</span></label>
+						<div class="controls form-inline">
+							<label class="uni-radio">
+								<input type="checkbox" value="sc"  name="view_to[]" class="uni_style" {if in_array('sc',$article.view_to)}checked{/if} {if $article.participation_expires gt $smarty.now || $article.writer_selection}disabled{else}onclick="clickviewto();"{/if} />
+								Senior 
+							</label>
+							<label class="uni-radio">
+								<input type="checkbox" value="jc" name="view_to[]" class="uni_style" {if in_array('jc',$article.view_to)}checked{/if} {if $article.participation_expires gt $smarty.now || $article.writer_selection}disabled{else}onclick="clickviewto();"{/if}  />
+								Junior 
+							</label>						
+							
+							{if $article.product neq 'translation'}
+							<label class="uni-checkbox">
+								<input type="checkbox" value="jc0" name="view_to[]" class="uni_style" {if in_array('jc0',$article.view_to)}checked{/if} {if $article.participation_expires gt $smarty.now || $article.writer_selection}disabled{else}onclick="clickviewto();"{/if} />
+								Debutants 
+							</label>		
+							{/if}	
+						</div>
+					</div> 
+					{* If private loading writers through ajax *}
+					{if $article.AOtype eq "private"}
+						{* <div class="control-group formSep">
+						<label class="control-label">Langue(s) des r&eacute;dacteurs / traducteurs</label>
+						<div class="controls">
+							<select name="language_filter[]" disabled="disabled" id="language_filter" class="cselect" style="width:400px" onchange="loadPrivateWriters('{$article.id}')">
+								{html_options options=$language_array|utf8_encode}
+							</select>
+						</div>
+					</div> *}
+					<div class="control-group formSep">
+						<label class="control-label">R&eacute;dacteur(s) / traducteur(s)<span class="f_req">*</span></label>
+						<div class="controls" id="writers_filter">
+						</div>
+					</div>
+					{/if}	
+					{* checking is participation ongoing and participants if yes then setting disabled *}
+					<div class="control-group formSep">
+						<label class="control-label">Fourchette de prix pour la r&eacute;daction
+						<span class="f_req">*</span></label>
+						<div class="controls">
+							<span style="vertical-align:top"><input type="text" placeholder="Min" value="{$article.price_min}" id="price_min" name="price_min" class="span2 number" 
+							{if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) || $article.writer_selection} disabled {/if} 
+							/></span>
+							<span style="vertical-align:middle"><input type="text" placeholder="Max" value="{$article.price_max}" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) || $article.writer_selection} disabled {/if} id="price_max" name="price_max" class="span2 number"/></span>
+							<span style="vertical-align:middle">&euro;</span>
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label  class="control-label">D&eacute;lai du timing de participation <span class="f_req">*</span></label>
+						<div class="controls">
+						{if $article.correction_type eq "extern"}
+						{if ($article.correction_participationexpires gt $smarty.now && $article.totalcorrectpart) || $corrector_selection}
+							{assign var="correction" value=false}
+						{/if}
+					{else}
+						{if $article.correction_participationexpires gt $smarty.now}{assign var="correction" value=false}{/if}
+					{/if}
+							<span><input type="text" name="participation_time" id="participation_time" class="span2" value="{$article.participation_time}" 
+							{if ($article.participation_expires gt $smarty.now || $article.writer_selection) || $correction}disabled{/if} /></span> mins 					
+						</div>
+					</div>
+					<div class="control-group formSep">
+						<label  class="control-label">D&eacute;lai du timing de s&eacute;lection<span class="f_req">*</span></label>
+						<div class="controls">
+							<span><input type="text" name="selection_time" id="selection_time" class="span2" value="{$article.selection_time}" {if $article.participation_expires gt $smarty.now || $article.writer_selection}disabled{/if}  /></span> mins 					
+						</div>
+					</div>
+					{* checking is participation ongoing, writer selection stage and no. of participants if yes then setting disabled *}
+					<div class="row-fluid">
+						<div class="control-group formSep">		
+							<label class="control-label">D&eacute;lai d'envoi de l&rsquo;article<span class="f_req">*</span></label>
+							<div class="controls">
+								<div class="span3">
+									JC0&nbsp;&nbsp;<input type="text" name="subjunior_time" id="subjunior_time" class="span7 validate[required]" value="{$article.subjunior_time}"
+									{if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) || $article.writer_selection} disabled {/if} 
+									> 
+								</div>
+								<div class="span3" style="margin-left:0">
+									&nbsp;JC&nbsp;&nbsp;&nbsp;<input type="text" name="junior_time" id="junior_time" class="span7 validate[required]" value="{$article.junior_time}" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) || $article.writer_selection} disabled {/if} > 
+								</div>
+								<div class="span3" style="margin-left:0">
+									SC&nbsp;&nbsp;<input type="text" name="senior_time" id="senior_time" class="span7 validate[required]" value="{$article.senior_time}" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) ||  $article.writer_selection} disabled {/if} > 
+								</div>
+								<select id="submit_option" class="span3 cselect" style="width:90px" name="submit_option" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) ||  $article.writer_selection} disabled {/if} >
+									<option value="min" {if $article.submit_option=="min"}selected{/if}>Min(s)</option>
+									<option value="hour" {if $article.submit_option=="hour" || $article.submit_option==""}selected{/if}>Heure(s)</option>
+									<option value="day" {if $article.submit_option=="day"}selected{/if}>Jour(s)</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="control-group formSep">		
+							<label class="control-label">D&eacute;lai de renvoi de l&rsquo;article<span class="f_req">*</span></label>
+							<div class="controls">
+								<div class="span3">
+									JC0&nbsp;&nbsp;<input type="text" name="jc0_resubmission" id="jc0_resubmission" class="span7 validate[required]" value="{$article.jc0_resubmission}" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) ||  $article.writer_selection} disabled {/if}> 
+								</div>
+								<div class="span3" style="margin-left:0">
+									&nbsp;JC&nbsp;&nbsp;&nbsp;<input type="text" name="jc_resubmission" id="jc_resubmission" class="span7 validate[required]" value="{$article.jc_resubmission}" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) ||  $article.writer_selection} disabled {/if}> 
+								</div>
+								<div class="span3" style="margin-left:0">
+									SC&nbsp;&nbsp;<input type="text" name="sc_resubmission" id="sc_resubmission" class="span7 validate[required]" value="{$article.sc_resubmission}" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) ||  $article.writer_selection} disabled {/if}> 
+								</div>
+								<select id="resubmit_option" class="span3 cselect" style="width:90px" name="resubmit_option" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) ||  $article.writer_selection} disabled {/if}>
+									<option value="min" {if $article.resubmit_option=="min"}selected{/if}>Min(s)</option>
+									<option value="hour" {if $article.resubmit_option=="hour" || $article.resubmit_option==""}selected{/if}>Heure(s)</option>
+									<option value="day" {if $article.resubmit_option=="day"}selected{/if}>Jour(s)</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="control-group formSep">		
+						<label class="control-label">#Fichiers / Pack<span class="f_req">*</span></label>
+						<div class="controls">
+							<input type="text" name="files_pack" id="files_pack" class="span2 integer" value="{$article.files_pack}" {if ($article.totalpart > 0 && $article.participation_expires > $smarty.now) || $article.writer_selection} readonly {/if}  />
+						</div>
+					</div>
+					{if $artuserprice neq 'NO'}
+                    <div class="control-group formSep">
+                        <label class="control-label">Prix du r&eacute;dacteur s&eacute;lectionn&eacute; <span class="f_req">*</span></label>
+                        <div class="controls">
+                            
+							{if $artuserprice[0].status=="published"}
+								{if  $user_type=='superadmin'}
+									<div class="input-append span2">
+										<input type="text" placeholder="Writer price" value="{$artuserprice[0].price_user}" id="price_writer" name="price_writer" class="span6"/>
+										<span class="add-on">&euro;</span> 
+									</div>
+								{else}
+									<div class="span1" style="margin-top:5px">   
+										{$artuserprice[0].price_user} &euro;
+									</div>
+								{/if}
+							{else}
+							<div class="input-append span2">
+								<input type="text" placeholder="Writer price" value="{$artuserprice[0].price_user}" id="price_writer" name="price_writer" class="span6"/>
+								<span class="add-on">&euro;</span> 
+							</div>
+							{/if}
+							
+							<span style="display: block; height: 30px; float: left; margin-top: 5px;">( {$artuserprice[0].first_name|utf8_encode} {$artuserprice[0].last_name|utf8_encode} )</span>
+                            <input type="hidden" value="{$artuserprice[0].id}" id="part_id" name="part_id" />
+                        </div>
+                    </div>
+                    {/if}
+                    {if $article.product=='translation'}
+					<div class="control-group formSep" style="margin-bottom:0">
+                        <label class="control-label">Do not consider Source language</label>
+                        <div class="controls">
+                            <div id="sourcelang_nocheckbox">
+                                <input type="checkbox" {if $article.sourcelang_nocheck eq 'yes'}checked{/if} name="sourcelang_nocheck" value="yes" >
+                            </div>
+                        </div>
+                    </div>
+					{/if}
+                    <div class="control-group formSep" style="margin-bottom:0">
+						<label class="control-label">Correction<span class="f_req">*</span></label>
+						<div class="controls">
+							<div class="toggle-check1" id="correctioncheck">
+								<input type="checkbox" id="correction" name="correction" {if $stage2 eq 'yes'} disabled {/if} {if $article.correction eq 'yes'}checked{/if}>
+							</div>
+						</div>
+						<input type="hidden" name="" id="correction_file" value="{$article.correction_file}" />
+                        {if $stage2 eq 'yes'}
+                            <input type="hidden"  value="{$article.correction}" id="correctiontype" name="correctiontype" />
+                        {/if}
+					</div> 
+					<div class="control-group formsep">
+						<div class="controls">
+							<div class="hide alert alert-error" id="editao">Aucun brief de correction trouv&eacute;, <a class="editable editable-click" href="/deliveryongoing/edit-ao?ao_id={$article.did}&client_id={$article.clientid}&art_id={$article.id}" data-toggle="modal" role="button" data-target="#edit_ao_modal" id="edit_ao">Cliquez-ici</a> pour l&rsquo;uploader.</div>
+						</div>
+					</div>
+					<div id="correction_details" {if $article.correction neq 'yes'} style="display:none" {/if}> 
+						<div class="control-group formSep">
+							<label class="control-label">Type de correcteurs<span class="f_req">*</span></label>
+							<div class="controls form-inline">
+								<label class="uni-radio">
+									<input type="checkbox" value="sc"  name="corrector_list[]" class="uni_style" {if $article.corrector_list == 'CB' || $article.corrector_list=='CSC'}checked{/if} {if $article.correction_participationexpires gt $smarty.now || $article.corrector_selection}disabled{else}onclick="clickcorrectorlist();"{/if} />
+									Senior 
+								</label>
+								<label class="uni-radio">
+									<input type="checkbox" value="jc" name="corrector_list[]" class="uni_style" {if $article.corrector_list == 'CB' || $article.corrector_list=='CJC'}checked{/if} {if $article.correction_participationexpires gt $smarty.now || $article.corrector_selection}disabled{else}onclick="clickcorrectorlist();"{/if} />
+									Junior 
+								</label>											
+							</div>
+						</div> 
+						<div class="control-group formSep">
+							<label class="control-label">Fourchette de prix pour la correction<span class="f_req">*</span></label>
+							<div class="controls">
+								<span style="vertical-align:top"><input type="text" placeholder="Min"  
+								{if $article.correction_type eq "extern"}
+									{if ($article.correction_participationexpires gt $smarty.now && $article.totalcorrectpart) || $corrector_selection}{assign var="corrector_price_status" value="disabled"}{$corrector_price_status}{/if}
+								{else}
+									{if $article.correction_participationexpires gt $smarty.now}{assign var="corrector_price_status" value="disabled"}{$corrector_price_status}{/if}
+								{/if}
+									value="{$article.correction_pricemin}" id="correction_pricemin" name="correction_pricemin" class="span2"/></span>
+								<span style="vertical-align:middle"><input type="text" placeholder="Max" {if $article.correction_pricemax}value="{$article.correction_pricemax}"{else}value="0"{/if} id="correction_pricemax" name="correction_pricemax" {$corrector_price_status} class="span2"/></span>
+								<span style="vertical-align:middle">&euro;</span>
+							</div>
+						</div>
+						<div class="control-group formSep">
+							<label  class="control-label">D&eacute;lai du timing de participation pour la correction<span class="f_req">*</span></label>
+							<div class="controls">
+								<span><input type="text" name="correction_participation" id="correction_participation" class="span2 digits required" value="{$article.correction_participation}" {if $article.correction_participationexpires gt $smarty.now || $article.corrector_selection}disabled{/if} /></span> mins 					
+							</div>
+						</div>
+						<div class="control-group formSep">
+							<label  class="control-label">Timing pour la s&eacute;lection du correcteur<span class="f_req">*</span></label>
+							<div class="controls">
+								<span><input type="text" name="correction_selection_time" id="correction_selection_time" {if $article.correction_participationexpires gt $smarty.now || $article.corrector_selection}disabled{/if} class="span2" value="{if $article.correction_selection_time}{$article.correction_selection_time}{else}60{/if}"  /></span> mins 					
+							</div>
+						</div>
+						<div class="control-group formSep">		
+							<label class="control-label">D&eacute;lai d'envoi de l&rsquo;article pour le correcteur<span class="f_req">*</span></label>
+							<div class="controls">
+								<div class="span3" style="margin-left:0">
+									&nbsp;JC&nbsp;&nbsp;&nbsp;<input type="text" name="correction_jc_submission" id="correction_jc_submission" class="span7 required" value="{$article.correction_jc_submission}" 
+									{if ($article.correction_participationexpires gt $smarty.now && $article.totalcorrectpart) || $corrector_selection}disabled{/if}
+									> 
+								</div>
+								<div class="span3" style="margin-left:0">
+									SC&nbsp;&nbsp;<input type="text" name="correction_sc_submission" id="correction_sc_submission" class="span7 required" value="{$article.correction_sc_submission}" 
+									{if ($article.correction_participationexpires gt $smarty.now && $article.totalcorrectpart) || $corrector_selection}disabled{/if}
+									> 
+								</div>
+								<select id="correction_submit_option" class="span3 cselect" style="width:90px" name="correction_submit_option" {if ($article.correction_participationexpires gt $smarty.now && $article.totalcorrectpart) || $corrector_selection}disabled{/if}
+								>
+									<option value="min" {if $article.correction_submit_option=="min"}selected{/if}>Min(s)</option>
+									<option value="hour" {if $article.correction_submit_option=="hour"}selected{/if}>Heure(s)</option>
+									<option value="day" {if $article.correction_submit_option=="day"}selected{/if}>Jour(s)</option>
+								</select>
+							</div>
+						</div>
+						<div class="control-group formSep">		
+							<label class="control-label">D&eacute;lai de renvoi de l&rsquo;article pour le correcteur<span class="f_req">*</span></label>
+							<div class="controls">
+								<div class="span3" style="margin-left:0">
+									&nbsp;JC&nbsp;&nbsp;&nbsp;<input type="text" name="correction_jc_resubmission" id="correction_jc_resubmission" class="span7 required" value="{$article.correction_jc_resubmission}" 
+									{if ($article.correction_participationexpires gt $smarty.now && $article.totalcorrectpart) || $corrector_selection}disabled{/if}
+									> 
+								</div>
+								<div class="span3" style="margin-left:0">
+									SC&nbsp;&nbsp;<input type="text" name="correction_sc_resubmission" id="correction_sc_resubmission" class="span7 required" value="{$article.correction_sc_resubmission}" 
+									{if ($article.correction_participationexpires gt $smarty.now && $article.totalcorrectpart) || $corrector_selection}disabled{/if}
+									> 
+								</div>
+								<select id="correction_resubmit_option" class="span3 cselect" style="width:90px" name="correction_resubmit_option" {if ($article.correction_participationexpires gt $smarty.now && $article.totalcorrectpart) || $corrector_selection}disabled{/if} >
+									<option value="min" {if $article.correction_resubmit_option=="min"}selected{/if}>Min(s)</option>
+									<option value="hour" {if $article.correction_resubmit_option=="hour"}selected{/if}>Heure(s)</option>
+									<option value="day" {if $article.correction_resubmit_option=="day"}selected{/if}>Jour(s)</option>
+								</select>
+							</div>
+						</div>
+						<div class="control-group formSep">
+							<label class="control-label">Mod&eacute;ration de la correction</label>
+							<div class="controls">
+								<div class="toggle-check1" id="nomoderation_check">
+									<input type="checkbox" id="nomoderation" name="nomoderation" {if $article.nomoderation eq 'no'} checked{/if}>
+								</div>
+							</div>							
+						</div>
+						{if $article.correction_type eq "private"}
+						<div class="control-group formSep">
+							<label class="control-label">Correcteur(s)<span class="f_req">*</span></label>
+							<div class="controls" id="correctors_filter">
+								{* <select multiple="multiple" {if $stage2 eq 'yes'} disabled {/if} name="favcorrectorcheck[]" data-placeholder="Select corrector..." id="favcorrectorcheck" style="width:400px">
+								{foreach from=$correctorlistall item=contrib}
+									{if in_array($contrib.identifier,$correctors_array)}
+									<option value="{$contrib.identifier}" selected>{$contrib.name|utf8_encode}</option>
+									{else}
+									<option value="{$contrib.identifier}">{$contrib.name|utf8_encode}</option>
+									{/if}
+								{/foreach}
+								</select> *}
+							</div>
+						</div>
+						{/if}
+						{if $artcrtprice neq 'NO'}
+                        <div class="control-group formSep">
+                            <label class="control-label">Prix du correcteur s&eacute;lectionn&eacute;<span class="f_req">*</span></label>
+                            <div class="controls">
+								
+								{if $artuserprice[0].status=="published"}
+									{if  $user_type=='superadmin'}
+										<div class="input-append span2">
+											<input type="text" placeholder="Corrector price" value="{$artcrtprice[0].price_corrector}" id="price_corrector" name="price_corrector" class="span6"/>
+											<span class="add-on">&euro;</span>
+										</div>
+									{else}
+										<div class="span1" style="margin-top:5px">   
+											{$artcrtprice[0].price_corrector}&nbsp; &euro;
+										</div>
+									{/if}
+								{else}
+								<div class="input-append span2">
+									<input type="text" placeholder="Corrector price" value="{$artcrtprice[0].price_corrector}" id="price_corrector" name="price_corrector" class="span6"/>
+									<span class="add-on">&euro;</span>
+								</div>		
+								{/if}
+								
+							<span style="display: block; height: 30px; float: left; margin-top: 5px;">( {$artcrtprice[0].first_name|utf8_encode} {$artcrtprice[0].last_name|utf8_encode} )</span>
+							<input type="hidden" value="{$artcrtprice[0].id}" id="crtpart_id" name="crtpart_id" />	
+							</div>	
+                        </div>
+                        {/if}
+						
+						{if $article.product=='translation'}
+                        <div class="control-group formSep" style="margin-bottom:0">
+                            <label class="control-label">Do not consider Source language </label>
+                            <div class="controls">
+                                <div class="span6">
+                                    <div id="sourcelang_nocheckbox_correction">
+                                        <input type="checkbox" {if $article.sourcelang_nocheck_correction eq 'yes'}checked{/if} name="sourcelang_nocheck_correction" value="yes">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+						{/if}
+					</div>
+					<input type="hidden" name="ao_id" value="{$article.delivery_id}">
+					<input type="hidden" name="article_id" value="{$article.id}">
+					<input type="hidden" name="client_id" value="{$article.user_id}">
+					<div class="control-group">
+						<div class="controls">
+							<button class="btn btn-gebo" type="submit">Mettre &agrave; jour</button>
+							<button class="btn" data-dismiss="modal">Annuler</button>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+{/foreach}
+{/if}

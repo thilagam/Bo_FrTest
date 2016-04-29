@@ -1,0 +1,218 @@
+{literal}
+<script type="text/javascript" charset="utf-8" src="/BO/script/datempicker.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#articletype").chosen({ disable_search: true });	
+		$("#missionmange").chosen({ disable_search: true });	
+		$("#clientype").chosen({ disable_search: true });	
+	
+       $('#start_date').datetimepicker({
+			showSecond: true,
+			timeFormat: 'hh:mm:ss',
+			minDate: new Date(),
+			stepHour: 1,
+			stepMinute: 1,
+			stepSecond: 10,
+			timeOnlyTitle: 'Choisir une heure',
+			timeText: 'Heure',
+			hourText: 'Heures',
+			minuteText: 'Minutes',
+			secondText: 'Secondes',
+			currentText: 'Maintenant',
+			closeText: 'Termin&eacute;',
+
+		});
+		
+		$('#workcheck').toggleButtons({
+	 	label:{enabled: "Oui",disabled: "Non"},
+		onChange: function () {
+			var type=$("input[name='work']:checked").val();
+			if(type=="yes")
+				$("#hasworked").show();
+			else
+				$("#hasworked").hide();
+		}
+		});
+	});	
+		
+	function validate_brief()
+	{
+		var err=0;
+		var type=$("input[name='work']:checked").val();
+		var price=$("#price").val();
+		var potential=$("#potential").val();
+		var daylimit=$("#daylimit").val();
+		
+		if(type=="yes")
+		{
+			var year=$("#year").val();
+			var volume=$("#volume").val();
+			if(isNaN(year) || year=="")
+			{
+				$("#year").css("border-color","red");
+				if(isNaN(volume))
+					$("#yearerr").html("Merci d'ins&eacute;rer un chiffre");
+				$("#year").focus();
+				err++;
+			}
+			else
+			{
+				$("#year").css("border-color","");				
+				$("#yearerr").html("");
+			}	
+			if(isNaN(volume) || volume=="")
+			{
+				$("#volume").css("border-color","red");
+				if(isNaN(volume))
+					$("#volumeerr").html("Merci d'ins&eacute;rer un chiffre");
+				$("#volume").focus();
+				err++;
+			}
+			else
+			{
+				$("#volume").css("border-color","");
+				$("#volumeerr").html("");
+			}	
+		}
+		
+		if(isNaN(price))
+		{
+			$("#price").css("border-color","red");
+			$("#priceerr").html("Merci d'ins&eacute;rer un chiffre");
+			$("#price").focus();
+			err++;
+		}
+		else
+		{
+			$("#price").css("border-color","");
+			$("#priceerr").html("");
+		}	
+		if(isNaN(potential))
+		{
+			$("#potential").css("border-color","red");
+			$("#potentialerr").html("Merci d'ins&eacute;rer un chiffre");
+			$("#potential").focus();
+			err++;
+		}
+		else
+		{
+			$("#potential").css("border-color","");
+			$("#potentialerr").html("");
+		}
+		if(isNaN(daylimit))
+		{
+			$("#daylimit").css("border-color","red");
+			$("#daylimiterr").html("Merci d'ins&eacute;rer un chiffre");
+			$("#daylimit").focus();
+			err++;
+		}
+		else
+		{
+			$("#daylimit").css("border-color","");
+			$("#daylimiterr").html("");
+		}
+		if(err==0)
+		{
+			document.pollbriefform.submit();
+			return true;
+		}
+		else
+			return false;
+	}
+</script>
+
+{/literal}	
+
+<form name="pollbriefform" id="pollbriefform" method="post" action="/ao/pollmoderateusers?submenuId=ML2-SL17&poll={$poll}&addbrief=1">
+	<table cellpadding="4" cellspacing="2" width="85%" align="center">
+		<tr>
+			<td valign="top">A-t-on d&eacute;j&agrave; travaill&eacute; avec le client </td>
+			<td>
+				<div id="workcheck">
+					<input type="checkbox" name="work" id="work" value="yes" {if $briefdetail[0].work=="yes" || $briefdetail[0].work==""}checked="checked"{/if}/>
+				</div>
+			</td>
+		</tr>
+		<tr id="hasworked" {if $briefdetail[0].work=="no"}style="display:none;"{/if}>
+			<td colspan="2">
+				<div class="well">
+				<table cellpadding="4" cellspacing="2" width="90%" align="center" >
+					<tr>
+						<td valign="top">En quelle ann&eacute;e ?</td>
+						<td><input type="text" name="year" id="year" maxlength="4" value="{$briefdetail[0].year}"/><div style="color:red;" id="yearerr"></div></td>
+					</tr>
+					<tr>
+						<td valign="top">Volum&eacute;trie de l'ancien contrat ?</td>
+						<td><input type="text" name="volume" id="volume" value="{$briefdetail[0].volume}"/><div style="color:red;" id="volumeerr"></div></td>
+					</tr>
+					<tr>
+						<td valign="top">Type d'articles de l'ancien contrat ?</td>
+						<td>{html_options name=articletype id=articletype selected=$briefdetail[0].articletype options=$ep_art_type|utf8_encode|stripslashes}</td>
+					</tr>
+					<tr>
+						<td valign="top">Tarif de vente moyen par article ?</td>
+						<td><input type="text" name="price" id="price" value="{$briefdetail[0].price}"/><div style="color:red;" id="priceerr"></div></td>
+					</tr>
+					<tr>
+						<td valign="top">Quel &eacute;tait le niveau d'exigence du client ?</td>
+						<td><input type="text" name="level" id="level" value="{$briefdetail[0].level|utf8_encode}" /></td>
+					</tr>
+					<tr><td>&nbsp;</td></tr>
+				</table>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>Volum&eacute;trie potentielle d'articles sur l'ann&eacute;e</td>
+			<td><input type="text" name="potential" id="potential" value="{$briefdetail[0].potential}" /><div style="color:red;" id="potentialerr"></div></td>
+		</tr>
+		<tr>
+			<td>Y a-t-il un potentiel annexe &agrave; cette mission</td>
+			<td><input type="text" name="potentialannexe" id="potentialannexe" value="{$briefdetail[0].potentialannexe|utf8_encode}" /></td>
+		</tr>
+		<tr>
+			<td>Type de clients ?</td>
+			<td> 
+				<select name="clientype" id="clientype">
+					<option value="seo" {if $briefdetail[0].clientype=="seo"}selected{/if}>SEO</option>
+					<option value="edit" {if $briefdetail[0].clientype=="edit"}selected{/if}>Edito</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Qui va g&eacute;rer la mission chez le client ? </td>
+			<td>
+				<select name="missionmange" id="missionmange">
+					<option value="contract" {if $briefdetail[0].missionmange=="contract"}selected{/if}>Signataire du contrat</option>
+					<option value="editorial" {if $briefdetail[0].missionmange=="editorial"}selected{/if}>&eacute;quipe de r&eacute;daction interne</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Date de d&eacute;marrage souhait&eacute;e </td>
+			<td><input type="text" id="start_date" name="start_date" readonly="readonly" value="{$briefdetail[0].start_date|date_format:'%d/%m/%Y %H:%M:%S'}" /></td>
+		</tr>
+		
+		<tr>
+			<td>Temps imparti pour la mission (en nombre de jours) </td>
+			<td><input type="text" id="daylimit" name="daylimit" value="{$briefdetail[0].daylimit}" /><div style="color:red;" id="daylimiterr"></div></td>
+		</tr>
+		
+		<tr>
+			<td valign="top">Commentaire libre</td>
+			<td> 
+				<textarea name="comment" id="comment" cols="22" rows="6" >{$briefdetail[0].comment|utf8_encode}</textarea>
+			</td>
+		</tr>
+		<tr><td>&nbsp;</td></tr>
+		<tr>
+			<td colspan="2" align="center">
+				<input type="button" name="cancel" value="Annuler" class="btn btn-info" data-dismiss="modal"></input>
+				<input type="button" name="submit_pollbrief" value="Terminer" class="btn btn-info" onClick="return validate_brief();"></input>
+			</td>
+		</tr>
+		<tr><td>&nbsp;</td></tr>
+	</table>
+	<input type="hidden" name="poll" id="poll" value="{$poll}" />
+</form>

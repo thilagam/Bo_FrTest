@@ -1,0 +1,20 @@
+<div class="chat_box">
+    <div class="chat_msg clearfix">
+        <div class="chat_msg_heading"><span class="chat_msg_date"></span><span class="chat_user_name"><h3>RDV Information</h3></span></div>
+        <div class="chat_msg_body">
+
+            <div class="vcard-item">
+                <ul class="list_a">
+
+                    <li><p class="sepH_a"><strong>Rdv : </strong> {$leavedetails[0].leave}</p></li>
+                    <li><p class="sepH_a"><strong>Country :</strong> {if $leavedetials[0].country eq 38} FRANCE {elseif $leavedetials.country eq 53} INDIA {else} UK {/if}</p></li>
+                    <li><p class="sepH_a"><strong>Place :</strong> {$leavedetails[0].meeting_place}</p></li>
+                    <li><p class="sepH_a"><strong>From :</strong> {$leavedetails[0].start|date_format:"%d/%m/%Y %H:%m"|upper}</p></li>
+                    <li><p class="sepH_a"><strong>To :</strong> {$leavedetails[0].end|date_format:"%d/%m/%Y %H:%m"|upper}</p></li>
+                    <li><p class="sepH_a"><strong>Reasons :</strong> {$leavedetails[0].rdv_reasons}</p></li>
+                    <li><p class="sepH_a"><strong>Invitee :</strong> {$leavedetails[0].rdv_invitees}</p></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,596 @@
+{literal}
+	<style>
+		.w-box-content.cnt_a
+		{
+			min-height:auto;
+		}
+	</style>	
+{/literal}
+{foreach item=article from=$articleDetails name="articleDetails"} 
+<div class="row-fluid">
+	<div class="span6" id="leftheight">
+		<div class="span4">
+			<div class="progress" style="margin-bottom:10px">
+				<div class="progress-bar" role="progressbar" aria-valuenow="{$article.progressbar_percent}" aria-valuemin="0" aria-valuemax="100"
+				{if $article.progressbar_percent eq 0} style="width: 100%;  background:#E3E5F4;"
+				{elseif $article.progressbar_percent eq 15} style="width: {$article.progressbar_percent}%; color:#FFFFFF; background:#ff7200;"
+				{elseif $article.progressbar_percent eq 30} style="width: {$article.progressbar_percent}%; color:#FFFFFF; background:#ffa200;"
+				{elseif $article.progressbar_percent eq 45} style="width: {$article.progressbar_percent}%; color:#FFFFFF; background:#ffd21d;"
+				{elseif $article.progressbar_percent eq 65} style="width: {$article.progressbar_percent}%; background:#f2f43c;"
+				{elseif $article.progressbar_percent eq 85} style="width: {$article.progressbar_percent}%; background:#cbf43c;"
+				{elseif $article.progressbar_percent eq 100} style="width: {$article.progressbar_percent}%;  background:#3fe805;"
+				{elseif $article.progressbar_percent eq 12} style="width: {$article.progressbar_percent}%; color:#FFFFFF; background:#ff7200;"
+				{elseif $article.progressbar_percent eq 25} style="width: {$article.progressbar_percent}%; color:#FFFFFF; background:#ffa200;"
+				{elseif $article.progressbar_percent eq 37} style="width: {$article.progressbar_percent}%; color:#FFFFFF; background:#ffc600;"
+				{elseif $article.progressbar_percent eq 50} style="width: {$article.progressbar_percent}%; background:#ffd21d;"
+				{elseif $article.progressbar_percent eq 62} style="width: {$article.progressbar_percent}%; background:#f2f43c;"
+				{elseif $article.progressbar_percent eq 85} style="width: {$article.progressbar_percent}%; color:#FFFFFF; background:#f2f43c;"
+				{elseif $article.progressbar_percent eq 97} style="width: {$article.progressbar_percent}%;  background:#cbf43c;"
+				{/if} >
+				</div>
+			</div>
+		</div>
+		&nbsp;{$article.progressbar_percent}%
+		<div class="clear"></div>
+		<div class="row-fluid viewart">
+			<h3 style="float:left">{$article.title|stripslashes|utf8_encode}</h3>
+			{if $article.status eq 'refused'} <label class="label label-important">closed</label>
+						{elseif $article.writer_bid_details |@count gt 0 OR $article.corrector_bid_details |@count gt 0 }
+                            {if $article.writer_bid_details |@count gt 0}
+                            {if $article.writer_bid_details[0].writer_status eq 'bid' OR $article.writer_bid_details[0].writer_status eq 'disapproved' OR $article.writer_bid_details[0].writer_status eq 'time_out'}
+
+                                {if ($article.writer_bid_details[0].writer_status eq 'bid' && $article.writer_bid_details[0].article_submit_expires lt $smarty.now) OR ($article.writer_bid_details[0].writer_status eq 'time_out')}
+                                    <label class="label label-important">Non envoy&eacute; par le r&eacute;dacteur</label>
+                                {else}
+                                    <a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><label class="label label-info">
+                                            {if $article.writer_bid_details[0].writer_status eq 'bid' OR $article.writer_bid_details[0].writer_status eq 'time_out' }
+                                            EN COURS DE REDACTION {if $article.writer_bid_details[0].latest_cycle gt 1}({$article.writer_bid_details[0].latest_cycle}) {/if}
+                                            {else}
+                                            non1 envoy&eacute;
+                                            {/if}
+                                        </label></a>
+                            {/if}
+                            {elseif $article.writer_bid_details[0].writer_status eq 'plag_exec' OR $article.writer_bid_details[0].current_stage eq 'stage0' }
+                            <a href="/proofread/stage-articles?submenuId=ML3-SL11&aoId={$article.delivery_id}"><label class="label label-info">EN PHASE PLAGIAT</label></a>
+                            {elseif $article.writer_bid_details[0].writer_status eq 'under_study' && $article.writer_bid_details[0].current_stage eq 'stage1'}
+                            <a href="/proofread/stage-deliveries?submenuId=ML3-SL2"><label class="label label-info">EN RELECTURE PHASE 1</label></a>
+                            <br>
+                            <!--{$article.writer_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}-->
+                            {elseif $article.writer_bid_details[0].writer_status eq 'under_study' && $article.writer_bid_details[0].current_stage eq 'client'}
+                            <label class="label label-info">EN RELECTURE Client</label>
+                            <br>
+                            {$article.writer_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}
+                            {elseif $article.writer_bid_details[0].writer_status eq 'under_study' && $article.writer_bid_details[0].current_stage eq 'stage2' && $article.corrector_bid_details[0].current_stage neq 'stage2'}
+                            <a href="/proofread/stage-deliveries?submenuId=ML3-SL3"><label class="label label-info">EN RELECTURE PHASE 2</label></a>
+                            <br>
+                            <!--{$article.writer_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}-->
+
+                            {elseif $article.writer_bid_details[0].writer_status eq 'published' && $article.corrector_bid_details[0].corrector_status neq 'published'}
+                            <label class="label label-warning">VALID&Eacute;</label>
+                            {/if}
+                            {/if}
+                            {if $article.corrector_bid_details |@count gt 0}
+                            {if ($article.corrector_bid_details[0].corrector_status eq 'bid' || $article.corrector_bid_details[0].corrector_status eq 'disapproved') && ($article.writer_bid_details[0].writer_status eq 'under_study')}
+
+                            {if ($article.corrector_bid_details[0].corrector_status eq 'bid' &&  	$article.corrector_bid_details[0].corrector_submit_expires lt $smarty.now) OR ($article.corrector_bid_details[0].corrector_status eq 'time_out')}
+                            <label class="label label-important">Non envoy&eacute; par le correcteur</label>
+                            {else}
+                            <a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}"><label class="label label-info">
+                                    {if $article.corrector_bid_details[0].corrector_status eq 'bid'}
+                                    EN COURS DE CORRECTION {if $article.corrector_bid_details[0].latest_cycle gt 1}({$article.corrector_bid_details[0].latest_cycle}) {/if}
+                                    {else}
+                                    non envoy&eacute;
+                                    {/if}
+                                </label></a><br>
+											{*	<span id="time_{$article.id}_{$article.corrector_bid_details[0].corrector_submit_expires}" class="alert alert-danger">
+													<i class="icon-time"></i> <span id="text_{$article.id}_{$article.corrector_bid_details[0].corrector_submit_expires}"></span>
+												</span> *}
+                            {/if}
+                            {elseif ($article.corrector_bid_details[0].corrector_status eq 'bid' || $article.corrector_bid_details[0].corrector_status eq 'disapproved') && ($article.writer_bid_details[0].writer_status eq 'disapproved_temp' || $article.writer_bid_details[0].writer_status eq 'closed_temp' )}
+                            <a href="/correction/moderation?submenuId=ML3-SL10"><label class="label label-info">EN COURS DE MODERATION</label></a>
+                            <br>
+                            {elseif ($article.corrector_bid_details[0].corrector_status eq 'under_study' && $article.corrector_bid_details[0].current_stage eq 'stage2') && ($article.writer_bid_details[0].writer_status eq 'under_study' || $article.writer_bid_details[0].current_stage eq 'stage2' )}
+                            <a href="/proofread/stage-deliveries?submenuId=ML3-SL3"><label class="label label-info">EN RELECTURE PHASE 2</label></a>
+                            <br>
+                            <!--{$article.corrector_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}-->
+
+                            {elseif ($article.corrector_bid_details[0].corrector_status eq 'under_study' && $article.corrector_bid_details[0].current_stage eq 'mission_test') && ($article.writer_bid_details[0].writer_status eq 'under_study' || $article.writer_bid_details[0].current_stage eq 'mission_test' )}
+                            <a href="/ao/markstat?submenuId=ML2-SL3"><label class="label label-info">Statistiques de missions test</label></a>
+                            <br>
+                            <!--{$article.corrector_bid_details[0].updated_at|date_format:"%d/%m/%Y %R"}-->
+                            {elseif $article.corrector_bid_details[0].corrector_status eq 'published' &&  $article.writer_bid_details[0].writer_status eq 'published'}
+                            <label class="label label-warning">VALID&Eacute;</label>
+                            {elseif $article.writer_bid_details[0].writer_status eq 'closed' OR $article.bo_closed_status eq 'closed' }
+                            <label class="label label-warning">article ferm&eacute;</label>
+                            {/if}
+                            {/if}
+                        {/if}
+
+                            {if $article.bo_closed_status eq 'closed' && !$article.writerParticipation}
+                            <label class="label label-warning">article ferm&eacute;</label>
+                            {elseif $article.participation_expires gt $smarty.now OR $article.correction_participationexpires gt $smarty.now}
+                            {if $article.participation_expires gt $smarty.now && !$article.writerParticipation && $article.publishtime gt $smarty.now }
+                            <a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><label class="label label-info hint--left  hint" data-hint="R&eacute;dacteur">PROGRAMM&Eacute;</label></a><br>
+								{*	<span id="time_{$article.id}_{$article.publishtime}" class="alert alert-danger">
+										<i class="icon-time"></i> <span id="text_{$article.id}_{$article.publishtime}"></span>
+									</span> *}
+                            {elseif $article.participation_expires gt $smarty.now && !$article.writerParticipation}
+                            <a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><label class="label label-info hint--left  hint" data-hint="R&eacute;dacteur">PARTICIPATIONS EN COURS</label></a><br>
+									{*<span id="time_{$article.id}_{$article.participation_expires}" class="alert alert-danger">
+										<i class="icon-time"></i> <span id="text_{$article.id}_{$article.participation_expires}"></span>
+									</span> *}
+                            {elseif $article.correction_participationexpires gt $smarty.now &&  $article.writer_bid_details[0].writer_status eq 'under_study' && !$article.corrector_bid_details[0].corrector_status && !$article.correctorParticipation}
+                            <a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}"><label class="label label-info hint--left  hint" data-hint="Correcteur">PARTICIPATIONS EN COURS</label></a><br>
+								{* <span id="time_{$article.id}_{$article.correction_participationexpires}" class="alert alert-danger">
+										<i class="icon-time"></i> <span id="text_{$article.id}_{$article.correction_participationexpires}"></span>
+									</span>
+								*}
+                            {/if}
+                            {elseif $article.participation_expires lt $smarty.now && $article.totalParticipations gt 0 && !$article.writerParticipation}
+                            <a href="/processao/article-profiles?submenuId=ML2-SL2&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning hint--left  hint" data-hint="R&eacute;dacteur">EN S&Eacute;LECTION DE PROFIL</span></a>
+                            {elseif $article.correction_participationexpires lt $smarty.now && $article.totalCorrectionParticipations gt 0 && !$article.correctorParticipation}
+                            <a href="/correction/corrector-article-profiles?submenuId=ML2-SL18&aoId={$article.delivery_id}"><span  style="cursor:pointer" class="label label-warning hint--left  hint" data-hint="Correcteur">EN S&Eacute;LECTION DE PROFIL</span></a>
+                            {/if}
+		</div>
+		
+		<div class="span12" style="border-top:1px solid #eee;border-bottom:1px solid #eee;margin-left:0">
+		<div class="pull-left" style="margin:10px 0">
+		<div class="btn-group">
+		{if $article.writerParticipation}
+			{if $article.writer_bid_details[0].writer_status neq 'published' && $article.writer_bid_details[0].writer_status neq 'closed' && $article.writer_bid_details[0].current_stage neq 'stage2' }
+			<a data-toggle="modal" class="btn btn-inverse" onclick="return getCloseComment('{$article.id}',0)">Clore</a>
+			{/if}
+		{else}
+			<a data-toggle="modal" onclick="closeArtprofile('{$article_id}', 'no');"><button type="button" class="btn btn-inverse">Clore</button></a>
+		{/if}
+		
+		
+		{if $article.totalParticipations eq '0' &&  $article.participation_expires lt $smarty.now && $article.writer_bid_details[0].writer_stage neq 'stage0' && $article.writer_bid_details[0].writer_stage neq 'stage1' && $article.writer_bid_details[0].writer_stage neq 'stage2' && $article.writer_bid_details[0].writer_stage neq 'corrector' && $article.missiontest neq 'yes' &&  $article.status neq 'refused'}
+			{assign var="writer_republish" value=true}
+		{elseif $article.totalParticipations gt 0 && $article.writer_bid_details[0].writer_status neq 'published' && $article.writer_bid_details[0].writer_stage neq 'stage0' && $article.writer_bid_details[0].writer_stage neq 'stage1' && $article.writer_bid_details[0].writer_stage neq 'stage2' && $article.writer_bid_details[0].writer_stage neq 'corrector' &&  $article.participation_expires lt $smarty.now && $article.missiontest neq 'yes' &&  $article.status neq 'refused'}
+			{assign var="writer_republish" value=true}
+		{/if}
+		
+		{if $article.totalCorrectionParticipations eq '0' && $article.correction eq 'yes' && $article.correction_participationexpires lt $smarty.now && $article.correction_participationexpires neq 0 && $article.writerParticipation && $article.missiontest neq 'yes' &&  $article.status neq 'refused'}
+			{assign var="corrector_republish" value=true}
+		{elseif $article.totalCorrectionParticipations gt 0 && $article.correction eq 'yes' && $article.corrector_bid_details[0].corrector_status neq 'published' && $article.correction_participationexpires lt $smarty.now && $article.correction_participationexpires neq 0 && $article.missiontest neq 'yes' &&  $article.status neq 'refused'}
+			{assign var="corrector_republish" value=true}
+		{/if}
+		
+		{if $writer_republish || $corrector_republish}
+		<div class="btn-group">
+			<a class="dropdown-toggle btn btn-danger" data-toggle="dropdown" href="#" oldtitle="Options" title="" aria-describedby="ui-tooltip-3">
+			Republish
+			<b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu">
+			{if $writer_republish}
+			<li>
+				<a class="" name="closerepublish" href="/article-republish/republishpopup?artId={$article.id}" data-target="#republish" data-toggle="modal">Writer Republish</a>
+			</li>
+			{/if}
+			{if $corrector_republish}
+			<li>
+				<a class="" name="closerepublish" href="/article-republish/republishcorrectorpopup?close=yes&amp;artId={$article.id}" data-target="#republish" data-toggle="modal">Corrector Republish</a>
+			</li>	
+			{/if}
+		</div>
+		{/if}
+		
+		
+		<a class="btn btn-info editable editable-click" href="/deliveryongoing/edit-article?article_id={$article.id}" data-toggle="modal" role="button" data-target="#edit_article_modal" id="edit_article">
+			<span style="vertical-align: text-bottom;">Edit</span>
+		</a>
+		
+		{if $article.writerParticipation}
+			{if $article.bo_closed_status !='closed' && $article.writer_bid_details[0].status!='bid'}
+				{assign var="writer_download" value=true}
+			{/if}
+			{if $article.expiredWriterParticipation }
+				{assign var="writer_moretime" value=true}
+			{/if}
+		{/if}
+		{if $article.correctorParticipation}
+			{if $article.corrector_artproc_details != 'NO'}
+				{assign var="corrector_download" value=true}
+			{/if}
+		{/if}
+			{if $writer_download || $corrector_download}
+			<div class="btn-group">
+				<a class="dropdown-toggle btn btn-success" data-toggle="dropdown" href="#" oldtitle="Options" title="" aria-describedby="ui-tooltip-3">
+				Download Article
+				<b class="caret"></b>
+				</a>
+				<ul class="dropdown-menu">
+				{if $writer_download}
+				<li>
+					<a class="" href="/BO/download_article_latestversion.php?article_id={$article.id}&type=writer" >
+						R&eacute;dacteur 
+					</a>
+				</li>
+				{/if}
+				{if $corrector_download}
+				<li>
+					<a class="" href="/BO/download_article_latestversion.php?article_id={$article.id}&type=corrector" >
+						Correcteur 
+					</a>
+				</li>
+				{/if}
+				</ul>
+			</div>
+			{/if}
+		
+		{if $article.correctorParticipation}
+			{if $article.expiredcorrectorParticipation }
+			{assign var="corrector_moretime" value=true}
+			{/if}
+		{/if}
+		
+		{if $writer_moretime || $corrector_moretime}
+		<div class="btn-group">
+			<a class="dropdown-toggle btn" data-toggle="dropdown" href="#" oldtitle="Options" title="" aria-describedby="ui-tooltip-3">
+			Give more time
+			<b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu">
+			{if $writer_moretime}
+			<li>
+				<a href="/deliveryongoing/extend-time?utype=writer&participation_id={$article.expiredWriterParticipation}" role="button" data-toggle="modal" data-target="#extend_time" class="">Writer</a>
+			</li>
+			{/if}
+			{if $corrector_moretime}
+			<li>
+				<a href="/deliveryongoing/extend-time?utype=corrector&participation_id={$article.expiredcorrectorParticipation}" role="button" data-toggle="modal" data-target="#extend_time" class="">Corrector</a>
+			</li>
+			{/if}
+			</ul>
+		</div>
+		{/if}				<!------------------------ stop participations ------------------------->		{if $participation_ongoing}			<div class="btn-group">				<a class="dropdown-toggle btn btn-inverse" data-toggle="dropdown" href="#" oldtitle="Options" title="" aria-describedby="ui-tooltip-3">					Stop					<b class="caret"></b>				</a>				<ul class="dropdown-menu">								{if $writer_stopparticipation}				<li>					<a href="javascript:void(0);" onclick="return stopparticipation('{$article.id}', 'writing')">Writer participation</a>				</li>				{/if}				{if $corrector_stopparticipation}				<li>					<a href="javascript:void(0);" onclick="return stopparticipation('{$article.id}', 'correction')">Corrector participation</a>				</li>				{/if}				</ul>			</div>		{/if}
+		</div>
+		</div>
+		</div>
+		<div class="clear"></div>
+		<div class="topset2">
+			{if $article.writerParticipation}
+			<div class="w-box span6">
+				<div class="w-box-header">Writer</div>
+				<div class="w-box-content  cnt_a">
+					<div class="image">
+						<img class="img-circle" style="float:left" alt="{$article.writerName|utf8_encode}" src="{$fo_path}profiles/contrib/pictures/{$article.writer_bid_details[0].user_id}/{$article.writer_bid_details[0].user_id}_h.jpg" title="{$article.writerName|utf8_encode}">
+						<span style="margin-left:5px"><strong>{$article.writerName|utf8_encode}</strong></span><br>
+						<span style="margin-left:5px">
+						{if $article.writer_type == 'senior'}
+						SC
+						{elseif  $article.writer_type == 'junior'}
+						JC
+						{else}
+						JCO
+						{/if}
+						</span>
+					</div>
+					<div class="clear"></div>
+					{if $article.writer_facturation_details |@count gt 0 }
+					<table class="table viewarttable table-striped topset2" >
+					<tr>
+						<td>Prix r&eacute;dacteur s&eacute;lectionn&eacute;</td>
+						<td>{$article.writer_facturation_details[0].price_user|zero_cut:2} &euro;</td>
+					</tr>
+					<tr>
+						<td>Prix moyen participants</td>
+						<td>{$article.writer_facturation_details[0].avg_price|zero_cut:2} &euro;</td>
+					</tr>
+					<tr>
+						<td>Statut paiement</td>
+						<td>
+						{if $article.writer_facturation_details[0].status eq 'Not paid'}
+								Facture cr&eacute;&eacute;e
+						{elseif $article.writer_facturation_details[0].status eq 'paid'}
+							Pay&eacute;e
+						{elseif $article.writer_facturation_details[0].royalty}	
+							En attente
+						{else}
+							N/A
+						{/if}	
+						</td>
+					</tr>
+					</table>
+					{else}
+						N/A
+					{/if}	
+				</div>	
+			</div>	
+			{/if}
+			{if $article.correctorParticipation}
+			<div class="w-box span6">
+				<div class="w-box-header">Corrector</div>
+				<div class="w-box-content  cnt_a">
+					<div class="image">
+						<img class="img-circle" style="float:left" alt="{$article.correctorName|utf8_encode}" src="{$fo_path}profiles/contrib/pictures/{$article.corrector_bid_details[0].corrector_id}/{$article.corrector_bid_details[0].corrector_id}_h.jpg" title="{$article.correctorName|utf8_encode}">
+						<span style="margin-left:5px"><strong>{$article.correctorName}</strong></span><br>
+						<span style="margin-left:5px">
+						{if $article.corrector_type == 'senior'}
+						SC
+						{else}
+						JC
+						{/if}
+						</span>
+					</div>
+					<div class="clear"></div>
+					{if $article.corrector_facturation_details |@count gt 0 }
+					<table class="table viewarttable table-striped topset2" >
+					<tr>
+						<td>Prix r&eacute;dacteur s&eacute;lectionn&eacute;</td>
+						<td>{$article.corrector_facturation_details[0].price_corrector|zero_cut:2} &{$currency};</td>
+					</tr>
+					<tr>
+						<td>Prix moyen participants</td>
+						<td>{$article.corrector_facturation_details[0].avg_price|zero_cut:2} &{$currency};</td>
+					</tr>
+					<tr>
+						<td>Statut paiement</td>
+						<td>
+						{if $article.corrector_facturation_details[0].status eq 'Not paid'}
+								Facture cr&eacute;&eacute;e
+						{elseif $article.corrector_facturation_details[0].status eq 'paid'}
+							Pay&eacute;e
+						{elseif $article.corrector_facturation_details[0].royalty}	
+							En attente
+						{else}
+							N/A
+						{/if}	
+						</td>
+					</tr>
+					</table>
+					{else}
+						N/A
+					{/if}	
+				</div>	
+			</div>	
+			{/if}
+		</div>	
+		<div class="clear"></div>
+		
+		{* Start of Comments *}
+		
+		<div class="w-box topset2">
+		<div class="w-box-header">Comments</div>
+		<div class="w-box-content  cnt_a">
+			{literal}
+				<style type="text/css">
+				.media {
+					background: none repeat scroll 0 0 #FFFFFF;
+					border-color: #E4E4E4 #E4E4E4 #BBBBBB;
+					border-image: none;
+					border-radius: 4px;
+					border-style: solid;
+					border-width: 1px;
+					box-shadow: 0 1px 1px rgba(0, 0, 0, 0.086);
+					margin-bottom: 15px;
+					overflow: hidden;
+					padding: 12px;
+				}
+				.close
+				{
+				   padding: 3px;
+				}
+				</style>
+				<script type="text/javascript">
+				//Comments submission
+				$(document).ready(function() {
+						$("#comment_submit").click(function(){
+								
+							var $b = $('input[name=user_val]');
+							var countselected = $b.filter(':checked').length;
+							var selected = '';
+							if(countselected >= 1)
+							{				
+								$('input[name=user_val]:checked').each(function() {
+									if(selected)
+										selected =   selected + '|' + ($(this).val());
+									else			
+										selected =   $(this).val();
+								});
+							}	
+							//alert(selected);
+							
+							$.post("/ongoing/save-comments?send_notification="+selected, $("#comment_form").serialize(),
+								function(data) {
+									//alert(data);
+									 var obj = $.parseJSON(data);
+									$("#comments_list").html(obj.comments);
+									$("#comment_count").text(obj.count);
+									$("#comment_count_1").html('<i class="icon-comment"></i> '+obj.count);
+									$("#article_comments").val(''); 
+									$("#comments_list img").addClass('img-circle');
+								}
+							);
+						});
+						
+						//refreshing comments
+						
+						var comment_type=$("#comment_type").val();
+						var identifier=$("#identifier").val();
+						 /* setInterval(function() {
+							//$('#comments_list').load('/ongoing/save-comments?comment_type='+comment_type+'&identifier='+identifier);
+							$.getJSON('/ongoing/save-comments?comment_type='+comment_type+'&identifier='+identifier,
+								{
+									format: "json"
+								},
+								function(data) {
+									$("#comments_list").html(data.comments);
+									$("#comment_count").text(data.count);
+									$("#comment_count_1").html('<i class="icon-comment"></i> '+data.count);
+									$("#article_comments").val('');
+								});
+						}, 60000); */ 
+						
+						//changing active status of a comment
+						$("[id^=delete_comment_]").die('click').live('click', function() {
+							
+							var parentLi=$(this).parents("li:first").attr('id');
+							var deleteButton=$(this).attr('id').split("_");
+							var comment_id=deleteButton[2];
+							var msg = "Etes-vous s&ucirc;r(e) de vouloir cacher ce  commentaire sur la plateforme ?";
+							smoke.confirm(msg,function(e){
+								if (e){
+									deleteComments(comment_id,comment_type,identifier);
+								}
+								else{
+									return false;
+								}
+							}); 			
+								
+						});
+						
+						//edit textarea toggle
+						$("[id^=edit_comment_]").die('click').live('click', function(event) {
+							
+							event.preventDefault();
+							
+							var editButton=$(this).attr('id').split("_");
+							var comment_id=editButton[2];		
+							var comment_box=$('#user_comment_'+comment_id).toggle();
+							var comment_new=$('#edit_user_comment_'+comment_id).toggle();
+								
+						});
+						
+						//update comments
+						$("[id^=update_submit_]").live('click', function() {
+							
+							var updateButton=$(this).attr('id').split("_");
+							var comment_id=updateButton[2];		
+							var comments=$("#article_comments_"+comment_id).val();				
+							
+							var target_page = '/ongoing/save-comments?comment_action=update&article_comments='+comments+'&comment_id='+comment_id+'&comment_type=article&identifier='+identifier;			
+							$.post(target_page, function(data){					
+									//alert(data);
+									var obj = $.parseJSON(data);
+									$("#comments_list").html(obj.comments);
+									$("#comment_count").text(obj.count);
+									$("#comment_count_1").html('<i class="icon-comment"></i> '+obj.count);
+									$("#article_comments").val('');
+									$("#comments_list img").addClass('img-circle');
+								}
+							);
+						});
+						
+						$("#asideheight").css("max-height",(parseInt($("#leftheight").height())-55)+'px');
+						$("#asideheight").mCustomScrollbar({
+														scrollButtons:{scrollType:"stepless"},
+														keyboard:{scrollType:"stepless"},
+														theme:"rounded-dark",
+														mouseWheel:{ scrollAmount:100 },
+														autoHideScrollbar:true
+														});
+						
+					});	
+				/** ajax function to delete/inactive comment data**/
+				function deleteComments(comment_id,comment_type,identifier)
+				{
+						var target_page = '/ongoing/save-comments?comment_action=delete&comment_id='+comment_id+'&comment_type='+comment_type+'&identifier='+identifier;
+						
+						$.post(target_page, function(data){									
+								
+								var obj = $.parseJSON(data);
+								$("#comments_list").html(obj.comments);
+								$("#comment_count").text(obj.count);
+								$("#comment_count_1").html('<i class="icon-comment"></i> '+obj.count);
+								$("#article_comments").val('');	
+								$("#comments_list img").addClass('img-circle');								
+							});
+				}
+					
+				</script>
+				{/literal}
+				<div class="mod">	 
+					 <ul class="media-list" id="comments_list">
+					 {if $commentDetails |@count gt 0}
+							{foreach from=$commentDetails item=comment name=commentDetails}
+								<li class="media" id="comment_{$comment.identifier}">					
+									{if $comment.edit eq 'yes'}
+										<a  class="close hint--left" type="button" id="edit_comment_{$comment.identifier}" data-hint="Edit Comment"><i class="icon-pencil"></i></a>
+									{/if}
+									
+									<a  class="close hint--left" data-hint="Hide Comment" type="button" id="delete_comment_{$comment.identifier}">&times;</a>
+									{if $comment.edit neq 'yes'}
+									<label class="uni-checkbox pull-left">
+											<input type="checkbox" name="user_val" id="user_val_{$smarty.foreach.commentDetails.index+1}" class="uni_style " value="{$comment.user_id}">
+									</label>
+									{/if}
+									<a class="pull-left imgframe" href="#" role="button" data-toggle="modal" data-target="#viewProfile-ajax">
+										<img alt="Topito" class="media-object img-circle" width="60px" src="{$comment.profile_pic}">
+									</a>
+									<div class="media-body">
+										<h4 class="media-heading">
+											
+											<a  role="button" data-toggle="modal" data-target="#viewProfile-ajax">{$comment.profile_name|utf8_encode}</a></h4>
+											
+										<span id="user_comment_{$comment.identifier}">{$comment.comments|utf8_encode|stripslashes}</span>
+										
+										<span id="edit_user_comment_{$comment.identifier}" style="display:none">
+											<textarea class="span10" name="article_comments_{$comment.identifier}" id="article_comments_{$comment.identifier}">{$comment.comments|utf8_encode|stripslashes}</textarea>
+											<button type="button" id="update_submit_{$comment.identifier}" name="update_submit_{$comment.identifier}" class="btn">Mettre &agrave; jour</button>
+										</span>								
+										<p class="muted">{$comment.time}</p>
+									</div>
+								</li>		
+							{/foreach}	
+						
+					{/if}	
+					</ul>
+					<div class="row-fluid">
+						<div class=" well">
+							<form action="" method="POST" id="comment_form">
+								<h4>Commenter / poser une question</h4>
+								<fieldset>
+									<textarea class="span12" placeholder="Ecrire un commentaire" name="article_comments" id="article_comments"></textarea>
+									<button type="button" id="comment_submit" name="comment_submit" class="btn">Envoyer</button>
+									<input type="hidden" name="comment_type" value="{$comment_type}" id="comment_type">
+									<input type="hidden" name="identifier" value="{$identifier}" id="identifier">
+								</fieldset>
+							</form>
+						</div>
+					</div>
+				</div>
+		</div>
+		</div>
+		
+		{* End of Comments *}
+	</div>
+	<div class="span6" id="">
+		<div class="w-box">
+			<div class="w-box-header">Activities</div>
+			<div class="w-box-content cnt_a" id="asideheight">
+			{if $histories|@count>0}
+				{foreach from=$histories item=history}
+				<div class="media activity">
+					<a class="pull-left imgframe">
+						{if $history.type=='superclient'}
+							<img class="media-object img-circle" width="60px" src="{$fo_path}profiles/superclients/logos/{$history.user_id}/{$history.user_id}.png">
+						{elseif $history.type=='contributor'}
+							<img class="media-object img-circle" width="60px" src="{$fo_path}profiles/contrib/pictures/{$history.user_id}/{$history.user_id}_h.jpg">
+						{elseif $history.type=='client'}
+							<img class="media-object img-circle" width="60px" src="{$fo_path}profiles/clients/logos/{$history.user_id}/{$history.user_id}.png">
+						{else}
+							<img class="media-object img-circle" width="60px" src="{$fo_path}profiles/bo/{$history.user_id}/logo.jpg">
+						{/if}
+					</a>
+					<div class="media-body">
+						{if $history.first_name}
+							<a>{$history.first_name|utf8_encode} {$history.last_name|utf8_encode}</a> {$history.action_at|time_ago}<br>
+						{/if}
+						
+						{$history.action_sentence|utf8_encode}
+					</div>
+				</div>
+				{/foreach}
+			{else}
+			<div class="pull-center">
+				<strong>No Actvities Found</strong>
+			</div>
+			{/if}
+			</div>
+		</div>
+	</div>
+</div>
+{/foreach}

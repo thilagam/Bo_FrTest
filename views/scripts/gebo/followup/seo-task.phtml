@@ -1,0 +1,101 @@
+		<div class="followup-header">
+			<h3 class="heading">{$viewarray.title|utf8_encode} <span class="headerdim"> · {$viewarray.from_date} - {$viewarray.to_date}</span></h3>
+			 <div class="row-fluid">    
+				<div class="header-info">
+					<div class="span4">
+						<span class="upper">Priority</span>
+						<span class="bottom">{$viewarray.priority}</span>
+					</div>
+					<div class="span4">
+						<span class="upper">Production Cost</span>
+						<span class="bottom">{$viewarray.production_cost|zero_cut_t:2} &{$viewarray.currency};</span>
+					</div>
+					<div class="span4">
+						<span class="upper">Turnover</span>
+						<span class="bottom">{if $viewarray.turnover eq 'Gratuit'}Gratuit{else}{$viewarray.turnover|zero_cut_t:2} &{$viewarray.currency};{/if}</span>
+					</div>
+				</div>
+			</div> 
+		</div>
+		
+		{if $viewarray.seo_action == 'new' || $viewarray.seo_action=='edit'}
+		<div class="row-fluid topset2">
+			<form class="form" enctype="multipart/form-data" action="/followup/submit-seotask" id="taskadd" method="POST">		
+			<input type="text" placeholder="Title of the Task" name="title" class="span8 validate[required]" value="{$viewarray.task_title|utf8_encode}" />
+
+				{if $seofiles}
+				
+						<h4>Link to</h4>
+							{$seofiles|utf8_encode}
+				
+				{/if}
+				
+				<textarea name="comment" Placeholder="Enter a comment *" class="span8 validate[required]">{$viewarray.comments|utf8_encode}</textarea>
+			
+				
+						<label>Attach a file</label>
+							<input type="file" name="mulitupload[]" accept="doc|xls|zip|docx|xlsx" class="multi" id=""/>
+						<div class="onsuccessrep">
+							{$task_files|utf8_encode}
+						</div>
+						
+	<hr>
+					
+						<div class="pull-center">
+							<button  class="btn btn-default" data-dismiss="modal" type="reset">Cancel</button>
+							<button class="btn btn-primary" type="submit">Done</button>
+						</div>
+				
+					<input type="hidden" name="cmid" value="{$viewarray.cmid}" />
+					<input type="hidden" name="contract_id" value="{$viewarray.contract_id}" />
+					<input type="hidden" name="mission_id" value="{$viewarray.mission_id}" />
+					<input type="hidden" name="task_id" value="{$viewarray.task_id}" />
+					<input type="hidden" name="quote_id" value="{$viewarray.quote_id}" />
+			</form>
+		</div>
+		{else}
+		<div class="row-fluid">
+				
+						<h3>{$viewarray.task_title|utf8_encode}</h3>
+
+				{if $seofiles}
+				<p>Link To : {$seofiles|utf8_encode}</p>
+		
+				{/if}
+<div class="media">
+							<a class="pull-left imgframe">
+							<img class="media-object rd_30" width="50px" src="{$fo_path}profiles/bo/{$viewarray.updated_by}/logo.jpg">
+							</a>
+							<div class="media-body">
+								{$viewarray.comments|stripslashes|htmlentities|nl2br|utf8_encode}
+							</div>
+							</div>
+				<br><h4>File <div class="pull-right" style="margin-bottom:5px">
+							<a href="/followup/download-document?type=task&index=-1&task_id={$viewarray.task_id}" class="btn btn-small">Download Zip</a>
+						</div></h4>
+						<table class="onsuccessrep table">
+						{if $task_files}
+							{$task_files|utf8_encode}
+						{else}
+							<tr><td align="center">No attached files</td></tr>
+						{/if}
+						</table>
+			
+				<div class="control-group">
+					<div class="controls topset2 pull-center" style="margin-left:0">
+					<a href="/followup/seotask?tid={$viewarray.task_id}&seo_action=edit" data-toggle="modal" role="button" data-target="#edit_task">
+						<button  class="btn btn-primary" id="trig_edit" type="button">Edit</button>
+					</a>
+					</div>
+				</div>		
+		</div>
+		{/if}
+		{literal}
+		<script type="text/javascript">
+			 $("input[type=file].multi").MultiFile();
+			  $(".uni_style").uniform();
+			  $('textarea').data('promptPosition','topLeft');
+			 $("#taskadd").validationEngine();
+			
+		</script>
+		{/literal}

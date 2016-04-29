@@ -1,0 +1,76 @@
+{literal}
+<script type="text/javascript">
+
+ $(document).ready(function() {	
+	
+	$("#menu_mailbox").addClass("active");
+	$("#menu_sentbox").addClass("active");
+	$("#sent_icon").show();
+	
+});
+</script>	
+{/literal}
+<div class="container">
+	{if $actionmessages[0]}
+		<div class="alert alert-success"><button data-dismiss="alert" class="close" type="button">&times;</button>
+			<i class="icon-ok icon-white"></i> {$actionmessages[0]}.
+		</div>  
+	{/if}
+	<section id="maibox">
+		<form method="" action="">
+			<div class="row">    
+				<div class="span12">
+					<!---Pagination start-->
+					<div class="pagination pull-right">
+						{include file="Contrib/pagination.phtml"}
+					</div>	
+					<!---Pagination END-->
+					<h1>Private messages</h1>
+				<hr>
+				</div>
+
+				{include file="Contrib/pattern/mail_leftmenu.phtml"}
+
+				<div class="span9">
+					<div class="mod" id="mailbox-list">
+					{if $paginator|@count gt 0}
+							{foreach item=message from=$paginator}
+								
+								<!-- row -->
+								<div class="clearfix read">
+									<a href="/contrib/view-mail?type=sentbox&page={$smarty.request.page}&message={$message.messageId}&ticket={$message.ticket_id}">
+										<ul class="unstyled">											
+											<li class="snd" {if $message.sendername|strlen gt 20} rel="tooltip" align="top" data-original-title="{$message.sendername|stripslashes}"{/if}>TO : {$message.sendername|truncate:20:"...":true|stripslashes}</li>
+											<li class="sbj">{$message.Subject|truncate:55:"...":true|stripslashes}
+												<span class="m">&#9679;  {$message.text_message}</span>
+											</li>
+											<li class="d">
+												{if $smarty.now|date_format:"%d/%m/%Y" eq $message.receivedDate|date_format:"%d/%m/%Y"}
+													{$message.receivedDate|date_format:"%I.%M %p"}
+												{elseif $smarty.now|date_format:"%Y" eq $message.receivedDate|date_format:"%Y"}
+													{$message.receivedDate|date_format:"%d %b"}
+												{else}
+													{$message.receivedDate|date_format:"%d/%m/%y"}
+												{/if}
+											</li>
+										</ul>
+									</a>						
+								</div>	
+							{/foreach}						
+						{else}
+							<h4 class="no-results">{$sent_messages}</h4>
+						{/if}			
+					
+					</div>
+				</div>
+				<div class="span12">
+					<!---Pagination start-->
+					<div class="pagination pull-right">
+						{include file="Contrib/pagination.phtml"}
+					</div>	
+					<!---Pagination END-->										
+				</div>
+			</div>
+		</form>
+	</section>
+</div>

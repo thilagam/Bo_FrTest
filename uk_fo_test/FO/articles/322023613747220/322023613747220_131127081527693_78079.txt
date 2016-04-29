@@ -1,0 +1,47 @@
+
+SL.NO
+Task( Status )    
+Module
+File realted to task
+
+KT to Thilagam
+
+
+
+Extraction of content{
+http://www.beaute-test.com/colour_caresse_shine_stain_l_oreal.php?listeavis=1
+}
+Local server
+
+
+Redirection of links from mission followup page{
+stage0 link
+stage1 LINK
+Stage2 Link
+}
+
+
+
+		
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,370 @@
+{literal}
+<script src="/BO/theme/gebo/js/jquery-ui-1.8.16.custom.min.js" type="text/javascript" charset="utf-8"
+        xmlns="http://www.w3.org/1999/html"></script>
+<link rel="stylesheet" href="/BO/theme/gebo/css/jquery-ui-1.8.16.custom.css">
+<style>
+.wrapper table
+{
+	width: 100%;
+}
+
+.wrapper .table thead th
+{
+	background-color: inherit !important;
+}
+
+.wrapper table thead th:last-child
+{
+	background-color: #1fbba6 !important;
+}
+.realtotal{
+    color: #89c0f7;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.realtotal a{
+font-size: 26px;
+ }
+.table_foot{
+    background-color: rgb(35, 126, 159);
+    color: #FFFFFF;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+    #download_date{
+        width: 245px;
+    }
+</style>
+<script>
+    $(function() {
+         $('#download_date').datepicker({
+             maxDate: "0",
+             changeMonth: true,
+             changeYear: true,
+             showButtonPanel: true,
+             dateFormat: 'mm-yy',
+             beforeShow: function (input, inst) {
+                 var offset = $(input).offset();
+                 var height = $(input).height();
+                 window.setTimeout(function () {
+                     inst.dpDiv.css({ top: (offset.top + height + 4) + 'px', left: offset.left + 'px' })
+                 }, 1);
+             }
+
+         }).focus(function() {
+                 var thisCalendar = $(this);
+                 $('.ui-datepicker-calendar').detach();
+                 $('.ui-datepicker-close').click(function() {
+                     var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                     var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                     thisCalendar.datepicker('setDate', new Date(year, month, 1));
+                 });
+            });
+     });
+</script>
+{/literal}
+
+		<section id="">
+            <div class="row-fluid">
+                <h1> Real Turnover {$year}:<span class="realtotal"> {$totalturnovereuro|zero_cut_t:2} &euro; - {$totalturnoverpound|zero_cut_t:2} &pound;</span></h1>
+            </div>
+
+			<div class="row-fluid">	
+			<div class="" style="margin-top:-20px">
+			<form id="filter_rturn">
+					<select data-placeholder="Years" id="yearlist" name="year" class='yearselect submit'>
+					<option></option>
+						{foreach from=$year_list item=years name=year_loop}
+							{if $years eq $year}
+							   <option value="{$years}" selected="selected" >{$years}</option>
+							{else}
+							   <option value="{$years}" >{$years}</option>
+							{/if}
+						{/foreach}
+					</select>
+					<select data-placeholder="All Clients" id="all_clients" name="client" class='clientselect' >
+						<option value="">All Clients</option>
+						{foreach from=$clients item=user name=users key=userkey}
+						{if $userkey eq $client}
+							<option value="{$userkey}" selected>{$user}</option>
+						{else}
+							<option value="{$userkey}" >{$user}</option>
+						{/if}
+						{/foreach}
+					</select>
+					<select data-placeholder="All Sales" id="all_sales" class='saleselect' name="sales_id" >
+										<option></option>
+									
+											{foreach from=$salesusers item=user name=users key=usrkey}
+											{if $usrkey eq $smarty.get.sales_id}
+										<option value="{$usrkey}" selected="selected">{$user}</option>
+												{else}
+											<option value="{$usrkey}" >{$user}</option>
+											{/if}
+									
+										{/foreach}
+					</select>
+					<a class="btn submit btn-gebo pull-center" id="search-filter" style="margin-top:-23px"><strong>Search</strong></a>
+			</form>
+			</div>
+            {if $err neq 'yes'}
+            <div class="wrapper" id="">
+				<table class="table table-hover table-bordered" id="client-turnover">
+					<thead>
+						<tr class="displayDatas">
+							<th>Code</th>
+							<th style="width:250px">Client Name</th>
+							<th>{$month_array_val.01}</th>
+							<th>{$month_array_val.02}</th>
+							<th>{$month_array_val.03}</th>
+							<th>{$month_array_val.04}</th>
+							<th>{$month_array_val.05}</th>
+							<th>{$month_array_val.06}</th>
+							<th>{$month_array_val.07}</th>
+							<th>{$month_array_val.08}</th>
+							<th>{$month_array_val.09}</th>
+							<th>{$month_array_val.10}</th>
+							<th>{$month_array_val.11}</th>
+							<th>{$month_array_val.12}</th>
+							<th>total <span class="yearTotal">{$year}</span></th>
+						</tr>
+					</thead>
+					<tbody>		
+					{if $monthturnovers|@count> 0}
+                    {assign var='total_euro_01' value=0}
+                    {assign var='total_euro_02' value=0}
+                    {assign var='total_euro_03' value=0}
+                    {assign var='total_euro_04' value=0}
+                    {assign var='total_euro_05' value=0}
+                    {assign var='total_euro_06' value=0}
+                    {assign var='total_euro_07' value=0}
+                    {assign var='total_euro_08' value=0}
+                    {assign var='total_euro_09' value=0}
+                    {assign var='total_euro_10' value=0}
+                    {assign var='total_euro_11' value=0}
+                    {assign var='total_euro_12' value=0}
+                    {assign var='total_pounds_01' value=0}
+                    {assign var='total_pounds_02' value=0}
+                    {assign var='total_pounds_03' value=0}
+                    {assign var='total_pounds_04' value=0}
+                    {assign var='total_pounds_05' value=0}
+                    {assign var='total_pounds_06' value=0}
+                    {assign var='total_pounds_07' value=0}
+                    {assign var='total_pounds_08' value=0}
+                    {assign var='total_pounds_09' value=0}
+                    {assign var='total_pounds_10' value=0}
+                    {assign var='total_pounds_11' value=0}
+                    {assign var='total_pounds_12' value=0}
+                    {foreach from=$monthturnovers item="monthturnover" name="monthturnover"}
+						<tr>
+							<td>{$monthturnover.other_info.client_code}</td>
+							<td>
+								<a href="/turnover/real-month-client-focus?client={$monthturnover.other_info.user_id}&year={$year}&sales_id={$smarty.get.sales_id}">
+								{$monthturnover.other_info.company_name}
+								</a>
+							</td>
+							<td>
+                                {assign var=month_year value=$year|cat:'-'|cat:'01'}
+								{assign var='total_euro' value=$monthturnover.euro.$month_year}
+								{assign var='total_pounds' value=$monthturnover.euro.pounds.$month_year}
+                            	{$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+                            </td>
+							<td>
+								{assign var=month_year value=$year|cat:'-'|cat:'02'}
+								{assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+								{assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td>
+								{assign var=month_year value=$year|cat:'-'|cat:'03'}
+                                {assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+                                {assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td>
+								{assign var=month_year value=$year|cat:'-'|cat:'04'}
+                                {assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+                                {assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td>
+								{assign var=month_year value=$year|cat:'-'|cat:'05'}
+                                {assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+                                {assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td>
+								{assign var=month_year value=$year|cat:'-'|cat:'06'}
+                                {assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+                                {assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td>
+								{assign var=month_year value=$year|cat:'-'|cat:'07'}
+                                {assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+                                {assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td>
+								{assign var=month_year value=$year|cat:'-'|cat:'08'}
+                                {assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+                                {assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td>
+							    {assign var=month_year value=$year|cat:'-'|cat:'09'}
+                                {assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+                                {assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td>
+								{assign var=month_year value=$year|cat:'-'|cat:'10'}
+                                {assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+                                {assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td>
+								{assign var=month_year value=$year|cat:'-'|cat:'11'}
+                                {assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+                                {assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td>
+								{assign var=month_year value=$year|cat:'-'|cat:'12'}
+                                {assign var='total_euro' value=$total_euro+$monthturnover.euro.$month_year}
+                                {assign var='total_pounds' value=$total_pounds+$monthturnover.pounds.$month_year}
+                                {$monthturnover.euro.$month_year|zero_cut_t:2} &euro;<br/>{$monthturnover.pounds.$month_year|zero_cut_t:2} &pound;
+							</td>
+							<td style="text-align:right">{$total_euro|zero_cut_t:2} &euro;<br/>{$total_pounds|zero_cut_t:2} &pound;</td>
+						</tr>
+                            {assign var=month_year value=$year|cat:'-'|cat:'01'}
+                                    {assign var='total_euro_01' value=$total_euro_01+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_01' value=$total_pounds_01+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'02'}
+                                    {assign var='total_euro_02' value=$total_euro_02+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_02' value=$total_pounds_02+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'03'}
+                                    {assign var='total_euro_03' value=$total_euro_03+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_03' value=$total_pounds_03+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'04'}
+                                    {assign var='total_euro_04' value=$total_euro_04+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_04' value=$total_pounds_04+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'05'}
+                                    {assign var='total_euro_05' value=$total_euro_05+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_05' value=$total_pounds_05+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'06'}
+                                    {assign var='total_euro_06' value=$total_euro_06+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_06' value=$total_pounds_06+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'07'}
+                                    {assign var='total_euro_07' value=$total_euro_07+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_07' value=$total_pounds_07+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'08'}
+                                    {assign var='total_euro_08' value=$total_euro_08+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_08' value=$total_pounds_08+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'09'}
+                                    {assign var='total_euro_09' value=$total_euro_09+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_09' value=$total_pounds_09+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'10'}
+                                    {assign var='total_euro_10' value=$total_euro_10+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_10' value=$total_pounds_10+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'11'}
+                                    {assign var='total_euro_11' value=$total_euro_11+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_11' value=$total_pounds_11+$monthturnover.pounds.$month_year}
+                            {assign var=month_year value=$year|cat:'-'|cat:'12'}
+                                    {assign var='total_euro_12' value=$total_euro_12+$monthturnover.euro.$month_year}
+                                    {assign var='total_pounds_12' value=$total_pounds_12+$monthturnover.pounds.$month_year}
+                    {/foreach}
+					{else}
+						<tr>
+							<th colspan="14" style="text-align:center">No record found!</th>
+						</tr>
+					{/if}
+                    </tbody>
+                    <tfoot>
+                        <tr class="alert-info">
+                            <td colspan="2" >Total</td>
+                            <td style="text-align:center">{$total_euro_01|zero_cut_t:2} &euro;<br/>{$total_pounds_01|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_02|zero_cut_t:2} &euro;<br/>{$total_pounds_02|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_03|zero_cut_t:2} &euro;<br/>{$total_pounds_03|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_04|zero_cut_t:2} &euro;<br/>{$total_pounds_04|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_05|zero_cut_t:2} &euro;<br/>{$total_pounds_05|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_06|zero_cut_t:2} &euro;<br/>{$total_pounds_06|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_07|zero_cut_t:2} &euro;<br/>{$total_pounds_07|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_08|zero_cut_t:2} &euro;<br/>{$total_pounds_08|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_09|zero_cut_t:2} &euro;<br/>{$total_pounds_09|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_10|zero_cut_t:2} &euro;<br/>{$total_pounds_10|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_11|zero_cut_t:2} &euro;<br/>{$total_pounds_11|zero_cut_t:2} &pound;</td>
+                            <td style="text-align:center">{$total_euro_12|zero_cut_t:2} &euro;<br/>{$total_pounds_12|zero_cut_t:2} &pound;</td>
+                            <td  class="total-row" style="text-align:right"><span class="yearTotal"> {$totalturnovereuro|zero_cut_t:2} &euro;<br/>{$totalturnoverpound|zero_cut_t:2} &pound;</span></td>
+                        </tr>
+                    </tfoot>
+				</table>
+			<a class="btn btn-default" style="margin-top: 10px;" href="/turnover/real-turnover-report?download=pdf{if $smarty.get.client}&client={$smarty.get.client}{/if}{if $year}&year={$year}{/if}">Export PDF</a>
+			<a class="btn btn-primary" style="margin-top: 10px;" href="/turnover/real-turnover-report{if $year}?year={$year}{/if}{if $smarty.get.client}&client={$smarty.get.client}{/if}" >Export XLS</a>	
+           {else}
+                <h1>Sorry, no data to generate fill. Try again with differnt month and year.</h1>
+            {/if}
+                <!-- *** added on 03.02.2016 *** -->
+                <!-- button to download sales report in xlsx format-->
+                <div>
+                    <hr />
+                    <h2> Monthly Report Extraction</h2>
+                    <form>
+                        <div class="formSep">
+                            <div class="row-fluid">
+                                <div class="form-inline">
+                                    <input type="text" readonly name="download_date" class="monthYearPicker" id="download_date" value=""/>
+                                    <a class="btn btn-primary" id="download_link" onclick="href_create_download_link();" href="javascript:void(0);" >Download</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+		    <!-- *** end of added on 03.02.2016 *** -->
+        </section>
+					
+	{literal}
+
+	<script>
+		$(document).ready(function(){
+			$("#yearlist").chosen({allow_single_deselect:false,search_contains: true});
+	  	    $("#all_clients").chosen({allow_single_deselect:false,search_contains: true});
+			$("#all_sales").chosen({allow_single_deselect:true,search_contains: true});
+			$(".submit").on('click',function(){
+				$("#filter_rturn").submit();
+			})
+			
+			$('#client-turnover').dataTable({
+				"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"iDisplayLength" : 1000,
+				 "aaSorting": [[ 0, "asc" ]],
+				"aoColumns": [
+					{ "sType": "string"  },
+					{ "sType": "string"  },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" },
+					{ "sType": "natural" }
+				]
+			});
+		});
+        function href_create_download_link(){
+            var date = $("#download_date").val().split('-');
+            console.log(date[0]+date[1]);
+            var href = '/turnover/download-sales-report-xlsx?month=' +date[0]+'&year='+date[1];
+            $("#download_link").attr("href", href);
+        }
+
+	</script>
+	{/literal}

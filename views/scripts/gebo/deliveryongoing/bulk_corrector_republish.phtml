@@ -1,0 +1,328 @@
+{literal}
+<!--<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/lib/ckeditor/ckeditor.js"></script>-->
+<script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript" >
+$(document).ready(function() {
+   $("#parttime_option").chosen({ allow_single_deselect: false,search_contains: true  });
+   $("#sub_opt_time").chosen({ allow_single_deselect: false,search_contains: true  });
+   $("#sub_opt_resub").chosen({ allow_single_deselect: false,search_contains: true  });
+  //  $("#corrector_lang").chosen({ allow_single_deselect: false,search_contains: true  });
+    $(".alert").hide();
+    $('.table textarea').tinymce({
+        // Location of TinyMCE script
+        script_url 							: '/BO/theme/gebo/lib/tiny_mce/tiny_mce.js?' + new Date().getTime(),
+        // General options
+        theme 								: "advanced",
+        plugins 							: "autoresize,style,table,advhr,advimage,advlink,emotions,inlinepopups,preview,media,contextmenu,paste,fullscreen,noneditable,xhtmlxtras,template,advlist",
+        // Theme options
+        theme_advanced_buttons1 			: "undo,redo,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,fontsizeselect",
+        theme_advanced_buttons2 			: "forecolor,backcolor,|,cut,copy,paste,pastetext,|,bullist,numlist,link,image,media,|,code,preview,fullscreen",
+        theme_advanced_buttons3 			: "",
+        theme_advanced_toolbar_location 	: "top",
+        theme_advanced_toolbar_align 		: "left",
+        theme_advanced_statusbar_location 	: "bottom",
+        theme_advanced_resizing 			: false,
+        height                              : 300,
+        content_css                         : "/BO/theme/gebo/css/tinymce_styles.css?" + new Date().getTime(),
+        theme_advanced_font_sizes           : "8px,10px,12px,13px,14px,16px,18px,20px",
+        font_size_style_values              : "8px,10px,12px,13px,14px,16px,18px,20px",
+        init_instance_callback				: function(){
+
+            function resizeWidth() {
+                document.getElementById(tinyMCE.activeEditor.id+'_tbl').style.width='100%';
+            }
+            resizeWidth();
+            $(window).resize(function() {
+                resizeWidth();
+            })
+        }
+    });
+});
+if (tinymce.getInstanceById('mailbody'))
+{
+    tinymce.execCommand('mceRemoveControl', true, 'mailbody');
+    loadEditors('mailbody');
+}
+else  if (!tinymce.getInstanceById('mailbody'))
+    loadEditors('mailbody');
+
+var closelmode = "{/literal}{$close}{literal}";
+if(closelmode == 'yes')
+{
+    if(tinymce.getInstanceById('refusemessage'))
+    {
+        tinymce.execCommand('mceRemoveControl', true, 'refusemessage');
+        loadEditors('refusemessage');
+    }
+    else  if(!tinymce.getInstanceById('refusemessage'))
+        loadEditors('refusemessage');
+
+}
+
+function fngetmailcontent(artid)
+{
+     var commentBox1=$("#mailbody");
+     commentBox1.hide();
+        if (tinymce.getInstanceById('mailbody'))
+        {
+            tinymce.execCommand('mceRemoveControl', true, 'mailbody');
+            loadEditors('mailbody');
+        }
+        else  if (!tinymce.getInstanceById('mailbody'))
+            loadEditors('mailbody');
+
+     var parttime_option = $("#parttime_option").val();
+     var extend_time = $("#participation_time").val();
+     var target_page = "/article-republish/getextendcrtparticipationtime?part_time="+extend_time+"&parttime_option="+parttime_option+"&bulk=yes&artid="+artid;
+     $.post(target_page, function(data){
+         $("#mailbody").html(data);
+     });
+     commentBox.show();
+}
+///when republish popup will come to upate values
+function saveCorrectorRepublishPop() ///when directly republish
+{
+   // var artId = $("#artId").val();
+    var crtprice_min = $("input[id='price_min']").map(function(){ return $(this).attr('class')+"_"+$(this).val(); }).get();// alert(price_min);
+    var crtprice_max = $("input[id='price_max']").map(function(){ return $(this).attr('class')+"_"+$(this).val(); }).get(); //alert(price_max);
+    var artlist = $("#artlist").val();
+    var crtaotype = $("#crtaotype").val();
+    var aoId = $("#aoId").val();
+    var closerepublish = $("#closerepublish").val();
+    var stage = $("#stage").val();
+    var parttime_option = $("#parttime_option").val();
+    var parttime = $("#participation_time").val();
+    var suboptparttime = $("#sub_opt_parttime").val();
+    var jc0time = $("#subjunior_time").val();
+    var jctime =  $("#junior_time").val();
+    var sctime = $("#senior_time").val();
+    var subopttime = $("#sub_opt_time").val();
+    var jcresub = $("#jc_resubmission").val();
+    var scresub = $("#sc_resubmission").val();
+    var suboptresub = $("#sub_opt_resub").val();
+    var object = $("#object").val();
+    var message = $("#mailbody").val();
+    var refusalmessage =  $("#refusemessage").val();
+   // var crtselectedlang = $("#corrector_lang").val();
+    var emailyes =  $("#emailyes").val();
+	var crtselectedlang = [];
+	$("input[name='corrector_lang[]']").each(function ()
+    {
+			crtselectedlang.push($(this).val());
+	});
+    ///validation////
+    if(crtaotype == "private")
+    {
+        if((parttime == '')||(price_min == '')||(price_min == '')||(jctime == '')||(sctime == '')||(jcresub == '')||(scresub == ''))
+        {
+            smoke.alert("please check inputs given");
+            return false;
+        }
+    }
+    else
+    {
+        if((crtselectedlang == null) || (parttime == '')||(price_min == '')||(price_min == '')||(jctime == '')||(sctime == '')||(jcresub == '')||(scresub == ''))
+        {
+            smoke.alert("please check inputs given");
+            return false;
+        }
+    }
+    var target_page = "/article-republish/bulkrepublishcorrectorpopup?aoId="+aoId+"&artlist="+artlist+"&crtprice_min="+crtprice_min+"&crtprice_max="+crtprice_max+"&save=save&parttime_option="+parttime_option+"&parttime="+parttime+"&suboptparttime="+suboptparttime+
+            "&jctime="+jctime+"&sctime="+sctime+"&subopttime="+subopttime+"&jcresub="+jcresub+"&scresub="+scresub+"&suboptresub="+suboptresub;
+    $.post(target_page, function(data){   //alert(data);
+        if($("#nopartsforrepublish").val() == 'yes')
+        {
+            alert("Plus personne ne peut participer.");
+        }
+	    if(stage != '')   /////////when republish pop up generated in any of stages
+        {
+			smoke.confirm("L\'article sera remis en ligne",function(e){
+                if(e)
+                {
+                    //$("#commentsCrtRefuseObject").val(object);
+                    $("#commentsCrtRefuse").val(refusalmessage);
+                    smoke.confirm("PREVENIR PAR EMAIL",function(e2){
+                        if(e2)
+                        {
+                            $("#sendtofo").val('yes');
+                            $("#crtsendtofo").val('yes');
+                            $("#anouncebyemail").val('yes');
+                            $("#anouncebyemail2").val('yes');
+                            $("#s2art_approve").val('no');
+                            //$("#disapprove"+stage+"form").submit();
+                            $("#s2art_corrector_permdisapprove").val('yes');
+                            $("#s2correction").submit();
+                            return true;
+                        }
+                        else
+                        {
+                            $("#sendtofo").val('yes');
+                            $("#crtsendtofo").val('yes');
+                            $("#s2art_approve").val('no');
+                            //$("#disapprove"+stage+"form").submit();
+                            $("#s2art_corrector_permdisapprove").val('yes');
+                            $("#s2correction").submit();
+                            return true;
+                        }
+                    });
+                }
+                else
+                {
+                    $("#sendtofo").val('no');
+                    $("#crtsendtofo").val('no');
+                    $("#s2art_approve").val('no');
+                    //$("#disapprove"+stage+"form").submit();
+                    $("#s2art_corrector_permdisapprove").val('yes');
+                    $("#s2correction").submit();
+                    return true;
+                }
+            });
+        }
+        else      /////////when republish pop up generated in corrector selection profile related pages
+        {
+            smoke.confirm("L\'article sera remis en ligne",function(e){
+                if (e)
+                {
+                    smoke.confirm("PREVENIR PAR EMAIL",function(e){
+                        if (e)
+                        {
+                            if(closerepublish == 'yes')
+                                window.location.href = "/article-republish/bulkpublishcrtarticlefo?aoId="+aoId+"&artlist="+artlist+"&crtselectedlang="+crtselectedlang+"&sendmail=yes&sendrefusalmail=yes&refusalmailcontent="+escape(refusalmessage)+"&republishmail="+escape(message)+"&republishsubject="+object;
+                            else
+                                window.location.href = "/article-republish/bulkpublishcrtarticlefo?aoId="+aoId+"&artlist="+artlist+"&crtselectedlang="+crtselectedlang+"&sendmail=yes&republishmail="+escape(message)+"&republishsubject="+object;
+                        }
+                        else
+                        {
+                            if(closerepublish == 'yes')
+                                window.location.href = "/article-republish/bulkpublishcrtarticlefo?aoId="+aoId+"&artlist="+artlist+"&crtselectedlang="+crtselectedlang+"&sendmail=yes&sendrefusalmail=yes&refusalmailcontent="+escape(refusalmessage)+"&republishmail="+escape(message)+"&republishsubject="+object;
+                            else
+                                window.location.href = "/article-republish/bulkpublishcrtarticlefo?aoId="+aoId+"&artlist="+artlist+"&sendmail=no";
+                        }
+                    });
+                }
+                else
+                {
+                    return false;
+                }
+            });
+
+        }
+
+
+    });
+}
+</script>
+<style type="text/css">
+    .form-horizontal .control-label {
+        float: left;
+        padding-top: 5px;
+        text-align: right;
+        width: 42%;
+        font-weight:bold;
+        cursor:default;
+    }
+    .form-horizontal .controls {
+        margin-left: 47%;
+    }
+</style>
+{/literal}
+
+<div class="alert alert-warning" ><strong>Configuration de republication - {$missiontitle}</strong></div>
+<input id="nopartsforrepublish" name="nopartsforrepublish" value="{$nopartsforrepublish}" type="hidden">
+<!--<input id="mailcontent" name="mailcontent" value="{$message}" type="hidden">
+<input id="refusemailcontent" name="refusemailcontent" value="{$refusemessage}" type="hidden">
+--><input id="closerepublish" name="closerepublish" value="{$close}" type="hidden">
+<input id="crtaotype" name="crtaotype" value="{$artdeldetails[0].delcrttype}" type="hidden">
+<input id="stage" name="stage" value="{$stage}" type="hidden">
+<div class="alert alert-success"><strong>Renvoyer l'article aux personnes ayant déjà participé sans être sélectionnées</strong> ({$refusedcontributors})</div>
+<form class="form-horizontal form_validation_ttip" >
+<fieldset>
+    <div class="control-group formSep">
+        <label class="control-label">Temps de bidding :</label>
+        <div class="controls form-inline">
+            <span style="vertical-align:top;"><input id="participation_time" name="participation_time" type="text" value="{$artdeldetails[0].correction_participation}" onkeyup="fngetmailcontent('{$artdeldetails[0].artId}');"/></span>
+            <select name="parttime_option" id="parttime_option" onchange="fngetmailcontent('{$artdeldetails[0].artId}');">
+                <option value="min" selected="">Minute(s)</option>
+                <option value="hour">Heure(s)</option>
+                <option value="day">Jour(s)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="control-group formSep">
+        {foreach from=$pricedetials key=price_key item=price_item}
+		<div style="margin-top:10px">
+        <label class="control-label"> {$price_item.arttitle}:</label>
+        <div class="controls form-inline">
+            min : <input id="price_min" name="pricemin" class="pricemin_{$price_item.artid}" type="text"  value="{$price_item.artprice_min}"/>
+            max : <input id="price_max" name="pricemax" class="pricemax_{$price_item.artid}" type="text"  value="{$price_item.artprice_max}"/>
+        </div>
+        </div>
+        {/foreach}
+    </div>
+    <div class="control-group formSep">
+        <label class="control-label">Temps de rédaction :</label>
+        <div class="controls form-inline">
+            <span style="vertical-align:top;">JC <input id="junior_time" name="junior_time" type="text" value="{$artdeldetails[0].correction_jc_submission}" class="span1"/></span>&nbsp;
+            <span style="vertical-align:top;">SC <input id="senior_time" name="senior_time" type="text"  value="{$artdeldetails[0].correction_sc_submission}" class="span1"/></span>&nbsp;
+            <select name="sub_opt_time" id="sub_opt_time" class="span2">
+                <option value="min" {if $artdeldetails[0].correction_submit_option eq 'mim'}selected="selected"{/if}>Minute(s)</option>
+                <option value="hour" {if $artdeldetails[0].correction_submit_option eq 'hour'}selected="selected"{/if}>Heure(s)</option>
+                <option value="day" {if $artdeldetails[0].correction_submit_option eq 'day'}selected="selected"{/if}>Jour(s)</option>
+            </select>
+        </div>
+    </div>
+    <div class="control-group formSep">
+        <label class="control-label">Temps de rédaction après refus d'un article :</label>
+        <div class="controls form-inline">
+            <span style="vertical-align:top;">JC <input id="jc_resubmission" name="jc_resubmission" type="text" class="span1" value="{$artdeldetails[0].correction_jc_resubmission}"/></span>&nbsp;
+            <span style="vertical-align:top;">SC <input id="sc_resubmission" name="sc_resubmission" type="text" class="span1" value="{$artdeldetails[0].correction_sc_resubmission}"/></span>&nbsp;
+            <select name="sub_opt_resub" id="sub_opt_resub" class="span2">
+                <option value="min" {if $artdeldetails[0].correction_resubmit_option eq 'mim'}selected="selected"{/if}>Minute(s)</option>
+                <option value="hour" {if $artdeldetails[0].correction_resubmit_option eq 'hour'}selected="selected"{/if}>Heure(s)</option>
+                <option value="day" {if $artdeldetails[0].correction_resubmit_option eq 'day'}selected="selected"{/if}>Jour(s)</option>
+            </select>
+        </div>
+    </div>
+    {* {if $artdeldetails[0].delcrttype eq "public"}
+    <div class="control-group formSep">
+        <label class="control-label">Language :</label>
+        <div class="controls form-inline">
+            <select name="corrector_lang[]" id="corrector_lang" data-placeholder="select language"  multiple="multiple" style="width:250px;padding-left: 50px;top:50px;position: relative;">
+                {foreach from=$language_array item=langitem key=langkey}
+                {if $langkey eq $artdeldetails[0].language}
+                <option value="{$langkey}" selected>{$langitem|utf8_encode}</option>
+                {else}
+                <option value="{$langkey}">{$langitem|utf8_encode}</option>
+                {/if}
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    {/if} *}
+	<input type="hidden" name="corrector_lang[]" id="corrector_lang" value="{$artdeldetails[0].language}"/>
+    <div class="control-group formSep">
+        <label class="control-label">Objet de l'email :</label>
+        <div class="controls form-inline">
+            <input id="object" name="object" type="text" class="span5" value="{$object|utf8_encode}"/>
+        </div>
+    </div>
+</fieldset>
+</form>
+<table class="table table-bordered">
+    <tr>
+        {if $close == 'yes'}
+            <td colspan=2><div class="alert alert-danger">article create message to Correctors</div><textarea rows="4" cols="50" name="mailbody" id="mailbody">{$message}</textarea></td>
+            <td colspan=3><div class="alert alert-danger">Refusal message to participants</div><textarea rows="4" cols="50" name="refusemessage" id="refusemessage">{$refusemessage}</textarea></td>
+        {else}
+            <td colspan=5><textarea rows="4" cols="50" name="mailbody" id="mailbody">{$message}</textarea></td>
+        {/if}
+    </tr>
+    <tr>
+        <input id="artId" name="artId" value="{$artdeldetails[0].artId}" type="hidden"/>
+        <input id="artlist" name="artlist" value="{$artlist}" type="hidden"/>
+        <input id="aoId" name="aoId" value="{$aoId}" type="hidden"/>
+        <td colspan="5"><button type="button" id="republish" name="republish" class="btn btn-danger" onclick="saveCorrectorRepublishPop();" >Re-publier</button></td>
+    </tr>
+</table>
+

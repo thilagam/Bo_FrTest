@@ -1,0 +1,490 @@
+
+<link rel="stylesheet" href="/BO/theme/gebo/lib/fullcalendar/fullcalendar_gebo.css" />
+
+<!--<script src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css" />-->
+{literal}
+<style>
+    #calendar .fc-sat .fc-widget-content,
+    #calendar .fc-sun .fc-widget-content{
+        background-color:#B6B6B6;}
+    #calendar0 .fc-sat .fc-widget-content,
+    #calendar0 .fc-sun .fc-widget-content{
+        background-color:#B6B6B6;}
+
+    #calendar1 .fc-sat .fc-widget-content,
+    #calendar1 .fc-sun .fc-widget-content{
+        background-color:#B6B6B6;}
+
+    #calendar2 .fc-sat .fc-widget-content,
+    #calendar2 .fc-sun .fc-widget-content{
+        background-color:#B6B6B6;}
+    #calendar3 .fc-sat .fc-widget-content,
+    #calendar3 .fc-sun .fc-widget-content{
+        background-color:#B6B6B6;}
+    #calendar4 .fc-sat .fc-widget-content,
+    #calendar4 .fc-sun .fc-widget-content{
+        background-color:#B6B6B6;}
+    #calendar5 .fc-sat .fc-widget-content,
+    #calendar5 .fc-sun .fc-widget-content{
+        background-color:#B6B6B6;}
+
+
+</style>
+<script type="text/javascript" >
+$(document).ready(function() {
+    gebo_calendar.regular();
+    //* resize elements on window resize
+    var lastWindowHeight = $(window).height();
+    var lastWindowWidth = $(window).width();
+    $(window).on("debouncedresize",function() {
+        if($(window).height()!=lastWindowHeight || $(window).width()!=lastWindowWidth){
+            lastWindowHeight = $(window).height();
+            lastWindowWidth = $(window).width();
+            //* rebuild calendar
+            $('#calendar').fullCalendar('render');
+        }
+    });
+    $('#create_at').datepicker({language: 'fr'}).on('changeDate', function(ev){
+
+    });
+    $('#publicholidaysgrid').dataTable( {
+        "aLengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        "sPaginationType": "bootstrap",
+        "aaSorting": [ [0,'asc'] ],
+
+        "iDisplayLength": 5,
+
+        "aoColumns": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+
+        ]
+    } );
+
+    var date = new Date();
+    var d = date.getDate();
+    var m = date.getMonth();
+    var y = date.getFullYear();
+    $('#calendar').find ('td.fc-sun' ).css('background-color', '#E0DBDD');
+    $('#calendar').find ('td.fc-sat' ).css('background-color', '#E0DBDD');
+    $('#calendar').find ('td.fc-sun' ).css('pointer-events', 'none');
+    $('#calendar').find ('td.fc-sat' ).css('pointer-events', 'none');
+    $('#calendar0').fullCalendar({
+        header: {
+            left: '',
+            center: 'title',
+            right: ''
+        },
+        selectable: true,
+        selectHelper: true,
+        month:m-1,
+        theme: true,
+        events: '/hrm/show-public-holidays',
+        editable: false,
+        eventColor: '#bcdeee',
+        disableDragging : false
+    });
+
+    $('#calendar1').fullCalendar({
+        header: {
+            left: '',
+            center: 'title',
+            right: ''
+        },
+        selectable: true,
+        selectHelper: true,
+        theme: true,
+        events: '/hrm/show-public-holidays',
+        editable: false,
+        eventColor: '#bcdeee'
+    });
+    $('#calendar2').fullCalendar({
+        header: {
+            left: '',
+            center: 'title',
+            right: ''
+        },
+        selectable: true,
+        selectHelper: true,
+        month:m+1,
+        theme: true,
+        events: '/hrm/show-public-holidays',
+        editable: false,
+        eventColor: '#bcdeee'
+    });
+    $('#calendar3').fullCalendar({
+        header: {
+            left: '',
+            center: 'title',
+            right: ''
+        },
+        selectable: true,
+        selectHelper: true,
+        month:m+2,
+        theme: true,
+        events: '/hrm/show-public-holidays',
+        editable: false,
+        eventColor: '#bcdeee'
+    });
+
+    $('#calendar4').fullCalendar({
+        header: {
+            left: '',
+            center: 'title',
+            right: ''
+        },
+        selectable: true,
+        selectHelper: true,
+        month:m+3,
+        theme: true,
+        events: '/hrm/show-public-holidays',
+        editable: false,
+        eventColor: '#bcdeee'
+    });
+    $('#calendar5').fullCalendar({
+        header: {
+            left: '',
+            center: 'title',
+            right: ''
+        },
+        selectable: true,
+        selectHelper: true,
+        month:m+4,
+        theme: true,
+        events: '/hrm/show-public-holidays',
+        editable: false,
+        eventColor: '#bcdeee'
+    });
+    $('#myprevbutton').click(function() {
+        $('#calendar0').fullCalendar('prev');
+        $('#calendar1').fullCalendar('prev');
+        $('#calendar2').fullCalendar('prev');
+        $('#calendar3').fullCalendar('prev');
+        $('#calendar4').fullCalendar('prev');
+        $('#calendar5').fullCalendar('prev');
+    });
+    $('#mynextbutton').click(function() {
+        $('#calendar0').fullCalendar('next');
+        $('#calendar1').fullCalendar('next');
+        $('#calendar2').fullCalendar('next');
+        $('#calendar3').fullCalendar('next');
+        $('#calendar4').fullCalendar('next');
+        $('#calendar5').fullCalendar('next');
+    });
+});
+function editPublicHoliday()
+{
+    var leavetitle = $("#leave_title").val();
+    var mandatory = $("#mandatory").val();
+    var create = $("#create_at").val();
+    var country = $("#country").val();
+
+   if(leavetitle == '' ||  mandatory ==0 ||  create=='' || country==0)
+     {
+     smoke.alert("Please enter all valid inputs");
+     return false;
+     } else{
+      // $('form:editholiday').submit();
+     return true;
+     }
+}
+function convert(str) {
+    var date = new Date(str),
+        mnth = ("0" + (date.getMonth()+1)).slice(-2),
+        day  = ("0" + date.getDate()).slice(-2);
+    return [ date.getFullYear(), mnth, day ].join("-");
+}
+//* calendar
+gebo_calendar = {
+    regular: function() {
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+        var calendar = $('#calendar').fullCalendar({
+
+            header: {
+                left: 'prev next',
+                center: 'title,today',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            buttonText: {
+                prev: '<i class="icon-chevron-left cal_prev" />',
+                next: '<i class="icon-chevron-right cal_next" />'
+            },
+            aspectRatio: 2,
+            selectable: true,
+            selectHelper: true,
+            events: '/hrm/show-public-holidays',
+            select: function(start, end, allDay) {
+                smoke.prompt("Enter Title for Holiday?", function(title){
+                    if (title) {
+                        calendar.fullCalendar('renderEvent',
+                            {
+                                title: title,
+                                start: start,
+                                end: end,
+                                allDay: allDay
+                            },
+                            true // make the event "stick"
+                        );
+                        $.ajax({
+                            type: "POST",
+                            url: '/hrm/save-public-holiday',
+                            data: "title=" + title + "&start=" + start + "&end=" + end + "&allDay="+ allDay + "&save=yes"
+                        });
+                    }
+                    else
+                    {
+                        calendar.fullCalendar('unselect');
+                    }
+                    calendar.fullCalendar('unselect');
+                });
+            },
+            eventClick: function(event, element) {  //alert(event.id); alert(event.title);
+                var href="/hrm/leave-pop-up?leaveId="+event.id;
+                $('#leavepopup .modal-body').load(href);
+                $("#leavepopup").modal();
+            },
+            eventRender: function (event, element, view) {
+                var dateString = $.fullCalendar.formatDate(event.start, 'yyyy-MM-dd');
+                view.element.find('.fc-day[data-date="' + dateString + '"]').css('background-color', '#bcdeee');
+            },
+            dayRender: function (date, cell) {
+
+                var today = new Date();
+                var end = new Date();
+                end.setDate(today.getDate()+7);
+
+                if (date.getDate() === today.getDate()) {
+                    cell.css("background-color", "red");
+                }
+
+                if(date > today && date <= end) {
+                    cell.css("background-color", "yellow");
+                }
+
+            },
+            editable: true,
+           // theme: false,
+
+            eventColor: '#bcdeee'
+
+        })
+    }
+};
+function deleteLeave(id)
+{
+    smoke.confirm("Are you sure with this action",function(e){
+        if (e)
+        {
+            var target_page = '/hrm/removeevent?leaveId='+id;
+            $.post(target_page, function(data){  //alert(data);
+                window.location.reload();
+            });
+        }
+        else
+        {
+           return false;
+        }
+    });
+
+}
+function DeletePublicHolidays()
+{
+    var $b = $('input[name=pleave]');
+    var countselected = $b.filter(':checked').length;
+    if(countselected >= 1)
+    {
+        var selected = '';
+        $('input[name=pleave]:checked').each(function() {
+            if(selected)
+                selected =   selected + '|' + ($(this).val());
+            else
+                selected =   $(this).val();
+        });
+        var c = smoke.confirm('Do you really want to proceed ?', function(e){
+            if (e){
+                var target_page = "/hrm/delete-public-holiday?delete=yes&leavelist="+selected;
+                $.post(target_page, function(data){// alert(data);
+                    window.location.reload();
+                });
+            }
+            else{
+                return false;
+            }
+        });
+    }
+    else
+    {
+        smoke.alert("S\u00e9lectionner au moins un.");
+        return false;
+    }
+
+}
+function editPublicHolidays()
+{
+    var $b = $('input[name=pleave]');
+    var countselected = $b.filter(':checked').length;
+    if(countselected >= 1)
+    {
+        var selected = '';
+        $('input[name=pleave]:checked').each(function() {
+            if(selected)
+                selected =   selected + '|' + ($(this).val());
+            else
+                selected =   $(this).val();
+        });
+        var href="/hrm/bulkedit-public-holiday?leavelist="+selected;
+        $("#publicholiday").removeData('modal');
+        $('#publicholiday .modal-body').load(href);
+        $("#publicholiday").modal();
+        $(".modal-backdrop:gt(0)").remove();
+           /* var target_page = "/hrm/bulkedit-public-holiday?leavelist="+selected;
+            $.post(target_page, function(data){ alert('hello');//alert(data);*/
+               /* var obj = $.parseJSON(data); alert(obj[0][0].leave); alert(obj[1][0].leave);
+              //  console.log(ar.id);
+                for(var i=0;i<obj.length;i=i+1){
+
+                    alert(ar);
+                    *//**//*inp=ar[i].split(",");
+
+                    alert(inp[0]+"-"+inp[1]+"-"+inp[2]);*//**//*
+                }*/
+          //  });
+
+    }
+    else
+    {
+        smoke.alert("S\u00e9lectionner au moins un.");
+        return false;
+    }
+
+}
+</script>
+{/literal}
+
+<h3 class="heading">Public Holidays
+    {if $groupId == 1}
+	<!--<a class="label label-inverse alignright" data-toggle="modal" data-target="#defineholiday" href="/hrm/define-holiday" style="margin-left:10px">Define Holidays</a>&nbsp;-->
+    <a class="label label-inverse alignright" data-toggle="modal" data-target="#publicholiday" href="/hrm/save-public-holiday?add=show" ><i class="splashy-add"></i></a>
+    {/if}
+</h3>
+
+<table id="publicholidaysgrid" class="table table-bordered table-striped table_vam ">
+    <thead>
+    <tr>
+        <th></th>
+        <th>Sl.no</th>
+        <th>Leave</th>
+        <th>Start</th>
+        <th>Type</th>
+        <th>Country</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {if $publicholidays neq 'NO'}
+    {foreach from=$publicholidays key=publicholidays_key item=publicholidays_item name=publicholidays_loop}
+    <tr>
+        <td><input type="checkbox" name="pleave" id="pleave{$smarty.foreach.publicholidays_loop.index+1}" value="{$publicholidays_item.id}" ></td>
+        <td>{$smarty.foreach.publicholidays_loop.index+1}</td>
+        <td>{$publicholidays_item.leave|stripslashes|wordwrap:20:"\n":true}</td>
+        <td><div style="display:none">{$publicholidays_item.start}</div>{$publicholidays_item.start|date_format:"%d/%m/%Y"|upper}</td>
+        <td>{if $publicholidays_item.mandatory eq 'yes'}Mandatory{else}Optional{/if}</td>
+        <td>{if $publicholidays_item.country eq 'ind'}India{/if}
+            {if $publicholidays_item.country eq 'fr'}France{/if}
+            {if $publicholidays_item.country eq 'uk'}UK{/if}</td>
+        <td>
+            {if $groupId == 1}
+            <a data-toggle="modal" data-target="#publicholiday" href="/hrm/save-public-holiday?holidayId={$publicholidays_item.id}&edit=show" ><i class="splashy-calendar_week_edit"></i></a>
+            &nbsp;<a href="#" onclick="deleteLeave('{$publicholidays_item.id}');" ><i class="splashy-calendar_week_remove"></i></a>
+            {else}
+             NO ACTION
+            {/if}
+        </td>
+    </tr>
+    {/foreach}
+    {/if}
+    </tbody>
+</table>
+<div class="span6">
+    <button type="button" name="pholiday_delete" class="btn btn-success"  onclick="return DeletePublicHolidays();">Delete</button>
+    <button type="button" name="pholiday_edit" class="btn btn-success"  onclick="return editPublicHolidays();">Edit</button>
+</div>
+<div class="alert span10 pull-left">
+    <button type="button" id="myprevbutton"  ><i class="splashy-arrow_large_left"></i></button>
+    <button type="button" id="mynextbutton"  ><i class="splashy-arrow_large_right"></i></button>
+</div>
+<table width="100%" cellpadding="5" cellspacing="5">
+
+    <tr>
+        <td width="33%">
+            <div id="calendar0">
+            </div>
+        </td>
+        <td width="33%">
+            <div id="calendar1">
+            </div>
+        </td>
+        <td width="33%">
+            <div id="calendar2">
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td width="33%">
+            <div id="calendar3">
+            </div>
+        </td>
+        <td width="33%">
+            <div id="calendar4">
+            </div>
+        </td>
+        <td width="33%">
+            <div id="calendar5">
+            </div>
+        </td>
+    </tr>
+</table>
+<!--<div class="row-fluid">
+    <div class="span12">
+        <h2 class="heading">Calendar</h2>
+        <div id="calendar" class="fc">
+
+        </div>
+    </div>
+</div>-->
+<!--///for the group profiles popup///-->
+<div class="modal hide fade" id="publicholiday">
+    <div class="modal-header">
+        <button  class="close" onclick="closePopup('publicholiday');">&times;</button>
+        <h3>PUBLIC LEAVES</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+<!--///for the group profiles popup///-->
+<div class="modal4 hide fade" id="leavepopup">
+    <div class="modal-header">
+        <button  class="close" onclick="closePopup('leavepopup');">&times;</button>
+        <h3>Manage your Leave</h3>
+    </div>
+    <div class="modal-body">
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+
+
+<script src="/BO/theme/gebo/lib/fullcalendar/fullcalendar.min.js"></script>
+<script src="/BO/theme/gebo/lib/fullcalendar/gcal.js"></script>
+

@@ -1,0 +1,376 @@
+<link rel="stylesheet" type="text/css" href="/FO/css/common/bootstrap-wysihtml5.css"></link>
+<script src="/FO/script/common/wysihtml5-0.3.0.min.js"></script>
+<script src="/FO/script/common/bootstrap-wysihtml5.js"></script> 
+<script src="/FO/script/common/locales/bootstrap-wysihtml5.fr-FR.js"></script>
+<!--  ratings -->
+<script type="text/javascript" charset="utf-8" src="/FO/script/common/jquery.raty.min.js"></script>
+{literal}
+<script type="text/javascript">
+	
+	var tokensArray = {/literal}{$js_tokens_array}{literal};
+	var whiteListArray = {/literal}{$js_wl_keywords}{literal};
+	
+	/*Ebookers stencils validations*/
+	function auto_grow(element) {
+		//alert(element.scrollHeight)
+		if(element.scrollHeight > 85)
+		{
+			element.style.height = "100px";
+			element.style.height = (element.scrollHeight)+"px";
+		}	
+	}	
+	function wordCount(val)
+	{	
+		var wordCount=0;
+		if(val=='')
+		{
+			return {
+				charactersNoSpaces : 0,
+				characters         : 0,
+				words              : wordCount,
+				lines              : 0
+			}
+		}	
+		else
+		{
+			/*if(whiteListArray.length>0)
+			{
+				val=val.replace(/[\.\,\!\?]/g,'');
+				//var stencil_text=encodeURI(val);
+				var regexp = new RegExp(decodeURI(whiteListArray.join( '|' )), 'ig');
+				//alert(val+'--'+decodeURI(whiteListArray.join( '|' )));
+				val = val.replace(regexp, '');
+			}*/		
+			val = val.replace(/\\s+/gi, ' ');	
+			if(val=='' || val==' ')
+				wordCount=0;
+			else
+				wordCount=val.trim().replace(/\\s+/gi, ' ').split(' ').length;
+			
+			return {
+				charactersNoSpaces : val.replace(/\\s+/g, '').length,
+				characters         : val.length,
+				words              : wordCount,
+				lines              : val.split(/\\r*\n/).length
+			}
+		}	
+	}
+	
+	function htmlEntities(str) {
+		return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+	
+	$(function(){	
+		/*toggle blocks*/
+		$(".boxTitle a > i").click(function(){
+			$(this).toggleClass('icon-chevron-down');
+			$(this).parents(".boxTitle").toggleClass('boxtitleToggled');			
+			$(this).parents(".boxTitle").next().toggle();
+		});
+		
+		/*auto resize of textarea onload*/
+		$("[id^=stencil_text_]" ).each(function(u) {
+			auto_grow(this);
+			if($(this).val())
+			{
+				var c = wordCount($(this).val());				
+				$(this).next('.wordCount').html(c.words +' Words');
+			}
+		});
+		/*rating function*/
+		$("[id^=starval]" ).each(function(u) {			
+			var index=parseInt(u+1);
+			$(this).raty({
+				scoreName : 'entity_score',
+				number    : 5,
+				path: '/FO/images/',			  
+				target     : '#precision-target'+index,
+				targetKeep : true,
+				targetType : 'number'
+			});			
+		});	
+		$("[id^=starclose]" ).each(function(u) {
+			var index=parseInt(u+1);
+			$(this).raty({
+				scoreName : 'entity_score',
+				number    : 5,
+				path: '/FO/images/',
+				//  score     : {/literal}{$s1marks[0]}{literal},
+				target     : '#precision-target-close'+index,
+				targetKeep : true,
+				targetType : 'number'
+			});			
+		});
+	});	
+</script>
+<style type="text/css">
+.sample-management-cont{
+    background-color: #f8f8f8;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 20px 8px -18px rgba(0, 0, 0, 0.3), 0 1px 0 #fff inset;    
+}
+.topset1{
+	margin-top:20px
+}
+textarea {
+  resize: vertical; 
+}
+
+</style>
+{/literal}
+<div class="container">
+	<br>
+{if $missionDetails | @count gt 0}
+	{foreach from=$missionDetails item=article name=details}	
+	<ul class="breadcrumb">
+	<li><a href="/contrib/home">Home</a> <span class="divider">/</span></li>
+	<li><a href="/contrib/ongoing">My contributions</a> <span class="divider">/</span></li>
+	<li class="active">{$article.title}</li>
+	</ul> 
+	<div class="alert alert-success"><button data-dismiss="alert" class="close" type="button">&times;</button>
+		<i class="icon-ok icon-white"></i> Congratulations {$client_email} ! You have been selected as a writer for this mission. Please respect deadlines. 
+	</div>
+	<!-- start, Summary -->
+	<section id="summary">
+		<div class="row-fluid">
+			<div class="span7">
+				{if $article.missiontest eq 'yes'}
+					<span class="label label-test-mission">Proofreading Test Mission</span>
+				{else}
+					<span class="label label-correction">Proofreading Mission</span>
+				{/if}
+				<h1>{$article.title}</h1>
+			</div>
+			<div class="span2 stat">
+				<p>Delivery deadline</p>
+				<!-- add classname "less24" if time is < 24h  -->
+				<!-- p class="num-large less24">Livr�e</p-->
+				{if $article.status eq 'bid' OR $article.status eq 'disapproved' }
+					<p class="num-large less24">
+						<span id="dtime_{$article.article_id}_{$article.corrector_submit_expires}">
+							<span id="dtext_{$article.article_id}_{$article.corrector_submit_expires}">{$article.corrector_submit_expires}</span>
+						</span>
+					</p>
+				{else}
+					<p class="num-large less24" style="font-size:18px">{$article.status_trans}</p>
+				{/if}	
+			</div>
+			<div class="span2 stat">
+				<p>Rate</p>
+				<p class="num-large">{$article.price_corrector} 
+				{if $article.currency eq 'euro'	}
+						&euro;
+					{else}
+						&pound;
+					{/if}
+				</p>
+			</div>
+			<div class="span1 stat">
+				<div class="icon-comment-large new"><a href="#comment" class="scroll" id="comment_count">{$commentDetails|@count}</a></div>
+				<!--  to active if new comment, add classname "new" -->
+				<!--div class="icon-comment-large new"><a href="#comment">3</a></div-->
+			</div>
+		</div>
+	</section>
+	<!-- end, summary --> 
+	<div class="row-fluid"> 
+		<div class="span9">
+			{if $product_type eq 'translation'}
+				<section id="ebStencilTranslation">
+			{else}	
+				<section id="stencilWrapper">
+			{/if}
+				<div class="mod">
+					<div class="summary clearfix">
+						<h4>PROJECT DETAILS
+							{if $article.spec_exists eq 'yes'}
+								<span class="pull-right"><a href="/contrib/download-file?type=correctionbrief&article_id={$article.article_id}" class="btn btn-small btn-success"><i class="icon-white icon-circle-arrow-down"></i> T&eacute;l&eacute;charger le brief client</a></span>
+							{/if}
+						</h4>
+					</div>
+				</div>
+						<div class="row-fluid">  
+					<h3>Please proofread the {$article.files_pack} versions of sentences. They all contain some mandatory words. Do not delete them.</h3>
+				</div>
+				{if $product_type eq 'redaction'}
+					<div class="row-fluid">
+						<div class="textSampleWrapper">
+							<div class="span12">
+								<h5>SAMPLE TEXT</h5>
+								<p>
+									{$sample_text|htmlentities}
+								</p>
+							</div>	
+							<div class="requiredWordsList">
+								<dl>
+									<dt>Mandatory Words:</dt>
+									{if $mandatory_tokens | @count gt 0}
+										{foreach item=token from=$mandatory_tokens name=token}
+											<dd><span class="label">{$token|urldecode|utf8_decode|htmlentities}</span></dd>
+										{/foreach}
+									{/if}								
+								</dl>
+								<dl>
+									<dt>Optional Words:</dt>
+									{if $optional_tokens | @count gt 0}
+										{foreach item=token from=$optional_tokens name=token}
+											<dd><span class="label">{$token|urldecode|utf8_decode|htmlentities}</span></dd>
+										{/foreach}
+									{/if}
+								</dl>
+							</div>					
+						</div>
+					</div>
+				{/if}
+				{if $article.status eq 'bid' OR $article.status eq 'disapproved'}
+					<div class="row-fluid file-management-cont"> 						
+						{if $product_type eq 'translation'}
+							{include file="Contrib/m-corrector-validation-popup-ebooker-translations.phtml"}
+						{else}
+							{include file="Contrib/m-corrector-validation-popup-ebooker.phtml"}
+						{/if}
+					</div>	
+				{else}			
+					{if $product_type eq 'translation'}	
+						<div class="stencilTableWrapper">
+							<table class="table">							
+								<tbody>
+									{if $stencilsDetails | @count gt 0}
+										{foreach item=stencil from=$stencilsDetails name=stencil}
+											{assign var=text_index value=$smarty.foreach.stencil.index+1}
+											{assign var=nindex value=$smarty.foreach.stencil.index}
+												
+												<div class="translationBox-default">
+													<span class="boxTitle">
+														<h5>Sentence {$text_index}</h5>
+														<a href="javascript:void(0);"><i class="icon-chevron-up"></i></a>
+													</span>
+													<div class="boxContent slidingDiv">
+														<div class="span6 txtOrignal">
+															<label for="">Orignal sentence</label>
+															<p>{$translateStencils[$nindex]}</p>
+														</div>
+														<div class="span6">
+															<label for="">Your translation</label>
+															<textarea  name="stencil_text[]" id="stencil_text_{$text_index}" rows="3" onkeyup="auto_grow(this)" placeholder="Please enter you translation here">{$stencil}</textarea>
+															<span class="wordCount"></span>
+															<p class="missingToken"></p>
+															<p class="duplicateContentAlert"></p>
+															<a href="" class="duplicateShowCTA" target="_blank" style="display:none">See version with plagirism	</a>
+															<div class="duplicateShowContent"></div>
+														</div>
+													</div>								
+												</div>
+										{/foreach}							
+									{else}
+										<tr><td colspan="4"></td></tr>
+									{/if}	
+										<tr>
+											<td colspan="4">
+												<span class="span12 error" id="plag_error"></span>
+											</td>
+										</tr>
+								</tbody>
+							</table>
+						</div>
+					{else}	
+						<div class="stencilTableWrapper">
+							<table class="table">									
+								<table class="table">							
+									<tbody>
+										{if $stencilsDetails | @count gt 0}
+											{foreach item=stencil from=$stencilsDetails name=stencil}
+												{assign var=text_index value=$smarty.foreach.stencil.index+1}
+												<tr>
+													<td class="stencilNum"><span>{$text_index}</span></td>
+													<td class="stencilTextArea ">
+														<textarea  name="stencil_text[]" id="stencil_text_{$text_index}" rows="3" onkeyup="auto_grow(this)">{$stencil}</textarea>
+														<span class="wordCount"></span>
+														<p class="missingToken"></p>
+														<p class="duplicateContentAlert"></p>
+														<a href="" class="duplicateShowCTA" target="_blank" style="display:none">See version with plagirism	</a>
+														<div class="duplicateShowContent"></div>
+													</td>
+												</tr>
+											{/foreach}									
+										{else}
+											<tr><td colspan="4"></td></tr>
+										{/if}	
+										<tr>
+											<td colspan="4">
+												<span class="span12 error" id="plag_error"></span>
+											</td>
+										</tr>
+									</tbody>
+								</table> 
+							</table>
+						</div>					
+					{/if}
+				{/if}	
+			</section>
+			{include file="Contrib/article-comments.phtml"}
+		</div>
+		<div class="span3">
+		<!--  right column  -->
+			<aside>
+				<div class="aside-bg">
+					<div id="selected-editor" class="aside-block">
+						<div class="editor-container">
+							<h4>The Writer</h4>
+							<a href="/contrib/public-profile?user_id={$article.writer}" data-target="#viewProfile-ajax" data-toggle="modal" role="button"><img src="{$article.writer_pic_profile}" alt="{$article.writer_name}"></a>							
+							<p class="editor-name">{$article.writer_name}</p>
+						</div>
+					</div>
+
+
+					<div class="aside-block" id="garantee">
+						<h4>Your Guarantees</h4>
+						<dl>
+							<dt><span class="umbrella"></span>Edit-place is your mediator</dt>
+							<dd>In case of disputes/issues (delivery deadline, article rewrite/amendment, refund...)</dd>
+							<dt><span class="locked"></span>Secure payment</dt>
+							<dd>Our online payment solution guarantees a hassle-free transaction</dd>
+						</dl>
+					</div>
+				</div>
+			</aside>
+		</div>
+	</div>
+	{/foreach}
+{/if}
+</div>
+{literal}
+<script type="text/javascript">
+var cur_date=0,js_date=0,diff_date=0;
+cur_date={/literal}{$smarty.now}{literal};
+var category_name="{/literal}{$missionDetails[0].category_name}{literal}";
+ //console.log(category_name);
+js_date=(new Date().getTime())/ 1000;
+diff_date=Math.floor(js_date-cur_date);
+	$("#menu_ongoing").addClass("active");
+	startMissionTimer('dtime','dtext');	
+
+	$('body').removeClass('homepage');
+	$('body').addClass('mission');
+</script>
+{/literal}
+<!-- ***** Modal collections -->
+<!-- ajax use start -->
+<div id="fix-article" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3 id="myModalLabel">Proofreading of article</h3>
+	</div>
+	<div class="modal-body">
+	</div>
+</div>
+	<!-- ajax use start -->
+	<div id="viewProfile-ajax" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3 id="myModalLabel">Public Profile</h3>
+			</div>
+		<div class="modal-body">
+		</div>
+	</div>
+	<!-- ajax use end -->

@@ -1,0 +1,84 @@
+{literal}
+<script language="javascript">
+$(document).ready(function() {
+    $('#clientrejectedartsgrid').dataTable({
+        "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        "sPaginationType": "bootstrap",
+        "aaSorting": [[ 0, "asc" ]],
+        "aoColumns": [
+            { "sType": "formatted-num" },
+            { "sType": "string" },
+            { "sType": "string" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+            { "sType": "natural" },
+        ]
+    });
+});
+//////locking system/////////////
+function lockSystemClientRejectedArts(artid, mode, page, rownum)
+{
+    if(mode == 'lock')
+    {
+        var target_page = "/proofread/locksystem?artId="+artid+"&mode=lock&stage="+page;
+        $.post(target_page, function(data){  //alert(data);
+                $('#lock'+artid).html("<a href='/proofread/client-rejected-arts-correction?submenuId=ML3-SL5&articleId="+artid+"'>" +
+                    "<i class='splashy-application_windows_edit'></i>" +
+                    "</a>&nbsp;&nbsp;<a onclick=\"lockSystemClientRejectedArts('"+artid+"', 'unlock', '"+page+"', '"+rownum+"');\"><i class='splashy-lock_large_unlocked'></i></a>");
+        });
+    }
+    else{
+        var target_page = "/proofread/locksystem?artId="+artid+"&mode=unlock&stage="+page;
+        $.post(target_page, function(data){
+            $('#lock'+artid).html("<a onclick=\"lockSystemClientRejectedArts('"+artid+"','lock', '"+page+"', '"+rownum+"');\"><i class='splashy-lock_large_locked'></i></a>");
+        });
+    }
+}
+
+</script>
+{/literal}
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="heading">Liste des articles rejet&eacute;s par le client</h3>
+        <table id="clientrejectedartsgrid" class="table table-bordered table-striped table_vam">
+            <thead>
+            <tr>
+                <th>Titre Article Id</th>
+                <th>Titre Ao</th>
+                <th>Client</th>
+                <th>Contributeur</th>
+               <!-- <th>DATE DE FIN AO</th>-->
+                <th>DATE D' ENVOI</th>
+                <th>Lock/Unlock</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach from=$paginator key=rejectedarts_key item=rejectedarts_item name=rejectedarts_loop}
+            <tr>
+                <td>{$rejectedarts_item.title|escape:'htmlall'|wordwrap:20:"\n":true}</td>
+                <td>{$rejectedarts_item.deliveryTitle|escape:'htmlall'}</td>
+                <td>{$rejectedarts_item.company_name}</td>
+                <td>{if $rejectedarts_item.first_name neq ''}{$rejectedarts_item.first_name}{else}{$rejectedarts_item.email}{/if}</td>
+                <!--<div class="col-two">CAT&Eacute;GORIE</div>
+                <td><div style="display:none;">{$rejectedarts_item.delivery_date}</div>{$rejectedarts_item.delivery_date|date_format:"%d/%m/%Y"}</td>-->
+                <td>{$rejectedarts_item.article_sent_at|date_format:"%d/%m/%Y"}</td>
+                <td><div id="lock{$rejectedarts_item.artId}">
+                        {if $rejectedarts_item.lock_status eq 'yes'}
+                        {if $rejectedarts_item.lockedUser eq $userId}
+                        <a href="/proofread/client-rejected-arts-correction?submenuId={$submenuId}&articleId={$rejectedarts_item.artId}" ><i class="splashy-application_windows_edit"></i></a>&nbsp;&nbsp;
+                        <a onclick="lockSystemClientRejectedArts('{$rejectedarts_item.artId}', 'unlock', 'clientrejectart', '{$smarty.foreach.rejectedarts_loop.index}');"><i class="splashy-lock_large_unlocked"></i></a>
+                        {else}
+                        <div>Lock&eacute; par {$rejectedarts_item.locked_by[0].login}</div>
+                        {/if}
+                        {else}
+                        <a onclick="lockSystemClientRejectedArts('{$rejectedarts_item.artId}', 'lock', 'clientrejectart', '{$smarty.foreach.rejectedarts_loop.index}');"><i class="splashy-lock_large_locked"></i></a>
+                        {/if}
+                    </div>
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>
+

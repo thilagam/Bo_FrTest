@@ -1,0 +1,237 @@
+{literal}
+<script>
+	$(document).ready(function(){
+		var working = false;
+		$('#addCommentForm').submit(function(e){
+			e.preventDefault();
+			if(working) return false;
+		
+			if($('#commentuser').val()=="")
+			{
+				$('#commentuser').css("border-color","#FF0000");
+			}
+			else
+			{
+			$.post('/client/submitaocomment',$(this).serialize(),function(msg){ //alert(msg);
+				$('#submit').val('Submit');
+				if(msg.status){
+					$(msg.html).hide().insertBefore('#addCommentContainer').slideDown();
+					$('#commentuser').val('');
+					$('#commentcountdisp').html(msg.count);
+					$('#commentcount').val('');
+					$('#commentcount').val(msg.count);
+					$('#commentuser').css("border-color","#CCCCCC");
+				}
+			},'json');
+			}
+		});
+	});
+
+</script>
+{/literal}
+
+<div class="container">
+	<!-- start, status -->
+	<div class="row-fluid">
+		<div id="state2" class="span12">
+			<ul class="unstyled">
+				<li class="span3" rel="tooltip" data-original-title="Select the writer who will work on your project"><span class="writer_select">Choice of writer</span></li>
+				<li class="span3" rel="tooltip" data-original-title="The writer selected is working on your project"><span class="ongoing">Ongoing work</span></li>
+				<li class="span3 hightlight" rel="tooltip" data-original-title="You pay the amount of the order as a deposit"><span class="cb">Deposit</span></li>
+				<li class="span3" rel="tooltip" data-original-title="Download your delivered projects"><span class="dld">Download</span></li>
+			</ul>
+		</div>
+	</div>
+	<!-- end, status -->
+
+	<!-- start, Summary -->
+	<section id="summary">
+		<div class="row-fluid">
+			<div class="span6">
+				<h1><p>Mission</p> {$aoparticipation[0].title}</h1>
+			</div>
+			<div class="span3 stat">
+				<p>Delivery date</p>
+				<p class="num-large less24">
+					{if $aoparticipation[0].articlestatus=="closed_client"}
+						Closed
+					{else}
+						Delivered
+					{/if}
+				</p>
+			</div>
+			<div class="span2 stat">
+				<p>Rate</p>
+				<p class="num-large">{$aoparticipation[0].price_user_total|ceil} {if $aoparticipation[0].currency=='pound'}&pound;{else}&euro;{/if}</p> 
+			</div>
+			<div class="span1 stat">
+				{if $commentcount>0}
+					<div class="icon-comment-large new" id="commentcountdisp" rel="tooltip" data-original-title="Comments on this mission"><a href="#comment">{$commentcount}</a></div> 
+				{else}	
+					<div class="icon-comment-large" id="commentcountdisp"><a href="#comment">0</a></div>
+				{/if}
+			</div>
+		</div>
+	</section>
+	<!-- end, summary --> 
+
+	<div class="row-fluid"> 
+		{if $aoparticipation[0].premium_option=="0"}
+		<div class="statusbar clearfix">
+			<div class="btn-toolbar">
+				<div class="btn-group">
+					{if $aoparticipation[0].created_by=="FO"}
+						<a class="btn btn-small" href="/client/quotes-1?article={$smarty.get.id}"><i class="icon-pencil"></i> Re-launch quote</a>
+					{/if}
+					{if $aoparticipation[0].articlestatus!="closed_client"}
+						<a class="btn btn-small" href="/client/compose-mail?serviceid=111201092609847&object={$aoparticipation[0].title}" target="_blank"><i class="icon-envelope"></i> Contact Edit-place</a>
+						<a class="btn btn-small" href="javascript:void(0);" onClick="CloseArticle('{$smarty.get.id}');" ><i class="icon-remove"></i> Close quote</a>
+					{/if}
+				</div>
+			</div>
+		</div>
+		{/if}
+		<div class="row-fluid"> 	
+		<div class="span9">
+			<section id="file-management">
+				<div class="row-fluid file-management-cont">
+					 <i class="inbox"></i><h4 class="clearfix">Reception Area </h4>
+					<table class="table span10 offset1 table-bordered">
+						{foreach from=$files item=file}
+							<tr>
+								<td class="span10"><i class="icon-download"></i> {$file.name}</td>
+								<td class="span2 muted" nowrap>{$aoparticipation[0].article_sent_at}</td>
+								<td class="span2 muted">{$file.size}</td>
+							</tr>
+						{/foreach}	
+					</table>
+
+					{if $aoparticipation[0].articlestatus!="closed_client"}
+					<div class="pull-center btn-group" style="white-space: normal !important;" >
+						<!-- button display if user has already paid -->
+						<a href="/client/order3?id={$smarty.get.id}" class="btn btn-primary btn-small"  rel="tooltip" data-original-title="In order to download delivered content, you must pay the amount of the order as a deposit to Edit-place">
+							<i class="icon-download icon-white"></i> Pay and download 
+						</a>
+						<!--{if $aoparticipation[0].premium_option=="0"}
+							<a class="btn btn-small" data-target="#moretime-ajax" data-toggle="modal" role="button" ><i class="icon-time"></i> Accorder un délai supplémentaire</a>
+						{/if}-->
+						<a class="btn btn-small" data-original-title="Help" data-placement="bottom" onClick="leadaide();"><i class="icon-question-sign"></i> Help</a>
+					</div>
+					{/if}
+					
+				</div>
+			</section>
+			
+			<section id="comment">
+				<h4><i class="icon-comment"></i> Comments</h4>
+				<div class="row-fluid" id="addCommentContainer">
+					<ul class="media-list">
+						{foreach from=$commentlist item=comment}
+						<li class="media" id="comment_{$comment.identifier}">
+							<a data-target="#viewProfile-ajax" data-toggle="modal" role="button" href="" class="pull-left">
+								<img src="{$comment.profilepic}" class="media-object" alt="Topito">
+							</a>
+							<div class="media-body" >
+								<h4 class="media-heading">
+									<a data-target="#viewProfile-ajax" data-toggle="modal" role="button" href="http://ued.sebcdesign.com/edit-place/client/profile_topito.html">
+										{if $comment.first_name!=""}
+											{$comment.first_name|ucfirst}
+										{else}
+											{$comment.email}
+										{/if}
+									</a>
+									{if $clientidentifier==$comment.user_id}
+											<div class="pull-right"><button type="button" class="close" onClick="deletecomment('{$comment.identifier}');">&times;</button></div>
+									{/if}
+								</h4>
+								{$comment.comments}
+								<p class="muted">{$comment.time}</p>
+							</div>
+						</li>
+						{/foreach}
+					</ul>
+					<div class=" well">
+						<form method="post" action="" id="addCommentForm" >
+						<h4>Comment/ post a question</h4>
+							<fieldset>
+								<textarea name="commentuser" id="commentuser" placeholder="Add a comment" class="span12"></textarea>
+								<button class="btn" name="submit" id="submit" type="submit" >Send</button>
+							</fieldset>
+							
+							<input type="hidden" name="article" id="article" value="{$smarty.get.id}" />
+							<input type="hidden" name="commentcount" id="commentcount" value="{$commentcount}" />
+						</form>
+					</div>
+				</div>
+			</section>
+		</div>
+		
+		<div class="span3">
+			<!--  right column  -->
+			<aside>
+				<div class="aside-bg">
+					{if $aoparticipation[0].premium_option=="0"}
+						<div class="editor-price">
+							<p class="quote-price">Total Price :<strong> {$aoparticipation[0].price_user_total|ceil} {if $aoparticipation[0].currency=='pound'}&pound;{else}&euro;{/if}</strong></p>
+							<ul class="unstyled stripe">
+								<li>Writer tariff  : {$aoparticipation[0].price_user|zero_cut:2} {if $aoparticipation[0].currency=='pound'}&pound;{else}&euro;{/if}</li>
+								<li>Edit-place fees included : {$aoparticipation[0].ep_percent|zero_cut:2}%</li>
+							</ul>
+						</div>
+					{/if}
+					<div id="selected-editor" class="aside-block">
+						<div class="editor-container">
+							<h4>Your contact</h4>
+							<a class="imgframe-large" onclick="loadcontribprofile('{$contact[0].identifier}');" role="button" data-toggle="modal" data-target="#viewContribProfile" style="cursor:pointer;">
+							<img src="{$contact[0].profilepic}" alt="{$contact[0].name}"></a>
+							<p class="editor-name"><a onclick="loadcontribprofile('{$contact[0].identifier}');" role="button" data-toggle="modal" data-target="#viewContribProfile" style="cursor:pointer;">{$contact[0].name}</a></p>
+							{if $aoparticipation[0].premium_option=="0"}
+								<a href="/client/compose-mail?clientid={$contact[0].identifier}&ord=y1s" class="btn btn-small">Contact {$contact[0].first_name|ucfirst}</a>
+								<address>
+									<i class="icon-phone"></i> +{$contact[0].phone_number}<br>
+									<a href="mailto:{$contact[0].email}"><i class="icon-email"></i> {$contact[0].email}</a>
+								</address>
+							{/if}
+						</div>
+					</div>
+					
+					{if $customerstrust|@count>0}
+					<div id="we-trust" class="aside-block">
+						<h4>THE WRITER HAS ALREADY WORKED WITH</h4>
+						<ul class="unstyled">
+							{foreach from=$customerstrust item=clogo key=ckey}
+								<li><img src="{$clogo}" rel="tooltip" data-original-title="{$ckey|utf8_decode}" data-placement="left"></li>
+							{/foreach}
+						</ul>
+					</div>
+					{/if}
+					
+					<div class="aside-block" id="garantee">
+						<h4>YOUR GUARANTEES</h4>
+
+						<dl>
+							<dt><span class="umbrella"></span>Edit-place is your mediator</dt>
+							<dd>In the event of a dispute/issue (delay in delivery, article rewrites, refund…)</dd>
+							<dt><span class="locked"></span>Secure payment</dt>
+							<dd>Our online payment solution guarantees you a hassle-free transaction</dd>
+						</dl>
+					</div>
+					</div>
+			</aside>  
+		</div>
+		</div>
+	</div>
+</div>
+
+<!-- contrib profile -->
+<div id="viewContribProfile" class="modal container hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+		<h3 id="myModalLabel">Writer's Profile</h3>
+	</div>
+	<div class="modal-body">
+		<div id="userprofile">
+	
+		</div>
+	</div>
+</div>

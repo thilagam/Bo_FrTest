@@ -1,0 +1,317 @@
+<link href="/BO/theme/lbd/css/view-portfolio.css" rel="stylesheet" />
+<script src="/BO/theme/lbd/js/Chart.js"></script>
+<script src="/BO/theme/lbd/js/portfolio-scripts.js"></script>
+<!-- js file to create download export image -->
+<script src="/BO/theme/lbd/lib/html2canvas/dist/html2canvas.js"></script>
+<!-- **********************
+         STAR NEW CODE
+     ********************** -->
+<div id="stick"><i class="material-icons dp48" id="donwload_icon" onclick="javascript:download_img();">cloud_download</i></div>
+<div id="download_zip"></div>
+<div id="onePortfolio">
+    <div class="container-fluid">
+        <div class="container" id="onePortfolioPerso">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-md-3" >
+                                    <img id="profile_pic" class="img-responsive imageCache" width="300" src="{$result.profile_pic}" alt="">
+                                </div>
+                                <div class="col-md-7 onePortfolioPersoInfo">
+                                    <h2 class="containerBestContribName" >{$result.first_name|lower} <span class="secured">{$result.last_name|lower}</span>
+											{*<span class="portfolioOneExport secured" data-toggle="modal" data-target="#portfolioOneExport" id="download_icon">
+												<i class="material-icons">
+                                                    file_download
+                                                </i>
+											</span>*}
+                                    </h2>
+                                    <div class="onePortfolioPersoFlag">
+                                        <img src="/BO/theme/lbd/img/flag/{$result.language}.gif" alt="">
+                                        <span>({$languages_array[$result.language]})</span> - Courant (C2)
+                                    </div>
+                                    <div class="onePortfolioPersoContrib containerBestContribStatus">
+                                        <div>
+                                            {if $result.initial eq 'mr'}
+                                                R&eacute;dacteur {$result.profile_type} <br>
+                                                Traducteur {if $result.translator eq 'yes'} {$result.translator_type} <br> {/if}
+                                                correcteur {if $result.type2 eq 'corrector'} {$result.profile_type2}  <br>{/if}
+                                            {else}
+                                                R&eacute;dactrice {$result.profile_type} <br>
+                                                Traductrice {if $result.translator eq 'yes'} {$result.translator_type} <br> {/if}
+                                                correctrice {if $result.type2 eq 'corrector'} {$result.profile_type2}  <br>{/if}
+                                            {/if}
+                                        </div>
+                                    </div>
+                                    <div class="onePortfolioPersoContact">
+											<span class="secured">
+												<i class="material-icons">mail</i><a href="#">{$result.email}</a>
+											</span>
+											<span class="secured">
+												<i class="material-icons">phone</i> {$result.phone_number}
+											</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 onePortfolioPersoStat">
+                                    <p>Inscrit depuis : {$result.joined_since}</p>
+                                    <p class="onePortfolioPersoStatBorder">Nombre d'articles : {$result.articale_written}</p>
+                                    <!--<p>Client : {$result.total_client}</p>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- updated design on 18.04.2016 -->
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-3">
+                    <div id="onePortfolioAbout">
+                        <div class="card">
+                            <div class="content">
+                                <div class="text-center onePortfolioAboutIMG">
+                                    <img src="/BO/theme/lbd/img/quote.png" alt="">
+                                </div>
+                                <p>
+                                    {$result.self_details}
+                                </p>
+                            </div> <!-- content -->
+                        </div> <!-- card -->
+                    </div> <!-- ID -->
+                </div> <!-- col-sm-2 -->
+
+
+                <div class="col-md-9">
+
+                    <div id="onePortfolioCustomers">
+                        <div class="card">
+                            <div class="content">
+                                <h3> {if $result.random_client|@count lte '1'} A travaill&eacute; pour...{else} {$result.random_client|@count} clients lui font confiance{/if}</h3>
+                                {foreach from=$result.random_client item=client_id name=client_pics}
+                                <a href="/portfolio/download-lastest-article-zip?clinetId={$client_id|strip}&contribId={$result.identifier}">
+                                    <img id="client_pics_{$smarty.foreach.client_pics.index}" src="{$url}/profiles/clients/logos/{$client_id|strip}/{$client_id|strip}.png" alt="Logo Custommers">
+                                </a>
+                                {/foreach}
+                                <p class="onePortfolioCustomersClic"><span class="glyphicon glyphicon-info-sign"></span> Click on a logo to download articles</p>
+                            </div> <!-- Content -->
+                        </div> <!-- card -->
+                    </div> <!-- id -->
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="onePortfolioLanguage">
+                                <div class="card">
+                                    <div class="content">
+                                        <h3>Niveaux de Langue</h3>
+                                        <div class="row">
+                                            {foreach from=$result.language_more item=item1 key=key1}
+                                            <div class="col-md-3 onePortfolioLang text-center">
+                                                {if $item1 eq 100}
+                                                    <div class="onePortfolioLangInfo">
+                                                        <h4>
+                                                        <img src="/BO/theme/lbd/img/flag/{$key1}.gif" alt=""><br>
+                                                        {$languages_array[$key1]}
+                                                        <br />
+                                                        <small>Courant (C2)</small>
+                                                    </h4>
+                                                    </div>
+                                                {elseif $item1 gte 80}
+                                                    <div class="onePortfolioLangInfo">
+                                                         <h4>
+                                                        <img src="/BO/theme/lbd/img/flag/{$key1}.gif" alt=""><br>
+                                                        {$languages_array[$key1]}<br />
+                                                        <small>Avanc&eacute; (C1)</small>
+                                                         </h4>
+                                                    </div>
+
+                                                {elseif $item1 gte 66}
+                                                    <div class="onePortfolioLangInfo">
+                                                         <h4>
+                                                        <img src="/BO/theme/lbd/img/flag/{$key1}.gif" alt=""><br>
+                                                        {$languages_array[$key1]}<br />
+                                                        <small>Interm&eacute;diaire sup&eacute;rieur (B2)</small>
+                                                         </h4>
+                                                    </div>
+                                                {elseif $item1 gte 50}
+                                                    <div class="onePortfolioLangInfo">
+                                                         <h4>
+                                                        <img src="/BO/theme/lbd/img/flag/{$key1}.gif" alt=""><br>
+                                                        {$languages_array[$key1]}<br />
+                                                        <small>Interm&eacute;diaire (B1)</small>
+                                                         </h4>
+                                                    </div>
+                                                {/if}
+                                            </div>
+                                            {foreachelse}
+                                            <div class="alert alert-warning" role="alert">
+                                            <span class="glyphicon glyphicon-info-sign"></span> Other languages not specified yet
+                                        </div>
+                                            {/foreach}
+                                        </div>
+                                    </div> <!-- Content -->
+                                </div> <!-- card -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="onePortfolioSector">
+                                <div class="card">
+                                    <div class="content">
+                                        <h3>Ses r&eacutealisations</h3>
+                                        <div class="row">
+                                            <ul>
+                                                <li class="col-md-6 text-center onePortfolioSectorOneCategory">
+                                                    <ul>
+                                                        {foreach from=$result.article_type item=type }
+                                                        {if $type_array[$type] neq ''}
+                                                        <li>
+                                                            {$type_array[$type]|stripslashes}
+                                                        </li>
+                                                        {/if}
+                                                        {foreachelse}
+                                                        <h3>No Article type to display</h3>
+                                                        {/foreach}
+                                                    </ul>
+                                                </li>
+                                                <li class="col-md-6">
+                                                    <div class="onePortfolioSectorOne">
+                                                        <ul>
+                                                            {foreach from=$result.category_more item=item2 key=key2}
+                                                            <li>
+                                                                <i class="material-icons">{$icon_list[$key2]}</i>
+                                                                {$categories_array[$key2]|@strip}
+                                                                {*{$item2}%*}
+                                                            </li>
+                                                            {foreachelse}
+                                                            <h3>No category to display</h3>
+                                                            {/foreach}
+                                                        </ul>
+
+                                                    </div>
+                                                </li>
+                                            </ul>
+
+
+                                        </div>
+                                    </div> <!-- content -->
+                                </div> <!-- card -->
+                            </div> <!-- ID -->
+                        </div>
+                    </div>
+
+                </div> <!-- col-sm-10 -->
+
+            </div> <!-- row -->
+        </div> <!-- container -->
+
+        <!-- end of updated design on 18.04.2016 -->
+    </div> <!-- container-fluid -->
+</div> <!-- onePortfolio -->
+<!-- Modal Export -->
+<div class="modal fade" id="portfolioOneExport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Export result portfolio</h4>
+            </div>
+            <div class="modal-body">
+                <div class="portfolioExportBtnArticle">
+                    <button class="btn btn-fill btn-primary" onclick="javascript:download_img();">Download IMG</button>
+                </div>
+                <!--<div>
+                    <button class="btn btn-fill btn-primary">Export PDF</button>
+                    <button class="btn btn-fill btn-warning">Get the link</button>
+                </div>
+                <div>
+                    <button class="btn btn-fill btn-danger">Export PPT</button>
+                    <button class="btn btn-fill btn-success">Export excel</button>
+                </div>
+                <div class="portfolioExportBtnArticle">
+                    <button class="btn btn-fill btn-default">Download article example</button>
+                </div>
+-->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- **********************
+         END NEW CODE
+     ********************** -->
+<div id="lightbox" style="display:none;">
+    <div id="lightbox-footer" ><a>Download as png</a></div>
+    <div id="lightbox_canvas"></div>
+</div>
+{literal}
+    <script>
+        $("#download_icon ").on('click',function(){
+            setTimeout(function(){$(".modal-backdrop").remove();},1000);
+        });
+        function download_img(){
+            $('#download_zip').html('We\'re exportig your portfolio. Please wait...');
+            $(".secured").hide();
+//            html2canvas(document.querySelector("#onePortfolio"), {canvas: canvas}).then(function(canvas) {
+//                console.log('Drew on the existing canvas');
+//            });
+            html2canvas(document.querySelector("#onePortfolio") ).then(function(canvas) {
+                $('#portfolioOneExport').modal('hide');
+                //$('#lightbox').show();
+                $('#lightbox_canvas').html(canvas);
+                var tmp_canvas = document.querySelector('canvas');
+                var dataURL = tmp_canvas.toDataURL("image/png");
+                $("#download_zip").html('<a id="downloadImgLink"  download="{/literal}{$result.first_name}_{$result.identifier}.png{literal}" href="#" target="_blank">Download Image</a> &nbsp; ');
+                $("#downloadImgLink").attr("href", dataURL);
+                $("#downloadImgLink")[0].click();//autotriger click//
+                $("#download_zip").html('');//clear the status bar//
+            });
+        }
+        function close_lightbox(){
+            $(".secured").show();
+            $("#lightbox").hide();
+        }
+        function download_img_to_server(){
+            var profile_pic = '{/literal}{$result.profile_pic}{literal}';
+            $.ajax({
+                type: 'POST',
+                url: '/portfolio/download-img-to-server?profile_pic='+profile_pic,
+                success: function (data) {
+                    var src = '/BO/assets/temp_img/'+data.trim();
+                    $("#profile_pic").attr('src',src);
+                }
+            });
+        }
+        function download_client_img_to_server(){
+            var i =0;
+            var client_pics = '';
+            //create an array of all client images urls//
+            {/literal}{foreach from=$result.random_client item=client_id }{literal}
+            client_pics += "client_pics_"+i+"={/literal}{$url}/profiles/clients/logos/{$client_id|strip}/{$client_id|strip}.png{literal}&";
+            i++;//increment i to updatepic number
+            {/literal}{/foreach}{literal}
+            //end of create an array of all client images urls//
+            // convert the array to string to pass to php function easyily//
+            $.ajax({
+                type: 'POST',
+                url: '/portfolio/download-client-img-to-server?&'+client_pics+'&count='+i,
+                success: function (data) {
+                    $result = JSON.parse(data);
+                    for(j=0;j<i;j++){
+                        var src = '/BO/assets/temp_img/'+$result[j].trim();
+                        $("#client_pics_"+j).attr('src',src);
+                    }
+                }
+            });
+        }
+        $(document).ready(function(){
+            console.log("page loaded proceed ajax");
+            download_img_to_server();
+            download_client_img_to_server();
+        });
+    </script>
+{/literal}

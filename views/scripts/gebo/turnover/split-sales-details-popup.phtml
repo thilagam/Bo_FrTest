@@ -1,0 +1,42 @@
+{if $salesownerdetail}
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+<div style="text-align:center;">
+								
+										
+										<img src="{$fo_path}/profiles/bo/{$salesownerdetail.sales_creator_id}/logo.jpg?123"  class="rd_30">
+										<h3>{$salesownerdetail.sales_owner}</h3>
+										<span class="salesLoc"><i class="fa fa-map-marker"></i> {$salesownerdetail.city} - {$salesownerdetail.state}</span>
+										<!-- <span class="salesSkypeId">
+											<i class="fa fa-skype"></i>
+											<span>{$salesownerdetail.skype_id}</span> -->
+										</span>
+										<div class="salesStats">
+											<div class="span4">
+												- <span>Assigned missions</span>
+											</div>
+											<div class="span4">
+												{$salesownerdetail.signedcount} <span>Signed Quotes</span>
+											</div>
+											<div class="span4">
+												{$salesownerdetail.averagecount}% <span>Average signature</span>
+											</div>  		  		
+										</div>
+										<div class="salesContact">
+											<div class="span6">
+												<a href="mailto:{$salesownerdetail.email}">
+													<i class="fa fa-envelope-o"></i>
+													<span>email sales</span>
+												</a>
+												
+											</div>
+											<div class="span6">
+												<a href="">
+													<i class="fa fa-line-chart "></i>
+													<span>View profile</span>
+												</a>
+												
+											</div> 					
+										</div>
+									</div>
+									</div>
+		{/if}

@@ -1,0 +1,689 @@
+{literal}
+<script type="text/javascript">	
+var assigncount =  0;
+var usertype={/literal}"{$user_type}"{literal};
+$(document).ready(function() {
+	if(assigncount>0)
+	{
+		$("#assigncount").text(assigncount);
+		$("#assigncount").removeClass('hide');
+	}
+	else
+	$("#assigncount").addClass('hide');
+	
+	$(".tooltips").popover({ trigger: "manual" ,placement: 'top', html: true, animation:false})
+	.on("mouseenter", function () {
+		var _this = this;
+		$(this).popover("show");
+		$(".popover").on("mouseleave", function () {
+			$(_this).popover('hide');
+		});
+	}).on("mouseleave", function () {
+		var _this = this;
+		setTimeout(function () {
+			if (!$(".popover:hover").length) {
+				$(_this).popover("hide");
+			}
+		}, 300);
+	});
+	
+	$("#salesuseropen, #contractsopen").chosen({allow_single_deselect:false,search_contains: true});
+	  $("#salesusertovalid, #salesuser_contracts, #salesuserclosed, #contractsclosed, #deletedclients, #deletedsalesuser").chosen({allow_single_deselect:false,search_contains: true});
+	  
+	  $('#salesuseropen, #contractsopen').on('change', function(evt, params) {
+		$(".openreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadcontracts/',{'sid':$("#salesuseropen").val(),'table':1,'opened':1,'client_id':$("#contractsopen").val()},function(data){$(".openreplace").html(data)})
+	  });
+
+	  $('#salesuserclosed, #contractsclosed').on('change', function(evt, params) {
+		$(".closedreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadcontracts/',{'sid':$("#salesuserclosed").val(),'table':1,'opened':2,'client_id':$("#contractsclosed").val()},function(data){$(".closedreplace").html(data)})
+	  });
+	  
+	   $('#salesusertovalid, #salesuser_contracts').on('change', function(evt, params) {
+		$(".tovalidreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadcontracts/',{'sid':$("#salesusertovalid").val(),'table':1,'opened':0,'client_id':$("#salesuser_contracts").val()},function(data){$(".tovalidreplace").html(data)})
+	  });
+	
+	    $('#deletedclients, #deletedsalesuser').on('change', function(evt, params) {
+		$(".deletedreplace").html('<center><b>Please wait Loading...</b></center>');
+		$.post('/contractmission/loadcontracts/',{'sid':$("#deletedsalesuser").val(),'table':1,'opened':3,'client_id':$("#deletedclients").val()},function(data){$(".deletedreplace").html(data)});
+	  });
+	  
+	if(usertype=="superadmin")
+	{
+		$('#openedList').dataTable({
+				"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 0, "asc" ]],
+				"iDisplayLength":50,
+				"aoColumns": [
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "numeric" },
+					{ "sType": "string" },
+					{ "sType": "eu_date" },
+					{ "sType": "eu_date" },
+					{ "sType": "string" },
+					{ "sType": "string","bSortable": false  }
+				]
+			});
+			
+			$('#validatelist').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "string" },
+                { "sType": "eu_date" },
+                { "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string","bSortable": false  }
+            ]
+        });
+	}
+	else
+	{
+		$('#openedList').dataTable({
+				"sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+				"sPaginationType": "bootstrap",
+				"aaSorting": [[ 0, "asc" ]],
+				"iDisplayLength":50,
+				"aoColumns": [
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "string" },
+					{ "sType": "numeric" },
+					{ "sType": "string" },
+					{ "sType": "eu_date" },
+					{ "sType": "eu_date" },
+					{ "sType": "string" }
+				]
+			});
+			
+			$('#validatelist').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "string" },
+                { "sType": "eu_date" },
+                { "sType": "eu_date" },
+				{ "sType": "string" }
+            ]
+        });
+	}
+	
+	
+		
+	$('#closedlist').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "numeric" },
+                { "sType": "string" },
+                { "sType": "eu_date" },
+                { "sType": "eu_date" },
+				{ "sType": "string" },
+				{ "sType": "string" }
+            ]
+        });
+		
+	$('#deletedlist').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "numeric" },
+                { "sType": "string" },
+                { "sType": "eu_date" },
+                { "sType": "eu_date" },
+				{ "sType": "string" }
+            ]
+        });
+		
+	$(document).on("click",".closecontract",function(){
+		if($(".closecontract:checked").length)
+			$("#showcmclose").show();
+		else
+			$("#showcmclose").hide();
+	});
+		
+	$(document).on("click",".closecontract2",function(){
+		if($(".closecontract2:checked").length)
+			$("#showcmclose2").show();
+		else
+			$("#showcmclose2").hide();
+	});
+		
+	$(document).on("click","#checktoassign",function(e){
+		  if($("#checktoassign:checked").length)
+		  {
+			 $(".closecontract").prop("checked",true);  
+			 if($(".closecontract:checked").length)
+			 $("#showcmclose").show();
+		  }
+		  else
+		  {
+			 $(".closecontract").removeAttr("checked"); 
+			 $("#showcmclose").hide();
+		  }
+	});
+	
+	$(document).on("click","#checktoassign2",function(e){
+		  if($("#checktoassign2:checked").length)
+		  {
+			 $(".closecontract2").prop("checked",true);  
+			 if($(".closecontract2:checked").length)
+			 $("#showcmclose2").show();
+		  }
+		  else
+		  {
+			 $(".closecontract2").removeAttr("checked"); 
+			 $("#showcmclose2").hide();
+		  }
+	});
+	
+	});
+	
+	function closebulkmissions(txt)
+	{
+		if(txt=="close" && $(".closecontract:checked").length==1)
+		{
+			$('#closesinglecontract').modal('show');
+			$(".bulkstatus").val('closed');
+		}
+		else
+		{
+			smoke.confirm("Are you sure? Want to "+txt+" this contracts",function(e)
+			{
+				if(e)
+				{
+					if(txt=='close')
+						$(".bulkstatus").val('closed');
+					else
+						$(".bulkstatus").val('deleted');
+					$("#cmclosebulk").submit();
+				}
+				else
+				return false;
+					
+			});
+		}
+		return false;
+	}
+	
+	function closebulkmissions2(txt)
+	{
+		if(txt=="close" && $(".closecontract2:checked").length==1)
+		{
+			$('#closesinglecontract2').modal('show');
+			$(".bulkstatus").val('closed');
+		}
+		else
+		{
+			smoke.confirm("Are you sure? Want to "+txt+" this contracts",function(e)
+			{
+				if(e)
+				{
+					if(txt=='close')
+						$(".bulkstatus").val('closed');
+					else
+						$(".bulkstatus").val('deleted');
+					$("#cmclosebulk2").submit();
+				}
+				else
+				return false;
+					
+			});
+		}
+		return false;
+	}
+</script>
+{/literal}
+<div class="row-fluid">
+	<div class="span12">
+    	<h1 class="heading pull-left">Contract Follow Up</h1>
+		<div class="clearfix"></div>
+		<div class="row-fluid">
+			<ul class="nav nav-tabs">
+				<li class="{if $smarty.get.active eq ''} active {/if}"><a href="#openedup" data-toggle="tab">Opened</a></li>
+				<li class="{if $smarty.get.active eq 'validate'} active {/if}"><a href="#validateup" data-toggle="tab" class="">To Validate&nbsp;<span class="badge badge-warning" id="assigncount"></span></a></li>
+				<li class="{if $smarty.get.active eq 'finished'} active {/if}"><a href="#finishedup" data-toggle="tab">Finished / Closed</a></li>
+				<li class="{if $smarty.get.active eq 'deleted'} active {/if}">
+					<a href="#deletedtab" data-toggle="tab">Deleted</a>
+				</li>
+			</ul>	
+			<div class="tab-content" style="overflow:hidden;min-height:400px">
+			<div class="tab-pane {if $smarty.get.active eq ''} active {/if}" id="openedup">
+				<div class="row-fluid">
+					<div class="">
+					<select data-placeholder="All Sales" id="salesuseropen" class='cselect'>
+						<option value="">All User</option>
+						{foreach from=$contracts_opened_sales_users item=user key=key name=users}
+						   <option value="{$key}" >{$user}</option>
+						{/foreach}
+					</select>
+					<select data-placeholder="All Clients" id="contractsopen" class='cselect'>
+						<option value="">All Clients</option>
+						{foreach from=$contracts_opened_clients item=user key=key name=users}
+						   <option value="{$key}" >{$user}</option>
+						{/foreach}
+					</select>
+					</div>
+				</div>
+				<form class="" action="/contractmission/close-bulk-contract" name="" id="cmclosebulk" method="POST" enctype='multipart/form-data'>
+				<div class="row-fluid">
+					<div class="openreplace">
+					<table class="table table-bordered table-hover table_vam" id="openedList" >
+						<thead>
+							<tr>
+							   <th style="display:none"></th>
+							   <th>Contract Name</th>
+							   <th>Turnover</th>
+							   <th>% Done</th>
+							   <th>Duration</th>
+							   <th>Company Name</th>
+							   <th>Expected Launch</th>
+							   <th>Expected End</th>
+							   <th>Action</th>
+							   {if $user_type=="superadmin"}
+							   <th>
+								<input type="checkbox" id="checktoassign" />
+							   </th>
+							   {/if}
+							</tr>
+						</thead>
+						<tbody>
+						{foreach from=$contracts_opened item="contract" name="contracts" }
+							<tr>
+							   <td style="display:none"></td>
+							   <td>
+							  <a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view">{$contract.contractname}</a>
+							   </td>
+							   <td>{$contract.turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</td>
+							   <td>{$contract.percentage}</td>
+							   <td>{$contract.duration}</td>
+							   <td>
+							   <a class="hint--left" data-hint="{if $contract.clfname || $contract.cllname}{$contract.clfname} {$contract.cllname}{else}{$contract.clemail}{/if}" target="_blank" href="/quote/create-client?uaction=view&client_id={$contract.client_id}&submenuId=ML13-SL1">
+							   {$contract.company_name}
+							   </a>
+							   </td>
+							   <td>{$contract.expected_launch_date|date_format:'%d/%m/%Y'}</td>
+							   <td>{$contract.expected_end_date|date_format:'%d/%m/%Y'}</td>
+							   <td>
+								<div class="btn-group">
+									<a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view" class="btn">View contract</a>
+									<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+									<ul class="dropdown-menu">
+									  <li><a href="/contractmission/missions-list?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}"><i class="icon-list-alt"></i> View Missions</a></li>
+									</ul>
+								</div>
+								</td>
+								{if $user_type=="superadmin"}
+									<td>
+										<input type="checkbox" class="closecontract" name="closecontract[{$contract.quotecontractid}]" value="{$contract.quoteid}" />
+									</td>
+								{/if}
+							</tr>
+						{/foreach}
+						</tbody>
+					</table>
+					</div>
+					<div style="position:fixed;top:35%;right:0;display:none" id="showcmclose">
+						<input type="button" name="cmclose1" value="Close" onclick="return closebulkmissions('close')" class="btn btn-danger" />
+						<input type="button" name="delete" value="Delete" onclick="return closebulkmissions('delete')" class="btn btn-danger" />
+						<input type="hidden" name="cmclose" value="1" />
+						<input type="hidden" name="bulkstatus" class="bulkstatus" value="" />
+					</div>
+					<div class="modal hide fade" id="closesinglecontract" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-header">
+							<button class="close" data-dismiss="modal" >&times;</button>
+							<h3>Close contract</h3>
+						</div>
+						<div class="modal-body">
+							<div class="row-fluid">
+								<div class="control-group">
+									<label class="control-label">Commentaire</label>
+									<div class="controls">
+										<textarea cols="30" id="comments" name="comment" rows="5" class="span12"></textarea>
+									</div>
+								</div>
+							</div>
+							<div class="control-group">
+								<div class="controls pull-center">
+									<button id="valid-sign-old" class="btn btn-primary" type="submit">Valider</button>
+									<button  class="btn" data-dismiss="modal" type="reset">Annuler</button>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+						</div>
+					</div>
+				</div>
+				</form>
+			</div>
+			<div class="tab-pane {if $smarty.get.active eq 'validate'} active {/if}" id="validateup">
+					<div class="row-fluid">
+					<select data-placeholder="All Sales" id="salesusertovalid" class='cselect'>
+						<option value="">All User</option>
+						{foreach from=$tovalidate_sales_users item=user key=key name=users}
+						   <option value="{$key}" >{$user}</option>
+						{/foreach}
+					</select>
+					<select data-placeholder="All Sales" id="salesuser_contracts" class='cselect'>
+						<option value="">All Clients</option>
+						{foreach from=$tovalidate_clients item=user key=key name=users}
+						   <option value="{$key}" >{$user}</option>
+						{/foreach}
+					</select>
+					</div>
+					<form class="" action="/contractmission/close-bulk-contract" name="" id="cmclosebulk2" method="POST" enctype='multipart/form-data'>
+					<div class="row-fluid">
+					<div class="tovalidreplace">
+					<table class="table table-bordered table-hover table_vam" id="validatelist" >
+						<thead>
+							<tr>
+							   <th style="display:none"></th>
+							   <th>Contract Name</th>
+							   <th>Turnover</th>
+							   <th>Duration</th>
+							   <th>Company Name</th>
+							   <th>Expected Launch</th>
+							   <th>Expected End</th>
+							   <th>Action</th>
+							   {if $user_type=="superadmin"}
+							   <th>
+								<input type="checkbox" id="checktoassign2" />
+							   </th>
+							   {/if}
+							</tr>
+						</thead>
+						<tbody>
+						{assign var=toassigncount value=0}
+						{foreach from=$contracts_to_validate item="contract" name="contracts" }
+							<tr>
+							   <td style="display:none"></td>
+							   <td>
+							   <a href='/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}'> {$contract.contractname}</a>
+							   </td>
+							   <td>{$contract.turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</td>
+							   <td>{$contract.duration}</td>
+							   <td>
+							   <a class="hint--left" data-hint="{if $contract.clfname || $contract.cllname}{$contract.clfname} {$contract.cllname}{else}{$contract.clemail}{/if}" target="_blank" href="/quote/create-client?uaction=view&client_id={$contract.client_id}&submenuId=ML13-SL1">
+							   {$contract.company_name}
+							   </a>
+							   </td>
+							   <td>{$contract.expected_launch_date|date_format:'%d/%m/%Y'}</td>
+							   <td>{$contract.expected_end_date|date_format:'%d/%m/%Y'}</td>
+							   <td> <a href='/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}' class="btn">Validate Contract</a></td>
+							   {if $user_type=="superadmin"}
+									<td>
+										<input type="checkbox" class="closecontract2" name="closecontract[{$contract.quotecontractid}]" value="{$contract.quoteid}" />
+									</td>
+								{/if}
+							</tr>
+							{assign var=toassigncount value=$toassigncount+1}
+						{/foreach}
+						</tbody>
+					</table>
+					</div>
+					<div style="position:fixed;top:35%;right:0;display:none" id="showcmclose2">
+						<input type="button" name="cmclose1" value="Close" onclick="return closebulkmissions2('close')" class="btn btn-danger" />
+						<input type="button" name="delete" value="Delete" onclick="return closebulkmissions2('delete')" class="btn btn-danger" />
+						<input type="hidden" name="cmclose" value="1" />
+						<input type="hidden" name="bulkstatus" class="bulkstatus" value="" />
+					</div>
+					<div class="modal hide fade" id="closesinglecontract2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-header">
+							<button class="close" data-dismiss="modal" >&times;</button>
+							<h3>Close contract</h3>
+						</div>
+						<div class="modal-body">
+							<div class="row-fluid">
+								<div class="control-group">
+									<label class="control-label">Commentaire</label>
+									<div class="controls">
+										<textarea cols="30" id="comments" name="comment" rows="5" class="span12"></textarea>
+									</div>
+								</div>
+							</div>
+							<div class="control-group">
+								<div class="controls pull-center">
+									<button id="valid-sign-old" class="btn btn-primary" type="submit">Valider</button>
+									<button  class="btn" data-dismiss="modal" type="reset">Annuler</button>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+						</div>
+					</div>
+					</div>
+					</form>
+			</div>
+			<div class="tab-pane {if $smarty.get.active eq 'finished'} active {/if}" id="finishedup">
+				<div class="row-fluid">
+					<div class="">
+					<select data-placeholder="All Sales" id="salesuserclosed" class='cselect'>
+						<option value="">All User</option>
+						{foreach from=$contracts_finished_sales_users item=user key=key name=users}
+						   <option value="{$key}" >{$user}</option>
+						{/foreach}
+					</select>
+					<select data-placeholder="All Sales" id="contractsclosed" class='cselect'>
+						<option value="">All Clients</option>
+						{foreach from=$contracts_finished_clients item=user key=key name=users}
+						   <option value="{$key}" >{$user}</option>
+						{/foreach}
+					</select>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="closedreplace">
+					<table class="table table-bordered table-hover table_vam" id="closedlist" >
+						<thead>
+							<tr>
+							   <th style="display:none"></th>
+							   <th>Contract Name</th>
+							   <th>Turnover</th>
+							   <th>% Done</th>
+							   <th>Duration</th>
+							   <th>Company Name</th>
+							   <th>Expected Launch</th>
+							   <th>Expected End</th>
+							   <th>Action</th>
+							   <th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+						{foreach from=$contracts_finished item="contract" name="contracts" }
+							<tr>
+							   <td style="display:none"></td>
+							   <td>
+							  <a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view">{$contract.contractname}</a>
+							   </td>
+							   <td>{$contract.turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</td>
+							   <td>{$contract.percentage}</td>
+							   <td>{$contract.duration}</td>
+							   <td>
+							   <a class="hint--left" data-hint="{if $contract.clfname || $contract.cllname}{$contract.clfname} {$contract.cllname}{else}{$contract.clemail}{/if}" target="_blank" href="/quote/create-client?uaction=view&client_id={$contract.client_id}&submenuId=ML13-SL1">
+							   {$contract.company_name}
+							   </a>
+							   </td>
+							   <td>{$contract.expected_launch_date|date_format:'%d/%m/%Y'}</td>
+							   <td>{$contract.expected_end_date|date_format:'%d/%m/%Y'}</td>
+							   <td>
+								<div class="btn-group">
+									<a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view" class="btn">View contract</a>
+									<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+									<ul class="dropdown-menu">
+									  <li><a href="/contractmission/missions-list?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}"><i class="icon-list-alt"></i> View Missions</a></li>
+									</ul>
+								</div>
+								</td>
+								<td><label class="label label-info">Finished</label></td>
+							</tr>
+						{/foreach}
+						{foreach from=$contracts_closed item="contract" name="contracts" }
+							<tr>
+							   <td style="display:none"></td>
+							   <td>
+							  <a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view">{$contract.contractname}</a>
+								  {assign var=closedc_status value=0}
+							  {if $contract.closed_comment}
+									<a href="/contractmission/add-comments?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}&comment={$closedc_status}&quote_id={$contract.quoteid}&cstatus=view" data-toggle="modal" tabindex="-1" data-target="#closed_comment">
+										<i class="splashy-comments"></i>
+									</a>
+									 {assign var=closedc_status value=1}
+							  {/if}
+							   </td>
+							   <td>{$contract.turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</td>
+							   <td>{$contract.percentage}</td>
+							   <td>{$contract.duration}</td>
+							   <td>
+							   <a class="hint--left" data-hint="{if $contract.clfname || $contract.cllname}{$contract.clfname} {$contract.cllname}{else}{$contract.clemail}{/if}" target="_blank" href="/quote/create-client?uaction=view&client_id={$contract.client_id}&submenuId=ML13-SL1">
+							   {$contract.company_name}
+							   </a>
+							   </td>
+							   <td>{$contract.expected_launch_date|date_format:'%d/%m/%Y'}</td>
+							   <td>{$contract.expected_end_date|date_format:'%d/%m/%Y'}</td>
+							   <td>
+								<div class="btn-group">
+									<a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view" class="btn">View contract</a>
+									<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+									<ul class="dropdown-menu">
+									  <li><a href="/contractmission/missions-list?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}"><i class="icon-list-alt"></i> View Missions</a></li>
+									{if $user_type=="superadmin" || $user_type=="facturation"}
+									  <li><a href="/contractmission/add-comments?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}&comment={$closedc_status}&quote_id={$contract.quoteid}&cstatus=add" data-toggle="modal" tabindex="-1" data-target="#closed_comment"><i class="splashy-comments"></i></i> Add comment</a></li>
+									{/if}
+									</ul>
+								</div>
+								</td>
+								<td>
+								<label class="label label-important">Closed</label>
+								</td>
+							</tr>
+						{/foreach}
+						</tbody>
+					</table>
+					</div>
+				</div>
+			</div>
+			
+			<!-- Start of Deleted Contracts -->
+			<div class="tab-pane {if $smarty.get.active eq 'deleted'} active {/if}" id="deletedtab">
+				<div class="row-fluid">
+					<div class="">
+					<select data-placeholder="All Sales" id="deletedsalesuser" class='cselect'>
+						<option value="">All User</option>
+						{foreach from=$contracts_deleted_sales_users item=user key=key name=users}
+						   <option value="{$key}" >{$user}</option>
+						{/foreach}
+					</select>
+					<select data-placeholder="All Sales" id="deletedclients" class='cselect'>
+						<option value="">All Clients</option>
+						{foreach from=$contracts_deleted_clients item=user key=key name=users}
+						   <option value="{$key}" >{$user}</option>
+						{/foreach}
+					</select>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="deletedreplace">
+					<table class="table table-bordered table-hover table_vam" id="deletedlist" >
+						<thead>
+							<tr>
+							   <th style="display:none"></th>
+							   <th>Contract Name</th>
+							   <th>Turnover</th>
+							   <th>% Done</th>
+							   <th>Duration</th>
+							   <th>Company Name</th>
+							   <th>Expected Launch</th>
+							   <th>Expected End</th>
+							   <th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+						{foreach from=$contracts_deleted item="contract" name="contracts" }
+							<tr>
+							   <td style="display:none"></td>
+							   <td>
+							  <a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view">{$contract.contractname}</a>
+							   </td>
+							   <td>{$contract.turnover|zero_cut_t:2} &{$contract.sales_suggested_currency};</td>
+							   <td>{$contract.percentage}</td>
+							   <td>{$contract.duration}</td>
+							   <td>
+							   <a class="hint--left" data-hint="{if $contract.clfname || $contract.cllname}{$contract.clfname} {$contract.cllname}{else}{$contract.clemail}{/if}" target="_blank" href="/quote/create-client?uaction=view&client_id={$contract.client_id}&submenuId=ML13-SL1">
+							   {$contract.company_name}
+							   </a>
+							   </td>
+							   <td>{$contract.expected_launch_date|date_format:'%d/%m/%Y'}</td>
+							   <td>{$contract.expected_end_date|date_format:'%d/%m/%Y'}</td>
+							   <td>
+								<div class="btn-group">
+									<a href="/contractmission/contract-edit?submenuId=ML13-SL3&contract_id={$contract.quotecontractid}&action=view" class="btn">View contract</a>
+									<a href="" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus" style="opacity:0.5"></i></a>
+									<ul class="dropdown-menu">
+									  <li><a href="/contractmission/missions-list?submenuId=ML13-SL4&contract_id={$contract.quotecontractid}"><i class="icon-list-alt"></i> View Missions</a></li>
+									</ul>
+								</div>
+								</td>
+							</tr>
+						{/foreach}
+						</tbody>
+					</table>
+					</div>
+				</div>
+			</div>
+			<!-- End of Deleted Contracts -->
+			
+		</div>
+		</div>
+	</div>
+</div>
+<!-- Add or view comments-->
+<div class="modal container hide fade" id="closed_comment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+		<h3>Closed comment</h3>
+    </div>
+    <div class="modal-body">
+		
+    </div>
+    <div class="modal-footer">
+    </div>
+</div>
+{literal}
+<script>
+	assigncount =  {/literal}"{$toassigncount}"{literal};
+</script>
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+{/literal}

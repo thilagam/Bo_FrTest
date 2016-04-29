@@ -1,0 +1,167 @@
+
+
+<div class="row-fluid">
+			<div class="span12">
+				<h1 class="heading">Quotes Weekly Report ({$weely_table_details.startdate} to {$weely_table_details.enddate})</h1>
+				<a href="/quote/weekly-quotes?submenuId=ML13-SL4&download=report" class="btn btn-primary pull-right">Download</a>
+				<ul class="nav nav-tabs">
+					<li class="{if $smarty.get.active eq ''} active {/if}"><a href="#weekly" data-toggle="tab">Total Quote List</a></li>
+					<li class="{if $smarty.get.active eq 'weekly-list'} active {/if}"><a href="#weekly-list" data-toggle="tab">Quotes Details</a></li>				
+				</ul>	
+				
+				
+				<div class="tab-content">
+					<div id="weekly" class="tab-pane fade {if $smarty.get.active eq ''} in active {/if}">
+							<table class="table table-bordered table-hover table_vam" id="weekly_quotesList" >
+							
+							<tbody>
+								
+						{if $weely_table_details|@count>0}
+						
+							<thead>
+								<tr>								  
+								   <th>Total {$weely_table_details.quotetotal} in FR</th>
+								   <th>{$weely_table_details.turnover}  Euros</th>
+								   <th>{$weely_table_details.quotetotal}</th>
+								   <th>Average {$weely_table_details.signature} % of signature</th>
+								   
+								</tr>
+							</thead>
+						
+							   {if $user_check_array|@count>0}
+									{foreach from=$user_check_array item=user_check_item name=user_check_loop}
+									  <tr>
+									  <td>{$user_check_item.saleinchange}</td>
+									  <td>{$user_check_item.trunover}</td>
+									  <td>{$user_check_item.count}</td>
+									  <td>{$user_check_item.signature/$user_check_item.count|ceil}</td>
+									  </tr>
+									{/foreach}
+								{/if}				
+				{/if}
+				</table>
+					</div>
+					
+					<div id="weekly-list" class="tab-pane fade {if $smarty.get.active eq 'weekly-list'} in active {/if}">
+						
+						<table class="table table-bordered table-hover table_vam" id="weekly_details" >
+							<thead>
+								<tr>								  
+								  
+								   <th>Client Name</th>
+								   <th>Nom devis</th>
+								   <th>Sales in charge</th>
+								   <th>Creation date</th>
+								   <th>% of signature</th>
+								   <th>Turnover</th>
+								   <th>Status</th>
+								   <th>Status 2</th>
+								   <th>Notions of timings</th>
+								   <th>Comment</th>
+								  	</tr>
+								  	</thead>
+								  
+								{if $weely_table_quote|@count>0}
+								{$quoteloophtml}
+							{/if}	
+						
+						</table>
+						</div>
+					
+					
+					
+				</div>
+
+			</div>
+</div>
+
+{literal}
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/countdown.js"></script>
+<script src="/BO/theme/gebo/js/jquery.MultiFileQuote.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	$('#weekly_details').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+			"iDisplayLength" : 50,
+            "aaSorting": [[ 3, "desc" ]],
+            "aoColumns": [               
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+				{ "sType": "eu_date" },
+				{ "sType": "string" },
+			    { "sType": "string" },
+				{ "sType": "string" },
+                { "sType": "natural" },	
+				{ "sType": "string" },				
+				{ "sType": "string" }
+				
+            ]
+        });
+	</script>
+
+
+<style type="text/css">
+.dropdown-menu
+{
+right:0;
+left: auto;
+}
+.turnover
+{
+font-size:18px;
+font-weight: 500;
+}
+.dataTables_wrapper
+{
+	/*padding-bottom:195px;*/
+	position:inherit;
+}
+.icon-time
+{
+top:0px;
+}
+.alert{
+margin:3px;
+padding:3px;
+}
+
+.btn-group
+{
+	position:static;
+}
+
+.dropdown-menu
+{
+	top:auto;
+}
+
+.version-change
+{
+	cursor: pointer;
+}
+
+.dataTables_wrapper .top, .dataTables_wrapper .bottom
+{
+	padding:0;
+	background:#fff;
+}
+
+.popover-content td
+{
+	border-left:none;
+}
+
+#cls_quotesList_wrapper
+{
+	padding-bottom:140px;
+}
+#weekly-list{
+	margin-top:25px;
+	}
+</style>
+{/literal}
+

@@ -1,0 +1,183 @@
+{literal}
+<script type="text/javascript">	
+$(document).ready(function() {
+	$('#quotesList').dataTable({
+            "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "aaSorting": [[ 0, "asc" ]],
+			"iDisplayLength":50,
+            "aoColumns": [
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" },
+                { "sType": "string" }
+            ]
+        });
+});	
+</script>
+<link rel="stylesheet" type="text/css" href="/BO/theme/gebo/lib/jsgantt/jsgantt.css"/>
+<script language="javascript" src="/BO/theme/gebo/lib/jsgantt/jsgantt-mission.js"></script>
+<style>
+
+	#leftside td, #leftside th
+	{
+		padding:8px;
+	}
+	
+	#rightside th,#rightside td
+	{
+		padding:8px 0;
+	}
+	
+	.tooltips 
+	{
+		cursor:pointer;
+	}
+	
+	
+	
+</style>
+{/literal}
+
+<div class="row-fluid">
+	<div class="span12">
+    	<h3 class="heading">Mission List</h3>
+		  <table class="table table-bordered table-striped table_vam" id="quotesList" >
+            <thead>
+                <tr>
+                   <th>Mission Name</th>
+                   <th>Contract Name</th>
+                   <th>Assigned To</th>
+                   <th>Survey</th>
+                   <th>Recruitement</th>                   
+                   <th>Mission Type</th>       
+				   <th>Action</th>
+                 <!-- <th>View Mission</th> -->
+                </tr>
+            </thead>
+            <tbody>
+				{foreach from=$contractmissions item="mission" name="contractmission" }
+					<tr>
+						<td>{if $mission.product eq 'translation'} {$mission.product_name} {$mission.product_type_name} 					{$mission.language_source_name} au {$mission.language_dest_name} {else} {$mission.product_name} {$mission.product_type_name}  in {$mission.language_source_name} {/if}</td>
+						<td><a href='/contractmission/contract-list/'>{$mission.contractname}</a></td>
+						<td>{$mission.first_name}&nbsp;{$mission.last_name}</td>
+						<td>{if $mission.is_survey eq 'yes'} 
+							{if $mission.survey_status eq 'create'}
+							<a href='/survey/create-survey?contract_missionid={$mission.contractmissionid}'>Create Survey</a> 
+							{elseif $mission.survey_status eq 'closed'} 
+								<a href='/survey/followup?survey_id={$mission.survey_id}'>Closed</a> 
+							{else}
+								<a href='/survey/followup?survey_id={$mission.survey_id}'>Follow Up</a> 
+							{/if}
+						{else}
+							-
+						{/if}
+						</td>
+						<td>
+						{if $mission.is_recruitment eq 'yes'} 
+							{if $mission.recruitment_status eq 'create'}
+							<a href='/contractmission/create-recruitment?contract_missionid={$mission.contractmissionid}'>Create Recruitment</a> 
+							{elseif $mission.survey_status eq 'closed'} 
+								<a href='/contractmission/recruitment-follow-up?recruitment_id={$mission.recruitment_id}'>Closed</a> 
+							{else}
+								<a href='/contractmission/recruitment-follow-up?recruitment_id={$mission.recruitment_id}'>Follow Up</a> 
+							{/if}
+						{else}
+							-
+						{/if}</td>
+						<td>{if $mission.privatedelivery eq 'yes'}Private Delivery{else}Public Delivery{/if}</td>
+						<td>
+						{if $mission.create_delivery}
+							<a href="/quotedelivery/delivery-prod1?mission_id={$mission.contractmissionid}">Create Delivery</a>
+						{else}
+							-
+						{/if}
+						</td>
+					</tr>
+				{/foreach}
+            </tbody>
+        </table> 
+		
+		<ul class="nav nav-tabs">
+			<li class="{if $smarty.get.active eq ''} active {/if}"><a href="#opened" data-toggle="tab">Opened</a></li>
+			<li class="{if $smarty.get.active eq 'validate'} active {/if}"><a href="#validate" data-toggle="tab">To be assigned</a></li>
+			<li class="{if $smarty.get.active eq 'finished'} active {/if}"><a href="#finished" data-toggle="tab">Finished</a></li>
+		</ul>	
+		
+		<div class="tab-content">
+			<div class="tab-pane {if $smarty.get.active eq ''} active {/if}" id="opened">
+				<div id='missions-opened'></div>
+			</div>
+			<div class="tab-pane {if $smarty.get.active eq 'validate'} active {/if}" id="validate">
+				<div id='missions-toassign'></div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+<!--popup to show mission details-->
+<div class="modal container hide fade" id="mission_modal">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" >&times;</button>
+        <h3>Missions</h3>
+    </div>
+    <div class="modal-body">
+		
+	</div>
+    <div class="modal-footer">
+    </div>
+</div>	
+{literal}
+<script>
+
+  var g = new JSGantt.GanttChart('g',document.getElementById('missions-opened'), 'week');
+
+	g.setShowRes(0); // Show/Hide Responsible (0/1)
+	g.setShowDur(0); // Show/Hide Duration (0/1)
+	g.setShowComp(0); // Show/Hide % Complete(0/1)
+    g.setCaptionType('None');  // Set to Show Caption (None,Caption,Resource,Duration,Complete)
+
+	  if(g) {
+		{/literal}
+		{foreach from=$contractmissionsopened item="mission" name="contracts" }
+		{literal} id = {/literal}{$mission.contractmissionid}{literal};{/literal}
+		{literal} mname = {/literal}{if $mission.product eq 'translation'} "{$mission.product_name} {$mission.product_type_name} {$mission.language_source_name} au {$mission.language_dest_name}" {else} "{$mission.product_name} {$mission.product_type_name}  in {$mission.language_source_name}" {/if}{literal};{/literal}
+		{literal} lang = {/literal}"{$mission.language_source_name}"{literal};{/literal}
+		{literal} edate = {/literal}"{$mission.expected_end_date}"{literal};{/literal}
+		{literal} ldate = {/literal}"{$mission.expected_launch_date}"{literal};{/literal}
+		{literal} pdone = {/literal}"0%"{literal};{/literal}
+		{literal} pm = {/literal}"{$mission.first_name} {$mission.last_name}"{literal};{/literal}
+		{literal}
+		json = '{"lang":"'+lang+'","pdone":"'+pdone+'","pm":"'+pm+'"}';
+			g.AddTaskItem(new JSGantt.TaskItem(id,mname,ldate,edate,'2B78E4','',0,mname,0,0,0,0,'','Caption 1',json));
+		{/literal}
+		{/foreach}
+		{literal}
+		g.Draw();	
+		g.DrawDependencies();
+	  }
+	  else
+	  {
+		alert("not defined");
+	  }
+ 
+		
+$(document).ready(function() {
+ $(".uni_style2").uniform();
+		 $(".uni_style").uniform();
+		
+	$('.tooltips').tooltipster(
+	 {
+		contentAsHTML: true,
+		theme: 'tooltipster-noir',
+		position: 'bottom',
+		positionTracker:true,
+		interactive: true,
+	 }); 
+		
+});
+</script>
+{/literal}

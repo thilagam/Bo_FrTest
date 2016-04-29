@@ -1,0 +1,546 @@
+{if $recruitmentQuoteDetails|@count gt 0}
+	{foreach from=$recruitmentQuoteDetails item=recruitment name="quote"}
+{literal}
+<style>
+	.mission-details:nth-of-type(1)
+	{
+		margin:0 0 10px;
+	}
+	
+	.mission-details
+	{
+		margin:10px 0;
+	}
+	
+	.mission-table
+	{
+		margin-bottom:0;
+	}
+	
+	/* span[id^="time_"] */
+	.time1
+	{
+		padding-bottom:0px;
+		padding-top:0px;
+	}
+	td .icon-time
+	{
+		top:3px;
+	}
+	
+	.alert
+	{
+		padding-right:14px;
+	}
+	
+	.smiley
+	{
+		transform:rotate(90deg);
+		font-size:18px;
+		margin-left:8px;
+	}
+	
+	.changebackground
+	{
+		background-color:#dadada;
+	}
+	
+	.under_marks{
+		text-decoration:line-through;
+	}
+	.time
+	{
+		font-size: 26px;
+		font-weight: 300;
+		height:30px;
+	}
+	
+	.btn-default:hover {background-color:rgb(245, 245, 245) !important; color:rgb(179, 179, 179); border-color:rgb(179, 179, 179) !important;}
+</style>
+<link href="/BO/theme/gebo/lib/iCheck/skins/line/grey.css" rel="stylesheet">
+<link href="/BO/theme/gebo/lib/iCheck/skins/line/green.css" rel="stylesheet">
+<script src="/BO/theme/gebo/lib/iCheck/icheck.min.js" type="text/javascript" charset="utf-8"></script> 
+<link rel="stylesheet" href="/BO/theme/gebo/js/validation-engine/validationEngine.jquery.css" type="text/css"/>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine-fr.js" type="text/javascript" charset="utf-8"></script>
+<script src="/BO/theme/gebo/js/validation-engine/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+<script language="JavaScript" type="text/javascript" src="/BO/theme/gebo/js/countdown.js"></script>
+<script>
+var cur_date={/literal}{$smarty.now}{literal};
+var js_date=(new Date().getTime())/ 1000;
+var diff_date=Math.floor(js_date-cur_date);
+var rid = {/literal}{$smarty.get.recruitment_id}{literal};
+ $(document).ready(function() {
+	startCountDown();
+		
+	var currency = 'euro';
+	$(document).ready(function(){
+	
+	//$(".disable_hire").closest("tr").addClass('changebackground');
+	
+    //////////show timer//////////
+    $("[id^=time_]").each(function(i) {
+        var article=$(this).attr('id').split("_");
+        var ts=article[1];
+        var ts2 =article[2];
+        $("#time_"+article[1]).countdown({
+            timestamp   : ts,
+            diff_date  : diff_date,
+            callback    : function(days, hours, minutes, seconds){
+                var message = "";
+                message += days + "j"  +" ";
+                message += hours + "h" +" ";
+                message += minutes + "mns"+ " ";
+				if(minutes<1)	
+			    message += seconds + "s";
+                $("#time_"+article[2]).html(message);
+                if(days==0 && hours==0 && minutes==0 && seconds==0)
+                {
+                    //window.location.reload();
+                }
+            }
+        });
+    });
+    //////////////////////////////////////////////////////////////////
+		
+		
+		
+		 /*$('input[name="hire[]"]').each(function(){
+			var self = $(this),
+			  label = self.next(),
+			  label_text = label.text();
+			label.remove();
+			
+			if($(self).is(":checked"))
+			{
+				self.iCheck({
+				  checkboxClass: 'icheckbox_line-green',
+				  radioClass: 'iradio_line-green',
+				  insert: '<div class="icheck_line-icon"></div>' + label_text
+				});
+			
+			}
+			else
+			{	self.iCheck({
+				  checkboxClass: 'icheckbox_line-grey',
+				  radioClass: 'iradio_line-grey',
+				  insert: '<div class="icheck_line-icon"></div>' + label_text
+				});
+			}	
+		  });
+		var participants = {/literal}{$recruitment.total_article}{literal}
+		$("#participent_save").validationEngine({onValidationComplete: function(form, status){
+			if(status==true)
+			{
+				if($("input[name='hire[]']:checked").length >= participants)
+				return true;
+				else
+				{
+					smoke.confirm("Sure to Close this Challenge, Since only "+ $("input[name='hire[]']:checked").length+" Partcipants are selected less then required "+participants+" Participants",function(e)
+					{
+						if(e)
+						{
+							$("#status").val('closed');
+							$('#participent_save').validationEngine('detach');
+							$("#participent_save").submit();
+						}
+					});	
+				}
+			}
+		}});*/
+	
+		$(".lessdetails").hide();
+		$(document).on('click','.moredetails',function(){
+			$(this).hide();
+			$(".lessdetails").show();
+			$(".slide").slideDown();
+		});
+		
+		$(document).on('click','.lessdetails',function(){
+			$(this).hide();
+			$(".moredetails").show();
+			$(".slide").slideUp();
+		});
+		
+		$('#selecttable').dataTable({
+             "bPaginate":   false,
+             "bSort":   false,
+            "aoColumns": [
+                null,
+                null,
+                null,                
+                {/literal}{if $show_quiz eq 'yes'}{literal}
+                null,
+				{/literal}
+				{/if}				
+				{literal}
+				null,
+                null,
+            ]
+        });
+				
+	});
+	
+	$(document).on('click','.load',function(){
+			var value = "";
+			if($(this).val()!="all")
+			$(".all").removeAttr('checked');
+			$(".load:checked").each(function(){
+			if($(this).val()=="all")
+			{
+				value = "";
+				$(".load").removeAttr('checked');
+				$(this).attr('checked','checked');
+				return false;
+			}
+			else
+				value += ","+$(this).val();
+			});
+			$(".loadtable").html("Please Wait Loading...");
+			$.post("/recruitment/loadparticipation",{"value":value,"rid":rid,'currency':currency},function(result){
+				//alert(result);
+				$(".loadtable").html(result);
+			});
+		})
+		
+		//toggle green and grey buttons
+		/*$('input[name="hire[]"]').on('ifChecked', function(event){			
+			$(this).parent().removeClass('icheckbox_line-grey');
+			$(this).parent().toggleClass('icheckbox_line-green checked');			
+		});
+		$('input[name="hire[]"]').on('ifUnchecked', function(event){			
+			$(this).parent().removeClass('icheckbox_line-green');
+			$(this).parent().toggleClass('icheckbox_line-grey');			
+		});*/
+});		
+		
+	function save()
+	{
+		  $('#participent_save').validationEngine('hideAll');
+          $('#participent_save').validationEngine('detach');
+		  $("#participent_save").submit();
+	}
+	
+	function startCountDown()
+	{
+	 //////////show timer//////////
+		$("[id^=time1_]").each(function(i) {
+			var article=$(this).attr('id').split("_");
+			var ts=article[1];
+			var ts2 =article[2];
+			$("#time1_"+article[1]).countdown({
+				timestamp   : ts,
+				diff_date  : diff_date,
+				callback    : function(days, hours, minutes, seconds){
+					var message = "";
+					if(days>0)
+						message += days + " jour(s)"  +" ";
+					if(hours>0)		
+						message += hours + " :" +" ";
+					if(minutes > 0)	
+						message += minutes + " :"+ " ";
+					//if(minutes<1)	
+					message +=seconds ;
+					$("#time1_"+article[2]).html(message);
+					if(days==0 && hours==0 && minutes==0 && seconds==0)
+					{
+						//window.location.reload();
+					}
+				}
+			});
+		});
+
+	}
+	
+	function StopRecruitment(param)
+	{
+		if(param=="stop")
+			var paramtext='Sure to Stop this Challenge ?';
+		else if(param=="resume")
+			var paramtext='Sure to Resume this Challenge ?';
+			
+		smoke.confirm(paramtext,function(e)
+		{
+			if(e)
+			{
+				$.post("/recruitment/stoprecruitment",{"recruitment":rid,"action":param},function(result){
+					//alert(result);
+					if($.trim(result)=='stopped')
+					{
+						if(param=='stop')
+							$("#stoprecruitblock").html('<a href="javascript:void(0);" class="btn btn-warning" onclick="return StopRecruitment(\'resume\')">Resume</a>');
+						else if(param=="resume")
+							$("#stoprecruitblock").html('<a href="javascript:void(0);" class="btn btn-danger" onclick="return StopRecruitment(\'stop\')">Stop</a>');
+						//window.location.reload();
+					}
+				});
+			}
+			else
+				return false;
+		});
+		
+	}
+	
+	function hireparticipant(flag,rpid,user)
+	{
+		var rid=$("#recruitment_id").val(); 
+		$('#loadingmessage_'+rpid).show(); 
+		$("#hireaction_"+rpid).html('');
+		$.post("/recruitment/hireparticipation",{"rid":rid,"rpid":rpid,"hire":flag,"user":user},function(result){
+			sleep(1000);
+			if(flag=='yes')
+			{
+				$("#hireaction_"+rpid).html('<span class="label label-success">Hired</span>');
+				
+				var hirecount=$("#hired_count").val();
+				hirecount=parseInt(hirecount) + 1;
+				$("#hired_count").val(hirecount);
+				$("#hiredcounttext").html(hirecount);
+				//$("#hire_yes_"+rpid).attr("class","btn btn-success");
+				//$("#hire_yes_"+rpid).attr("disabled","disabled");
+				//$("#hire_no_"+rpid).attr("disabled","disabled");
+			}
+			else if(flag=='no')
+			{
+				$("#hireaction_"+rpid).html('<span class="label label-inverse">Not Hired</span>');
+				//$("#hire_no_"+rpid).attr("class","btn btn-inverse");
+				//$("#hire_no_"+rpid).attr("disabled","disabled");
+				//$("#hire_yes_"+rpid).attr("disabled","disabled");
+			}
+			$('#loadingmessage_'+rpid).hide(); 
+		});
+	}
+	
+	function CloseRecruitment()
+	{
+		var rid=$("#recruitment_id").val(); 
+		
+		smoke.confirm("Sure to Close this Challenge ?",function(e)
+		{
+			if(e)
+			{
+				$.post("/recruitment/closerecruitment",{"rid":rid},function(result){//alert(result);
+					window.location.reload();
+				});
+			}
+		});
+	}
+	
+</script>
+{/literal}
+{literal}
+<link href="/BO/theme/gebo/css/mission-followup.css" rel="stylesheet" />
+{/literal}
+	<div class="row-fluid">    
+		<div class="span12">
+			<div class="followup-header">
+				<h3><a href="/followup/prod?submenuId=ML13-SL4&cmid={$smarty.get.cmid}">
+				<b>{$recruitment.product_name} {$recruitment.product_type_name}  in													{$recruitment.language_source_name}</b></a> > {$recruitment.recruitment_title} <span class="headerdim">{$recruitment.launch} - {$recruitment.enddate}</span></h3>
+				<div class="row-fluid">    
+					<div class="header-info">
+						<div class="span3">
+							 
+							{if $recruitment.recruitment_status eq 'closed'}
+								<span class="upper">
+									Recruitment ferm&eacute;e
+								</span>	
+							{elseif $recruitment.global_recruitment_time gt $smarty.now}
+								<span class="upper">Participation</span>
+								<span id="time1_{$recruitment.global_recruitment_time}_{$smarty.get.recruitment_id}" class="bottom">
+									<span id="time1_{$smarty.get.recruitment_id}"></span>
+								</span>
+							{else}
+								<span class="upper">
+									Participation ferm&eacute;e
+								</span>
+							{/if}	
+							<!--<div style="padding:0" class="span10">
+								<div class="sepH_b progress progress-success">
+									<div style="width: {$recruitment.percentage}%;background-image:linear-gradient({$recruitment.color}, {$recruitment.color})" class="bar"></div> 
+								</div>
+							</div>
+							<div><strong>&nbsp;&nbsp;{$recruitment.percentage}%</strong></div>-->
+						</div>
+						<div class="span2">
+							<span class="upper">Nb r&eacute;dacteurs</span>
+							<span class="bottom">{$recruitment.num_hire_writers}</span>
+						</div>
+						<div class="span2">
+							<span class="upper">Partcipants</span>
+							<span class="bottom">{$recruitment.participation_details|@count}</span>
+						</div>
+						{if $show_quiz eq 'yes'}
+							<div class="span2">
+								<span class="upper">QUIZz</span>
+								<span class="bottom">{$recruitment.quiz_qualified}/{$recruitment.participation_details|@count}</span>
+							</div>
+						{/if}	
+						<div class="span2">
+							<span class="upper">En relecture</span>
+							<span class="bottom">								
+							{if $recruitment.proofread_cnt gt 0}
+								{if $recruitment.correction eq 'multi_external'}
+									<a href="/ao/markstat?submenuId=ML2-SL3&recruitment_id={$smarty.get.recruitment_id}" target="_rstat" class="label label-info">View</a>									
+								{elseif $recruitment.correction eq 'external' || $recruitment.correction eq 'internal' }	
+									<a href="/proofread/stage-deliveries?submenuId=ML3-SL3" target="_rstat" class="label label-info">View</a>
+								{/if}
+							{else}
+								-
+							{/if}	
+							</span>
+						</div>
+						
+						<!------ stop recruitment ---->
+						<div id="stoprecruitblock" class="span1">
+						{if $recruitmentparticipationexpired=="YES" && $recruitment.recruitment_status neq 'closed'}
+							{if $recruitment.stoprecruitment=='stop'}
+								<a href="javascript:void(0);" class="btn btn-warning" onclick="return StopRecruitment('resume')">Resume</a>
+							{else}
+								<a href="javascript:void(0);" class="btn btn-danger" onclick="return StopRecruitment('stop')">Stop</a>
+							{/if}
+						{/if}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<h3 class="heading">Participants s&eacute;lectionn&eacute;s: <span id="hiredcounttext">{$recruitment.hired_count}</span> / {$recruitment.num_hire_writers}
+						<input type="hidden" name="hired_count" id="hired_count" value="{$recruitment.hired_count}" />
+						<div class="span9 pull-right">
+							<div class="span6"></div>
+							<label class="control-label span2" style="text-align:left;width:100px"><strong>View Profile</strong></label>
+							<div style="margin-top:-7px" class="controls span4">
+								<label class="checkbox inline">
+								<input type="checkbox" class="load all" value="all" name="contrib_type[]"> 
+									All
+								</label>
+								<label class="checkbox inline">
+								<input type="checkbox" class="load" value="sc" name="contrib_type[]"> 
+									SC
+								</label>
+								<label class="checkbox inline">
+									<input type="checkbox" class="load" value="jc" name="contrib_type[]">  
+									JC
+								</label>
+								<label class="checkbox inline">
+									<input type="checkbox" class="load" value="jco" name="contrib_type[]"> 
+									JCO
+								</label>
+							</div>
+						</div>				
+					</h3>
+				</div>	
+			</div>		
+			<form class="form-horizontal" action="/recruitment/hire-user/" name="participent_save" id="participent_save" method="POST" enctype='multipart/form-data'>
+				<input type="hidden" name="recruitment_id" id="recruitment_id" value="{$smarty.get.recruitment_id}" />
+				<input type="hidden" name="cmid" value="{$smarty.get.cmid}" />
+				<div class="row-fluid">				
+					<div class="row-fluid loadtable">
+						<table class="table selecttable" id="selecttable">
+						<thead>
+							<tr>
+								<th>R&eacute;dacteurs</th>
+								<th>Tempo</th>
+								<th>Prix per article</th>
+								{if $show_quiz eq 'yes'}
+								<th>Quizz</th>
+								{/if}
+								<th>Note & article</th>
+								<th>Hire</th>
+							</tr>
+						</thead>
+							{if $recruitment.participation_details|@count gt 0}
+								{foreach from=$recruitment.participation_details item=row name="pd" }
+									{assign var=hire value=true}
+									<tr>
+										<td style="width:20%">
+											<div class="imageHolder">
+												<a href="/user/contributor-edit?submenuId=ML10-SL6&tab=viewcontrib&userId={$row.user_id}" target="_blank" ><img class="media-object  img-circle" width="50px" height="50px"  src="{$fo_path}/{$row.image}" ></a>
+												<span class="caption label label-level">
+													<i class="icon-bookmark"></i>
+													{$row.profiletype}
+												</span>
+											</div>
+											<div class="nameHolder">
+											{if $row.first_name!=""}
+												<b>{$row.first_name}&nbsp;{$row.last_name}</b>
+											{else}
+												<b>{$row.email}</b>
+											{/if}
+											</div>
+										</td>									
+										<td><img src="/BO/theme/gebo/img/gCons/copy-item.png" alt="" /><div class="text">{$row.articles_per_week}/semaine</div></td>
+										<td><img src="/BO/theme/gebo/img/gCons/dollar.png" alt="" /><div class="text">{$row.price_user|zero_cut:2} &euro; / art	</div></td>
+										{if $row.link_quiz && $row.quiz}
+											
+											{if $row.qualified eq 'yes' && $row.percent eq '100'}
+											<td>
+												<img src="/BO/theme/gebo/img/gCons/button_ok.png" alt="" />
+												<div class="text">Quizz {$row.num_correct} / {$row.num_total}</div>
+											{elseif $row.qualified eq 'yes'}
+											<td>
+												<img src="/BO/theme/gebo/img/gCons/button_ok_orange.png" alt="" />
+												<div class="text">Quizz {$row.num_correct} / {$row.num_total}</div>
+											{else}
+												<td class="disable_hire">
+												{assign var=hire value=false}
+												<div class="smiley">:(</div>
+												<div class="text">Lost</div>
+											{/if}
+											</td>
+										{/if}
+										
+										<td>
+											{if $row.status =='under_study' || $row.status =='plag_exec' || $row.status =='published' || $row.status =='disapproved'}											
+											<a class="btn btn-small {if $row.marks &&  $row.marks < $row.min_mark}under_marks{/if}"  href="/BO/download_article_latestversion.php?article_id={$row.article_id}&type=writer"><i class="icon-download"></i> {if $row.marks}{$row.marks|zero_cut:2}/10{/if}</a>
+											{elseif $row.article_submit_expires eq 0}
+												-
+											{elseif $smarty.now>$row.article_submit_expires}
+												<strong>Article Test Time Out</strong>											
+											{else}
+											<span id="time_{$row.article_submit_expires}_{$row.rpid}" class="alert alert-danger">
+												<i class="icon-time"></i>
+												<span id="time_{$row.rpid}"></span>
+											</span>
+											{/if}
+										</td>										
+										<td >
+											<!--<input type="checkbox" name="hire[]" value="{$row.rpid}" data-prompt-position="topLeft:-120" {if $row.is_hired == 'yes'} checked="checked" {/if}  class="validate[minCheckbox[1]]" {if !$hire}disabled="disabled"{/if} /> 
+											<label>{if $row.is_hired == 'yes'} Hired {else} Hire {/if}</label>-->
+											<!-- class="validate[minCheckbox[{$row.no_contrib}],maxCheckbox[{$row.no_contrib}]]" -->
+											<div id="hireaction_{$row.rpid}">
+												{if $row.is_hired=="yes"}
+													<span class="label label-success">Hired</span>
+												{elseif $row.is_hired=="no"}
+													<span class="label label-inverse">Not Hired</span>
+												{else}
+													<button type="button" name="hire_yes_{$row.rpid}" id="hire_yes_{$row.rpid}" data-loading-text="Loading..." value="yes"  class="btn btn-default" onClick="hireparticipant('yes','{$row.rpid}','{$row.user_id}')">YES</button>
+													<button type="button" name="hire_no_{$row.rpid}" id="hire_no_{$row.rpid}" data-loading-text="Loading..."  value="no"  class="btn btn-default" onClick="hireparticipant('no','{$row.rpid}','{$row.user_id}')">NO</button>
+												{/if}
+											</div>
+											<div id="loadingmessage_{$row.rpid}" style="display:none;"<i class="icon-refresh"></i></div>
+										</td>
+									</tr>
+								{/foreach}
+							{/if}
+						</table>
+					</div>
+				</div>
+				<div class="control-group topset2">
+				{if $recruitment.recruitment_status neq 'closed'}
+					{if $recruitment.participation_details|@count gt 0}
+						<div class="pull-center">
+						{if $smarty.now >= $recruitment.expires}
+							<button class="btn" value="close" name="close" type="button" Onclick="CloseRecruitment();"><i style="margin-right:5px" class="icon-remove"></i>Fermer ce recrutement</button>
+						{/if}
+							<!--<button class="btn btn-primary" onclick="return save()"  value="save" type="submit">Sauvegarder</button>-->
+						</div>
+						<input type="hidden" value="{$recruitment.status}" name="status" id="status"/> 
+					{/if}					
+				{/if}	
+				</div>
+			</form>
+		</div>
+	</div>
+	{/foreach}
+{/if}	
