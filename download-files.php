@@ -657,6 +657,8 @@
                 exit;
             }
         }//downloadTurnoverReport//
+
+
         public function downloadXlsx(){
             ob_start();
             if( isset($_SESSION['file']) ) {
@@ -664,7 +666,16 @@
                 $filename = explode("/",$file);
                 //temparary downloading method//
                 if( file_exists($file) )
-                    header('Location: http://ep-test.edit-place.com/FO/invoice/client/xls/'.$filename[count($filename)-1]);
+                {
+                    /** Author: Thilagam **/
+                    /** Date:2/05/2016 **/
+                    /** Reason: Code optimization **/
+
+                    //header('Location: http://ep-test.edit-place.com/FO/invoice/client/xls/'.$filename[count($filename)-1]);
+                   $path_file = "http://ep-test.edit-place.com/FO/invoice/client/xls/".$filename[count($filename)-1]);
+                    $this->download($path_file);
+                }
+
                 /*
                 header("Content-type: application/xlsx");
                 //header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
