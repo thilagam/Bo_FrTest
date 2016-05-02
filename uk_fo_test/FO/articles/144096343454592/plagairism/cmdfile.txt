@@ -1,1 +1,0 @@
-source ~/.rvm/scripts/rvm;rvm use 2.2.2-head >> /dev/null ;cd /home/oboulo/Programs/ptrack/rails_projects/seo_test/script/ebookers/plag;bundle exec ruby -W0 ebookers_plag.rb  '131118134514921' 'Arun Kumar' 'xlsx' 'Stencils_plagiarism_65669.xlsx' 'Stencils_plagiarism_65669.xml' 2>&1 ; at 2015-08-31 13:54:57

@@ -1,1 +1,0 @@
-Cufon.replace('h2,h3'); 

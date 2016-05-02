@@ -12,7 +12,11 @@
                 $filename = $pathinfo['filename'];
             if(file_exists($path_file))
             {
-                header("Pragma: public"); // required
+                /** Author: Thilagam **/
+                /** Date:29/04/2016 **/
+                /** Reason: Code optimization **/
+
+               /* header("Pragma: public"); // required
                 header("Expires: 0");
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                 header("Cache-Control: private",false); // required for certain browsers
@@ -21,7 +25,9 @@
                 header("Content-Transfer-Encoding: binary");
                 header("Content-Length: ".filesize($_SERVER['DOCUMENT_ROOT']."/BO/epcontractsource/".$filename));
                 ob_end_flush();
-                readfile($path_file);
+                readfile($path_file);*/
+               $this->download($path_file);
+
                 exit;
             }
         }//testfunction//
