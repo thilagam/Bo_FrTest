@@ -1022,7 +1022,9 @@
         }//downloadAttachment//
         //found in href//
         public function downloadBrief(){
+            ob_start();
             $ao_id=$_REQUEST['ao_id'];
+            //echo $ao_id;exit;
             $result = mysql_query("SELECT filepath  from Delivery where id =".$ao_id);
             while($row = mysql_fetch_array($result))
             {
@@ -1058,6 +1060,7 @@
                 header("Content-Length: ".filesize($zipname));
                 ob_end_flush();
                 readfile($zipname);
+               // $this->download($zipname);
                 exit;
             }
             else
