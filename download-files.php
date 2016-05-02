@@ -116,7 +116,6 @@
             }
         }
 
-        /* Method not used*/
         public function downloadPO($cid){
             $path = '/BO/contractDocuments/';
             if($cid)
@@ -163,8 +162,7 @@
             }
         }//downloadPO//
 
-        /* Method not used*/
-        public function downloadQuote($index=false,$contract_id=false,$type=false,$task_id=false,$mission_id=false,$quote_id=false,$logid=false,$filename=false){
+       public function downloadQuote($index=false,$contract_id=false,$type=false,$task_id=false,$mission_id=false,$quote_id=false,$logid=false,$filename=false){
             ob_start();
 
             include $_SERVER['DOCUMENT_ROOT'].'/BO/dbconfig.php';
@@ -1024,7 +1022,7 @@
         }//downloadAttachment//
         //found in href//
         public function downloadBrief(){
-            $ao_id=$_REQUEST['$ao_id'];
+            $ao_id=$_REQUEST['ao_id'];
             $result = mysql_query("SELECT filepath  from Delivery where id =".$ao_id);
             while($row = mysql_fetch_array($result))
             {
