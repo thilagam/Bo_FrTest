@@ -57,6 +57,8 @@
                 }
             }
         }//downloadBrief//
+
+
         public function downloadInvoice($fname=false,$cid=false,$final=false){
             $path = '/BO/contract_mission_invoice/';
             if($cid)
@@ -113,6 +115,8 @@
                 readfile($_SERVER['DOCUMENT_ROOT'].$path.$filename);
             }
         }
+
+        /* Method not used*/
         public function downloadPO($cid){
             $path = '/BO/contractDocuments/';
             if($cid)
@@ -158,6 +162,8 @@
                 }
             }
         }//downloadPO//
+
+        /* Method not used*/
         public function downloadQuote($index=false,$contract_id=false,$type=false,$task_id=false,$mission_id=false,$quote_id=false,$logid=false,$filename=false){
             ob_start();
 
@@ -1736,6 +1742,8 @@
             };
 
         }//downloadQuesioncontrib//
+
+        /*Used in hrm module*/
         public function downloadSamplecsv(){
             $path_file  =    '/home/sites/site6/web/BO/holiday_csv/Sample.csv' ;
             if(file_exists($path_file))
