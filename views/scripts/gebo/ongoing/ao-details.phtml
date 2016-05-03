@@ -332,6 +332,9 @@ cursor:pointer;
 					<tr>
 						<th>Brief</th>
 						<td><a class="label label-warning" href="/BO/download_brief.php?ao_id={$delivery.id}">Download</a></td>
+                        <!-- Author: Thilagam -->
+                        <!--  Date:03/05/2016 -->
+                        <!-- Reason: Code optimization -->
                          <!-- <td><a class="label label-warning" href="/BO/download-files.php?function=downloadBrief&ao_id={$delivery.id}">Download</a></td> -->
                         <th>Articles en attente</th>
 						 {math equation="a - b" a=$delivery.totalArticle b=$delivery.published_articles assign="pending_article"}
