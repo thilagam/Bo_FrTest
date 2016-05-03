@@ -24,7 +24,7 @@
 	<table class="table table-bordered table-striped table_vam" id="premiumtable">
 		<thead>
 			<tr>
-				<th>ID N°</th>
+				<th>ID Nï¿½</th>
 				<th>Name of Client</th>
 				<th>Date</th>
 				<th>Category</th>
@@ -42,6 +42,10 @@
 				<td>{$quote.aotype}</td>
 				<td>
 					<a href="/BO/downloadpremiumquote.php?id={$quote.id}" class="hint--left hint--info" data-hint="Download Quote"><i class="splashy-download"></i></a>
+                    <!--  Author: Thilagam -->
+                    <!-- Date:29/04/2016 **/ -->
+                    <!-- Reason: Code optimization -->
+                    <!-- <a href="/BO/download-files.php?function=downloadPremiumquote&id={$quote.id}" class="hint--left hint--info" data-hint="Download Quote"><i class="splashy-download"></i></a>-->
 				</td>
 			</tr>
         {/foreach}
