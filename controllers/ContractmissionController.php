@@ -953,7 +953,7 @@ class ContractmissionController extends Ep_Controller_Action
                         $email['comment'] = $params['comment'];
                         $email['documents'] = $documents;
                         //this functin is used to send the email after the contract is created//
-                        $this->sendContractDetailEmails($email,$users_list);
+                        $this->sendContractDetailEmails($email,$users_list,'');
                         /* *** END-OF added on 22.01.2016 **** */
 			}			
 			elseif($params['contract_id'])
@@ -970,11 +970,13 @@ class ContractmissionController extends Ep_Controller_Action
 					$save['finance_validator_id'] = $this->_view->loginuserId;
 					if($params['validate']=="validate")
 					{
+
 						$save['status'] = "validated";
 						$active = "";
 						$this->_helper->FlashMessenger('Validated Contract Successfully');
 						
-						$log_obj=new Ep_Quote_QuotesLog();					
+						$log_obj=new Ep_Quote_QuotesLog();		
+						$mission_obj=new Ep_Quote_QuoteMissions();			
 						$actionmessage = $log_obj->getActionSentence(11);
 						$client_obj = new Ep_Quote_Client();
 						$bo_user_details=$client_obj->getQuoteUserDetails($this->adminLogin->userId);
@@ -1006,6 +1008,22 @@ class ContractmissionController extends Ep_Controller_Action
 						$bo_user_details=$client_obj->getQuoteUserDetails($this->adminLogin->userId);
 						$validated_by = $bo_user_details[0]['first_name']." ".$bo_user_details[0]['last_name'];
 						$mission_link = "<a href='".$this->url."/contractmission/missions-list?submenuId=ML13-SL4&contract_id=".$contractid."'>click here</a>";
+						
+
+						$email = array();
+                        $email['title'] = $contract_details[0]['contractname'];
+                        $email['validated'] = 'validated';
+						$email['contract_turnover'] = $contract_details[0]['turnover'];
+						
+                        $email['link'] = BO_DOMAIN_.'contractmission/missions-list?submenuId=ML13-SL3&contract_id='.$params['contract_id'].'&action=view';
+						$email['download_po']=BO_DOMAIN_.'followup/download-po?cid='.$params['contract_id'];
+
+						if($params['contact_client'])
+						{
+							$clientcontact_obj = new Ep_Quote_ClientContacts();
+							$contactDetails = $clientcontact_obj->getContactDetails($params['contact_client']);
+							$email['contact_details']=$contactDetails;							
+						}
 						// Tech Missions
 						$tech_obj = new Ep_Quote_TechMissions();
 						$tech_missions = $tech_obj->getTechMissionDetails(array('quote_id'=>$quote_id,'include_final'=>'yes'));
@@ -1014,23 +1032,122 @@ class ContractmissionController extends Ep_Controller_Action
 							$tech_count = count($tech_missions);
 						else
 							$tech_count = 0;
-						if($tech_count)
-						{
-							$no_of_missions = $tech_count;
-							$subject = $mail_content[0]['Object'];
-							eval("\$subject= \"$subject\";");
-							$techmanagers = $quote_contract->getUsers('techmanager');
-							foreach($techmanagers as $row)
-							{
-								$name = $row['first_name']." ".$row['last_name'];
-								eval("\$message= \"$orgmessage\";");
-								$mail_obj->sendEMail($this->mail_from,$message,$row['email'],$subject);
-							}
 
-							/*sales Mission assigned on contract validated*/
-							$quotesDetailsassigned=$quote_obj->getQuoteDetails($quote_id);
+						
+						$searchParameters['quote_id']=$quote_id;
+						 $prodMissionDetails =  $this->getMissionDetails($searchParameters['quote_id']);
+						 
+						if($prodMissionDetails)
+							$prod_count = count($prodMissionDetails);
+						else
+							$prod_count = 0;
+
+						if($prod_count)
+						{
+							$quote_contract = new Ep_Quote_Quotecontract();
+							$prodmanagers = $quote_contract->getUsers('prodmanager');
+							foreach($prodmanagers as $row)
+							{
+								if(!in_array($row['email'],$users_list['prod']))
+								{
+								$users_list['prod'][]=$row['email'];
+								$users_list['prod'][$row['email']]=$row['first_name'].' '.$row['first_name'];
+								}
+							}
+						}
+
+						$seoParameters = array();
+						$seoParameters['quote_id']=$quote_id;
+						$seoParameters['misson_user_type_prod_seo']='sales OR seo';
+						$seoParameters['include_final']='yes';
+						$seoParameters['product_type_seo']='IN';
+						$seoMissionDetails =  $mission_obj->getMissionDetails($seoParameters);
+						if($seoMissionDetails)
+							$seo_count = count($seoMissionDetails);
+						else
+							$seo_count = 0;
+
+						/*getting tech managers list*/
+						if($seo_count)
+						{
+							$quote_contract = new Ep_Quote_Quotecontract();
+							$seomanagers = $quote_contract->getUsers('seomanager');
+							foreach($seomanagers as $row)
+							{
+								if(!in_array($row['email'],$users_list['seo']))
+								{
+								$users_list['seo'][]=$row['email'];
+								$users_list['seo'][$row['email']]=$row['first_name'].' '.$row['first_name'];
+								}
+							}
+						}
+
+						if($tech_count)
+						{							
+							$techprod=false;					
 							foreach($tech_missions as $eachTechMission)
 							{
+
+								$checkTechFlag=$quote_obj->techtitleDetails($eachTechMission['tech_type_id']);
+								$type='';
+								if($checkTechFlag[0]['tech_type_assign']=='superadmin')
+								{
+									
+									$variable=array("150717153700319"=>"fboucheron@edit-place.com",
+													"141127175625894"=>"schateau@edit-place.com");
+									foreach ($variable as $key => $value) 
+									{
+										$techmanagers[]=$client_obj->getQuoteUserDetails($key);
+									}
+									
+									$type='superadmin';
+									//$techmanagers = $quote_contract->getUsers();
+								}
+								elseif($checkTechFlag[0]['tech_type_assign']=='edito')
+								{									
+									$techmanagers = $quote_contract->getmissionuser("'prodmanager','prodsubmanager','multilingue'");
+									$type='prod';
+									$techprod=TRUE;
+																						
+								}
+								elseif($checkTechFlag[0]['tech_type_assign']=='integration')
+								{									
+									
+									$techmanagers = $quote_contract->getmissionuser("'techmanager','techuser'");
+									$type='tech';
+														
+								}
+									
+									foreach ($techmanagers as $row) 
+									{
+										if(!in_array($row['email'],$users_list[$type]) && $type!="" )
+										{
+										$users_list[$type][]=$row['email'];
+										$users_list[$type][$row['email']]=$row['first_name'].' '.$row['first_name'];
+										}
+									}
+																
+							}	
+
+						}
+
+						
+						if($tech_count)
+						{							
+												
+							$tech_turnover=0;						
+							/*sales Mission assigned on contract validated*/
+							$quotesDetailsassigned=$quote_obj->getQuoteDetails($quote_id);
+							$email['techMissiondetails']=$tech_missions;	
+							foreach($tech_missions as $eachTechMission)
+							{
+
+								$checkTechFlag=$quote_obj->techtitleDetails($eachTechMission['tech_type_id']);
+								
+									
+									$tturnover=$eachTechMission['free_mission']=='yes'? 0 : $eachTechMission['turnover'];
+									$tech_turnover+=$tturnover;
+
 								$checkTechTitle=$quote_obj->techtitleDetails($eachTechMission['tech_type_id']);
 								if($checkTechTitle[0]['tech_type_assign']=='sales')
 								{
@@ -1171,66 +1288,121 @@ class ContractmissionController extends Ep_Controller_Action
 									}
 								}
 							}
+							$email['tech_turnover']=$tech_turnover;
 						}
 						// SEO Missions
-						$mission_obj=new Ep_Quote_QuoteMissions();
-						$searchParameters = array();
-						$searchParameters['quote_id']=$quote_id;
-						$searchParameters['misson_user_type_prod_seo']='sales OR seo';
-						$searchParameters['include_final']='yes';
-						$searchParameters['product_type_seo']='IN';
-						$seoMissionDetails =  $mission_obj->getMissionDetails($searchParameters);
-						if($seoMissionDetails)
-							$seo_count = count($seoMissionDetails);
-						else
-							$seo_count = 0;
+						
 						if($seo_count)
 						{
-							$no_of_missions = $seo_count;
-							$subject = $mail_content[0]['Object'];
-							eval("\$subject= \"$subject\";");
-							$seomanagers = $quote_contract->getUsers('seomanager');
-							foreach($seomanagers as $row)
+							$seo_turnover=0;
+							foreach($seoMissionDetails as  $k=>$seoMission)
 							{
-								$name = $row['first_name']." ".$row['last_name'];
-								eval("\$message= \"$orgmessage\";");
-								$mail_obj->sendEMail($this->mail_from,$message,$row['email'],$subject);
+								$seoMissionDetails[$k]['product_name']=$this->product_array[$seoMission['product']];
+								$seoMissionDetails[$k]['language_source_name']=$this->getCustomName("EP_LANGUAGES",$seoMission['language_source']);
+								
+								$seo_turnover+=$seoMission['free_mission']=='yes'? 0 : $seoMission['turnover'];
 							}
+							$email['seo_turnover']=$seo_turnover;
+							
+							
+							
+							$email['seoMissionDetails']=$seoMissionDetails;	
+						
+							
 						}
 						// Prod Missions
-						$searchParameters['product_type_seo']='NOT IN';
-						 $prodMissionDetails =  $mission_obj->getMissionDetails($searchParameters);
-						if($prodMissionDetails)
-							$prod_count = count($prodMissionDetails);
-						else
-							$prod_count = 0;
+
 						if($prod_count)
 						{
-							$no_of_missions = $prod_count;
-							$subject = $mail_content[0]['Object'];
-							eval("\$subject= \"$subject\";");
-							//$seomanagers = $quote_contract->getUsers('multilingue');
-							$seomanagers = $quote_contract->getUsers('prodmanager');
-							foreach($seomanagers as $row)
+							/*calculating Editorial turnover*/
+							
+							$editorial_turnover=0;
+							foreach($prodMissionDetails as $mission)
 							{
-								$name = $row['first_name']." ".$row['last_name'];
-								eval("\$message= \"$orgmessage\";");
-								$mail_obj->sendEMail($this->mail_from,$message,$row['email'],$subject);
+								$mturnover=$mission['free_mission']=='yes'? 0 : $mission['turnover'];
+								$editorial_turnover+=$mturnover;
 							}
+							$email['editorial_turnover']=$editorial_turnover;
+							
+													
+							$email['missiondetails'] = $prodMissionDetails;	
+							
 						}
-						$no_of_missions = (int)$tech_count + (int)$seo_count + (int)$prod_count;
-						$subject = $mail_content[0]['Object'];
-						eval("\$subject= \"$subject\";");
+						
 						$quote_obj = new Ep_Quote_Quotes();
 						$quote_res = $quote_obj->getQuoteDetails($quote_id);
 						$client_obj=new Ep_Quote_Client();
 						$bo_user_details=$client_obj->getQuoteUserDetails($quote_res[0]['created_by']);
 						if($bo_user_details!='NO')
 						{
-							$name = $bo_user_details[0]['first_name']." ".$bo_user_details[0]['last_name'];
-							eval("\$message= \"$orgmessage\";");
-							$mail_obj->sendEMail($this->mail_from,$message,$bo_user_details[0]['email'],$subject);
+								$users_list['quoteby'][]=$bo_user_details[0]['email'];
+								$users_list['quoteby'][$bo_user_details[0]['email']]=$bo_user_details[0]['first_name'].' '.$bo_user_details[0]['last_name'];
 						} 
+					//	echo "<pre>"; print_r($users_list); exit;
+						$validateuser=$client_obj->getQuoteUserDetails($this->adminLogin->userId);
+							$email['validated_by']=$validateuser[0]['first_name'].' '.$validateuser[0]['last_name'];
+							$email['currency'] = $quote_res[0]['sales_suggested_currency'];						 
+							$email['client_id'] = $quote_res[0]['client_id'];
+							$email['company_name'] = $quote_res[0]['company_name'];
+							$documents = $this->uploadFiles($_FILES,$params['contract_id'],$quote_contract,$params['document_name']);
+							$email['documents'] =  $documents;
+							$email['comment'] = $params['comment'];
+							foreach ($users_list['seo'] as  $value) 
+							{
+								$seo=$email;
+								$seo['mission_count']=$seo_count;
+								$seo['missiondetails']=array();
+								$seo['techMissiondetails']=array();
+								$seo['bo_name']=$users_list['seo'][$value];
+								if(preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $value))
+								$this->sendContractDetailEmails($seo,$value,'validate');	
+							}
+							foreach ($users_list['prod'] as  $value) 
+							{
+								$prod=$email;
+								if($techprod==TRUE)
+								{
+									$prod['mission_count']=$prod_count+$tech_count;
+									$prod['seoMissionDetails']=array();
+								}
+								else
+								{
+									$prod['mission_count']=$prod_count;
+									$prod['seoMissionDetails']=array();
+									$prod['techMissiondetails']=array();
+								}
+
+								$prod['bo_name']=$users_list['prod'][$value];
+								if(preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $value))
+								$this->sendContractDetailEmails($prod,$value,'validate');	
+							}
+							foreach ($users_list['superadmin'] as $value) 
+							{
+								$email['mission_count']=$prod_count+$seo_count+$tech_count;
+								$email['bo_name']=$users_list['superadmin'][$value];
+								if(preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $value))
+								$this->sendContractDetailEmails($email,$value,'validate');	
+							}
+							foreach ($users_list['tech'] as  $value) 
+							{
+								$tech=$email;
+								$tech['mission_count']=$tech_count;
+								$tech['seoMissionDetails']=array();
+								$tech['missiondetails']=array();
+								$tech['bo_name']=$users_list['tech'][$value];
+								if(preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $value))
+								$this->sendContractDetailEmails($tech,$value,'validate');	
+							}
+							foreach ($users_list['quoteby'] as  $value) 
+							{
+
+								$email['mission_count']=$prod_count+$seo_count+$tech_count;
+								$email['bo_name']=$users_list['quoteby'][$value];
+								if(preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $value))
+								$this->sendContractDetailEmails($email,$value,'validate');	
+							}
+							
+
 					}
 					else
 					{
@@ -1310,26 +1482,39 @@ class ContractmissionController extends Ep_Controller_Action
 	}
     /* *** added on 22.01.2016 **** */
     //this functin is used to send the email after the contract is created//
-    function sendContractDetailEmails($email,$users_list){
+    function sendContractDetailEmails($email,$users_list,$status){
         		
         $this->_view->message = $email;
         $email_content=$this->_view->renderHtml('contract-email-template');
-		
-		$p_array=array("mfouris@edit-place.com","jwolff@edit-place.com","tpellequer@edit-place.com");
-		$final_users_list=array_merge($users_list,$p_array);
-		
-		//echo "<pre>";print_r($email);print_r($final_users_list);
-		//echo  $email_content;exit;
+		  $mail_obj = new Ep_Message_AutoEmails();
+        if($status=='validate')
+        {
+        	
+        	 $subject = $email['title']." contract ".$email['mission_count']." missions have to be assigned";
 
-        $to_email =$final_users_list;
-        $subject = 'New Contract '.$email['company_name'].' : '.$email['title'];
-        //$destination = dirname(dirname($email['documents'][0]))."/documents-".rand(1000,10000).".zip";
-        //$zipfile = $this->create_zip($email['documents'],$destination);//ziiping all the files to send through email//
-        $mail_obj = new Ep_Message_AutoEmails();
-        foreach($to_email as $to)
-		{
-            $mail_obj->sendEMail('work@edit-place.com',$email_content,$to,$subject);
-		}	
+        	 $mail_obj->sendEMail('work@edit-place.com',$email_content,$users_list,$subject);
+        }
+        else
+        {
+			$p_array=array("mfouris@edit-place.com","jwolff@edit-place.com","tpellequer@edit-place.com");
+			$final_users_list=array_merge($users_list,$p_array);
+			
+			//echo "<pre>";print_r($email);print_r($final_users_list);
+			//echo  $email_content;exit;
+
+	        
+	        $subject = 'New Contract '.$email['company_name'].' : '.$email['title'];
+       
+	        $to_email =$final_users_list;
+	        
+	        //$destination = dirname(dirname($email['documents'][0]))."/documents-".rand(1000,10000).".zip";
+	        //$zipfile = $this->create_zip($email['documents'],$destination);//ziiping all the files to send through email//
+	      
+	        foreach($to_email as $to)
+			{
+	            $mail_obj->sendEMail('work@edit-place.com',$email_content,$to,$subject);
+			}	
+		}
         //unlink($zipfile);
     }
     // end of this functin is used to send the email after the contract is created//
