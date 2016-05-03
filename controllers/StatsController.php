@@ -1572,6 +1572,10 @@ class StatsController extends Ep_Controller_Action
             $_SESSION['file']=$file;
             // code to download xlxs file automatically xlsx files have to be downloaded with a php script writen in web directory//
             include (APP_PATH_ROOT.'download-xlsx.php');
+            /** Author: Thilagam **/
+            /** Date:03/05/2016 **/
+            /** Reason: Code optimization **/
+            //$this->_redirect("/BO/download-files.php?function=downloadXlsx&fullpath=$file");
             //downloding for tempoary//
             exit;
         }
