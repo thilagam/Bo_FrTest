@@ -27,7 +27,6 @@
                 ob_end_flush();
                 readfile($path_file);*/
                $this->download($path_file);
-
                 exit;
             }
         }//testfunction//
@@ -676,7 +675,7 @@
                     /** Reason: Code optimization **/
 
                     //header('Location: http://ep-test.edit-place.com/FO/invoice/client/xls/'.$filename[count($filename)-1]);
-                   $path_file = "http://ep-test.edit-place.com/FO/invoice/client/xls/".$filename[count($filename)-1]);
+                   $path_file = "http://ep-test.edit-place.com/FO/invoice/client/xls/".$filename[count($filename)-1];
                     $this->download($path_file);
                 }
 
@@ -1022,9 +1021,7 @@
         }//downloadAttachment//
         //found in href//
         public function downloadBrief(){
-            ob_start();
             $ao_id=$_REQUEST['ao_id'];
-            //echo $ao_id;exit;
             $result = mysql_query("SELECT filepath  from Delivery where id =".$ao_id);
             while($row = mysql_fetch_array($result))
             {
@@ -1047,10 +1044,13 @@
 
             if(file_exists($zipname))
             {
+                /** Author: Thilagam **/
+                /** Date:03/05/2016 **/
+                /** Reason: Code optimization **/
                 //echo $zipname;  exit;
                 chmod($zipname,0777);
 
-                header("Pragma: public"); // required
+                /*header("Pragma: public"); // required
                 header("Expires: 0");
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                 header("Cache-Control: private",false); // required for certain browsers
@@ -1059,8 +1059,8 @@
                 header("Content-Transfer-Encoding: binary");
                 header("Content-Length: ".filesize($zipname));
                 ob_end_flush();
-                readfile($zipname);
-               // $this->download($zipname);
+                readfile($zipname);*/
+                $this->download($zipname);
                 exit;
             }
             else
@@ -2199,7 +2199,7 @@
             ob_start();
             if(isset($_REQUEST['filename']) && $_REQUEST['filename'] != '' ) {
                 $filename = $_REQUEST['filename'];
-                $fullpath = $_SERVER['DOCUMENT_ROOT']."/BO/quotexls/$filename";
+                 $fullPath= $_SERVER['DOCUMENT_ROOT']."/BO/quotexls/$filename";
                 $this->download($fullPath);
                 /***** commented by thilagam *****/
                 //ceommented cox of code upgrade//
