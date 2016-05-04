@@ -2711,7 +2711,11 @@ class FollowupController extends Ep_Controller_Action
 	{
 		$request = $this->_request->getParams();
 		$this->_redirect("/BO/download-quote.php?type=".$request['type']."&index=".$request['index']."&task_id=".$request['task_id']);
-	}
+        /** Author: Thilagam **/
+        /** Date:04/05/2016 **/
+        /** Reason: Code optimization **/
+        //$this->_redirect("/BO/download-files.php?dunction=downloadQuote&type=".$request['type']."&index=".$request['index']."&task_id=".$request['task_id']);
+    }
 	
 	//To download PO / Contract Files
 	function downloadPoAction()
