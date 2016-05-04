@@ -1011,13 +1011,23 @@ class ContractmissionController extends Ep_Controller_Action
 						
 
 						$email = array();
+						$quote_obj = new Ep_Quote_Quotes();
+						$quote_res = $quote_obj->getQuoteDetails($quote_id);
                         $email['title'] = $contract_details[0]['contractname'];
                         $email['validated'] = 'validated';
 						$email['contract_turnover'] = $contract_details[0]['turnover'];
 						
                         $email['link'] = BO_DOMAIN_.'contractmission/missions-list?submenuId=ML13-SL3&contract_id='.$params['contract_id'].'&action=view';
 						$email['download_po']=BO_DOMAIN_.'followup/download-po?cid='.$params['contract_id'];
-
+						
+						$validateuser=$client_obj->getQuoteUserDetails($this->adminLogin->userId);
+						$email['validated_by']=$validateuser[0]['first_name'].' '.$validateuser[0]['last_name'];
+						$email['currency'] = $quote_res[0]['sales_suggested_currency'];						 
+						$email['client_id'] = $quote_res[0]['client_id'];
+						$email['company_name'] = $quote_res[0]['company_name'];
+						$documents = $this->uploadFiles($_FILES,$params['contract_id'],$quote_contract,$params['document_name']);
+						$email['documents'] =  $documents;
+						$email['comment'] = $params['comment'];
 						if($params['contact_client'])
 						{
 							$clientcontact_obj = new Ep_Quote_ClientContacts();
@@ -1046,6 +1056,27 @@ class ContractmissionController extends Ep_Controller_Action
 						{
 							$quote_contract = new Ep_Quote_Quotecontract();
 							$prodmanagers = $quote_contract->getUsers('prodmanager');
+							
+
+							if($tech_count)
+							{							
+											
+								foreach($tech_missions as $prodTechMission)
+								{
+
+									$prodcheckTechFlag=$quote_obj->techtitleDetails($prodTechMission['tech_type_id']);
+									$type='';
+									if($prodcheckTechFlag[0]['tech_type_assign']=='edito')
+									{
+																		
+											$prodmanagers = $quote_contract->getmissionuser("'prodmanager','prodsubmanager','multilingue'");
+											$type='prod';
+											$techprod=TRUE;
+											$prodetils[]=$prodTechMission;													
+									}
+								}	
+							}
+							
 							foreach($prodmanagers as $row)
 							{
 								if(!in_array($row['email'],$users_list['prod']))
@@ -1084,7 +1115,7 @@ class ContractmissionController extends Ep_Controller_Action
 
 						if($tech_count)
 						{							
-							$techprod=false;					
+											
 							foreach($tech_missions as $eachTechMission)
 							{
 
@@ -1103,13 +1134,7 @@ class ContractmissionController extends Ep_Controller_Action
 									$type='superadmin';
 									//$techmanagers = $quote_contract->getUsers();
 								}
-								elseif($checkTechFlag[0]['tech_type_assign']=='edito')
-								{									
-									$techmanagers = $quote_contract->getmissionuser("'prodmanager','prodsubmanager','multilingue'");
-									$type='prod';
-									$techprod=TRUE;
-																						
-								}
+								
 								elseif($checkTechFlag[0]['tech_type_assign']=='integration')
 								{									
 									
@@ -1326,11 +1351,11 @@ class ContractmissionController extends Ep_Controller_Action
 							
 													
 							$email['missiondetails'] = $prodMissionDetails;	
+								
 							
 						}
 						
-						$quote_obj = new Ep_Quote_Quotes();
-						$quote_res = $quote_obj->getQuoteDetails($quote_id);
+						
 						$client_obj=new Ep_Quote_Client();
 						$bo_user_details=$client_obj->getQuoteUserDetails($quote_res[0]['created_by']);
 						if($bo_user_details!='NO')
@@ -1339,14 +1364,7 @@ class ContractmissionController extends Ep_Controller_Action
 								$users_list['quoteby'][$bo_user_details[0]['email']]=$bo_user_details[0]['first_name'].' '.$bo_user_details[0]['last_name'];
 						} 
 					//	echo "<pre>"; print_r($users_list); exit;
-						$validateuser=$client_obj->getQuoteUserDetails($this->adminLogin->userId);
-							$email['validated_by']=$validateuser[0]['first_name'].' '.$validateuser[0]['last_name'];
-							$email['currency'] = $quote_res[0]['sales_suggested_currency'];						 
-							$email['client_id'] = $quote_res[0]['client_id'];
-							$email['company_name'] = $quote_res[0]['company_name'];
-							$documents = $this->uploadFiles($_FILES,$params['contract_id'],$quote_contract,$params['document_name']);
-							$email['documents'] =  $documents;
-							$email['comment'] = $params['comment'];
+						
 							foreach ($users_list['seo'] as  $value) 
 							{
 								$seo=$email;
@@ -1362,11 +1380,14 @@ class ContractmissionController extends Ep_Controller_Action
 								$prod=$email;
 								if($techprod==TRUE)
 								{
-									$prod['mission_count']=$prod_count+$tech_count;
+									$prod['techMissiondetails']=array();
+									$prod['mission_count']=$prod_count+count($prodetils);
+									$prod['techMissiondetails']=$prodetils;
 									$prod['seoMissionDetails']=array();
 								}
 								else
 								{
+									
 									$prod['mission_count']=$prod_count;
 									$prod['seoMissionDetails']=array();
 									$prod['techMissiondetails']=array();
