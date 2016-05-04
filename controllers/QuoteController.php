@@ -8985,7 +8985,11 @@ class QuoteController extends Ep_Controller_Action
 	{
 		$request = $this->_request->getParams();
 		$this->_redirect("/BO/download-quote.php?type=".$request['type']."&mission_id=".$request['mission_id']."&index=".$request['index']."&quote_id=".$request['quote_id']."&logid=".$request['logid']."&filename=".$request['filename']);
-	}
+        /** Author: Thilagam **/
+        /** Date:04/05/2016 **/
+        /** Reason: Code optimization **/
+        //$this->_redirect("/BO/download-files.php?function=downloadQuote&type=".$request['type']."&mission_id=".$request['mission_id']."&index=".$request['index']."&quote_id=".$request['quote_id']."&logid=".$request['logid']."&filename=".$request['filename']);
+    }
 	
 	function closeQuoteViewAction()
 	{
