@@ -2570,7 +2570,10 @@ class QuoteNewController extends Ep_Controller_Action
 					
 					
 					$quote_missions[$i]['showtheorical']=$this->quote_creation[$this->session_id]->create_mission['showtheorical'][$i];
+
 					
+					$quote_missions[$i]['history_unit_price']=0;
+					$quote_missions[$i]['history_margin_percentage']=0;
 					
 					//mission object getting selected mission details
 					if($quote_missions[$i]['selected_mission'])
@@ -2657,7 +2660,21 @@ class QuoteNewController extends Ep_Controller_Action
 										$missionDetails[$m]['company_name']=$company_name;
 									}
 								}	
-								
+
+								if($quote_missions[$i]['showtheorical']=='yes')
+								{	
+									$quote_missions[$i]['history_unit_price']=sprintf("%.2f",(sprintf("%.3f",($missionDetails[$m]['unit_price']/$missionDetails[$m]['nb_words']))*$quote_missions[$i]['nb_words']));
+									$percentagecalculate=sprintf("%.2f",($quote_missions[$i]['nb_words']*$missionDetails[$m]['internal_cost'])/$missionDetails[$m]['nb_words']);
+									$quote_missions[$i]['history_margin_percentage']=sprintf("%.5f",(100-(($percentagecalculate/$quote_missions[$i]['history_unit_price'])*100)));
+									
+								}
+								else
+								{
+									$realunitprice=sprintf("%.2f",($quote_missions[$i]['nb_words']/$missionDetails[$m]['nb_words'])*$missionDetails[$m]['real_unit_price']);
+									$quote_missions[$i]['history_unit_price']=$realunitprice;
+									$percentagecalculate=sprintf("%.2f",($quote_missions[$i]['nb_words']*$missionDetails[$m]['real_cost'])/$missionDetails[$m]['nb_words']);
+									$quote_missions[$i]['history_margin_percentage']=sprintf("%.5f",(100-(($percentagecalculate/$realunitprice)*100)));
+								}
 							}
 
 							$quote_missions[$i]['missionDetails']=$missionDetails;
@@ -8844,6 +8861,9 @@ class QuoteNewController extends Ep_Controller_Action
 			
 			$quoteMission_data['showtheorical']=$this->quote_creation[$this->session_id]->create_mission['showtheorical'][$mindex]=$showtheorical;
 			
+			$this->quote_creation[$this->session_id]->create_mission['history_margin_percentage'][$mindex]=$missionParams['margin_percentage_'.$mission_id];
+			$this->quote_creation[$this->session_id]->create_mission['history_unit_price'][$mindex]=$missionParams['unit_price_'.$mission_id];
+
 			//echo "<pre>";print_r($quoteMission_data);exit;
 			$quoteMission_obj->updateQuoteMission($quoteMission_data,$mission_id);
 		}
