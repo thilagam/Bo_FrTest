@@ -502,24 +502,23 @@
         }//DownloadQuoteXls//
         public function downloadSurvey($filename=false,$recruitmenttestartid=false,$recruitmenttestart=false,$testart=false){
             ob_start();
-
-            if($filename)
+            if($_GET['filename'])
             {
-                if($testart)
+                if($_GET['testart'])
                 {
-                    $file1 = $file_name = $_SERVER['DOCUMENT_ROOT'].'/BO/recruitmentDocuments/'.$filename;
+                    $file1 = $file_name = $_SERVER['DOCUMENT_ROOT'].'/BO/recruitmentDocuments/'.$_GET['filename'];
                     $pathinfo = pathinfo($file_name);
                     $file_name = substr($pathinfo['filename'],0,-4).".".$pathinfo['extension'];
                 }
-                elseif($recruitmenttestartid)
+                elseif($_GET['recruitmenttestartid'])
                 {
-                    $file1 = $file_name =  '/home/sites/site5/web/FO/recruitmentTestArticles/'.$recruitmenttestart;
+                    $file1 = $file_name =  '/home/sites/site5/web/FO/recruitmentTestArticles/'.$_GET['recruitmenttestart'];
                     $pathinfo = pathinfo($file_name);
-                    $file_name = $filename;
+                    $file_name = $_GET['filename'];
                 }
                 else
                 {
-                    $file1 = $file_name = '/home/sites/site5/web/FO/poll_spec/'.$filename;
+                    $file1 = $file_name = '/home/sites/site5/web/FO/poll_spec/'.$_GET['filename'];
                     $pathinfo = pathinfo($file_name);
                     $file_name = substr($pathinfo['filename'],0,strrpos($pathinfo['filename'],"_")).".".$pathinfo['extension'];
                 }
