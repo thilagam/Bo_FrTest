@@ -115,51 +115,38 @@
             }
         }
 
+        /** Author: Thilagam **/
+        /** Date:04/05/2016 **/
+        /** Reason: Code optimization **/
         public function downloadPO($cid){
             $path = '/BO/contractDocuments/';
-            if($cid)
-            {
-                include $_SERVER['DOCUMENT_ROOT'].'/BO/dbconfig.php';
-
-                $res = mysql_query("SELECT contractfilepaths,contractcustomfilenames,contractname from QuoteContracts WHERE quotecontractid='".$cid."'");
-
-                if(mysql_num_rows($res))
-                {
+            if ($_REQUEST['cid']) {
+                include $_SERVER['DOCUMENT_ROOT'] . '/BO/dbconfig.php';
+                $res = mysql_query("SELECT contractfilepaths,contractcustomfilenames,contractname from QuoteContracts WHERE quotecontractid='" . $_REQUEST['cid'] . "'");
+                if (mysql_num_rows($res)) {
                     $zip = new ZipArchive();
                     $row = mysql_fetch_row($res);
-
-                    $zipname = $_SERVER['DOCUMENT_ROOT'].$path.$row[2].'.zip';
+                    $zipname = $_SERVER['DOCUMENT_ROOT'] . $path . $row[2] . '.zip';
                     $zip->open($zipname, ZipArchive::CREATE);
-                    $exploaded = explode('|',$row[0]);
-                    $exploadedfn = explode('|',$row[1]);
-
-                    foreach($exploaded as $key => $value)
-                    {
-                        if(file_exists($_SERVER['DOCUMENT_ROOT'].$path.$value) && !is_dir($_SERVER['DOCUMENT_ROOT'].$path.$value))
-                        {
-                            $pathinfo = pathinfo($_SERVER['DOCUMENT_ROOT'].$path.$value);
-                            $filename = str_replace(" ","",basename($exploadedfn[$key]));
-                            if($filename=="")
+                    $exploaded = explode('|', $row[0]);
+                    $exploadedfn = explode('|', $row[1]);
+                    foreach ($exploaded as $key => $value) {
+                        if (file_exists($_SERVER['DOCUMENT_ROOT'] . $path . $value) && !is_dir($_SERVER['DOCUMENT_ROOT'] . $path . $value)) {
+                            $pathinfo = pathinfo($_SERVER['DOCUMENT_ROOT'] . $path . $value);
+                            $filename = str_replace(" ", "", basename($exploadedfn[$key]));
+                            if ($filename == "")
                                 $filename = $pathinfo['filename'];
-                            $filename .=".".strtolower($pathinfo['extension']);
-                            $zip->addFile($_SERVER['DOCUMENT_ROOT'].$path.$value,$filename);
+                            $filename .= "." . strtolower($pathinfo['extension']);
+                            $zip->addFile($_SERVER['DOCUMENT_ROOT'] . $path . $value, $filename);
                         }
                     }
                     $zip->close();
-
-                    if(file_exists($zipname)){
-                        header("Pragma: public");
-                        header("Expires: 0");
-                        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-                        header("Cache-Control: private",false);
-                        header('Content-type: application/zip');
-                        header('Content-Disposition: attachment; filename="'.basename($zipname).'"');
-                        readfile($zipname);
-                        unlink($zipname);
-                    }
+                    $this->download($zipname);
                 }
             }
         }//downloadPO//
+
+
 
        public function downloadQuote($index=false,$contract_id=false,$type=false,$task_id=false,$mission_id=false,$quote_id=false,$logid=false,$filename=false){
             ob_start();

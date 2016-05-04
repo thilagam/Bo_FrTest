@@ -2718,6 +2718,10 @@ class FollowupController extends Ep_Controller_Action
 	{
 		$request = $this->_request->getParams();
 		$this->_redirect("/BO/download-po.php?cid=".$request['cid']);
+        /** Author: Thilagam **/
+        /** Date:04/05/2016 **/
+        /** Reason: Code optimization **/
+       // $this->_redirect("/BO/download-files.php?function=downloadPO&cid=".$request['cid']);
 	}
 	
 	//Delete task documents through Ajax
