@@ -2221,7 +2221,11 @@ class ContractmissionController extends Ep_Controller_Action
 	{
 		$request = $this->_request->getParams();
 		$this->_redirect("/BO/download-quote.php?type=".$request['type']."&index=".$request['index']."&contract_id=".$request['contract_id']);
-	}
+        /** Author: Thilagam **/
+        /** Date:04/05/2016 **/
+        /** Reason: Code optimization **/
+        //$this->_redirect("/BO/download-files.php?function=downloadQuote&type=".$request['type']."&index=".$request['index']."&contract_id=".$request['contract_id']);
+    }
 	
 	function downloadInvoiceAction()
 	{
