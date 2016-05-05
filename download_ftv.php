@@ -16,4 +16,7 @@ if(file_exists($path_file))
     ob_end_flush();
     @readfile($path_file);
 }
+else{
+    echo "Sorry. File does not exist";
+}
 ?>

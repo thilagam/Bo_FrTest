@@ -88,14 +88,15 @@
                     }
                     $zip->close();
                     if(file_exists($zipname)){
-                        header("Pragma: public");
+                        /*header("Pragma: public");
                         header("Expires: 0");
                         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                         header("Cache-Control: private",false);
                         header('Content-type: application/zip');
                         header('Content-Disposition: attachment; filename="'.basename($zipname).'"');
                         readfile($zipname);
-                        unlink($zipname);
+                        unlink($zipname);*/
+                        $this->download($zipname);
                     }
                 }
             }
@@ -104,7 +105,7 @@
                 $filename = $_REQUEST['fname'];
                 $reqfilea = explode("/",$filename);
                 $reqfile = $reqfilea[count($reqfilea)-1];
-                header("Pragma: public"); // required
+                /*header("Pragma: public"); // required
                 header("Expires: 0");
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                 header("Cache-Control: private",false); // required for certain browsers
@@ -113,7 +114,8 @@
                 header("Content-Transfer-Encoding: binary");
                 header("Content-Length: ".filesize($_SERVER['DOCUMENT_ROOT'].$path.$filename));
                 ob_end_flush();
-                readfile($_SERVER['DOCUMENT_ROOT'].$path.$filename);
+                readfile($_SERVER['DOCUMENT_ROOT'].$path.$filename);*/
+                $this->download($_SERVER['DOCUMENT_ROOT'].$path.$filename);
             }
         }
 
@@ -203,7 +205,7 @@
                 $identifier = $_REQUEST['mission_id'];
                 $res = mysql_query("SELECT documents_path,documents_name from ContractMissions WHERE  contractmissionid='" . $identifier . "'");
             } elseif ($type = 'turnover') {
-                $filename = $_REQUEST['filename'];
+                /*$filename = $_REQUEST['filename'];
                 header("Pragma: public"); // required
                 header("Expires: 0");
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
@@ -213,7 +215,8 @@
                 header("Content-Transfer-Encoding: binary");
                 header("Content-Length: " . filesize($_SERVER['DOCUMENT_ROOT'] . "/BO/quotes_weekly_report/$filename"));
                 ob_end_flush();
-                readfile($_SERVER['DOCUMENT_ROOT'] . "/BO/turnover-report/$filename");
+                readfile($_SERVER['DOCUMENT_ROOT'] . "/BO/turnover-report/$filename");*/
+                $this->download($_SERVER['DOCUMENT_ROOT'] . "/BO/turnover-report/$filename");
             }
             if ($index == "-1" && ($type == "cm_tech" || $type == "cm_seo" || $type == "cm_staff")) {
                 $zipname = $_SERVER['DOCUMENT_ROOT'] . "/BO/quotexls/" . strtoupper($type) . "_" . $identifier . ".zip";
@@ -260,7 +263,7 @@
                 }
                 $zip->close();
                 if (file_exists($zipname)) {
-                    chmod($zipname, 0777);
+                    /*chmod($zipname, 0777);
                     header("Pragma: public"); // required
                     header("Expires: 0");
                     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
@@ -271,7 +274,8 @@
                     header("Content-Length: " . filesize($zipname));
                     ob_end_flush();
                     readfile($zipname);
-                    unlink($zipname);
+                    unlink($zipname);*/
+                    $this->download($zipname);
                 }
             } elseif ($index == "-1" && $type == "cm_prod") {
                 $zipname = $_SERVER['DOCUMENT_ROOT'] . "/BO/quotexls/" . strtoupper($type) . "_" . $identifier . ".zip";
@@ -341,7 +345,7 @@
                 }
                 $zip->close();
                 if (file_exists($zipname)) {
-                    chmod($zipname, 0777);
+                    /*chmod($zipname, 0777);
                     header("Pragma: public"); // required
                     header("Expires: 0");
                     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
@@ -352,7 +356,8 @@
                     header("Content-Length: " . filesize($zipname));
                     ob_end_flush();
                     readfile($zipname);
-                    unlink($zipname);
+                    unlink($zipname);*/
+                    $this->download($zipname);
                 }
             } elseif (mysql_num_rows($res)) {
                 $row = mysql_fetch_row($res);
@@ -373,7 +378,7 @@
                     }
                     $zip->close();
                     if (file_exists($zipname)) {
-                        chmod($zipname, 0777);
+                        /*chmod($zipname, 0777);
                         header("Pragma: public"); // required
                         header("Expires: 0");
                         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
@@ -384,7 +389,8 @@
                         header("Content-Length: " . filesize($zipname));
                         ob_end_flush();
                         readfile($zipname);
-                        unlink($zipname);
+                        unlink($zipname);*/
+                        $this->download($zipname);
                     }
                 } else {
                     $pathinfo = pathinfo($_SERVER['DOCUMENT_ROOT'] . $path . $documents_paths[$index]);
@@ -392,7 +398,7 @@
                     $filename = str_replace(" ", "", basename($documents_names[$index]));
                     if ($filename == "")
                         $filename = $pathinfo['filename'];
-                    header("Pragma: public"); // required
+                    /*header("Pragma: public"); // required
                     header("Expires: 0");
                     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                     header("Cache-Control: private", false); // required for certain browsers
@@ -401,7 +407,8 @@
                     header("Content-Transfer-Encoding: binary");
                     header("Content-Length: " . filesize($_SERVER['DOCUMENT_ROOT'] . $path . $documents_paths[$index]));
                     ob_end_flush();
-                    readfile($_SERVER['DOCUMENT_ROOT'] . $path . $documents_paths[$index]);
+                    readfile($_SERVER['DOCUMENT_ROOT'] . $path . $documents_paths[$index]);*/
+                    $this->download($_SERVER['DOCUMENT_ROOT'] . $path . $documents_paths[$index]);
                 }
             } elseif (mysql_num_rows($sale)) {
                 $row = mysql_fetch_row($sale);
@@ -412,7 +419,7 @@
                 $filename = str_replace(" ", "", basename($documents_names[$index]));
                 if ($filename == "")
                     $filename = $pathinfo['filename'];
-                header("Pragma: public"); // required
+                /*header("Pragma: public"); // required
                 header("Expires: 0");
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                 header("Cache-Control: private", false); // required for certain browsers
@@ -421,7 +428,8 @@
                 header("Content-Transfer-Encoding: binary");
                 header("Content-Length: " . filesize($_SERVER['DOCUMENT_ROOT'] . $path . $documents_paths[$index]));
                 ob_end_flush();
-                readfile($_SERVER['DOCUMENT_ROOT'] . $path . $documents_paths[$index]);
+                readfile($_SERVER['DOCUMENT_ROOT'] . $path . $documents_paths[$index]);*/
+                $this->download($_SERVER['DOCUMENT_ROOT'] . $path . $documents_paths[$index]);
             } elseif (mysql_num_rows($sales_down)) {
                 $row_sale = mysql_fetch_row($sales_down);
                 $currentFile = $quote_id . '/' . $file_name;
@@ -435,7 +443,7 @@
                 $filename = str_replace(" ", "", basename($sales_names[$key]));
                 if ($filename == "")
                     $filename = $pathinfo['filename'];
-                header("Pragma: public"); // required
+                /*header("Pragma: public"); // required
                 header("Expires: 0");
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                 header("Cache-Control: private", false); // required for certain browsers
@@ -444,7 +452,8 @@
                 header("Content-Transfer-Encoding: binary");
                 header("Content-Length: " . filesize($_SERVER['DOCUMENT_ROOT'] . $path . $sales_paths[$key]));
                 ob_end_flush();
-                readfile($_SERVER['DOCUMENT_ROOT'] . $path . $sales_paths[$key]);
+                readfile($_SERVER['DOCUMENT_ROOT'] . $path . $sales_paths[$key]);*/
+                $this->download($_SERVER['DOCUMENT_ROOT'] . $path . $sales_paths[$key]);
             }
         }
         //dint find in controller//
@@ -494,7 +503,7 @@
             if($filename=="")
                 $filename = $pathinfo['filename'];
 
-            header("Pragma: public"); // required
+            /*header("Pragma: public"); // required
             header("Expires: 0");
             header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
             header("Cache-Control: private",false); // required for certain browsers
@@ -503,7 +512,8 @@
             header("Content-Transfer-Encoding: binary");
             header("Content-Length: ".filesize($_SERVER['DOCUMENT_ROOT'].$path.$session_id));
             ob_end_flush();
-            readfile($_SERVER['DOCUMENT_ROOT'].$path.$session_id);
+            readfile($_SERVER['DOCUMENT_ROOT'].$path.$session_id);*/
+            $this->download($_SERVER['DOCUMENT_ROOT'].$path.$session_id);
         }//DownloadQuoteXls//
 
         public function downloadSurvey($filename=false,$recruitmenttestartid=false,$recruitmenttestart=false,$testart=false){
@@ -550,7 +560,7 @@
             $type = $_REQUEST['type'];
             if($type='turnover')
             {
-                $filename=$_REQUEST['filename'];
+                /*$filename=$_REQUEST['filename'];
                 header("Pragma: public"); // required
                 header("Expires: 0");
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
@@ -560,7 +570,8 @@
                 header("Content-Transfer-Encoding: binary");
                 header("Content-Length: ".filesize($_SERVER['DOCUMENT_ROOT']."/BO/turnover-report/$filename"));
                 ob_end_flush();
-                readfile($_SERVER['DOCUMENT_ROOT']."/BO/turnover-report/$filename");
+                readfile($_SERVER['DOCUMENT_ROOT']."/BO/turnover-report/$filename");*/
+                $this->download($_SERVER['DOCUMENT_ROOT']."/BO/turnover-report/$filename");
                 exit;
             }
         }//downloadTurnoverReport//
@@ -599,8 +610,14 @@
         //dint find in controller//
         public function downloadArticle($article_id=false,$type=false){
 
-            $artId=$article_id;
-            $type = $type;
+            $artId=$_REQUEST['article_id'];
+            $type = $_REQUEST['type'];
+            $con = mysql_connect("localhost","ep_fr","8tJEzHnFCh9B3VbS");
+            if (!$con)
+            {
+                die('Could not connect: ' . mysql_error());
+            }
+            mysql_select_db("ep_fr", $con);
             /*$result = mysql_query("SELECT ap.id, ap.article_path, ap.article_name FROM ArticleProcess ap
                                 INNER JOIN Participation p ON p.id = ap.participate_id
                                 INNER JOIN Article a ON a.id = p.article_id
@@ -751,6 +768,7 @@
             {
                 echo "Zip not Exists";exit;
             }  */
+
 
         }//downloadArticle//
         public function downloadArticleLatestversion($article_id=false,$type=false){
@@ -1110,7 +1128,7 @@
                 //echo $zipname;  exit;
                 chmod($zipname,0777);
 
-                header("Pragma: public"); // required
+                /*header("Pragma: public"); // required
                 header("Expires: 0");
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                 header("Cache-Control: private",false); // required for certain browsers
@@ -1119,7 +1137,8 @@
                 header("Content-Transfer-Encoding: binary");
                 header("Content-Length: ".filesize($zipname));
                 ob_end_flush();
-                readfile($zipname);
+                readfile($zipname);*/
+                $this->download($zipname);
                 exit;
             }
             else
@@ -1287,7 +1306,7 @@
             $filename1 = $file[1];
             if(file_exists($path_file))
             {
-                header("Pragma: public");
+                /*header("Pragma: public");
                 header("Expires: 0");
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                 header("Cache-Control: public");
@@ -1297,7 +1316,8 @@
                 header("Content-Transfer-Encoding: binary");
                 header("Content-Length: ".filesize($path_file));
                 ob_end_flush();
-                @readfile($path_file);
+                @readfile($path_file);*/
+                $this->download($path_file);
             }
             else{
                 echo "Sorry. File does not exist";
