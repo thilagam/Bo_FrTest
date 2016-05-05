@@ -541,12 +541,16 @@
                 readfile($file1);
             }
         }//downloadSurvey//
+
+        /** Author: Thilagam **/
+        /** Date:05/05/2016 **/
+        /** Reason: Code optimization **/
         public function downloadTurnoverReport($type=false,$filename=fasle){
             ob_start();
-            $type = $type;
+            $type = $_REQUEST['type'];
             if($type='turnover')
             {
-                $filename=$filename;
+                $filename=$_REQUEST['filename'];
                 header("Pragma: public"); // required
                 header("Expires: 0");
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");

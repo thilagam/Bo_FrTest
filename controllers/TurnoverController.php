@@ -2214,6 +2214,10 @@ class TurnoverController extends Ep_Controller_Action
 						convertHtmltableToXlsx($tablehtml,$path,True);
 						//$this->_redirect("/BO/turnover-report/$f_name");
 						$this->_redirect("/BO/download-turnover-report.php?type=turnover&filename=$f_name");
+                        /** Author: Thilagam **/
+                        /** Date:05/05/2016 **/
+                        /** Reason: Code optimization **/
+                        //$this->_redirect("/BO/download-files.php?function=downloadTurnoverReport&type=turnover&filename=$f_name");
 					} 
 	}
 	
@@ -2955,7 +2959,11 @@ class TurnoverController extends Ep_Controller_Action
 						$this->combinesheet($compare_name,$f_name,$split_name,$time);
 						$contractsheet="contract-sheet-".$time.'.xlsx';
 						$this->_redirect("/BO/download-turnover-report.php?type=turnover&filename=$contractsheet");
-					} 
+                        /** Author: Thilagam **/
+                        /** Date:05/05/2016 **/
+                        /** Reason: Code optimization **/
+                        //$this->_redirect("/BO/download-files.php?function=downloadTurnoverReport&type=turnover&filename=$contractsheet");
+                    }
 	
 	
 	}

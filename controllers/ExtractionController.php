@@ -295,6 +295,10 @@ class ExtractionController extends Zend_Controller_Action
 						chmod($comparepath,0777);
 						convertHtmltableToXlsx($Html,$comparepath,True);
 						$this->_redirect("/BO/download-turnover-report.php?type=turnover&filename=$proofreadingtheorical");
+                        /** Author: Thilagam **/
+                        /** Date:05/05/2016 **/
+                        /** Reason: Code optimization **/
+                        //$this->_redirect("/BO/download-files.php?function=downloadTurnoverReport&type=turnover&filename=$proofreadingtheorical");
 					}
 		
 
