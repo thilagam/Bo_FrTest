@@ -848,6 +848,10 @@ class FtvController extends Ep_Controller_Action
          $filepath = $request_id."-".$filename;
 
         $this->_redirect("/BO/download_ftv.php?ftvfile=".$filepath."");
+        /** Author: Thilagam **/
+        /** Date:05/05/2016 **/
+        /** Reason: Code optimization **/
+        //$this->_redirect("/BO/download-files.php?function=downloadFtv&ftvfile=".$filepath."");
 
 
     }

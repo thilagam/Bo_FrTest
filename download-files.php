@@ -753,19 +753,9 @@
             }  */
 
         }//downloadArticle//
-        /** Author: Thilagam **/
-        /** Date:05/05/2016 **/
-        /** Reason: Code optimization **/
         public function downloadArticleLatestversion($article_id=false,$type=false){
-
             $artId=$_REQUEST['article_id'];
             $type = $_REQUEST['type'];
-            $con = mysql_connect("localhost","ep_fr","8tJEzHnFCh9B3VbS");
-            if (!$con)
-            {
-                die('Could not connect: ' . mysql_error());
-            }
-            mysql_select_db("ep_fr", $con);
             /*$result = mysql_query("SELECT ap.id, ap.article_path, ap.article_name FROM ArticleProcess ap
                                 INNER JOIN Participation p ON p.id = ap.participate_id
                                 INNER JOIN Article a ON a.id = p.article_id
@@ -1288,8 +1278,11 @@
             }  */
 
         }//donwloadExpenseInvoice//
+        /** Author: Thilagam **/
+        /** Date:05/05/2016 **/
+        /** Reason: Code optimization **/
         public function downloadFtv($ftvfile){
-            $file = explode('-',$ftvfile);
+            $file = explode('-',$_REQUEST['ftvfile']);
             $path_file  =    '/home/sites/site5/web/FO/ftv_documents/'.$file[0].'/'.$file[1]  ; //exit;
             $filename1 = $file[1];
             if(file_exists($path_file))
@@ -1305,6 +1298,9 @@
                 header("Content-Length: ".filesize($path_file));
                 ob_end_flush();
                 @readfile($path_file);
+            }
+            else{
+                echo "Sorry. File does not exist";
             }
         }
         //dint find in controller//
