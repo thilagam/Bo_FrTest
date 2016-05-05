@@ -753,10 +753,19 @@
             }  */
 
         }//downloadArticle//
+        /** Author: Thilagam **/
+        /** Date:05/05/2016 **/
+        /** Reason: Code optimization **/
         public function downloadArticleLatestversion($article_id=false,$type=false){
 
-            $artId=$article_id;
-            $type = $type;
+            $artId=$_REQUEST['article_id'];
+            $type = $_REQUEST['type'];
+            $con = mysql_connect("localhost","ep_fr","8tJEzHnFCh9B3VbS");
+            if (!$con)
+            {
+                die('Could not connect: ' . mysql_error());
+            }
+            mysql_select_db("ep_fr", $con);
             /*$result = mysql_query("SELECT ap.id, ap.article_path, ap.article_name FROM ArticleProcess ap
                                 INNER JOIN Participation p ON p.id = ap.participate_id
                                 INNER JOIN Article a ON a.id = p.article_id
@@ -898,10 +907,12 @@
             {
                 echo "Zip not Exists";exit;
             }  */
+
         }//donwloadArticleLatestversion//
         public function downloadAttachment($m){
 
-            $result = mysql_query("SELECT attachment from Message where id ='".$m."'");
+            mysql_select_db("dev_editplace1", $con);
+            $result = mysql_query("SELECT attachment from Message where id ='".$_REQUEST['m']."'");
             while($row = mysql_fetch_array($result))
             {
                 $attachment=$row['attachment'];
@@ -920,6 +931,7 @@
                 readfile("$path_file");
                 exit;
             }
+
         }//downloadAttachment//
         //found in href//
         public function downloadBrief(){
@@ -1083,8 +1095,14 @@
             };
 
         }//downloadBrief2//
-        public function downloadContractAgreement($type=false,$user_id=false,$file=false){
 
+        /** Author: Thilagam **/
+        /** Date:05/05/2016 **/
+        /** Reason: Code optimization **/
+        public function downloadContractAgreement($type=false,$user_id=false,$file=false){
+            $user_id=$_REQUEST['user_id'];
+            $type=$_REQUEST['type'];
+            $file=$_REQUEST['file'];
 
             if($type=='zip')
             {

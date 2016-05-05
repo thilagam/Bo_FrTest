@@ -1901,7 +1901,11 @@ class OngoingController extends Ep_Controller_Action
 			            {
 			              		              
 			              $this->_redirect("/BO/download_contract_agreement.php?type=zip&user_id=".$user_id);
-			              exit;
+                            /** Author: Thilagam **/
+                            /** Date:05/05/2016 **/
+                            /** Reason: Code optimization **/
+                            //$this->_redirect("/BO/download-files.php?function=downloadContractAgreement&type=zip&user_id=".$user_id");
+			               exit;
 			            }
 			            else
 			              echo "File Not found";
@@ -1917,7 +1921,11 @@ class OngoingController extends Ep_Controller_Action
 			            {
 			              		              
 			              $this->_redirect("/BO/download_contract_agreement.php?file=$file_name&type=pdf&user_id=$user_id");
-			              exit;
+                            /** Author: Thilagam **/
+                            /** Date:05/05/2016 **/
+                            /** Reason: Code optimization **/
+                           //$this->_redirect("/BO/download-files.php?function=downloadContractAgreement&file=$file_name&type=pdf&user_id=$user_id");
+                            exit;
 			            }
 			            else
 			              echo "File Not found";
