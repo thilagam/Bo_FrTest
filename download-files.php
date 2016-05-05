@@ -57,26 +57,28 @@
             }
         }//downloadBrief//
 
-
+        /** Author: Thilagam **/
+        /** Date:05/05/2016 **/
+        /** Reason: Code optimization **/
         public function downloadInvoice($fname=false,$cid=false,$final=false){
             $path = '/BO/contract_mission_invoice/';
-            if($cid)
+            if($_REQUEST['cid'])
             {
                 include $_SERVER['DOCUMENT_ROOT'].'/BO/dbconfig.php';
 
-                if($final=='yes')
+                if($_REQUEST['final']=='yes')
                 {
-                    $res = mysql_query("SELECT file_path,invoice_number from ContractMissionInvoice WHERE contract_id='".$cid."' AND archive=0 AND invoice_type='final'");
+                    $res = mysql_query("SELECT file_path,invoice_number from ContractMissionInvoice WHERE contract_id='".$_REQUEST['cid']."' AND archive=0 AND invoice_type='final'");
                 }
                 else
                 {
-                    $res = mysql_query("SELECT file_path,invoice_number from ContractMissionInvoice WHERE contract_id='".$cid."' AND archive=0 AND invoice_type!='final'");
+                    $res = mysql_query("SELECT file_path,invoice_number from ContractMissionInvoice WHERE contract_id='".$_REQUEST['cid']."' AND archive=0 AND invoice_type!='final'");
                 }
 
                 if(mysql_num_rows($res))
                 {
                     $zip = new ZipArchive();
-                    $zipname = $_SERVER['DOCUMENT_ROOT'].$path."contract-inv-".$cid.'.zip';
+                    $zipname = $_SERVER['DOCUMENT_ROOT'].$path."contract-inv-".$_REQUEST['cid'].'.zip';
                     $zip->open($zipname, ZipArchive::CREATE);
 
                     while($row = mysql_fetch_assoc($res))
@@ -99,7 +101,7 @@
             }
             else
             {
-                $filename = $fname;
+                $filename = $_REQUEST['fname'];
                 $reqfilea = explode("/",$filename);
                 $reqfile = $reqfilea[count($reqfilea)-1];
                 header("Pragma: public"); // required
@@ -500,6 +502,7 @@
             readfile($_SERVER['DOCUMENT_ROOT'].$path.$session_id);
             //unlink($_SERVER['DOCUMENT_ROOT'].$path.$session_id);
         }//DownloadQuoteXls//
+
         public function downloadSurvey($filename=false,$recruitmenttestartid=false,$recruitmenttestart=false,$testart=false){
             ob_start();
             if($_GET['filename'])

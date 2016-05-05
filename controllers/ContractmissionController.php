@@ -2231,7 +2231,12 @@ class ContractmissionController extends Ep_Controller_Action
 	{
 		$request = $this->_request->getParams();
 		$this->_redirect("/BO/download-invoice.php?fname=".$request['fname']."&cid=".$request['cid']."&final=".$request['final']);
-	}
+        /** Author: Thilagam **/
+        /** Date:05/05/2016 **/
+        /** Reason: Code optimization **/
+        //$this->_redirect("/BO/download-files.php?function=downloadInvoice&fname=".$request['fname']."&cid=".$request['cid']."&final=".$request['final']);
+
+    }
 	/* To delete a document through Ajax */
 	function deleteDocumentAction()
 	{
