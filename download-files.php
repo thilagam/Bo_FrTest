@@ -471,18 +471,22 @@
             readfile($_SERVER['DOCUMENT_ROOT'].$path.$session_id);
             unlink($_SERVER['DOCUMENT_ROOT'].$path.$session_id);
         }//downloadQuoteTestXls//
+
+        /** Author: Thilagam **/
+        /** Date:05/05/2016 **/
+        /** Reason: Code optimization **/
         public function downloadQuoteXls($art_id=false,$session_id=false){
             ob_start();
 
-            if($art_id)
+            if($_GET['art_id'])
             {
-                $session_id=$art_id;
+                $session_id=$_GET['art_id'];
                 $path = "/BO/participantsxls/";
                 $pathinfo = pathinfo($_SERVER['DOCUMENT_ROOT'].$path.$session_id);
             }
             else
             {
-                $session_id=$session_id;
+                $session_id=$_GET['session_id'];
                 $path = "/BO/quotexls/";
                 $pathinfo = pathinfo($_SERVER['DOCUMENT_ROOT'].$path.$session_id);
             }
@@ -500,7 +504,6 @@
             header("Content-Length: ".filesize($_SERVER['DOCUMENT_ROOT'].$path.$session_id));
             ob_end_flush();
             readfile($_SERVER['DOCUMENT_ROOT'].$path.$session_id);
-            //unlink($_SERVER['DOCUMENT_ROOT'].$path.$session_id);
         }//DownloadQuoteXls//
 
         public function downloadSurvey($filename=false,$recruitmenttestartid=false,$recruitmenttestart=false,$testart=false){

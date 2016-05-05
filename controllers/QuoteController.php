@@ -10029,6 +10029,11 @@ class QuoteController extends Ep_Controller_Action
 		$cfilename = "quote-xls-".$quote_id."_".time().".xlsx";
 		$this->convertHtmltableToXlsx($htmltable,$cfilename);
   		$this->_redirect("/BO/download-quote-xls.php?session_id=".$cfilename);
+        /** Author: Thilagam **/
+        /** Date:05/05/2016 **/
+        /** Reason: Code optimization **/
+        //$this->_redirect("/BO/download-files.php?function=downloadQuoteXls&session_id=".$cfilename);
+
 	}
 	
 	function convertHtmltableToXlsx($htmltable,$filename,$extract=FALSE)
