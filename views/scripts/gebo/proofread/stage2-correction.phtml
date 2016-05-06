@@ -682,6 +682,11 @@ function deliveredarticle(article)
         <td>{if $versions_item.status eq ''}new {elseif $versions_item.status eq 'process'}revised {else}{$versions_item.status} {/if} </td>
         <td>{$versions_item.article_sent_at|date_format:"%d/%m/%Y %H:%M"}</td>
         <td><a href="/BO/download_article.php?artprocId={$versions_item.id}">Download</a></td>
+        <!-- Author: Thilagam -->
+        <!-- Date:06/05/2016 -->
+        <!-- Reason: Code optimization -->
+        <!--  <td><a href="/BO/download-files.php?function=downloadArticle&artprocId={$versions_item.id}">Download</a></td></a>-->
+
         <td><a href=""  data-target="#density" data-toggle="modal" onclick="return getDensity('{$versions_item.id}');">Density</a></td>
         <td><a data-target="#plagiarism" data-toggle="modal" href="/proofread/contentplagiarism?artprocessId={$versions_item.id}" class="label label-success">Internal</a>
 

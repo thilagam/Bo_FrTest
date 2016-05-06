@@ -399,6 +399,10 @@ cursor:pointer;
 										 <a class="label label-success" data-hint="T&eacute;l&eacute;charger le contrat" href="/ongoing/download-contract?article_id={$article.id}&user_id={$article.writer_bid_details[0].user_id}" ><i class="splashy-download"></i></a>
                             {if $article.writer_artproc_details neq 'NO' }
                                             <a class="label label-warning" data-hint="T&eacute;l&eacute;charger l'article" href="/BO/download_article.php?article_id={$article.id}&type=writer"><i class="splashy-download"></i></a>
+                            <!-- Author: Thilagam -->
+                            <!-- Date:06/05/2016 -->
+                            <!-- Reason: Code optimization -->
+                            <!-- <a class="label label-warning" data-hint="T&eacute;l&eacute;charger l'article" href="/BO/download-files.php?function=downloadArticle&article_id={$article.id}&type=writer"><i class="splashy-download"></i></a>-->
                             {/if}
                            
 							{else}

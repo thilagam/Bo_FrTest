@@ -607,17 +607,14 @@
                 echo "file name in session not found";
             }
         }//download xlsx//
-        //dint find in controller//
+        /** Author: Thilagam **/
+        /** Date:06/05/2016 **/
+        /** Reason: Code optimization **/
         public function downloadArticle($article_id=false,$type=false){
 
             $artId=$_REQUEST['article_id'];
             $type = $_REQUEST['type'];
-            $con = mysql_connect("localhost","ep_fr","8tJEzHnFCh9B3VbS");
-            if (!$con)
-            {
-                die('Could not connect: ' . mysql_error());
-            }
-            mysql_select_db("ep_fr", $con);
+
             /*$result = mysql_query("SELECT ap.id, ap.article_path, ap.article_name FROM ArticleProcess ap
                                 INNER JOIN Participation p ON p.id = ap.participate_id
                                 INNER JOIN Article a ON a.id = p.article_id
@@ -715,7 +712,7 @@
                         default: $dtype="attachment";
                     }
 //echo $dtype;exit;
-                    header("Pragma: public"); // required
+                    /*header("Pragma: public"); // required
                     header("Expires: 0");
                     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
                     header("Cache-Control: private",false); // required for certain browsers
@@ -725,7 +722,8 @@
                     header("Content-Length: ".$fsize);
                     ob_clean();
                     flush();
-                    readfile($fullPath);
+                    readfile($fullPath);*/
+                    $this->download($fullPath);
                     exit;
                 } else
                     die('File Not Found');

@@ -57,7 +57,11 @@
 					<td>
 						{if $row.status =='under_study' || $row.status =='plag_exec' || $row.status =='published' || $row.status =='disapproved'}
 						<a class="btn btn-small {if $row.marks &&  $row.marks < $row.min_mark}under_marks{/if}" href="/BO/download_article.php?article_id={$row.article_id}&type=writer"><i class="icon-download"></i> {if $row.marks}{$row.marks|zero_cut:2}/10{/if}</a>
-						{elseif $row.article_submit_expires eq 0}
+                        <!-- Author: Thilagam -->
+                        <!-- Date:06/05/2016 -->
+                        <!-- Reason: Code optimization -->
+                        <!-- <a class="btn btn-small {if $row.marks &&  $row.marks < $row.min_mark}under_marks{/if}" href="/BO/download-files.php?function=downloadArticle&article_id={$row.article_id}&type=writer"><i class="icon-download"></i> {if $row.marks}{$row.marks|zero_cut:2}/10{/if}</a> -->
+                        {elseif $row.article_submit_expires eq 0}
 							-
 						{elseif $smarty.now>$row.article_submit_expires}
 							<strong>Article Test Time Out</strong>											
