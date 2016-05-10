@@ -31,21 +31,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="PortfolioController.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="PortfolioController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/controllers/PortfolioController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.774074" vertical-offset="4393" max-vertical-offset="10489">
-              <caret line="75" column="35" selection-start-line="75" selection-start-column="35" selection-end-line="75" selection-end-column="35" />
+            <state vertical-scroll-proportion="-9.538462" vertical-offset="9782" max-vertical-offset="10506">
+              <caret line="590" column="5" selection-start-line="590" selection-start-column="5" selection-end-line="590" selection-end-column="5" />
               <folding>
-                <marker date="1462870237000" expanded="true" signature="15681:16434" placeholder="..." />
-                <marker date="1462870237000" expanded="true" signature="15736:15908" placeholder="..." />
-                <marker date="1462870237000" expanded="true" signature="15933:16074" placeholder="..." />
-                <marker date="1462870237000" expanded="true" signature="16099:16239" placeholder="..." />
-                <marker date="1462870237000" expanded="true" signature="16264:16412" placeholder="..." />
-                <marker date="1462870237000" expanded="true" signature="29650:30150" placeholder="..." />
-                <marker date="1462870237000" expanded="true" signature="29705:29923" placeholder="..." />
-                <marker date="1462870237000" expanded="true" signature="29948:30030" placeholder="..." />
-                <marker date="1462870237000" expanded="true" signature="30055:30128" placeholder="..." />
+                <marker date="1462876402000" expanded="true" signature="15681:16434" placeholder="..." />
+                <marker date="1462876402000" expanded="true" signature="15736:15908" placeholder="..." />
+                <marker date="1462876402000" expanded="true" signature="15933:16074" placeholder="..." />
+                <marker date="1462876402000" expanded="true" signature="16099:16239" placeholder="..." />
+                <marker date="1462876402000" expanded="true" signature="16264:16412" placeholder="..." />
+                <marker date="1462876402000" expanded="true" signature="29680:30180" placeholder="..." />
+                <marker date="1462876402000" expanded="true" signature="29735:29953" placeholder="..." />
+                <marker date="1462876402000" expanded="true" signature="29978:30060" placeholder="..." />
+                <marker date="1462876402000" expanded="true" signature="30085:30158" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -54,27 +54,56 @@
       <file leaf-file-name="Manage.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/Ep/Portfolio/Manage.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="51.0" vertical-offset="1326" max-vertical-offset="5780">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="-7.9636364" vertical-offset="5087" max-vertical-offset="5780">
+              <caret line="325" column="47" selection-start-line="325" selection-start-column="47" selection-end-line="325" selection-end-column="47" />
               <folding>
-                <marker date="1462870558000" expanded="true" signature="2883:3408" placeholder="SELECT DISTI..." />
-                <marker date="1462870558000" expanded="true" signature="5359:5729" placeholder="SELECT ${$ro..." />
-                <marker date="1462870558000" expanded="true" signature="6392:9922" placeholder="SELECT initi..." />
-                <marker date="1462870558000" expanded="true" signature="11210:11286" placeholder="SELECT * FRO..." />
-                <marker date="1462870558000" expanded="true" signature="11604:12508" placeholder="SELECT *,(SE..." />
-                <marker date="1462870558000" expanded="true" signature="11614:11662" placeholder="SELECT compa..Client..." />
-                <marker date="1462870558000" expanded="true" signature="12831:13198" placeholder="select u.ide..User..." />
-                <marker date="1462870558000" expanded="true" signature="13087:13161" placeholder="SELECT count..ClientContacts..." />
-                <marker date="1462870558000" expanded="true" signature="14477:15002" placeholder="select u.ide..User..." />
-                <marker date="1462870558000" expanded="true" signature="14791:14865" placeholder="SELECT count..ClientContacts..." />
-                <marker date="1462870558000" expanded="true" signature="16521:16606" placeholder="SELECT GROUP..." />
-                <marker date="1462870558000" expanded="true" signature="16702:17587" placeholder="SELECT (SUM(..." />
+                <marker date="1462876372000" expanded="true" signature="2883:3408" placeholder="SELECT DISTI..." />
+                <marker date="1462876372000" expanded="true" signature="5359:5729" placeholder="SELECT ${$ro..." />
+                <marker date="1462876372000" expanded="true" signature="6392:9922" placeholder="SELECT initi..." />
+                <marker date="1462876372000" expanded="true" signature="11210:11286" placeholder="SELECT * FRO..." />
+                <marker date="1462876372000" expanded="true" signature="11604:12508" placeholder="SELECT *,(SE..." />
+                <marker date="1462876372000" expanded="true" signature="11614:11662" placeholder="SELECT compa..Client..." />
+                <marker date="1462876372000" expanded="true" signature="12831:13198" placeholder="select u.ide..User..." />
+                <marker date="1462876372000" expanded="true" signature="13087:13161" placeholder="SELECT count..ClientContacts..." />
+                <marker date="1462876372000" expanded="true" signature="14477:15002" placeholder="select u.ide..User..." />
+                <marker date="1462876372000" expanded="true" signature="14791:14865" placeholder="SELECT count..ClientContacts..." />
+                <marker date="1462876372000" expanded="true" signature="16521:16606" placeholder="SELECT GROUP..." />
+                <marker date="1462876372000" expanded="true" signature="16702:17587" placeholder="SELECT (SUM(..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="search-result-page.phtml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/views/scripts/gebo/portfolio/search-result-page.phtml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5593">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ajax.phtml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/scripts/gebo/portfolio/ajax.phtml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="373.34616" vertical-offset="10404" max-vertical-offset="10999">
+              <caret line="41" column="20" selection-start-line="41" selection-start-column="20" selection-end-line="41" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/views/scripts/gebo/portfolio/ajax.phtml" />
+        <option value="$PROJECT_DIR$/controllers/PortfolioController.php" />
+        <option value="$PROJECT_DIR$/models/Ep/Portfolio/Manage.php" />
+      </list>
+    </option>
   </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
@@ -659,42 +688,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/Ep/Portfolio/Manage.php">
+    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/portfolio/ajax.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="51.0" vertical-offset="1326" max-vertical-offset="5780">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1462870558000" expanded="true" signature="2883:3408" placeholder="SELECT DISTI..." />
-            <marker date="1462870558000" expanded="true" signature="5359:5729" placeholder="SELECT ${$ro..." />
-            <marker date="1462870558000" expanded="true" signature="6392:9922" placeholder="SELECT initi..." />
-            <marker date="1462870558000" expanded="true" signature="11210:11286" placeholder="SELECT * FRO..." />
-            <marker date="1462870558000" expanded="true" signature="11604:12508" placeholder="SELECT *,(SE..." />
-            <marker date="1462870558000" expanded="true" signature="11614:11662" placeholder="SELECT compa..Client..." />
-            <marker date="1462870558000" expanded="true" signature="12831:13198" placeholder="select u.ide..User..." />
-            <marker date="1462870558000" expanded="true" signature="13087:13161" placeholder="SELECT count..ClientContacts..." />
-            <marker date="1462870558000" expanded="true" signature="14477:15002" placeholder="select u.ide..User..." />
-            <marker date="1462870558000" expanded="true" signature="14791:14865" placeholder="SELECT count..ClientContacts..." />
-            <marker date="1462870558000" expanded="true" signature="16521:16606" placeholder="SELECT GROUP..." />
-            <marker date="1462870558000" expanded="true" signature="16702:17587" placeholder="SELECT (SUM(..." />
-          </folding>
+        <state vertical-scroll-proportion="373.34616" vertical-offset="10404" max-vertical-offset="10999">
+          <caret line="41" column="20" selection-start-line="41" selection-start-column="20" selection-end-line="41" selection-end-column="20" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/controllers/PortfolioController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.774074" vertical-offset="4393" max-vertical-offset="10489">
-          <caret line="75" column="35" selection-start-line="75" selection-start-column="35" selection-end-line="75" selection-end-column="35" />
+        <state vertical-scroll-proportion="-9.538462" vertical-offset="9782" max-vertical-offset="10506">
+          <caret line="590" column="5" selection-start-line="590" selection-start-column="5" selection-end-line="590" selection-end-column="5" />
           <folding>
-            <marker date="1462870237000" expanded="true" signature="15681:16434" placeholder="..." />
-            <marker date="1462870237000" expanded="true" signature="15736:15908" placeholder="..." />
-            <marker date="1462870237000" expanded="true" signature="15933:16074" placeholder="..." />
-            <marker date="1462870237000" expanded="true" signature="16099:16239" placeholder="..." />
-            <marker date="1462870237000" expanded="true" signature="16264:16412" placeholder="..." />
-            <marker date="1462870237000" expanded="true" signature="29650:30150" placeholder="..." />
-            <marker date="1462870237000" expanded="true" signature="29705:29923" placeholder="..." />
-            <marker date="1462870237000" expanded="true" signature="29948:30030" placeholder="..." />
-            <marker date="1462870237000" expanded="true" signature="30055:30128" placeholder="..." />
+            <marker date="1462876402000" expanded="true" signature="15681:16434" placeholder="..." />
+            <marker date="1462876402000" expanded="true" signature="15736:15908" placeholder="..." />
+            <marker date="1462876402000" expanded="true" signature="15933:16074" placeholder="..." />
+            <marker date="1462876402000" expanded="true" signature="16099:16239" placeholder="..." />
+            <marker date="1462876402000" expanded="true" signature="16264:16412" placeholder="..." />
+            <marker date="1462876402000" expanded="true" signature="29680:30180" placeholder="..." />
+            <marker date="1462876402000" expanded="true" signature="29735:29953" placeholder="..." />
+            <marker date="1462876402000" expanded="true" signature="29978:30060" placeholder="..." />
+            <marker date="1462876402000" expanded="true" signature="30085:30158" placeholder="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/Ep/Portfolio/Manage.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.9636364" vertical-offset="5087" max-vertical-offset="5780">
+          <caret line="325" column="47" selection-start-line="325" selection-start-column="47" selection-end-line="325" selection-end-column="47" />
+          <folding>
+            <marker date="1462876372000" expanded="true" signature="2883:3408" placeholder="SELECT DISTI..." />
+            <marker date="1462876372000" expanded="true" signature="5359:5729" placeholder="SELECT ${$ro..." />
+            <marker date="1462876372000" expanded="true" signature="6392:9922" placeholder="SELECT initi..." />
+            <marker date="1462876372000" expanded="true" signature="11210:11286" placeholder="SELECT * FRO..." />
+            <marker date="1462876372000" expanded="true" signature="11604:12508" placeholder="SELECT *,(SE..." />
+            <marker date="1462876372000" expanded="true" signature="11614:11662" placeholder="SELECT compa..Client..." />
+            <marker date="1462876372000" expanded="true" signature="12831:13198" placeholder="select u.ide..User..." />
+            <marker date="1462876372000" expanded="true" signature="13087:13161" placeholder="SELECT count..ClientContacts..." />
+            <marker date="1462876372000" expanded="true" signature="14477:15002" placeholder="select u.ide..User..." />
+            <marker date="1462876372000" expanded="true" signature="14791:14865" placeholder="SELECT count..ClientContacts..." />
+            <marker date="1462876372000" expanded="true" signature="16521:16606" placeholder="SELECT GROUP..." />
+            <marker date="1462876372000" expanded="true" signature="16702:17587" placeholder="SELECT (SUM(..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/portfolio/search-result-page.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5593">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

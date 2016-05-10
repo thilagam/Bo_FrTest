@@ -582,6 +582,7 @@ class PortfolioController extends Ep_Controller_Action
         //create object reqired classes
         $obj_manage = new Ep_Portfolio_Manage();
         $results = $obj_manage->getTrendAnalysis();
+//        echo $results;exit;
         if ($results){//if match found redirect to search result page
             $this->_view->trendResultsTable = $this->trendResultsTable($results);
             $this->_view->page = 'load_trend_analysis';//reference to page load of ajax
