@@ -592,6 +592,9 @@ class PortfolioController extends Ep_Controller_Action
     public function trendResultsTable($results){
         $languages_array = $this->languages_array;
         $table = '';
+        //echo "<pre>";print_r($results);
+
+       // print_r($data);
         foreach ($results as  $result) {
 
                 $table .= '<tr>
