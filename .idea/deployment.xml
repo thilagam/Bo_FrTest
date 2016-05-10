@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="BO_FR_TEST">
+  <component name="PublishConfigData" autoUpload="Always">
     <serverData>
-      <paths name="BO_FR_TEST">
+      <paths name="Bo_FrTest">
         <serverdata>
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" web="/" />

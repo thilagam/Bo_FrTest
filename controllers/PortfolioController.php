@@ -350,6 +350,7 @@ class PortfolioController extends Ep_Controller_Action
             $result = $obj_manage->getPortfolio($params);
             //echo "<pre>";print_r($result);exit;
             if ($result){//if match found redirect to search result page
+                //fetch the function
                 $start= 0;$interval = 1;$condition='viewProtfolio';
 
                 $result[0]['profile_pic'] = $this->fetchBestImageForView($result);
@@ -572,5 +573,40 @@ class PortfolioController extends Ep_Controller_Action
         else{
             echo '<a href="javascript:void();" id="downloadZipLink"></a>';
         }
+    }
+    /* *** added on 09.05.2016*** */
+    // function to load trend analysis/prediction of required contributors/writeres//
+    public function loadTrendAnalysisAction(){
+        //$params=$this->_request->getParams();
+        //$type = 'load_trend_analysis';
+        //create object reqired classes
+        $obj_manage = new Ep_Portfolio_Manage();
+        $results = $obj_manage->getTrendAnalysis();
+        if ($results){//if match found redirect to search result page
+            $this->_view->trendResultsTable = $this->trendResultsTable($results);
+            $this->_view->page = 'load_trend_analysis';//reference to page load of ajax
+            $this->render('portfolio-search-result-ajax');
+        }
+    }
+    public function trendResultsTable($results){
+        $languages_array = $this->languages_array;
+        $table = '';
+        foreach ($results as  $result) {
+
+                $table .= '<tr>
+                    <td class="smallTableContribFlag">
+                        <img src="/BO/theme/lbd/img/flag/' . $result['language'] . '.gif" alt="flag">
+                        <div>'.utf8_encode($languages_array[$result['language']]).'</div>
+                    </td>
+                    <td>
+                        '.round($result['staff_req']).'
+                    </td>
+                    <td>
+                        '.$result['product'].'
+                    </td>
+                </tr>';
+
+        }
+        return $table;
     }
 }
