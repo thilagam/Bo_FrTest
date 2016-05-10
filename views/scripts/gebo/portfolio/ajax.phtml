@@ -21,7 +21,6 @@
         }
         function load_charts(){
             console.log('ajax initiated');
-            console.log('ajax initiated');
             var form_data = $("#main_form").serialize()+'&'+$("#filter_form").serialize();
             $.ajax({
                 type: 'POST',
@@ -32,6 +31,19 @@
                 }
             });
         }
+        function load_trend_analysis(){
+            console.log('ajax initiated load_trend_analysis');
+            //var form_data = $("#main_form").serialize()+'&'+$("#filter_form").serialize();
+            $.ajax({
+                type: 'POST',
+                url: '/portfolio/load-trend-analysis',//+form_data,
+                success: function (data) {
+                    console.log(data);
+                    $("#ajax_load_trend_analysis").html(data);
+                }
+            });
+
+        }
         $(document).ready(function () {
             $("#count_results").html('{/literal}{$count_results}{literal}');//display the actual count of results
             var count_results = {/literal}{$count_results}{literal};
@@ -40,6 +52,8 @@
             }
             //to load the charts
             load_charts();
+            //to load trend analysis graph//
+            load_trend_analysis();
         });
     </script>
 
@@ -153,16 +167,9 @@
                 </div>
             </div>
 
-            <!--<div class="card digramEvolNbrContrib">
-                <div class="content">
-                    <h3>
-                        Evolution du nombre de contributeur en 2015
-                    </h3>
-                    <div class="text-center">
-                        <img src="http://www.dr-aart.nl/Statistiek_bestanden/Lijndiagram1EN.jpg" alt="">
-                    </div>
-                </div>
-            </div>-->
+            <div  calss="card" id="ajax_load_trend_analysis">
+                Loading...
+            </div>
 
         </div><!-- de col-md-6 -->
 
@@ -603,5 +610,33 @@
     });
 </script>
 {/literal}
-
+{elseif $page eq 'load_trend_analysis'}
+    <div class="content" style="background-color: #FFFFFF; padding: 10px;">
+            <h3>
+               Trend analysis:
+            </h3>
+            <div class="text-center">
+                <table class="table table-hover table-bordered text-center">
+                    <thead>
+                    <tr class="smallTableContribTitle">
+                        <th>
+                            Langauge
+                        </th>
+                        <th class="text-center">
+                           Redaction
+                        </th>
+                        <th class="text-center">
+                            Prrofreading
+                        </th>
+                        <th class="text-center">
+                            Translation
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {$trendResultsTable}
+                    </tbody>
+                </table>
+            </div>
+    </div><!-- class="content" -->
 {/if}
