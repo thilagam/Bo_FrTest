@@ -153,6 +153,21 @@ class Ep_Portfolio_Manage extends Ep_Db_Identifier
                         $category_list
                     ) AS random_client,
                     (
+                        SELECT GROUP_CONCAT(DISTINCT(CONCAT(U.`identifier`,'--',C.`company_name`)) separator ', ')
+
+                        FROM `User` AS U
+                        INNER JOIN `Delivery` AS D ON D.`user_id` = U.`identifier`
+                        INNER JOIN `Article` AS A ON A.`delivery_id` = D.`id`
+                        INNER JOIN `Participation` AS P ON P.`article_id` = A.`id`
+                        LEFT JOIN  `Client` AS C ON U.`identifier` = C.`user_id`
+                        WHERE P.`status`
+                        IN (
+                        'under_study', 'published'
+                        )
+                        AND P.`user_id` = '".$id."'
+                        $category_list
+                    ) AS random_name,
+                    (
                        SELECT GROUP_CONCAT(DISTINCT(A.`type`) separator ', ')
                         FROM `User` AS U
                         INNER JOIN `Delivery` AS D ON D.`user_id` = U.`identifier`
@@ -169,12 +184,19 @@ class Ep_Portfolio_Manage extends Ep_Db_Identifier
                   LEFT JOIN UserPlus AS UP ON UP.user_id =  U.`identifier`
                   WHERE  U.`type` = 'contributor'
                   AND U.identifier = '".$id."' ";
-//        echo $query;exit;
+//        echo "<pre>".$query;exit;
         if (($result = $this->getQuery($query, true)) != NULL) {
             //convert all neccessary fields to array before returning//
             $result[0]['language_more'] = unserialize($result[0]['language_more']);
             $result[0]['category_more'] = unserialize($result[0]['category_more']);
             $result[0]['random_client'] = ($result[0]['random_client'] != NULL) ? explode( ',',preg_replace('/\s+/','',$result[0]['random_client']) ) : array();
+            $result[0]['random_name'] = ($result[0]['random_name'] != NULL) ? explode( ',',preg_replace('/\s+/','',$result[0]['random_name']) ) : array();
+            //for loop to trim identifier and only have company name in the array//
+            for($i=0;$i<count($result[0]['random_name']);$i++){
+                $value = $result[0]['random_name'][$i];
+                $valuearray = explode('--',$value);
+                $result[0]['random_name'][$i] = $valuearray[1];
+            }
             $result[0]['article_type'] = ($result[0]['article_type'] != NULL) ? explode( ',',preg_replace('/\s+/','',$result[0]['article_type']) ) : array();
             return $result;
         }
@@ -285,5 +307,28 @@ class Ep_Portfolio_Manage extends Ep_Db_Identifier
         }else{
             return "NO";
         }
+    }
+    public function getTrendAnalysis(){
+        $sub_result =  $this->getQuery("SELECT GROUP_CONCAT( `quoteid` SEPARATOR ',' ) AS sub_condition FROM `QuoteContracts`", true);
+        $sub_condition = trim($sub_result[0]['sub_condition'],',');
+        $query = "SELECT
+                    (SUM(P.staff*(IF(Q.estimate_sign_percentage IS NULL,100,Q.estimate_sign_percentage))/100 )) AS staff_req,
+                    SUM(P.staff ) AS staff,
+                    AVG(IF(Q.estimate_sign_percentage IS NULL,100,Q.estimate_sign_percentage)) AS percentage,
+                    P.product,
+                    IF(P.product= 'translation', language_dest, language_source) AS language
+                    FROM `Quotes` AS Q
+                    JOIN  `QuoteMissions` AS QM  ON  QM.quote_id = Q.`identifier`
+                    LEFT JOIN `ProdMissions` AS P ON P.`quote_mission_id` = QM.`identifier`
+                    WHERE Q.sales_review IN ('validated','signed')
+                    AND P.product IN ('translation','proofreading','redaction')
+                    AND Q.`identifier` NOT IN ( ".$sub_condition." )
+                    GROUP BY language,product";
+        //echo $query;exit;
+        if (($result = $this->getQuery($query, true)) != NULL) {
+            return $result;
+        }
+        else
+            return false;
     }
 }
