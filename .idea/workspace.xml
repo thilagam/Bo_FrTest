@@ -31,62 +31,93 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Manage.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/Ep/Portfolio/Manage.php">
+      <file leaf-file-name="FollowupController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/controllers/FollowupController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-19.923077" vertical-offset="5228" max-vertical-offset="6001">
-              <caret line="338" column="69" selection-start-line="338" selection-start-column="69" selection-end-line="338" selection-end-column="69" />
+            <state vertical-scroll-proportion="25.472727" vertical-offset="29485" max-vertical-offset="54383">
+              <caret line="1652" column="20" selection-start-line="1652" selection-start-column="20" selection-end-line="1652" selection-end-column="20" />
               <folding>
-                <marker date="1462954408894" expanded="true" signature="2883:3408" placeholder="SELECT DISTI..." />
-                <marker date="1462954408894" expanded="true" signature="5359:5729" placeholder="SELECT ${$ro..." />
-                <marker date="1462954408894" expanded="true" signature="6392:9922" placeholder="SELECT initi..." />
-                <marker date="1462954408894" expanded="true" signature="11210:11286" placeholder="SELECT * FRO..." />
-                <marker date="1462954408894" expanded="true" signature="11604:12508" placeholder="SELECT *,(SE..." />
-                <marker date="1462954408894" expanded="true" signature="11614:11662" placeholder="SELECT compa..Client..." />
-                <marker date="1462954408894" expanded="true" signature="12831:13198" placeholder="select u.ide..User..." />
-                <marker date="1462954408894" expanded="true" signature="13087:13161" placeholder="SELECT count..ClientContacts..." />
-                <marker date="1462954408894" expanded="true" signature="14477:15002" placeholder="select u.ide..User..." />
-                <marker date="1462954408894" expanded="true" signature="14791:14865" placeholder="SELECT count..ClientContacts..." />
-                <marker date="1462954408894" expanded="true" signature="16521:16606" placeholder="SELECT GROUP..." />
-                <marker date="1462954408894" expanded="true" signature="16704:17589" placeholder="SELECT (SUM(..." />
-                <marker date="1462954408894" expanded="true" signature="17797:18938" placeholder="SELECT IF(Pr..." />
+                <marker date="1462362312000" expanded="true" signature="10736:10752" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="11715:11731" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="20571:20587" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="21563:21579" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="28740:28756" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="37921:37937" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="38898:38914" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="47025:47041" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="61223:61239" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="62539:62555" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="63991:64007" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="94172:94326" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="94708:94845" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="104139:104155" placeholder="..." />
+                <marker date="1462362312000" expanded="true" signature="107853:107869" placeholder="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="search-result-page.phtml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/scripts/gebo/portfolio/search-result-page.phtml">
+      <file leaf-file-name="delivery-followup.phtml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/scripts/gebo/followup/delivery-followup.phtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="5593">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="-2.709091" vertical-offset="15831" max-vertical-offset="16422">
+              <caret line="940" column="15" selection-start-line="940" selection-start-column="8" selection-end-line="940" selection-end-column="15" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ajax.phtml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/scripts/gebo/portfolio/ajax.phtml">
+      <file leaf-file-name="DeliveryongoingController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/controllers/DeliveryongoingController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.461538" vertical-offset="10404" max-vertical-offset="10999">
-              <caret line="628" column="31" selection-start-line="628" selection-start-column="31" selection-end-line="628" selection-end-column="31" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PortfolioController.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/controllers/PortfolioController.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7908612" vertical-offset="10821" max-vertical-offset="11815">
-              <caret line="663" column="34" selection-start-line="663" selection-start-column="34" selection-end-line="663" selection-end-column="34" />
+            <state vertical-scroll-proportion="47.727272" vertical-offset="32545" max-vertical-offset="36771">
+              <caret line="1760" column="21" selection-start-line="1760" selection-start-column="13" selection-end-line="1760" selection-end-column="21" />
               <folding>
-                <marker date="1462962879850" expanded="true" signature="15681:16434" placeholder="..." />
-                <marker date="1462962879850" expanded="true" signature="15736:15908" placeholder="..." />
-                <marker date="1462962879850" expanded="true" signature="15933:16074" placeholder="..." />
-                <marker date="1462962879850" expanded="true" signature="16099:16239" placeholder="..." />
-                <marker date="1462962879850" expanded="true" signature="16264:16412" placeholder="..." />
+                <marker date="1458743243000" expanded="true" signature="57033:57044" placeholder="..." />
+                <marker date="1458743243000" expanded="true" signature="62843:63001" placeholder="..." />
+                <marker date="1458743243000" expanded="true" signature="63153:63291" placeholder="..." />
+                <marker date="1458743243000" expanded="true" signature="63338:64244" placeholder="..." />
+                <marker date="1458743243000" expanded="true" signature="63389:63544" placeholder="..." />
+                <marker date="1458743243000" expanded="false" signature="63762:63774" placeholder="..." />
+                <marker date="1458743243000" expanded="true" signature="63775:64149" placeholder="..." />
+                <marker date="1458743243000" expanded="true" signature="68196:68207" placeholder="..." />
+                <marker date="1458743243000" expanded="true" signature="70207:70218" placeholder="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="art-actions.phtml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/art-actions.phtml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-15.038462" vertical-offset="0" max-vertical-offset="1632">
+              <caret line="23" column="182" selection-start-line="23" selection-start-column="182" selection-end-line="23" selection-end-column="182" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ArticleRepublishController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/controllers/ArticleRepublishController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="34.436363" vertical-offset="10836" max-vertical-offset="62543">
+              <caret line="526" column="38" selection-start-line="526" selection-start-column="26" selection-end-line="526" selection-end-column="38" />
+              <folding>
+                <marker date="1453977976000" expanded="true" signature="33328:33351" placeholder="..." />
+                <marker date="1453977976000" expanded="true" signature="62868:62891" placeholder="..." />
+                <marker date="1453977976000" expanded="true" signature="121457:121480" placeholder="..." />
+                <marker date="1453977976000" expanded="true" signature="126448:126471" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="republishsinglepopup.phtml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/republishsinglepopup.phtml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.71704745" vertical-offset="9129" max-vertical-offset="11186">
+              <caret line="561" column="50" selection-start-line="561" selection-start-column="34" selection-end-line="561" selection-end-column="50" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -96,9 +127,12 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/models/Ep/Portfolio/Manage.php" />
         <option value="$PROJECT_DIR$/views/scripts/gebo/portfolio/ajax.phtml" />
         <option value="$PROJECT_DIR$/controllers/PortfolioController.php" />
+        <option value="$PROJECT_DIR$/models/Ep/Portfolio/Manage.php" />
+        <option value="$PROJECT_DIR$/views/scripts/gebo/followup/delivery-followup.phtml" />
+        <option value="$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/art-actions.phtml" />
+        <option value="$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/republishsinglepopup.phtml" />
       </list>
     </option>
   </component>
@@ -163,41 +197,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gebo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BO_FR_TEST" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Bo_FrTest" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gebo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="portfolio" />
+              <option name="myItemId" value="controllers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -317,11 +317,11 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="9988" max-vertical-offset="10557">
           <caret line="613" column="22" selection-start-line="613" selection-start-column="22" selection-end-line="613" selection-end-column="22" />
           <folding>
-            <marker date="1462962879850" expanded="true" signature="15681:16434" placeholder="..." />
-            <marker date="1462962879850" expanded="true" signature="15736:15908" placeholder="..." />
-            <marker date="1462962879850" expanded="true" signature="15933:16074" placeholder="..." />
-            <marker date="1462962879850" expanded="true" signature="16099:16239" placeholder="..." />
-            <marker date="1462962879850" expanded="true" signature="16264:16412" placeholder="..." />
+            <marker date="1462963941238" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462963941238" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462963941238" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462963941238" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462963941238" expanded="true" signature="-1:-1" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -331,19 +331,18 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5780">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1462954408894" expanded="true" signature="2883:3408" placeholder="SELECT DISTI..." />
-            <marker date="1462954408894" expanded="true" signature="5359:5729" placeholder="SELECT ${$ro..." />
-            <marker date="1462954408894" expanded="true" signature="6392:9922" placeholder="SELECT initi..." />
-            <marker date="1462954408894" expanded="true" signature="11210:11286" placeholder="SELECT * FRO..." />
-            <marker date="1462954408894" expanded="true" signature="11604:12508" placeholder="SELECT *,(SE..." />
-            <marker date="1462954408894" expanded="true" signature="11614:11662" placeholder="SELECT compa..Client..." />
-            <marker date="1462954408894" expanded="true" signature="12831:13198" placeholder="select u.ide..User..." />
-            <marker date="1462954408894" expanded="true" signature="13087:13161" placeholder="SELECT count..ClientContacts..." />
-            <marker date="1462954408894" expanded="true" signature="14477:15002" placeholder="select u.ide..User..." />
-            <marker date="1462954408894" expanded="true" signature="14791:14865" placeholder="SELECT count..ClientContacts..." />
-            <marker date="1462954408894" expanded="true" signature="16521:16606" placeholder="SELECT GROUP..." />
-            <marker date="1462954408894" expanded="true" signature="16704:17589" placeholder="SELECT (SUM(..." />
-            <marker date="1462954408894" expanded="true" signature="17797:18938" placeholder="SELECT IF(Pr..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT ${$ro..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT initi..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT * FRO..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT *,(SE..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT compa..Client..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="select u.ide..User..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT count..ClientContacts..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="select u.ide..User..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT count..ClientContacts..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT GROUP..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT IF(Pr..." />
           </folding>
         </state>
       </provider>
@@ -420,32 +419,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/Ep/Portfolio/Manage.php">
+    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/portfolio/ajax.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-19.923077" vertical-offset="5228" max-vertical-offset="6001">
-          <caret line="338" column="69" selection-start-line="338" selection-start-column="69" selection-end-line="338" selection-end-column="69" />
-          <folding>
-            <marker date="1462954408894" expanded="true" signature="2883:3408" placeholder="SELECT DISTI..." />
-            <marker date="1462954408894" expanded="true" signature="5359:5729" placeholder="SELECT ${$ro..." />
-            <marker date="1462954408894" expanded="true" signature="6392:9922" placeholder="SELECT initi..." />
-            <marker date="1462954408894" expanded="true" signature="11210:11286" placeholder="SELECT * FRO..." />
-            <marker date="1462954408894" expanded="true" signature="11604:12508" placeholder="SELECT *,(SE..." />
-            <marker date="1462954408894" expanded="true" signature="11614:11662" placeholder="SELECT compa..Client..." />
-            <marker date="1462954408894" expanded="true" signature="12831:13198" placeholder="select u.ide..User..." />
-            <marker date="1462954408894" expanded="true" signature="13087:13161" placeholder="SELECT count..ClientContacts..." />
-            <marker date="1462954408894" expanded="true" signature="14477:15002" placeholder="select u.ide..User..." />
-            <marker date="1462954408894" expanded="true" signature="14791:14865" placeholder="SELECT count..ClientContacts..." />
-            <marker date="1462954408894" expanded="true" signature="16521:16606" placeholder="SELECT GROUP..." />
-            <marker date="1462954408894" expanded="true" signature="16704:17589" placeholder="SELECT (SUM(..." />
-            <marker date="1462954408894" expanded="true" signature="17797:18938" placeholder="SELECT IF(Pr..." />
-          </folding>
+        <state vertical-scroll-proportion="-11.423077" vertical-offset="10430" max-vertical-offset="10999">
+          <caret line="631" column="39" selection-start-line="631" selection-start-column="39" selection-end-line="631" selection-end-column="39" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/portfolio/ajax.phtml">
+    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/portfolio/view-portfolio.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.461538" vertical-offset="10404" max-vertical-offset="10999">
-          <caret line="628" column="31" selection-start-line="628" selection-start-column="31" selection-end-line="628" selection-end-column="31" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5474">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/portfolio/homepage.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="3.9230769" vertical-offset="102" max-vertical-offset="1224">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -460,15 +453,115 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/controllers/PortfolioController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7908612" vertical-offset="10821" max-vertical-offset="11815">
-          <caret line="663" column="34" selection-start-line="663" selection-start-column="34" selection-end-line="663" selection-end-column="34" />
+        <state vertical-scroll-proportion="0.33333334" vertical-offset="1112" max-vertical-offset="11815">
+          <caret line="76" column="51" selection-start-line="76" selection-start-column="36" selection-end-line="76" selection-end-column="51" />
           <folding>
-            <marker date="1462962879850" expanded="true" signature="15681:16434" placeholder="..." />
-            <marker date="1462962879850" expanded="true" signature="15736:15908" placeholder="..." />
-            <marker date="1462962879850" expanded="true" signature="15933:16074" placeholder="..." />
-            <marker date="1462962879850" expanded="true" signature="16099:16239" placeholder="..." />
-            <marker date="1462962879850" expanded="true" signature="16264:16412" placeholder="..." />
+            <marker date="1462963941238" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462963941238" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462963941238" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462963941238" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462963941238" expanded="true" signature="-1:-1" placeholder="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/Ep/Portfolio/Manage.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.13356766" vertical-offset="5228" max-vertical-offset="6001">
+          <caret line="312" column="10" selection-start-line="312" selection-start-column="10" selection-end-line="312" selection-end-column="10" />
+          <folding>
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT DISTI..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT ${$ro..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT initi..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT * FRO..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT *,(SE..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT compa..Client..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="select u.ide..User..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT count..ClientContacts..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="select u.ide..User..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT count..ClientContacts..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT GROUP..." />
+            <marker date="1462970274967" expanded="true" signature="-1:-1" placeholder="SELECT IF(Pr..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controllers/FollowupController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="25.472727" vertical-offset="29485" max-vertical-offset="54383">
+          <caret line="1652" column="20" selection-start-line="1652" selection-start-column="20" selection-end-line="1652" selection-end-column="20" />
+          <folding>
+            <marker date="1462362312000" expanded="true" signature="10736:10752" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="11715:11731" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="20571:20587" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="21563:21579" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="28740:28756" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="37921:37937" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="38898:38914" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="47025:47041" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="61223:61239" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="62539:62555" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="63991:64007" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="94172:94326" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="94708:94845" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="104139:104155" placeholder="..." />
+            <marker date="1462362312000" expanded="true" signature="107853:107869" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/followup/delivery-followup.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.709091" vertical-offset="15831" max-vertical-offset="16422">
+          <caret line="940" column="15" selection-start-line="940" selection-start-column="8" selection-end-line="940" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/art-actions.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-15.038462" vertical-offset="0" max-vertical-offset="1632">
+          <caret line="23" column="182" selection-start-line="23" selection-start-column="182" selection-end-line="23" selection-end-column="182" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controllers/DeliveryongoingController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="47.727272" vertical-offset="32545" max-vertical-offset="36771">
+          <caret line="1760" column="21" selection-start-line="1760" selection-start-column="13" selection-end-line="1760" selection-end-column="21" />
+          <folding>
+            <marker date="1458743243000" expanded="true" signature="57033:57044" placeholder="..." />
+            <marker date="1458743243000" expanded="true" signature="62843:63001" placeholder="..." />
+            <marker date="1458743243000" expanded="true" signature="63153:63291" placeholder="..." />
+            <marker date="1458743243000" expanded="true" signature="63338:64244" placeholder="..." />
+            <marker date="1458743243000" expanded="true" signature="63389:63544" placeholder="..." />
+            <marker date="1458743243000" expanded="false" signature="63762:63774" placeholder="..." />
+            <marker date="1458743243000" expanded="true" signature="63775:64149" placeholder="..." />
+            <marker date="1458743243000" expanded="true" signature="68196:68207" placeholder="..." />
+            <marker date="1458743243000" expanded="true" signature="70207:70218" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controllers/ArticleRepublishController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="34.436363" vertical-offset="10836" max-vertical-offset="62543">
+          <caret line="526" column="38" selection-start-line="526" selection-start-column="26" selection-end-line="526" selection-end-column="38" />
+          <folding>
+            <marker date="1453977976000" expanded="true" signature="33328:33351" placeholder="..." />
+            <marker date="1453977976000" expanded="true" signature="62868:62891" placeholder="..." />
+            <marker date="1453977976000" expanded="true" signature="121457:121480" placeholder="..." />
+            <marker date="1453977976000" expanded="true" signature="126448:126471" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/republishsinglepopup.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.71704745" vertical-offset="9129" max-vertical-offset="11186">
+          <caret line="561" column="50" selection-start-line="561" selection-start-column="34" selection-end-line="561" selection-end-column="50" />
+          <folding />
         </state>
       </provider>
     </entry>

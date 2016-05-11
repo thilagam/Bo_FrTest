@@ -309,8 +309,8 @@ class Ep_Portfolio_Manage extends Ep_Db_Identifier
         }
     }
     public function getTrendAnalysis(){
-        $sub_result =  $this->getQuery("SELECT GROUP_CONCAT( `quoteid` SEPARATOR ',' ) AS sub_condition FROM `QuoteContracts`", true);
-        $sub_condition = trim($sub_result[0]['sub_condition'],',');
+       // $sub_result =  $this->getQuery("SELECT GROUP_CONCAT( `quoteid` SEPARATOR ',' ) AS sub_condition FROM `QuoteContracts`", true);
+        //$sub_condition = trim($sub_result[0]['sub_condition'],',');
        /* $query = "SELECT
                     (SUM(P.staff*(IF(Q.estimate_sign_percentage IS NULL,100,Q.estimate_sign_percentage))/100 )) AS staff_req,
                     SUM(P.staff ) AS staff,
@@ -336,7 +336,7 @@ class Ep_Portfolio_Manage extends Ep_Db_Identifier
                 left join ProdMissions on QuoteMissions.identifier = ProdMissions.quote_mission_id
                 where Quotes.sales_review IN ('signed','validated')
                 AND ProdMissions.product IN ('translation','proofreading','redaction')
-                AND Quotes.`identifier` NOT IN ( ".$sub_condition." )
+                AND Quotes.`identifier` NOT IN ( select quoteid FROM QuoteContracts )
                 group by language,ProdMissions.product";
         if (($result = $this->getQuery($query, true)) != NULL) {
             return $result;
