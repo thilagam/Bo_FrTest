@@ -661,7 +661,7 @@ class PortfolioController extends Ep_Controller_Action
                     }
                     else
                     {
-                        $table.="0";
+                        $table.=" ";
                     }
                 $table.="</td>";
 
