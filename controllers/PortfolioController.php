@@ -592,10 +592,83 @@ class PortfolioController extends Ep_Controller_Action
     public function trendResultsTable($results){
         $languages_array = $this->languages_array;
         $table = '';
-        //echo "<pre>";print_r($results);
-
+        /** Author: Thilagam **/
+        /** Date:11/05/2016 **/
+        /** Reason: Changes in the trend analysis of portfolio dev. To get the redaction, translation, proofreading **/
+        $langs = array();
+        foreach($results as $result)
+        {
+            if($result['language'])
+            {
+                if(!in_array($result['language'],$langs))
+                {
+                    array_push($langs,$result['language']);
+                }
+            }
+        }
+        $data=array();
+        for($i =1;$i<count($results);$i++)
+        {
+            if(in_array($results[$i]['language'],$langs))
+            {
+                $lang = $results[$i]['language'];
+                $data[$lang]['language']=$lang;
+                if($results[$i]['redaction']<>0)
+                {
+                    $data[$lang]['redaction']=round($results[$i]['redaction']);
+                }
+                if($results[$i]['translation']<>0)
+                {
+                    $data[$lang]['translation']=round($results[$i]['translation']);
+                }
+                if($results[$i]['proofreading']<>0)
+                {
+                    $data[$lang]['proofreading']=round($results[$i]['proofreading']);
+                }
+            }
+        }
+        foreach($data as $data1)
+        {
+            $table .= "<tr>";
+                $table.="<td class='smallTableContribFlag'>";
+                    $table.="<img src='/BO/theme/lbd/img/flag/".$data1['language'].".gif' alt='flag' >";
+                    $table.="<div>".utf8_encode($languages_array[$data1['language']])." </div>";
+                $table.="</td>";
+                $table.="<td>";
+                    if(isset($data1['redaction']))
+                    {
+                        $table.=$data1['redaction'];
+                    }
+                    else
+                    {
+                        $table.="0";
+                    }
+                $table.="</td>";
+                $table.="<td>";
+                    if(isset($data1['translation']))
+                    {
+                        $table.=$data1['translation'];
+                    }
+                    else
+                    {
+                        $table.="0";
+                    }
+                $table.="</td>";
+                $table.="<td>";
+                    if(isset($data1['proofreading']))
+                    {
+                        $table.=$data1['proofreading'];
+                    }
+                    else
+                    {
+                        $table.="0";
+                    }
+                $table.="</td>";
+            $table .= "</tr>";
+        }
+        return $table;
        // print_r($data);
-        foreach ($results as  $result) {
+        /*foreach ($results as  $result) {
 
                 $table .= '<tr>
                     <td class="smallTableContribFlag">
@@ -611,6 +684,6 @@ class PortfolioController extends Ep_Controller_Action
                 </tr>';
 
         }
-        return $table;
+        return $table;*/
     }
 }

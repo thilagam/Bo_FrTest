@@ -311,7 +311,7 @@ class Ep_Portfolio_Manage extends Ep_Db_Identifier
     public function getTrendAnalysis(){
         $sub_result =  $this->getQuery("SELECT GROUP_CONCAT( `quoteid` SEPARATOR ',' ) AS sub_condition FROM `QuoteContracts`", true);
         $sub_condition = trim($sub_result[0]['sub_condition'],',');
-        $query = "SELECT
+       /* $query = "SELECT
                     (SUM(P.staff*(IF(Q.estimate_sign_percentage IS NULL,100,Q.estimate_sign_percentage))/100 )) AS staff_req,
                     SUM(P.staff ) AS staff,
                     AVG(IF(Q.estimate_sign_percentage IS NULL,100,Q.estimate_sign_percentage)) AS percentage,
@@ -323,8 +323,21 @@ class Ep_Portfolio_Manage extends Ep_Db_Identifier
                     WHERE Q.sales_review IN ('validated','signed')
                     AND P.product IN ('translation','proofreading','redaction')
                     AND Q.`identifier` NOT IN ( ".$sub_condition." )
-                    GROUP BY language,product";
-        //echo $query;exit;
+                    GROUP BY language,product";*/
+        /** Author: Thilagam **/
+        /** Date:11/05/2016 **/
+        /** Reason: Changes in the trend analysis of portfolio dev. To get the redaction, translation, proofreading **/
+        $query = "SELECT
+                IF(ProdMissions.product = 'redaction', (SUM(ProdMissions.staff*(IF(Quotes.estimate_sign_percentage IS NULL,100,Quotes.estimate_sign_percentage))/100 )),0) AS redaction,
+                IF(ProdMissions.product = 'translation',(SUM(ProdMissions.staff*(IF(Quotes.estimate_sign_percentage IS NULL,100,Quotes.estimate_sign_percentage))/100 )),0) AS translation,
+                IF(ProdMissions.product = 'proofreading',(SUM(ProdMissions.staff*(IF(Quotes.estimate_sign_percentage IS NULL,100,Quotes.estimate_sign_percentage))/100 )),0) AS proofreading,
+                IF(ProdMissions.product= 'translation', language_dest, language_source) AS language from
+                Quotes join QuoteMissions on Quotes.identifier = QuoteMissions.quote_id
+                left join ProdMissions on QuoteMissions.identifier = ProdMissions.quote_mission_id
+                where Quotes.sales_review IN ('signed','validated')
+                AND ProdMissions.product IN ('translation','proofreading','redaction')
+                AND Quotes.`identifier` NOT IN ( ".$sub_condition." )
+                group by language,ProdMissions.product";
         if (($result = $this->getQuery($query, true)) != NULL) {
             return $result;
         }
