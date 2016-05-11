@@ -641,8 +641,18 @@ class PortfolioController extends Ep_Controller_Action
                     }
                     else
                     {
-                        $table.="0";
+                        $table.=" ";
                     }
+                $table.="</td>";
+                $table.="<td>";
+                if(isset($data1['proofreading']))
+                {
+                    $table.=$data1['proofreading'];
+                }
+                else
+                {
+                    $table.=" ";
+                }
                 $table.="</td>";
                 $table.="<td>";
                     if(isset($data1['translation']))
@@ -654,16 +664,7 @@ class PortfolioController extends Ep_Controller_Action
                         $table.="0";
                     }
                 $table.="</td>";
-                $table.="<td>";
-                    if(isset($data1['proofreading']))
-                    {
-                        $table.=$data1['proofreading'];
-                    }
-                    else
-                    {
-                        $table.="0";
-                    }
-                $table.="</td>";
+
             $table .= "</tr>";
         }
         return $table;
