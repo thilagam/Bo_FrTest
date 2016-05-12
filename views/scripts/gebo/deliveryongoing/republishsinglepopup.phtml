@@ -1,5 +1,6 @@
-{literal}
 <script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+{literal}
+
 <script type="text/javascript" >
 var lang = {/literal}"{$article.language}"{literal};
 var writing_cost = {/literal}"{$article.writing}"{literal};
@@ -72,6 +73,7 @@ function saveRepublishPop() ///when directly republish
 {
     var artId = $("#artId").val();
     var aotype = $("#aotype").val();
+    var title = $("#title").val();
     var selectedcontribs = $("#favcontribcheck").val();
     var sendmailtoonlysc = $('#sendmailtoonlysc').is(":checked") ;
     var fbpost = $("#fbpost").val();
@@ -104,12 +106,15 @@ function saveRepublishPop() ///when directly republish
     var pubselectedlang = $("#contrib_lang").val();
     if(aotype == "private"){
         var allobject = $("#allobject").val();
-        var allmessage = tinyMCE.get('allmailbody').getContent();  }
-    var scmessage = tinyMCE.get('scmailbody').getContent();
+        //var allmessage = tinyMCE.get('allmailbody').getContent();
+        var allmessage = $("#allmailbody").val();
+        }
+   // var scmessage = tinyMCE.get('scmailbody').getContent();
+    var scmessage = $('#scmailbody').val();
     var anouncebymail = $('#anouncebymail').is(":checked") ;
     var sendfrom = $('#sendfrom').val();
     var contrib_lang = $('#contrib_lang').val();
-	
+
     if($("#refusemail2").val() == 'yes')
     {
         var refusalmessage = tinyMCE.get('refusemessage').getContent();
@@ -118,11 +123,75 @@ function saveRepublishPop() ///when directly republish
     ///validation////
     if(aotype == "private")
     {
-        if(($("#maillimit").val()>6000)||(parttime == '')||(selectedcontribs == null)||(jc0time == '')||(jctime == '')||(sctime == '')||(jc0resub == '')||(jcresub == '')||(scresub == ''))
+        /*if(($("#maillimit").val()>6000)||(parttime == '')||(selectedcontribs == null)||(jc0time == '')||(jctime == '')||(sctime == '')||(jc0resub == '')||(jcresub == '')||(scresub == ''))
         {
             smoke.alert("please check limit of 60 exceed OR other inputs");
             return false;
+        }*/
+        /**Author:Thilagam**/
+        /**Date:12/5/2016**/
+        /**Reason:To display unique validation messages**/
+        if($("#maillimit").val()>6000)
+        {
+            smoke.alert("Maillimit should not exceed 60");
+            return false;
         }
+        else if(title == '')
+        {
+            smoke.alert("Please enter the title");
+            return false;
+        }
+        else if(price_min == '')
+        {
+            smoke.alert("Please enter the minimum price for writing");
+            return false;
+        }
+        else if(price_max == '')
+        {
+            smoke.alert("Please enter the maximum price for writing");
+            return false;
+        }
+        else if(parttime == '')
+        {
+            smoke.alert("Please enter the participation time");
+            return false;
+        }
+        else if(selectedcontribs == null)
+        {
+            smoke.alert("Please select the contributors");
+            return false;
+        }
+        else if(jc0time == '')
+        {
+            smoke.alert("Please enter the writing time for sub junior");
+            return false;
+        }
+        else if(jctime == '')
+        {
+            smoke.alert("Please enter the writing time for junior");
+            return false;
+        }
+        else if(sctime == '')
+        {
+            smoke.alert("Please enter the writing time for senior");
+            return false;
+        }
+        else if(jc0resub == '')
+        {
+            smoke.alert("Please enter the writing time for sub junior after refusal");
+            return false;
+        }
+        else if(jcresub == '')
+        {
+            smoke.alert("Please enter the writing time for junior after refusal");
+            return false;
+        }
+        else if(scresub == '')
+        {
+            smoke.alert("Please enter the writing time for junior after refusal");
+            return false;
+        }
+
     }
     else
     {
@@ -134,7 +203,7 @@ function saveRepublishPop() ///when directly republish
     }
     //alert(checked);
     var params = {artId:artId, save:'save',parttime_option:parttime_option,aotype:aotype,view_to:checked,viewto:checked2,pubselectedlang:pubselectedlang,selectedcontribs:selectedcontribs,price_min:price_min,price_max:price_max,fbcomments:fbcomments, parttime:parttime, suboptparttime:suboptparttime, jc0time:jc0time, sendmailtoonlysc:sendmailtoonlysc,jctime:jctime,sctime:sctime, subopttime:subopttime,jc0resub:jc0resub,jcresub:jcresub, scresub:scresub, suboptresub:suboptresub,scobject:scobject, allobject:allobject, scmessage:scmessage,allmessage:allmessage,'selection_time':$("#selection_time").val(),'title':$("#title").val(),'files_pack':$("#files_pack").val()}
-    $.post('/article-republish/republishpopup',params, function(data){ 
+    $.post('/article-republish/republishpopup',params, function(data){
         if($("#nopartsforrepublish").val() == 'yes')
         {
             alert("Plus personne ne peut participer.");
@@ -650,3 +719,4 @@ function changeContribCount($artid)
         <textarea rows="4" cols="150" name="fbcomments" id="fbcomments" style="width: 1000px;"> </textarea></td></tr>
 </table>
 </form>
+

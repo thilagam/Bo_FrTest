@@ -522,6 +522,24 @@ class ArticleRepublishController extends Ep_Controller_Action {
                 $this->_view->contrib_langarray =array("fr");
             else
                 $this->_view->contrib_langarray =array("all");
+            /**Author:Thilagam**/
+            /**Date:12/5/2016**/
+            /**Reason:To get the list of contributors to load in the drop down**/
+            $contriblistall=$delivery_obj->getAllContribAO(0);
+            $this->_view->contrib_array=array();
+            $contriblistall1=array();
+            for ($i=0;$i<count($contriblistall);$i++)
+            {
+                $contriblistall1[]=$contriblistall[$i];
+                $name=$contriblistall1[$i]['email'];
+                $nameArr=array($contriblistall1[$i]['first_name'],$contriblistall1[$i]['last_name']);
+                $nameArr=array_filter($nameArr);
+                if(count($nameArr)>0)
+                    $name.=" (".implode(", ",$nameArr).")";
+                $contriblistall1[$i]['name']=strtoupper($name);
+            }
+            $this->_view->contriblistall1=$contriblistall1;
+            /**End of code addition**/
             $this->_view->Contrib_langs = $contrib_lang_array;
             $contrib_cat_array=array_merge(array("all"=>"All"),$categories_array);
             $this->_view->Contrib_cats = $contrib_cat_array;
