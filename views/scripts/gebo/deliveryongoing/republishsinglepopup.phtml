@@ -192,14 +192,60 @@ function saveRepublishPop() ///when directly republish
             return false;
         }
 
+        /**End of code addition**/
+
     }
     else
     {
-        if((parttime == '')||(jc0time == '')||(jctime == '')||(sctime == '')||(jc0resub == '')||(jcresub == '')||(scresub == '') || (contrib_lang==null))
+        /**Author:Thilagam**/
+        /**Date:13/5/2016**/
+        /**Reason:To display unique validation messages**/
+        /*if((parttime == '')||(jc0time == '')||(jctime == '')||(sctime == '')||(jc0resub == '')||(jcresub == '')||(scresub == '') || (contrib_lang==null))
         {
             smoke.alert("please check inputs given");
             return false;
+        }*/
+        if(parttime == '')
+        {
+            smoke.alert("Please enter the participation time");
+            return false;
         }
+        else if(jc0time == '')
+        {
+            smoke.alert("Please enter the writing time for sub junior");
+            return false;
+        }
+        else if(jctime == '')
+        {
+            smoke.alert("Please enter the writing time for junior");
+            return false;
+        }
+        else if(sctime == '')
+        {
+            smoke.alert("Please enter the writing time for senior");
+            return false;
+        }
+        else if(jc0resub == '')
+        {
+            smoke.alert("Please enter the writing time for sub junior after refusal");
+            return false;
+        }
+        else if(jcresub == '')
+        {
+            smoke.alert("Please enter the writing time for junior after refusal");
+            return false;
+        }
+        else if(scresub == '')
+        {
+            smoke.alert("Please enter the writing time for junior after refusal");
+            return false;
+        }
+        else if(contrib_lang == null)
+        {
+            smoke.alert("Please select the language");
+            return false;
+        }
+        /**End of code addition**/
     }
     //alert(checked);
     var params = {artId:artId, save:'save',parttime_option:parttime_option,aotype:aotype,view_to:checked,viewto:checked2,pubselectedlang:pubselectedlang,selectedcontribs:selectedcontribs,price_min:price_min,price_max:price_max,fbcomments:fbcomments, parttime:parttime, suboptparttime:suboptparttime, jc0time:jc0time, sendmailtoonlysc:sendmailtoonlysc,jctime:jctime,sctime:sctime, subopttime:subopttime,jc0resub:jc0resub,jcresub:jcresub, scresub:scresub, suboptresub:suboptresub,scobject:scobject, allobject:allobject, scmessage:scmessage,allmessage:allmessage,'selection_time':$("#selection_time").val(),'title':$("#title").val(),'files_pack':$("#files_pack").val()}
@@ -627,6 +673,8 @@ function changeContribCount($artid)
                 </select>
             </div> 
             <div class="controls form-inline" id="contribs">
+
+
                 <select name="favcontribcheck[]" id="favcontribcheck" multiple="multiple" onchange="fngetmailcontent();">
                     {foreach from=$contriblistall1 item=contrib}
                     {if in_array($contrib.identifier,$contrib_array)}

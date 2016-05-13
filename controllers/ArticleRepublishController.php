@@ -451,8 +451,49 @@ class ArticleRepublishController extends Ep_Controller_Action {
         $jclist = $jclist-$participatedjccount;
         //$jc0list = $contrib_obj->getContributorcount('sub-junior');
         $jc0list = $contrib_obj->getWriterCountOnLang('sub-junior',$articleDetails[0]['language']);
-        $this->_view->jc0_count=  $jc0list-$participatedjc0count;
+         $this->_view->jc0_count=  $jc0list-$participatedjc0count;
         $jc0list =  $jc0list-$participatedjc0count;
+
+        /**Author:Thilagam**/
+        /**Date:13/5/2016**/
+        /**Reason:To get the list of participants who have already participated in the article**/
+        $scContrib = $contrib_obj->getWriterReplublish('senior',$articleDetails[0]['language']);
+        $jcContrib = $contrib_obj->getWriterReplublish('junior',$articleDetails[0]['language']);
+        $jc0Contrib = $contrib_obj->getWriterReplublish('sub-junior',$articleDetails[0]['language']);
+        $contrib = array();
+        if(!empty($scContrib))
+        {
+            foreach($scContrib as $dataS)
+            {
+                if(!in_array($dataS['identifier'],$contrib))
+                {
+                    array_push($contrib,$dataS['identifier']);
+                }
+            }
+        }
+
+        if(!empty($jcContrib))
+        {
+            foreach($jcContrib as $dataJ)
+            {
+                if(!in_array($dataJ['identifier'],$contrib))
+                {
+                    array_push($contrib,$dataJ['identifier']);
+                }
+            }
+        }
+
+        if(!empty($jc0Contrib))
+        {
+            foreach($jc0Contrib as $dataJC)
+            {
+                if(!in_array($dataJC['identifier'],$contrib))
+                {
+                    array_push($contrib,$dataJC['identifier']);
+                }
+            }
+        }
+        /**End of code addition**/
         $profiles = explode(",", $articleDetails[0]['view_to']);
         $profiles = implode(",", $profiles);
         $profs=explode(",",$profiles);
@@ -526,7 +567,7 @@ class ArticleRepublishController extends Ep_Controller_Action {
             /**Date:12/5/2016**/
             /**Reason:To get the list of contributors to load in the drop down**/
             $contriblistall=$delivery_obj->getAllContribAO(0);
-            $this->_view->contrib_array=array();
+            $this->_view->contrib_array = $contrib;
             $contriblistall1=array();
             for ($i=0;$i<count($contriblistall);$i++)
             {
@@ -684,6 +725,7 @@ class ArticleRepublishController extends Ep_Controller_Action {
         $this->resetDeliveredDetail($artId);//call the function to reset the delivered details of article
 		$this->_view->render("republishsinglepopup");
     }
+
     public function changecontribcountAction()
     {
         $contrib_obj = new EP_User_Contributor();

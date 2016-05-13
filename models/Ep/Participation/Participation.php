@@ -1227,6 +1227,21 @@ class EP_Participation_Participation extends Ep_Db_Identifier
         else
             return "NO";
     }
+
+    public function participatedContributorsRepublish($artId,$type)
+    {
+        $query = "select user_id FROM ".$this->_name." WHERE article_id=".$artId."";
+        if(($result = $this->getQuery($query,true)) != NULL)
+        {
+            for($i=0; $i<count($result); $i++)
+            {
+                $result[$i]= $result[$i]['user_id'];
+            }
+            return $result;
+        }
+        else
+            return "NO";
+    }
     /////////get participated contributor list w rt AO id//////////////////////////
     public function  participatedContributorsAo($aoId)
     {

@@ -292,7 +292,23 @@ class EP_User_Contributor extends Ep_Db_Identifier
         else
             return 0;
     }
-    
+
+    /**Author:Thilagam**/
+    /**Date:13/5/2016**/
+    /**Function:To get the list of participants who have already participated in the article**/
+    public function getWriterReplublish($ptype,$langs)
+    {
+        $langs = explode(",",$langs);
+        $langs=implode("','",$langs);
+
+        $ContribQuery = "select u.identifier  FROM User u INNER JOIN Contributor c ON u.identifier=c.user_id
+                           WHERE u.profile_type IN ('".$ptype."') AND u.status='active' AND u.blackstatus='no' AND c.language IN ('".$langs."')" ;
+
+        if(($Contribresult = $this->getQuery($ContribQuery,true)) != NULL)
+            return $Contribresult;
+        else
+            return array();
+    }
     public function getContribIds($params)
     {
         $cat = explode("|", $params['categ']);

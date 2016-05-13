@@ -591,6 +591,7 @@ class RepublishController extends Ep_Controller_Action {
                     $participatedjc0count++;
             }
         }
+
         //total counts of individual contribitors type////
         $sclist = $contrib_obj->getWriterCountOnLang('senior', $langs);
         $resarray[0]= $sclist-$participatedsccount;
