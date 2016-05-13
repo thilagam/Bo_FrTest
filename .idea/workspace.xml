@@ -31,102 +31,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Delivery.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/Ep/Delivery/Delivery.php">
+      <file leaf-file-name="stage0-correction.phtml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/scripts/gebo/proofread/stage0-correction.phtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.384615" vertical-offset="4274" max-vertical-offset="22967">
-              <caret line="278" column="5" selection-start-line="278" selection-start-column="5" selection-end-line="278" selection-end-column="5" />
-              <folding>
-                <marker date="1455633263000" expanded="true" signature="307:364" placeholder="select deliv..Article..." />
-                <marker date="1455633263000" expanded="true" signature="642:944" placeholder="select d.*, ..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="1208:1837" placeholder="select d.*,a..." />
-                <marker date="1455633263000" expanded="true" signature="2107:2672" placeholder="select d.*, ..." />
-                <marker date="1455633263000" expanded="true" signature="2942:2979" placeholder="select count..." />
-                <marker date="1455633263000" expanded="true" signature="3237:3571" placeholder="SELECT count..Article..." />
-                <marker date="1455633263000" expanded="true" signature="3270:3502" placeholder="SELECT count..Participation..." />
-                <marker date="1455633263000" expanded="true" signature="3973:4113" placeholder="select premi..." />
-                <marker date="1455633263000" expanded="true" signature="4513:5280" placeholder="SELECT d.*, ..." />
-                <marker date="1455633263000" expanded="true" signature="6441:7599" placeholder="SELECT d.*, ..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="7125:7199" placeholder="select p.sta..Participation..." />
-                <marker date="1455633263000" expanded="true" signature="8107:9148" placeholder="SELECT d.*, ..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="8658:8745" placeholder="select cp.st..CorrectorParticipation..." />
-                <marker date="1455633263000" expanded="true" signature="9904:10197" placeholder="SELECT d.id,..." />
-                <marker date="1455633263000" expanded="true" signature="10424:10625" placeholder="SELECT DATE_..Poll..." />
-                <marker date="1455633263000" expanded="true" signature="10872:10945" placeholder="select d.id,..." />
-                <marker date="1455633263000" expanded="true" signature="11192:11245" placeholder="select premi..." />
-                <marker date="1455633263000" expanded="true" signature="12046:12154" placeholder="select DISTI..User..." />
-                <marker date="1455633263000" expanded="true" signature="12957:13113" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="13531:13686" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="13966:14144" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="14941:15146" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="16147:16352" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="17102:17307" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="17913:18159" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="18596:18674" placeholder="SELECT d.id,..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="19573:19681" placeholder="select DISTI..User..." />
-                <marker date="1455633263000" expanded="true" signature="19989:20362" placeholder="SELECT d.id,..." />
-                <marker date="1455633263000" expanded="true" signature="21184:21292" placeholder="select DISTI..User..." />
-                <marker date="1455633263000" expanded="true" signature="22090:22644" placeholder="SELECT d.id,..." />
-                <marker date="1455633263000" expanded="true" signature="23403:24156" placeholder="SELECT d.id,..." />
-                <marker date="1455633263000" expanded="true" signature="24566:25297" placeholder="SELECT d.id,..." />
-                <marker date="1455633263000" expanded="true" signature="25892:29543" placeholder="SELECT d.id,..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="26356:26880" placeholder="SELECT count..Participation..." />
-                <marker date="1455633263000" expanded="true" signature="26963:27449" placeholder="SELECT CASE ..Participation..." />
-                <marker date="1455633263000" expanded="true" signature="27536:27647" placeholder="SELECT DATE_..Payment_article..." />
-                <marker date="1455633263000" expanded="true" signature="27731:28086" placeholder="select DATE_..Participation..." />
-                <marker date="1455633263000" expanded="true" signature="28171:28411" placeholder="SELECT d5.pu..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="28499:28799" placeholder="SELECT DATE_..Participation..." />
-                <marker date="1455633263000" expanded="true" signature="28889:29060" placeholder="SELECT u7.lo..User..." />
-                <marker date="1455633263000" expanded="true" signature="29791:29932" placeholder="SELECT d.id,..." />
-                <marker date="1455633263000" expanded="true" signature="30234:30596" placeholder="SELECT d.id,..." />
-                <marker date="1455633263000" expanded="true" signature="30887:31409" placeholder="SELECT d.id,..." />
-                <marker date="1455633263000" expanded="true" signature="32483:33003" placeholder="SELECT d.id,..." />
-                <marker date="1455633263000" expanded="true" signature="33375:33508" placeholder="select DISTI..User..." />
-                <marker date="1455633263000" expanded="true" signature="33936:34084" placeholder="select DISTI..User..." />
-                <marker date="1455633263000" expanded="true" signature="34282:34311" placeholder="SELECT id,ti..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="36461:37385" placeholder="select a.id ..Article..." />
-                <marker date="1455633263000" expanded="true" signature="37683:37823" placeholder="select price..Participation..." />
-                <marker date="1455633263000" expanded="true" signature="37956:38111" placeholder="select max(p..Participation..." />
-                <marker date="1455633263000" expanded="true" signature="38399:38457" placeholder="select * FRO..Payment_article..." />
-                <marker date="1455633263000" expanded="true" signature="38739:38867" placeholder="select *, co..Participation..." />
-                <marker date="1455633263000" expanded="true" signature="39266:39344" placeholder="SELECT d.id,..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="39567:39698" placeholder="SELECT id, t..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="39756:39857" placeholder="SELECT id, t..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="44544:44783" placeholder="SELECT * FRO..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="45365:45679" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="47660:47937" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="48064:48357" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="48999:49319" placeholder="SELECT p.*,u..PremiumQuotes..." />
-                <marker date="1455633263000" expanded="true" signature="49477:49618" placeholder="SELECT a.id,..Article..." />
-                <marker date="1455633263000" expanded="true" signature="49768:50383" placeholder="SELECT d.id,..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="50535:51099" placeholder="SELECT d.id,..Delivery..." />
-                <marker date="1455633263000" expanded="true" signature="52100:52305" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="53127:53332" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="53625:53996" placeholder="select a.id ..Article..." />
-                <marker date="1455633263000" expanded="true" signature="54881:54964" placeholder="SELECT `sten..." />
-                <marker date="1455633263000" expanded="true" signature="55859:56086" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="56219:56462" placeholder="SELECT ident..User..." />
-                <marker date="1455633263000" expanded="true" signature="57785:58099" placeholder="SELECT ident..User..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AoController.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/controllers/AoController.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1350" max-vertical-offset="104142">
-              <caret line="105" column="39" selection-start-line="105" selection-start-column="8" selection-end-line="105" selection-end-column="39" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ao-create1.phtml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/scripts/gebo/ao/ao-create1.phtml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="21869" max-vertical-offset="34935">
-              <caret line="1304" column="24" selection-start-line="1304" selection-start-column="24" selection-end-line="1304" selection-end-column="24" />
+            <state vertical-scroll-proportion="-1.9615384" vertical-offset="0" max-vertical-offset="7650">
+              <caret line="3" column="31" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
               <folding />
             </state>
           </provider>
@@ -135,311 +44,39 @@
       <file leaf-file-name="republishsinglepopup.phtml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/republishsinglepopup.phtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7609842" vertical-offset="3766" max-vertical-offset="13192">
-              <caret line="247" column="31" selection-start-line="247" selection-start-column="31" selection-end-line="247" selection-end-column="31" />
+            <state vertical-scroll-proportion="0.22037037" vertical-offset="0" max-vertical-offset="7106">
+              <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+              <folding>
+                <element signature="e#3591#12356#0#HTML" expanded="false" />
+                <element signature="e#13091#14141#0#HTML" expanded="false" />
+                <element signature="e#14170#15918#0#HTML" expanded="false" />
+                <element signature="e#15941#16076#0#HTML" expanded="false" />
+                <element signature="e#16170#16969#0#HTML" expanded="false" />
+                <element signature="e#17003#17393#0#HTML" expanded="false" />
+                <element signature="e#17487#18264#0#HTML" expanded="false" />
+                <element signature="n#style#0;n#!!top" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="jquery.qtip.min.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/theme/gebo/lib/qtip2/jquery.qtip.min.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RepublishController.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/controllers/RepublishController.php">
+      <file leaf-file-name="jquery.qtip.min.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/theme/gebo/lib/qtip2/jquery.qtip.min.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.115385" vertical-offset="9792" max-vertical-offset="42721">
-              <caret line="593" column="0" selection-start-line="593" selection-start-column="0" selection-end-line="593" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="119">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding>
-                <marker date="1463126815156" expanded="true" signature="27034:27057" placeholder="..." />
-                <marker date="1463126815156" expanded="true" signature="55723:55746" placeholder="..." />
-                <marker date="1463126815156" expanded="true" signature="114393:114416" placeholder="..." />
-                <marker date="1463126815156" expanded="true" signature="119304:119327" placeholder="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Participation.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/Ep/Participation/Participation.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.581819" vertical-offset="20642" max-vertical-offset="27183">
-              <caret line="1242" column="24" selection-start-line="1242" selection-start-column="24" selection-end-line="1242" selection-end-column="24" />
-              <folding>
-                <marker date="1463126238233" expanded="true" signature="1535:2236" placeholder="select p.id ..." />
-                <marker date="1463126238233" expanded="true" signature="2585:3306" placeholder="select p.id ..." />
-                <marker date="1463126238233" expanded="true" signature="5934:6798" placeholder="SELECT d.id,..Delivery..." />
-                <marker date="1463126238233" expanded="true" signature="6334:6426" placeholder="SELECT login..User..." />
-                <marker date="1463126238233" expanded="true" signature="7153:7500" placeholder="SELECT count..Delivery..." />
-                <marker date="1463126238233" expanded="true" signature="7781:8137" placeholder="SELECT d.id,..Delivery..." />
-                <marker date="1463126238233" expanded="true" signature="9153:9403" placeholder="SELECT count..Delivery..." />
-                <marker date="1463126238233" expanded="true" signature="9473:9736" placeholder="SELECT count..Delivery..." />
-                <marker date="1463126238233" expanded="true" signature="9699:9735" placeholder="SELECT artic..Participation..." />
-                <marker date="1463126238233" expanded="true" signature="9808:10178" placeholder="SELECT count..Delivery..." />
-                <marker date="1463126238233" expanded="true" signature="10761:11029" placeholder="SELECT count..Delivery..." />
-                <marker date="1463126238233" expanded="true" signature="11311:11588" placeholder="SELECT d.id,..Delivery..." />
-                <marker date="1463126238233" expanded="true" signature="12550:13092" placeholder="select p.*, ..." />
-                <marker date="1463126238233" expanded="true" signature="12637:12726" placeholder="select count..Participation..." />
-                <marker date="1463126238233" expanded="true" signature="13449:13616" placeholder="SELECT ap.ma..." />
-                <marker date="1463126238233" expanded="true" signature="14302:14470" placeholder="SELECT ap.ma..." />
-                <marker date="1463126238233" expanded="true" signature="15199:15817" placeholder="select p.use..." />
-                <marker date="1463126238233" expanded="true" signature="20461:20704" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="20738:20920" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="20954:21138" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="21172:21341" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="21363:21616" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="21650:21843" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="21877:22112" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="22146:22511" placeholder="select GROUP..." />
-                <marker date="1463126238233" expanded="true" signature="22549:22609" placeholder="select count..Template..." />
-                <marker date="1463126238233" expanded="true" signature="22633:22997" placeholder="select GROUP..." />
-                <marker date="1463126238233" expanded="true" signature="24753:25010" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="25044:25287" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="25309:25567" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="25601:25960" placeholder="select GROUP..." />
-                <marker date="1463126238233" expanded="true" signature="25994:26054" placeholder="select count..Template..." />
-                <marker date="1463126238233" expanded="true" signature="26078:26436" placeholder="select GROUP..." />
-                <marker date="1463126238233" expanded="true" signature="26471:26726" placeholder="select count..CorrecctorParticipation..." />
-                <marker date="1463126238233" expanded="true" signature="28693:28950" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="28984:29150" placeholder="select count..Article..." />
-                <marker date="1463126238233" expanded="true" signature="29172:29430" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="29464:29817" placeholder="select rr.re..." />
-                <marker date="1463126238233" expanded="true" signature="29851:29911" placeholder="select count..Template..." />
-                <marker date="1463126238233" expanded="true" signature="29935:30290" placeholder="select rr.re..." />
-                <marker date="1463126238233" expanded="true" signature="38188:38461" placeholder="SELECT a.lan..ArticleProcess..." />
-                <marker date="1463126238233" expanded="true" signature="38733:38939" placeholder="SELECT a.lan..Participation..." />
-                <marker date="1463126238233" expanded="true" signature="39233:39613" placeholder="select cl.co..." />
-                <marker date="1463126238233" expanded="true" signature="40184:40369" placeholder="select GROUP..." />
-                <marker date="1463126238233" expanded="true" signature="40632:40734" placeholder="select GROUP..ArticleReassignReasons..." />
-                <marker date="1463126238233" expanded="true" signature="41080:41150" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="41629:42106" placeholder="select p.sta..." />
-                <marker date="1463126238233" expanded="true" signature="42476:42629" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="42878:42994" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="43255:43371" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="43701:43873" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="44203:44374" placeholder="select artic..." />
-                <marker date="1463126238233" expanded="true" signature="44678:44877" placeholder="select artic..." />
-                <marker date="1463126238233" expanded="true" signature="45221:45288" placeholder="select max(c..." />
-                <marker date="1463126238233" expanded="true" signature="45632:45696" placeholder="select cycle..." />
-                <marker date="1463126238233" expanded="true" signature="46057:46102" placeholder="select cycle..." />
-                <marker date="1463126238233" expanded="true" signature="46427:47078" placeholder="select p.id ..." />
-                <marker date="1463126238233" expanded="true" signature="47387:47532" placeholder="select id, u..." />
-                <marker date="1463126238233" expanded="true" signature="47824:47948" placeholder="select id, u..." />
-                <marker date="1463126238233" expanded="true" signature="48591:48811" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="49179:49418" placeholder="select id, a..." />
-                <marker date="1463126238233" expanded="true" signature="49759:49939" placeholder="select id, u..." />
-                <marker date="1463126238233" expanded="true" signature="50235:50368" placeholder="select p.use..." />
-                <marker date="1463126238233" expanded="true" signature="50676:50828" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="51133:51265" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="51567:51705" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="52003:52142" placeholder="select id,re..." />
-                <marker date="1463126238233" expanded="true" signature="52444:52497" placeholder="select refus..." />
-                <marker date="1463126238233" expanded="true" signature="52816:52974" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="53245:53315" placeholder="select max(c..." />
-                <marker date="1463126238233" expanded="true" signature="54454:54724" placeholder="select count..Article..." />
-                <marker date="1463126238233" expanded="true" signature="54939:55067" placeholder="select a.id ..Delivery..." />
-                <marker date="1463126238233" expanded="true" signature="55300:55400" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="56052:56180" placeholder="select a.id ..Delivery..." />
-                <marker date="1463126238233" expanded="true" signature="56417:56755" placeholder="select p.id ..." />
-                <marker date="1463126238233" expanded="true" signature="57382:57450" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="57480:57585" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="58232:58332" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="58655:58771" placeholder="select user_..." />
-                <marker date="1463126238233" expanded="true" signature="59081:59233" placeholder="select user_..." />
-                <marker date="1463126238233" expanded="true" signature="59555:59866" placeholder="select p.use..." />
-                <marker date="1463126238233" expanded="true" signature="60168:60637" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="60952:61165" placeholder="select p.* F..." />
-                <marker date="1463126238233" expanded="true" signature="61499:61687" placeholder="select p.* F..." />
-                <marker date="1463126238233" expanded="true" signature="61980:62247" placeholder="select p.sta..." />
-                <marker date="1463126238233" expanded="true" signature="62565:62630" placeholder="select user_..." />
-                <marker date="1463126238233" expanded="true" signature="63006:63060" placeholder="select user_..." />
-                <marker date="1463126238233" expanded="true" signature="63006:63067" placeholder="select user_..." />
-                <marker date="1463126238233" expanded="true" signature="63006:63067" placeholder="select user_..." />
-                <marker date="1463126238233" expanded="true" signature="63006:63071" placeholder="select user_..." />
-                <marker date="1463126238233" expanded="true" signature="63517:63713" placeholder="select p.use..." />
-                <marker date="1463126238233" expanded="true" signature="64151:64223" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="64730:65433" placeholder="SELECT p.id,..Article..." />
-                <marker date="1463126238233" expanded="true" signature="65785:66503" placeholder="SELECT p.id,..Article..." />
-                <marker date="1463126238233" expanded="true" signature="66762:67410" placeholder="SELECT ap.id..Participation..." />
-                <marker date="1463126238233" expanded="true" signature="67730:67869" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="68165:68300" placeholder="select statu..." />
-                <marker date="1463126238233" expanded="true" signature="68633:68732" placeholder="select user_..." />
-                <marker date="1463126238233" expanded="true" signature="69010:69109" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="69428:69528" placeholder="select statu..." />
-                <marker date="1463126238233" expanded="true" signature="69729:69812" placeholder="select id,us..." />
-                <marker date="1463126238233" expanded="true" signature="70057:70145" placeholder="select statu..." />
-                <marker date="1463126238233" expanded="true" signature="70736:71264" placeholder="select conca..." />
-                <marker date="1463126238233" expanded="true" signature="71851:72251" placeholder="select cl.co..." />
-                <marker date="1463126238233" expanded="true" signature="72644:73321" placeholder="select p.id,..." />
-                <marker date="1463126238233" expanded="true" signature="74015:74108" placeholder="select cp.co..CorrectorParticipation..." />
-                <marker date="1463126238233" expanded="true" signature="74430:74531" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="74837:74924" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="75276:75499" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="75833:75972" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="76246:76363" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="76575:76714" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="76937:77017" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="77215:77391" placeholder="select user_..." />
-                <marker date="1463126238233" expanded="true" signature="77607:77701" placeholder="select id FR..." />
-                <marker date="1463126238233" expanded="true" signature="77852:77941" placeholder="select count..." />
-                <marker date="1463126238233" expanded="true" signature="78098:78150" placeholder="select * FRO..." />
-                <marker date="1463126238233" expanded="true" signature="78292:78445" placeholder="select * FRO..." />
-                <marker date="1463126238233" expanded="true" signature="78642:78712" placeholder="select * FRO..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="OngoingController.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/controllers/OngoingController.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="197.07692" vertical-offset="33582" max-vertical-offset="35853">
-              <caret line="1674" column="38" selection-start-line="1674" selection-start-column="24" selection-end-line="1674" selection-end-column="38" />
-              <folding>
-                <marker date="1462445342081" expanded="true" signature="54924:54935" placeholder="..." />
-                <marker date="1462445342081" expanded="true" signature="60748:60906" placeholder="..." />
-                <marker date="1462445342081" expanded="true" signature="61058:61196" placeholder="..." />
-                <marker date="1462445342081" expanded="true" signature="61243:62149" placeholder="..." />
-                <marker date="1462445342081" expanded="true" signature="61294:61449" placeholder="..." />
-                <marker date="1462445342081" expanded="false" signature="61667:61679" placeholder="..." />
-                <marker date="1462445342081" expanded="true" signature="61680:62054" placeholder="..." />
-                <marker date="1462445342081" expanded="true" signature="70465:70476" placeholder="..." />
-                <marker date="1462445342081" expanded="true" signature="72476:72487" placeholder="..." />
-                <marker date="1462445342081" expanded="true" signature="74427:74438" placeholder="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Article.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/Ep/Ongoing/Article.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="58" max-vertical-offset="5610">
-              <caret line="146" column="41" selection-start-line="146" selection-start-column="20" selection-end-line="146" selection-end-column="41" />
-              <folding>
-                <marker date="1458731058000" expanded="true" signature="632:3364" placeholder="SELECT (SELE..Article..." />
-                <marker date="1458731058000" expanded="true" signature="640:781" placeholder="SELECT count..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="815:993" placeholder="SELECT count..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="1043:1193" placeholder="SELECT count..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="1238:1425" placeholder="SELECT count..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="1497:1587" placeholder="SELECT login..User..." />
-                <marker date="1458731058000" expanded="true" signature="1609:1811" placeholder="SELECT p.id ..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="1869:2011" placeholder="SELECT ex.id..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="2062:2273" placeholder="SELECT cp.id..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="2335:2494" placeholder="SELECT ex1.i..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="2554:2709" placeholder="SELECT CONCA..UserPlus..." />
-                <marker date="1458731058000" expanded="true" signature="2758:2933" placeholder="SELECT CONCA..UserPlus..." />
-                <marker date="1458731058000" expanded="true" signature="3443:6018" placeholder="SELECT (SELE..Article..." />
-                <marker date="1458731058000" expanded="true" signature="3451:3592" placeholder="SELECT count..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="3626:3800" placeholder="SELECT count..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="3841:3991" placeholder="SELECT count..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="4036:4219" placeholder="SELECT count..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="4292:4382" placeholder="SELECT login..User..." />
-                <marker date="1458731058000" expanded="true" signature="4404:4606" placeholder="SELECT p.id ..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="4664:4806" placeholder="SELECT ex.id..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="4857:5051" placeholder="SELECT cp.id..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="5113:5272" placeholder="SELECT ex1.i..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="5332:5487" placeholder="SELECT CONCA..UserPlus..." />
-                <marker date="1458731058000" expanded="true" signature="5536:5711" placeholder="SELECT CONCA..UserPlus..." />
-                <marker date="1458731058000" expanded="true" signature="6361:6592" placeholder="select a.*,d..Article..." />
-                <marker date="1458731058000" expanded="true" signature="7286:9711" placeholder="SELECT d.use..Article..." />
-                <marker date="1458731058000" expanded="true" signature="7304:7443" placeholder="SELECT count..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="7483:7631" placeholder="SELECT count..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="7676:7737" placeholder="SELECT compa..Client..." />
-                <marker date="1458731058000" expanded="true" signature="7836:7926" placeholder="SELECT login..User..." />
-                <marker date="1458731058000" expanded="true" signature="7947:8148" placeholder="SELECT p.id ..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="8203:8344" placeholder="SELECT ex.id..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="8393:8595" placeholder="SELECT cp.id..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="8654:8812" placeholder="SELECT ex1.i..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="8869:9023" placeholder="SELECT CONCA..UserPlus..." />
-                <marker date="1458731058000" expanded="true" signature="9069:9243" placeholder="SELECT CONCA..UserPlus..." />
-                <marker date="1458731058000" expanded="true" signature="10071:10173" placeholder="SELECT contr..Watchlist..." />
-                <marker date="1458731058000" expanded="true" signature="10450:12707" placeholder="SELECT d.use..Article..." />
-                <marker date="1458731058000" expanded="true" signature="10468:10607" placeholder="SELECT count..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="10647:10795" placeholder="SELECT count..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="10840:10901" placeholder="SELECT compa..Client..." />
-                <marker date="1458731058000" expanded="true" signature="11000:11090" placeholder="SELECT login..User..." />
-                <marker date="1458731058000" expanded="true" signature="11111:11312" placeholder="SELECT p.id ..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="11367:11508" placeholder="SELECT ex.id..Participation..." />
-                <marker date="1458731058000" expanded="true" signature="11557:11759" placeholder="SELECT cp.id..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="11818:11976" placeholder="SELECT ex1.i..CorrectorParticipation..." />
-                <marker date="1458731058000" expanded="true" signature="12033:12187" placeholder="SELECT CONCA..UserPlus..." />
-                <marker date="1458731058000" expanded="true" signature="12233:12407" placeholder="SELECT CONCA..UserPlus..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Contributor.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/Ep/User/Contributor.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.807693" vertical-offset="4820" max-vertical-offset="14603">
-              <caret line="297" column="15" selection-start-line="297" selection-start-column="15" selection-end-line="297" selection-end-column="15" />
-              <folding>
-                <marker date="1463134203145" expanded="true" signature="2141:2706" placeholder="select c.pro..." />
-                <marker date="1463134203145" expanded="true" signature="2748:2863" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="2892:3012" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="3754:4312" placeholder="select c.pro..." />
-                <marker date="1463134203145" expanded="true" signature="4354:4483" placeholder="select count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="4512:4646" placeholder="select count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="5168:6206" placeholder="select c.pro..." />
-                <marker date="1463134203145" expanded="true" signature="6235:6350" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="6379:6499" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="6528:6631" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="6660:6784" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="6813:6925" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="6954:7100" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="7129:7275" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="7298:7414" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="7438:7643" placeholder="select pp.pr..Delivery..." />
-                <marker date="1463134203145" expanded="true" signature="7680:7904" placeholder="select count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="8849:9198" placeholder="SELECT count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="9503:9869" placeholder="SELECT count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="10268:11307" placeholder="select c.pro..." />
-                <marker date="1463134203145" expanded="true" signature="11336:11465" placeholder="select count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="11494:11628" placeholder="select count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="11657:11779" placeholder="select count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="11808:11953" placeholder="select count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="11982:12113" placeholder="select count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="12142:12307" placeholder="select count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="12336:12501" placeholder="select count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="12530:12665" placeholder="select count..CorrectorParticipation..." />
-                <marker date="1463134203145" expanded="true" signature="12695:12900" placeholder="select pp.pr..Delivery..." />
-                <marker date="1463134203145" expanded="true" signature="13788:14146" placeholder="select c.com..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="14813:15243" placeholder="SELECT u.ide..User..." />
-                <marker date="1463134203145" expanded="true" signature="16034:16197" placeholder="SELECT id AS..Delivery..." />
-                <marker date="1463134203145" expanded="true" signature="16361:16473" placeholder="select count..." />
-                <marker date="1463134203145" expanded="true" signature="16715:16828" placeholder="select count..." />
-                <marker date="1463134203145" expanded="true" signature="17160:17402" placeholder="select count..." />
-                <marker date="1463134203145" expanded="true" signature="17887:18114" placeholder="select count..." />
-                <marker date="1463134203145" expanded="true" signature="19495:19837" placeholder="SELECT u.ide..User..." />
-                <marker date="1463134203145" expanded="true" signature="20149:20562" placeholder="SELECT u.ide..User..." />
-                <marker date="1463134203145" expanded="true" signature="20621:20926" placeholder="SELECT u.ide..User..." />
-                <marker date="1463134203145" expanded="true" signature="27556:27987" placeholder="SELECT u.ide..User..." />
-                <marker date="1463134203145" expanded="true" signature="28299:28800" placeholder="SELECT u.ide..User..." />
-                <marker date="1463134203145" expanded="true" signature="28859:29251" placeholder="SELECT u.ide..User..." />
-                <marker date="1463134203145" expanded="true" signature="35432:35567" placeholder="SELECT count..." />
-                <marker date="1463134203145" expanded="true" signature="37017:37095" placeholder="SELECT confi..Configurations..." />
-                <marker date="1463134203145" expanded="true" signature="37417:37454" placeholder="select * fro..." />
-                <marker date="1463134203145" expanded="true" signature="37607:37951" placeholder="SELECT u.ide..User..." />
-                <marker date="1463134203145" expanded="true" signature="38386:38490" placeholder="SELECT count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="38558:38657" placeholder="SELECT count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="38725:38901" placeholder="SELECT count..Participation..." />
-                <marker date="1463134203145" expanded="true" signature="40485:40852" placeholder="SELECT p.mar..User..." />
-                <marker date="1463134203145" expanded="true" signature="42138:42501" placeholder="SELECT ap.ma..User..." />
-                <marker date="1463134203145" expanded="true" signature="42833:43039" placeholder="select count..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ArticleRepublishController.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/controllers/ArticleRepublishController.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.307692" vertical-offset="7506" max-vertical-offset="63563">
-              <caret line="468" column="17" selection-start-line="468" selection-start-column="17" selection-end-line="468" selection-end-column="17" />
-              <folding>
-                <marker date="1463134172755" expanded="true" signature="35601:35624" placeholder="..." />
-                <marker date="1463134172755" expanded="true" signature="65142:65165" placeholder="..." />
-                <marker date="1463134172755" expanded="true" signature="123731:123754" placeholder="..." />
-                <marker date="1463134172755" expanded="true" signature="128722:128745" placeholder="..." />
+                <element signature="n#!!doc" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -459,8 +96,9 @@
         <option value="$PROJECT_DIR$/controllers/AoController.php" />
         <option value="$PROJECT_DIR$/models/Ep/Participation/Participation.php" />
         <option value="$PROJECT_DIR$/controllers/RepublishController.php" />
-        <option value="$PROJECT_DIR$/controllers/ArticleRepublishController.php" />
         <option value="$PROJECT_DIR$/models/Ep/User/Contributor.php" />
+        <option value="$PROJECT_DIR$/controllers/ArticleRepublishController.php" />
+        <option value="$PROJECT_DIR$/views/scripts/gebo/proofread/stage0-correction.phtml" />
         <option value="$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/republishsinglepopup.phtml" />
       </list>
     </option>
@@ -527,33 +165,15 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="models" />
+              <option name="myItemId" value="theme" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Ep" />
+              <option name="myItemId" value="gebo" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="User" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BO_FR_TEST" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Bo_FrTest" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="models" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Ep" />
+              <option name="myItemId" value="lib" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -567,15 +187,37 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="models" />
+              <option name="myItemId" value="theme" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Ep" />
+              <option name="myItemId" value="gebo" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Participation" />
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="qtip2" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="BO_FR_TEST" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bo_FrTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="theme" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gebo" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -639,7 +281,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32861635" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -689,78 +331,15 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/republishsinglepopup.phtml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1160" max-vertical-offset="12376">
-          <caret line="132" column="55" selection-start-line="132" selection-start-column="55" selection-end-line="132" selection-end-column="55" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/ongoing/ao-details.phtml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2703" max-vertical-offset="15096">
-          <caret line="166" column="3" selection-start-line="166" selection-start-column="3" selection-end-line="166" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/controllers/ArticleRepublishController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="62849">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1463134172755" expanded="true" signature="35601:35624" placeholder="..." />
-            <marker date="1463134172755" expanded="true" signature="65142:65165" placeholder="..." />
-            <marker date="1463134172755" expanded="true" signature="123731:123754" placeholder="..." />
-            <marker date="1463134172755" expanded="true" signature="128722:128745" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/proofread/stage0-correction.phtml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1819" max-vertical-offset="7650">
-          <caret line="107" column="5" selection-start-line="107" selection-start-column="5" selection-end-line="107" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/controllers/FollowupController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="29485" max-vertical-offset="54383">
-          <caret line="1652" column="20" selection-start-line="1652" selection-start-column="20" selection-end-line="1652" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/followup/delivery-followup.phtml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="15831" max-vertical-offset="16422">
-          <caret line="940" column="15" selection-start-line="940" selection-start-column="8" selection-end-line="940" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/controllers/DeliveryongoingController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="32545" max-vertical-offset="36771">
-          <caret line="1760" column="21" selection-start-line="1760" selection-start-column="13" selection-end-line="1760" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/art-actions.phtml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="391" max-vertical-offset="1632">
-          <caret line="23" column="182" selection-start-line="23" selection-start-column="182" selection-end-line="23" selection-end-column="182" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/controllers/ArticleRepublishController.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="62543">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1463134172755" expanded="true" signature="35601:35624" placeholder="..." />
-            <marker date="1463134172755" expanded="true" signature="65142:65165" placeholder="..." />
-            <marker date="1463134172755" expanded="true" signature="123731:123754" placeholder="..." />
-            <marker date="1463134172755" expanded="true" signature="128722:128745" placeholder="..." />
+            <marker date="1463139143822" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1463139143822" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1463139143822" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1463139143822" expanded="true" signature="-1:-1" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -769,7 +348,16 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="9384" max-vertical-offset="11186">
           <caret line="561" column="50" selection-start-line="561" selection-start-column="34" selection-end-line="561" selection-end-column="50" />
-          <folding />
+          <folding>
+            <element signature="e#3591#12356#0#HTML" expanded="false" />
+            <element signature="e#13091#14141#0#HTML" expanded="false" />
+            <element signature="e#14170#15918#0#HTML" expanded="false" />
+            <element signature="e#15941#16076#0#HTML" expanded="false" />
+            <element signature="e#16170#16969#0#HTML" expanded="false" />
+            <element signature="e#17003#17393#0#HTML" expanded="false" />
+            <element signature="e#17487#18264#0#HTML" expanded="false" />
+            <element signature="n#style#0;n#!!top" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -969,13 +557,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/proofread/stage0-correction.phtml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1819" max-vertical-offset="7650">
-          <caret line="107" column="5" selection-start-line="107" selection-start-column="5" selection-end-line="107" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/controllers/ProofreadController.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="44734" max-vertical-offset="65501">
@@ -1000,18 +581,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/ao/ao-create1.phtml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="21869" max-vertical-offset="34935">
-          <caret line="1304" column="24" selection-start-line="1304" selection-start-column="24" selection-end-line="1304" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/views/scripts/gebo/ongoing/ao-details.phtml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.20913884" vertical-offset="2703" max-vertical-offset="15096">
           <caret line="166" column="3" selection-start-line="166" selection-start-column="3" selection-end-line="166" selection-end-column="3" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1020,76 +594,76 @@
         <state vertical-scroll-proportion="-17.384615" vertical-offset="4274" max-vertical-offset="22967">
           <caret line="278" column="5" selection-start-line="278" selection-start-column="5" selection-end-line="278" selection-end-column="5" />
           <folding>
-            <marker date="1455633263000" expanded="true" signature="307:364" placeholder="select deliv..Article..." />
-            <marker date="1455633263000" expanded="true" signature="642:944" placeholder="select d.*, ..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="1208:1837" placeholder="select d.*,a..." />
-            <marker date="1455633263000" expanded="true" signature="2107:2672" placeholder="select d.*, ..." />
-            <marker date="1455633263000" expanded="true" signature="2942:2979" placeholder="select count..." />
-            <marker date="1455633263000" expanded="true" signature="3237:3571" placeholder="SELECT count..Article..." />
-            <marker date="1455633263000" expanded="true" signature="3270:3502" placeholder="SELECT count..Participation..." />
-            <marker date="1455633263000" expanded="true" signature="3973:4113" placeholder="select premi..." />
-            <marker date="1455633263000" expanded="true" signature="4513:5280" placeholder="SELECT d.*, ..." />
-            <marker date="1455633263000" expanded="true" signature="6441:7599" placeholder="SELECT d.*, ..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="7125:7199" placeholder="select p.sta..Participation..." />
-            <marker date="1455633263000" expanded="true" signature="8107:9148" placeholder="SELECT d.*, ..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="8658:8745" placeholder="select cp.st..CorrectorParticipation..." />
-            <marker date="1455633263000" expanded="true" signature="9904:10197" placeholder="SELECT d.id,..." />
-            <marker date="1455633263000" expanded="true" signature="10424:10625" placeholder="SELECT DATE_..Poll..." />
-            <marker date="1455633263000" expanded="true" signature="10872:10945" placeholder="select d.id,..." />
-            <marker date="1455633263000" expanded="true" signature="11192:11245" placeholder="select premi..." />
-            <marker date="1455633263000" expanded="true" signature="12046:12154" placeholder="select DISTI..User..." />
-            <marker date="1455633263000" expanded="true" signature="12957:13113" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="13531:13686" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="13966:14144" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="14941:15146" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="16147:16352" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="17102:17307" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="17913:18159" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="18596:18674" placeholder="SELECT d.id,..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="19573:19681" placeholder="select DISTI..User..." />
-            <marker date="1455633263000" expanded="true" signature="19989:20362" placeholder="SELECT d.id,..." />
-            <marker date="1455633263000" expanded="true" signature="21184:21292" placeholder="select DISTI..User..." />
-            <marker date="1455633263000" expanded="true" signature="22090:22644" placeholder="SELECT d.id,..." />
-            <marker date="1455633263000" expanded="true" signature="23403:24156" placeholder="SELECT d.id,..." />
-            <marker date="1455633263000" expanded="true" signature="24566:25297" placeholder="SELECT d.id,..." />
-            <marker date="1455633263000" expanded="true" signature="25892:29543" placeholder="SELECT d.id,..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="26356:26880" placeholder="SELECT count..Participation..." />
-            <marker date="1455633263000" expanded="true" signature="26963:27449" placeholder="SELECT CASE ..Participation..." />
-            <marker date="1455633263000" expanded="true" signature="27536:27647" placeholder="SELECT DATE_..Payment_article..." />
-            <marker date="1455633263000" expanded="true" signature="27731:28086" placeholder="select DATE_..Participation..." />
-            <marker date="1455633263000" expanded="true" signature="28171:28411" placeholder="SELECT d5.pu..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="28499:28799" placeholder="SELECT DATE_..Participation..." />
-            <marker date="1455633263000" expanded="true" signature="28889:29060" placeholder="SELECT u7.lo..User..." />
-            <marker date="1455633263000" expanded="true" signature="29791:29932" placeholder="SELECT d.id,..." />
-            <marker date="1455633263000" expanded="true" signature="30234:30596" placeholder="SELECT d.id,..." />
-            <marker date="1455633263000" expanded="true" signature="30887:31409" placeholder="SELECT d.id,..." />
-            <marker date="1455633263000" expanded="true" signature="32483:33003" placeholder="SELECT d.id,..." />
-            <marker date="1455633263000" expanded="true" signature="33375:33508" placeholder="select DISTI..User..." />
-            <marker date="1455633263000" expanded="true" signature="33936:34084" placeholder="select DISTI..User..." />
-            <marker date="1455633263000" expanded="true" signature="34282:34311" placeholder="SELECT id,ti..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="36461:37385" placeholder="select a.id ..Article..." />
-            <marker date="1455633263000" expanded="true" signature="37683:37823" placeholder="select price..Participation..." />
-            <marker date="1455633263000" expanded="true" signature="37956:38111" placeholder="select max(p..Participation..." />
-            <marker date="1455633263000" expanded="true" signature="38399:38457" placeholder="select * FRO..Payment_article..." />
-            <marker date="1455633263000" expanded="true" signature="38739:38867" placeholder="select *, co..Participation..." />
-            <marker date="1455633263000" expanded="true" signature="39266:39344" placeholder="SELECT d.id,..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="39567:39698" placeholder="SELECT id, t..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="39756:39857" placeholder="SELECT id, t..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="44544:44783" placeholder="SELECT * FRO..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="45365:45679" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="47660:47937" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="48064:48357" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="48999:49319" placeholder="SELECT p.*,u..PremiumQuotes..." />
-            <marker date="1455633263000" expanded="true" signature="49477:49618" placeholder="SELECT a.id,..Article..." />
-            <marker date="1455633263000" expanded="true" signature="49768:50383" placeholder="SELECT d.id,..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="50535:51099" placeholder="SELECT d.id,..Delivery..." />
-            <marker date="1455633263000" expanded="true" signature="52100:52305" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="53127:53332" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="53625:53996" placeholder="select a.id ..Article..." />
-            <marker date="1455633263000" expanded="true" signature="54881:54964" placeholder="SELECT `sten..." />
-            <marker date="1455633263000" expanded="true" signature="55859:56086" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="56219:56462" placeholder="SELECT ident..User..." />
-            <marker date="1455633263000" expanded="true" signature="57785:58099" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select deliv..Article..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select d.*, ..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select d.*,a..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select d.*, ..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT count..Article..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select premi..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.*, ..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.*, ..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select p.sta..Participation..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.*, ..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select cp.st..CorrectorParticipation..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT DATE_..Poll..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select d.id,..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select premi..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select DISTI..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select DISTI..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select DISTI..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT CASE ..Participation..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT DATE_..Payment_article..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select DATE_..Participation..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d5.pu..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT DATE_..Participation..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT u7.lo..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select DISTI..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select DISTI..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT id,ti..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select a.id ..Article..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select price..Participation..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select max(p..Participation..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select * FRO..Payment_article..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select *, co..Participation..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT id, t..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT id, t..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT * FRO..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT p.*,u..PremiumQuotes..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT a.id,..Article..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..Delivery..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="select a.id ..Article..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT `sten..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
+            <marker date="1455633263000" expanded="true" signature="-1:-1" placeholder="SELECT ident..User..." />
           </folding>
         </state>
       </provider>
@@ -1107,54 +681,54 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="58" max-vertical-offset="5610">
           <caret line="146" column="41" selection-start-line="146" selection-start-column="20" selection-end-line="146" selection-end-column="41" />
           <folding>
-            <marker date="1458731058000" expanded="true" signature="632:3364" placeholder="SELECT (SELE..Article..." />
-            <marker date="1458731058000" expanded="true" signature="640:781" placeholder="SELECT count..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="815:993" placeholder="SELECT count..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="1043:1193" placeholder="SELECT count..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="1238:1425" placeholder="SELECT count..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="1497:1587" placeholder="SELECT login..User..." />
-            <marker date="1458731058000" expanded="true" signature="1609:1811" placeholder="SELECT p.id ..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="1869:2011" placeholder="SELECT ex.id..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="2062:2273" placeholder="SELECT cp.id..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="2335:2494" placeholder="SELECT ex1.i..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="2554:2709" placeholder="SELECT CONCA..UserPlus..." />
-            <marker date="1458731058000" expanded="true" signature="2758:2933" placeholder="SELECT CONCA..UserPlus..." />
-            <marker date="1458731058000" expanded="true" signature="3443:6018" placeholder="SELECT (SELE..Article..." />
-            <marker date="1458731058000" expanded="true" signature="3451:3592" placeholder="SELECT count..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="3626:3800" placeholder="SELECT count..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="3841:3991" placeholder="SELECT count..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="4036:4219" placeholder="SELECT count..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="4292:4382" placeholder="SELECT login..User..." />
-            <marker date="1458731058000" expanded="true" signature="4404:4606" placeholder="SELECT p.id ..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="4664:4806" placeholder="SELECT ex.id..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="4857:5051" placeholder="SELECT cp.id..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="5113:5272" placeholder="SELECT ex1.i..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="5332:5487" placeholder="SELECT CONCA..UserPlus..." />
-            <marker date="1458731058000" expanded="true" signature="5536:5711" placeholder="SELECT CONCA..UserPlus..." />
-            <marker date="1458731058000" expanded="true" signature="6361:6592" placeholder="select a.*,d..Article..." />
-            <marker date="1458731058000" expanded="true" signature="7286:9711" placeholder="SELECT d.use..Article..." />
-            <marker date="1458731058000" expanded="true" signature="7304:7443" placeholder="SELECT count..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="7483:7631" placeholder="SELECT count..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="7676:7737" placeholder="SELECT compa..Client..." />
-            <marker date="1458731058000" expanded="true" signature="7836:7926" placeholder="SELECT login..User..." />
-            <marker date="1458731058000" expanded="true" signature="7947:8148" placeholder="SELECT p.id ..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="8203:8344" placeholder="SELECT ex.id..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="8393:8595" placeholder="SELECT cp.id..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="8654:8812" placeholder="SELECT ex1.i..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="8869:9023" placeholder="SELECT CONCA..UserPlus..." />
-            <marker date="1458731058000" expanded="true" signature="9069:9243" placeholder="SELECT CONCA..UserPlus..." />
-            <marker date="1458731058000" expanded="true" signature="10071:10173" placeholder="SELECT contr..Watchlist..." />
-            <marker date="1458731058000" expanded="true" signature="10450:12707" placeholder="SELECT d.use..Article..." />
-            <marker date="1458731058000" expanded="true" signature="10468:10607" placeholder="SELECT count..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="10647:10795" placeholder="SELECT count..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="10840:10901" placeholder="SELECT compa..Client..." />
-            <marker date="1458731058000" expanded="true" signature="11000:11090" placeholder="SELECT login..User..." />
-            <marker date="1458731058000" expanded="true" signature="11111:11312" placeholder="SELECT p.id ..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="11367:11508" placeholder="SELECT ex.id..Participation..." />
-            <marker date="1458731058000" expanded="true" signature="11557:11759" placeholder="SELECT cp.id..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="11818:11976" placeholder="SELECT ex1.i..CorrectorParticipation..." />
-            <marker date="1458731058000" expanded="true" signature="12033:12187" placeholder="SELECT CONCA..UserPlus..." />
-            <marker date="1458731058000" expanded="true" signature="12233:12407" placeholder="SELECT CONCA..UserPlus..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT (SELE..Article..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT login..User..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT p.id ..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT ex.id..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT cp.id..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT ex1.i..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT CONCA..UserPlus..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT CONCA..UserPlus..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT (SELE..Article..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT login..User..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT p.id ..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT ex.id..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT cp.id..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT ex1.i..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT CONCA..UserPlus..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT CONCA..UserPlus..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="select a.*,d..Article..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT d.use..Article..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT compa..Client..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT login..User..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT p.id ..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT ex.id..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT cp.id..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT ex1.i..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT CONCA..UserPlus..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT CONCA..UserPlus..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT contr..Watchlist..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT d.use..Article..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT count..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT compa..Client..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT login..User..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT p.id ..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT ex.id..Participation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT cp.id..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT ex1.i..CorrectorParticipation..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT CONCA..UserPlus..." />
+            <marker date="1458731058000" expanded="true" signature="-1:-1" placeholder="SELECT CONCA..UserPlus..." />
           </folding>
         </state>
       </provider>
@@ -1164,16 +738,16 @@
         <state vertical-scroll-proportion="197.07692" vertical-offset="33582" max-vertical-offset="35853">
           <caret line="1674" column="38" selection-start-line="1674" selection-start-column="24" selection-end-line="1674" selection-end-column="38" />
           <folding>
-            <marker date="1462445342081" expanded="true" signature="54924:54935" placeholder="..." />
-            <marker date="1462445342081" expanded="true" signature="60748:60906" placeholder="..." />
-            <marker date="1462445342081" expanded="true" signature="61058:61196" placeholder="..." />
-            <marker date="1462445342081" expanded="true" signature="61243:62149" placeholder="..." />
-            <marker date="1462445342081" expanded="true" signature="61294:61449" placeholder="..." />
-            <marker date="1462445342081" expanded="false" signature="61667:61679" placeholder="..." />
-            <marker date="1462445342081" expanded="true" signature="61680:62054" placeholder="..." />
-            <marker date="1462445342081" expanded="true" signature="70465:70476" placeholder="..." />
-            <marker date="1462445342081" expanded="true" signature="72476:72487" placeholder="..." />
-            <marker date="1462445342081" expanded="true" signature="74427:74438" placeholder="..." />
+            <marker date="1462445342081" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462445342081" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462445342081" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462445342081" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462445342081" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462445342081" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1462445342081" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462445342081" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462445342081" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1462445342081" expanded="true" signature="-1:-1" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1183,151 +757,125 @@
         <state vertical-scroll-proportion="-8.581819" vertical-offset="20642" max-vertical-offset="27183">
           <caret line="1242" column="24" selection-start-line="1242" selection-start-column="24" selection-end-line="1242" selection-end-column="24" />
           <folding>
-            <marker date="1463126238233" expanded="true" signature="1535:2236" placeholder="select p.id ..." />
-            <marker date="1463126238233" expanded="true" signature="2585:3306" placeholder="select p.id ..." />
-            <marker date="1463126238233" expanded="true" signature="5934:6798" placeholder="SELECT d.id,..Delivery..." />
-            <marker date="1463126238233" expanded="true" signature="6334:6426" placeholder="SELECT login..User..." />
-            <marker date="1463126238233" expanded="true" signature="7153:7500" placeholder="SELECT count..Delivery..." />
-            <marker date="1463126238233" expanded="true" signature="7781:8137" placeholder="SELECT d.id,..Delivery..." />
-            <marker date="1463126238233" expanded="true" signature="9153:9403" placeholder="SELECT count..Delivery..." />
-            <marker date="1463126238233" expanded="true" signature="9473:9736" placeholder="SELECT count..Delivery..." />
-            <marker date="1463126238233" expanded="true" signature="9699:9735" placeholder="SELECT artic..Participation..." />
-            <marker date="1463126238233" expanded="true" signature="9808:10178" placeholder="SELECT count..Delivery..." />
-            <marker date="1463126238233" expanded="true" signature="10761:11029" placeholder="SELECT count..Delivery..." />
-            <marker date="1463126238233" expanded="true" signature="11311:11588" placeholder="SELECT d.id,..Delivery..." />
-            <marker date="1463126238233" expanded="true" signature="12550:13092" placeholder="select p.*, ..." />
-            <marker date="1463126238233" expanded="true" signature="12637:12726" placeholder="select count..Participation..." />
-            <marker date="1463126238233" expanded="true" signature="13449:13616" placeholder="SELECT ap.ma..." />
-            <marker date="1463126238233" expanded="true" signature="14302:14470" placeholder="SELECT ap.ma..." />
-            <marker date="1463126238233" expanded="true" signature="15199:15817" placeholder="select p.use..." />
-            <marker date="1463126238233" expanded="true" signature="20461:20704" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="20738:20920" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="20954:21138" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="21172:21341" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="21363:21616" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="21650:21843" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="21877:22112" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="22146:22511" placeholder="select GROUP..." />
-            <marker date="1463126238233" expanded="true" signature="22549:22609" placeholder="select count..Template..." />
-            <marker date="1463126238233" expanded="true" signature="22633:22997" placeholder="select GROUP..." />
-            <marker date="1463126238233" expanded="true" signature="24753:25010" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="25044:25287" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="25309:25567" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="25601:25960" placeholder="select GROUP..." />
-            <marker date="1463126238233" expanded="true" signature="25994:26054" placeholder="select count..Template..." />
-            <marker date="1463126238233" expanded="true" signature="26078:26436" placeholder="select GROUP..." />
-            <marker date="1463126238233" expanded="true" signature="26471:26726" placeholder="select count..CorrecctorParticipation..." />
-            <marker date="1463126238233" expanded="true" signature="28693:28950" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="28984:29150" placeholder="select count..Article..." />
-            <marker date="1463126238233" expanded="true" signature="29172:29430" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="29464:29817" placeholder="select rr.re..." />
-            <marker date="1463126238233" expanded="true" signature="29851:29911" placeholder="select count..Template..." />
-            <marker date="1463126238233" expanded="true" signature="29935:30290" placeholder="select rr.re..." />
-            <marker date="1463126238233" expanded="true" signature="38188:38461" placeholder="SELECT a.lan..ArticleProcess..." />
-            <marker date="1463126238233" expanded="true" signature="38733:38939" placeholder="SELECT a.lan..Participation..." />
-            <marker date="1463126238233" expanded="true" signature="39233:39613" placeholder="select cl.co..." />
-            <marker date="1463126238233" expanded="true" signature="40184:40369" placeholder="select GROUP..." />
-            <marker date="1463126238233" expanded="true" signature="40632:40734" placeholder="select GROUP..ArticleReassignReasons..." />
-            <marker date="1463126238233" expanded="true" signature="41080:41150" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="41629:42106" placeholder="select p.sta..." />
-            <marker date="1463126238233" expanded="true" signature="42476:42629" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="42878:42994" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="43255:43371" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="43701:43873" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="44203:44374" placeholder="select artic..." />
-            <marker date="1463126238233" expanded="true" signature="44678:44877" placeholder="select artic..." />
-            <marker date="1463126238233" expanded="true" signature="45221:45288" placeholder="select max(c..." />
-            <marker date="1463126238233" expanded="true" signature="45632:45696" placeholder="select cycle..." />
-            <marker date="1463126238233" expanded="true" signature="46057:46102" placeholder="select cycle..." />
-            <marker date="1463126238233" expanded="true" signature="46427:47078" placeholder="select p.id ..." />
-            <marker date="1463126238233" expanded="true" signature="47387:47532" placeholder="select id, u..." />
-            <marker date="1463126238233" expanded="true" signature="47824:47948" placeholder="select id, u..." />
-            <marker date="1463126238233" expanded="true" signature="48591:48811" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="49179:49418" placeholder="select id, a..." />
-            <marker date="1463126238233" expanded="true" signature="49759:49939" placeholder="select id, u..." />
-            <marker date="1463126238233" expanded="true" signature="50235:50368" placeholder="select p.use..." />
-            <marker date="1463126238233" expanded="true" signature="50676:50828" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="51133:51265" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="51567:51705" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="52003:52142" placeholder="select id,re..." />
-            <marker date="1463126238233" expanded="true" signature="52444:52497" placeholder="select refus..." />
-            <marker date="1463126238233" expanded="true" signature="52816:52974" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="53245:53315" placeholder="select max(c..." />
-            <marker date="1463126238233" expanded="true" signature="54454:54724" placeholder="select count..Article..." />
-            <marker date="1463126238233" expanded="true" signature="54939:55067" placeholder="select a.id ..Delivery..." />
-            <marker date="1463126238233" expanded="true" signature="55300:55400" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="56052:56180" placeholder="select a.id ..Delivery..." />
-            <marker date="1463126238233" expanded="true" signature="56417:56755" placeholder="select p.id ..." />
-            <marker date="1463126238233" expanded="true" signature="57382:57450" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="57480:57585" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="58232:58332" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="58655:58771" placeholder="select user_..." />
-            <marker date="1463126238233" expanded="true" signature="59081:59233" placeholder="select user_..." />
-            <marker date="1463126238233" expanded="true" signature="59555:59866" placeholder="select p.use..." />
-            <marker date="1463126238233" expanded="true" signature="60168:60637" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="60952:61165" placeholder="select p.* F..." />
-            <marker date="1463126238233" expanded="true" signature="61499:61687" placeholder="select p.* F..." />
-            <marker date="1463126238233" expanded="true" signature="61980:62247" placeholder="select p.sta..." />
-            <marker date="1463126238233" expanded="true" signature="62565:62630" placeholder="select user_..." />
-            <marker date="1463126238233" expanded="true" signature="63006:63060" placeholder="select user_..." />
-            <marker date="1463126238233" expanded="true" signature="63006:63067" placeholder="select user_..." />
-            <marker date="1463126238233" expanded="true" signature="63006:63067" placeholder="select user_..." />
-            <marker date="1463126238233" expanded="true" signature="63006:63071" placeholder="select user_..." />
-            <marker date="1463126238233" expanded="true" signature="63517:63713" placeholder="select p.use..." />
-            <marker date="1463126238233" expanded="true" signature="64151:64223" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="64730:65433" placeholder="SELECT p.id,..Article..." />
-            <marker date="1463126238233" expanded="true" signature="65785:66503" placeholder="SELECT p.id,..Article..." />
-            <marker date="1463126238233" expanded="true" signature="66762:67410" placeholder="SELECT ap.id..Participation..." />
-            <marker date="1463126238233" expanded="true" signature="67730:67869" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="68165:68300" placeholder="select statu..." />
-            <marker date="1463126238233" expanded="true" signature="68633:68732" placeholder="select user_..." />
-            <marker date="1463126238233" expanded="true" signature="69010:69109" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="69428:69528" placeholder="select statu..." />
-            <marker date="1463126238233" expanded="true" signature="69729:69812" placeholder="select id,us..." />
-            <marker date="1463126238233" expanded="true" signature="70057:70145" placeholder="select statu..." />
-            <marker date="1463126238233" expanded="true" signature="70736:71264" placeholder="select conca..." />
-            <marker date="1463126238233" expanded="true" signature="71851:72251" placeholder="select cl.co..." />
-            <marker date="1463126238233" expanded="true" signature="72644:73321" placeholder="select p.id,..." />
-            <marker date="1463126238233" expanded="true" signature="74015:74108" placeholder="select cp.co..CorrectorParticipation..." />
-            <marker date="1463126238233" expanded="true" signature="74430:74531" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="74837:74924" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="75276:75499" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="75833:75972" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="76246:76363" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="76575:76714" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="76937:77017" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="77215:77391" placeholder="select user_..." />
-            <marker date="1463126238233" expanded="true" signature="77607:77701" placeholder="select id FR..." />
-            <marker date="1463126238233" expanded="true" signature="77852:77941" placeholder="select count..." />
-            <marker date="1463126238233" expanded="true" signature="78098:78150" placeholder="select * FRO..." />
-            <marker date="1463126238233" expanded="true" signature="78292:78445" placeholder="select * FRO..." />
-            <marker date="1463126238233" expanded="true" signature="78642:78712" placeholder="select * FRO..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/controllers/RepublishController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.115385" vertical-offset="9792" max-vertical-offset="42721">
-          <caret line="593" column="0" selection-start-line="593" selection-start-column="0" selection-end-line="593" selection-end-column="0" />
-          <folding>
-            <marker date="1463126815156" expanded="true" signature="27034:27057" placeholder="..." />
-            <marker date="1463126815156" expanded="true" signature="55723:55746" placeholder="..." />
-            <marker date="1463126815156" expanded="true" signature="114393:114416" placeholder="..." />
-            <marker date="1463126815156" expanded="true" signature="119304:119327" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/controllers/ArticleRepublishController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.307692" vertical-offset="7506" max-vertical-offset="63563">
-          <caret line="468" column="17" selection-start-line="468" selection-start-column="17" selection-end-line="468" selection-end-column="17" />
-          <folding>
-            <marker date="1463134172755" expanded="true" signature="35601:35624" placeholder="..." />
-            <marker date="1463134172755" expanded="true" signature="65142:65165" placeholder="..." />
-            <marker date="1463134172755" expanded="true" signature="123731:123754" placeholder="..." />
-            <marker date="1463134172755" expanded="true" signature="128722:128745" placeholder="..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.id ..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.id ..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..Delivery..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT login..User..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT count..Delivery..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..Delivery..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT count..Delivery..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT count..Delivery..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT artic..Participation..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT count..Delivery..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT count..Delivery..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT d.id,..Delivery..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.*, ..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT ap.ma..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT ap.ma..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.use..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select GROUP..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..Template..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select GROUP..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select GROUP..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..Template..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select GROUP..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..CorrecctorParticipation..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..Article..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select rr.re..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..Template..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select rr.re..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT a.lan..ArticleProcess..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT a.lan..Participation..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select cl.co..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select GROUP..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select GROUP..ArticleReassignReasons..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.sta..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select artic..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select artic..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select max(c..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select cycle..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select cycle..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.id ..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id, u..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id, u..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id, a..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id, u..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.use..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id,re..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select refus..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select max(c..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..Article..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select a.id ..Delivery..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select a.id ..Delivery..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.id ..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select user_..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select user_..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.use..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.* F..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.* F..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.sta..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select user_..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select user_..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select user_..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select user_..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select user_..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.use..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT p.id,..Article..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT p.id,..Article..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="SELECT ap.id..Participation..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select statu..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select user_..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select statu..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id,us..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select statu..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select conca..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select cl.co..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select p.id,..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select cp.co..CorrectorParticipation..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select user_..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select id FR..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select * FRO..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select * FRO..." />
+            <marker date="1463126238233" expanded="true" signature="-1:-1" placeholder="select * FRO..." />
           </folding>
         </state>
       </provider>
@@ -1337,67 +885,192 @@
         <state vertical-scroll-proportion="-8.807693" vertical-offset="4820" max-vertical-offset="14603">
           <caret line="297" column="15" selection-start-line="297" selection-start-column="15" selection-end-line="297" selection-end-column="15" />
           <folding>
-            <marker date="1463134203145" expanded="true" signature="2141:2706" placeholder="select c.pro..." />
-            <marker date="1463134203145" expanded="true" signature="2748:2863" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="2892:3012" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="3754:4312" placeholder="select c.pro..." />
-            <marker date="1463134203145" expanded="true" signature="4354:4483" placeholder="select count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="4512:4646" placeholder="select count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="5168:6206" placeholder="select c.pro..." />
-            <marker date="1463134203145" expanded="true" signature="6235:6350" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="6379:6499" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="6528:6631" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="6660:6784" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="6813:6925" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="6954:7100" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="7129:7275" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="7298:7414" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="7438:7643" placeholder="select pp.pr..Delivery..." />
-            <marker date="1463134203145" expanded="true" signature="7680:7904" placeholder="select count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="8849:9198" placeholder="SELECT count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="9503:9869" placeholder="SELECT count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="10268:11307" placeholder="select c.pro..." />
-            <marker date="1463134203145" expanded="true" signature="11336:11465" placeholder="select count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="11494:11628" placeholder="select count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="11657:11779" placeholder="select count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="11808:11953" placeholder="select count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="11982:12113" placeholder="select count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="12142:12307" placeholder="select count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="12336:12501" placeholder="select count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="12530:12665" placeholder="select count..CorrectorParticipation..." />
-            <marker date="1463134203145" expanded="true" signature="12695:12900" placeholder="select pp.pr..Delivery..." />
-            <marker date="1463134203145" expanded="true" signature="13788:14146" placeholder="select c.com..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="14813:15243" placeholder="SELECT u.ide..User..." />
-            <marker date="1463134203145" expanded="true" signature="16034:16197" placeholder="SELECT id AS..Delivery..." />
-            <marker date="1463134203145" expanded="true" signature="16361:16473" placeholder="select count..." />
-            <marker date="1463134203145" expanded="true" signature="16715:16828" placeholder="select count..." />
-            <marker date="1463134203145" expanded="true" signature="17160:17402" placeholder="select count..." />
-            <marker date="1463134203145" expanded="true" signature="17887:18114" placeholder="select count..." />
-            <marker date="1463134203145" expanded="true" signature="19495:19837" placeholder="SELECT u.ide..User..." />
-            <marker date="1463134203145" expanded="true" signature="20149:20562" placeholder="SELECT u.ide..User..." />
-            <marker date="1463134203145" expanded="true" signature="20621:20926" placeholder="SELECT u.ide..User..." />
-            <marker date="1463134203145" expanded="true" signature="27556:27987" placeholder="SELECT u.ide..User..." />
-            <marker date="1463134203145" expanded="true" signature="28299:28800" placeholder="SELECT u.ide..User..." />
-            <marker date="1463134203145" expanded="true" signature="28859:29251" placeholder="SELECT u.ide..User..." />
-            <marker date="1463134203145" expanded="true" signature="35432:35567" placeholder="SELECT count..." />
-            <marker date="1463134203145" expanded="true" signature="37017:37095" placeholder="SELECT confi..Configurations..." />
-            <marker date="1463134203145" expanded="true" signature="37417:37454" placeholder="select * fro..." />
-            <marker date="1463134203145" expanded="true" signature="37607:37951" placeholder="SELECT u.ide..User..." />
-            <marker date="1463134203145" expanded="true" signature="38386:38490" placeholder="SELECT count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="38558:38657" placeholder="SELECT count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="38725:38901" placeholder="SELECT count..Participation..." />
-            <marker date="1463134203145" expanded="true" signature="40485:40852" placeholder="SELECT p.mar..User..." />
-            <marker date="1463134203145" expanded="true" signature="42138:42501" placeholder="SELECT ap.ma..User..." />
-            <marker date="1463134203145" expanded="true" signature="42833:43039" placeholder="select count..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select c.pro..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select c.pro..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select c.pro..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select pp.pr..Delivery..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select c.pro..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..CorrectorParticipation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select pp.pr..Delivery..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select c.com..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT u.ide..User..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT id AS..Delivery..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT u.ide..User..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT u.ide..User..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT u.ide..User..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT u.ide..User..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT u.ide..User..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT u.ide..User..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT count..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT confi..Configurations..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select * fro..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT u.ide..User..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT count..Participation..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT p.mar..User..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="SELECT ap.ma..User..." />
+            <marker date="1463134203145" expanded="true" signature="-1:-1" placeholder="select count..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controllers/ArticleRepublishController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.5254834" vertical-offset="9291" max-vertical-offset="63580">
+          <caret line="462" column="80" selection-start-line="462" selection-start-column="80" selection-end-line="462" selection-end-column="80" />
+          <folding>
+            <marker date="1463139143822" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1463139143822" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1463139143822" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1463139143822" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controllers/RepublishController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5079086" vertical-offset="9792" max-vertical-offset="42721">
+          <caret line="593" column="0" selection-start-line="593" selection-start-column="0" selection-end-line="593" selection-end-column="0" />
+          <folding>
+            <marker date="1463126815156" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1463126815156" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1463126815156" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1463126815156" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/ao/ao-create1.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="38.95958" vertical-offset="0" max-vertical-offset="34935">
+          <caret line="1304" column="24" selection-start-line="1304" selection-start-column="24" selection-end-line="1304" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/theme/gebo/js/jquery-latest.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2720">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/theme/gebo/js/jquery.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="157641">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/theme/gebo/js/jquery.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="170">
+          <caret line="4" column="36" selection-start-line="4" selection-start-column="36" selection-end-line="4" selection-end-column="36" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/theme/gebo/lib/chosen/chosen.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6511">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/theme/gebo/lib/chosen/chosen.jquery.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="595">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/scripts/gebo/proofread/stage0-correction.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.9615384" vertical-offset="0" max-vertical-offset="7650">
+          <caret line="3" column="31" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/theme/gebo/lib/uniform/jquery.uniform.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="595">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/theme/gebo/lib/qtip2/jquery.qtip.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="595">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/theme/gebo/lib/qtip2/jquery.qtip.min.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="595">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/views/scripts/gebo/deliveryongoing/republishsinglepopup.phtml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7609842" vertical-offset="3766" max-vertical-offset="13192">
-          <caret line="247" column="31" selection-start-line="247" selection-start-column="31" selection-end-line="247" selection-end-column="31" />
-          <folding />
+        <state vertical-scroll-proportion="0.22037037" vertical-offset="0" max-vertical-offset="7106">
+          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <folding>
+            <element signature="e#3591#12356#0#HTML" expanded="false" />
+            <element signature="e#13091#14141#0#HTML" expanded="false" />
+            <element signature="e#14170#15918#0#HTML" expanded="false" />
+            <element signature="e#15941#16076#0#HTML" expanded="false" />
+            <element signature="e#16170#16969#0#HTML" expanded="false" />
+            <element signature="e#17003#17393#0#HTML" expanded="false" />
+            <element signature="e#17487#18264#0#HTML" expanded="false" />
+            <element signature="n#style#0;n#!!top" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

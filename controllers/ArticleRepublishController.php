@@ -460,6 +460,7 @@ class ArticleRepublishController extends Ep_Controller_Action {
         $scContrib = $contrib_obj->getWriterReplublish('senior',$articleDetails[0]['language']);
         $jcContrib = $contrib_obj->getWriterReplublish('junior',$articleDetails[0]['language']);
         $jc0Contrib = $contrib_obj->getWriterReplublish('sub-junior',$articleDetails[0]['language']);
+        //The final array with all the senior,junior and sub-junior participants
         $contrib = array();
         if(!empty($scContrib))
         {

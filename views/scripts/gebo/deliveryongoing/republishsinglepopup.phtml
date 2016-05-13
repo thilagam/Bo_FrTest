@@ -1,7 +1,12 @@
+<script src="/BO/theme/gebo/js/jquery.min.js"></script>
+<script src="/BO/theme/gebo/lib/chosen/chosen.jquery.min.js"></script>
 <script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
+<script src="/BO/theme/gebo/lib/uniform/jquery.uniform.min.js"></script>
+<script src="/BO/theme/gebo/lib/qtip2/jquery.qtip.min.js"></script>
+<link href="/BO/theme/gebo/lib/chosen/chosen.css">
+<link href="/BO/theme/gebo/lib/qtip2/jquery.qtip.min.css">
 {literal}
-
-<script type="text/javascript" >
+<script type="text/javascript">
 var lang = {/literal}"{$article.language}"{literal};
 var writing_cost = {/literal}"{$article.writing}"{literal};
 $(document).ready(function() {
@@ -42,6 +47,7 @@ $(document).ready(function() {
             })
         }
     });
+
     updatedContribList($("#artId").val());
 	
 	if($("#aotype").val()=='private')
@@ -66,8 +72,9 @@ $(document).ready(function() {
 		if(parseFloat($("#price_min").val())>max_writer_price)
 			$("#price_min").val('0');
 	})
-	
+
 });
+
 ///when republish popup will come to upate values
 function saveRepublishPop() ///when directly republish
 {
@@ -296,6 +303,7 @@ function saveRepublishPop() ///when directly republish
         }
     });
 }
+/*
 
 if (tinymce.getInstanceById('scmailbody'))
 {
@@ -321,6 +329,7 @@ if(tinymce.getInstanceById('refusemessage'))
 }
 else  if(!tinymce.getInstanceById('refusemessage'))
     loadEditors('refusemessage');
+*/
 
 function changeMailByContribType()
 {
