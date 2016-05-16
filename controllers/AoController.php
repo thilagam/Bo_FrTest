@@ -103,7 +103,7 @@ class AoController extends Ep_Controller_Action
 				$contriblistall1[$i]['name']=strtoupper($name);
 			}
 		$this->_view->contriblistall1=$contriblistall1;
-        print_r($contriblistall1);exit;
+        
 	
 		//Private Correctors for Correction block
 		$correcterall=$del_obj->getAllCorrectors(0);

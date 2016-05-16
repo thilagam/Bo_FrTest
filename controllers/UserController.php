@@ -6153,9 +6153,10 @@ class UserController extends Ep_Controller_Action
                 if($res[$key1]['created_user'])
                 {
                     $users = $user_obj->getAllUsersDetails($res[$key1]['created_user']);
+                    $res[$key1]['projectManager'] = $users[0]['first_name'] . " " . $users[0]['last_name'];
                 }
                 /**End of modification**/
-                $res[$key1]['projectManager'] = $users[0]['first_name'] . " " . $users[0]['last_name'];
+
                 $parts = $participate_obj->crtParticipationDetails($res[$key1]['id']); //print_r($parts); exit;
                 if ($parts != 'NO') {
                     $users = $user_obj->getAllUsersDetails($parts[0]['corrector_id']);
