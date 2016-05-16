@@ -334,7 +334,7 @@ class UserController extends Ep_Controller_Action
             else
                 $menus = $details[0]['menuId'];
             ////for goroup Id in users table////
-            $grouparray = array('superadmin' => 1, 'ceouser' => 2, 'salesuser' => 3, 'chiefeditor' => 4, 'editor' => 5, 'seouser' => 6, 'customercare' => 7, 'partner' => 8, 'facturation' => 9, 'custom' => 10, 'multilingue' => 11, 'chiefodigeo' => 12, 'techuser' => 13, 'produser' => 14, 'techmanager' => 15, 'seomanager' => 16, 'prodsubmanager' => 17, 'salesmanager' => 18, 'prodmanager' => 19);
+            $grouparray = array('superadmin' => 1, 'ceouser' => 2, 'salesuser' => 3, 'chiefeditor' => 4, 'editor' => 5, 'seouser' => 6, 'customercare' => 7, 'partner' => 8, 'facturation' => 9, 'custom' => 10, 'multilingue' => 11, 'chiefodigeo' => 12, 'techuser' => 13, 'produser' => 14, 'techmanager' => 15, 'seomanager' => 16, 'prodsubmanager' => 17, 'salesmanager' => 18, 'prodmanager' => 19,'contractowner'=>20);
             $user_obj->login = $user_params["login"];
             $user_obj->email = $user_params["email"];
             $user_obj->password = $user_params["password"];
@@ -948,7 +948,7 @@ class UserController extends Ep_Controller_Action
             }
             ////
             ////for goroup Id in users table////
-            $grouparray = array('superadmin' => 1, 'ceouser' => 2, 'salesuser' => 3, 'chiefeditor' => 4, 'editor' => 5, 'seouser' => 6, 'customercare' => 7, 'partner' => 8, 'facturation' => 9, 'custom' => 10, 'multilingue' => 11, 'chiefodigeo' => 12, 'techuser' => 13, 'produser' => 14, 'techmanager' => 15, 'seomanager' => 16, 'prodsubmanager' => 17, 'salesmanager' => 18, 'prodmanager' => 19);
+            $grouparray = array('superadmin' => 1, 'ceouser' => 2, 'salesuser' => 3, 'chiefeditor' => 4, 'editor' => 5, 'seouser' => 6, 'customercare' => 7, 'partner' => 8, 'facturation' => 9, 'custom' => 10, 'multilingue' => 11, 'chiefodigeo' => 12, 'techuser' => 13, 'produser' => 14, 'techmanager' => 15, 'seomanager' => 16, 'prodsubmanager' => 17, 'salesmanager' => 18, 'prodmanager' => 19,'contractowner'=>20);
             $user_obj->login = $user_params["login"];
             $user_obj->email = $user_params["email"];
             $user_obj->password = $user_params["password"];
@@ -3275,6 +3275,7 @@ class UserController extends Ep_Controller_Action
             for ($i = 0; $i < $rResultcount; $i++) {
                 $row = array();
                 for ($j = 0; $j < count($aColumns); $j++) {
+                    echo $aColumns[$j];
                     if ($j == 0)
                         $row[] = $count;
                     else {
@@ -3306,12 +3307,10 @@ class UserController extends Ep_Controller_Action
                                 $row[] = '<a href="superclientcreate-step1?submenuId=ML9-SL1&uaction=edit&userId=' . $rResult[$i]['identifier'] . '" class="hint--left hint--info" data-hint="edit profile"><i class="icon-pencil"></i> </a>';
                             if ($type == 'sccontact')
                                 $row[] = '';
-                        } elseif ($aColumns[$j] == 'company_name') {
-                            /*if($rResult[$i]['type']=='superclient')
-                                $row[] = $rResult[$i]['sc_name'];
-                            else*/
-                            $row[] = $rResult[$i][$aColumns[$j]];
-                        } else
+                        } 
+                        elseif($aColumns[$j] == 'company_name'){
+                            $row[]=utf8_encode($rResult[$i]['company_name']);
+                        }else
                             $row[] = $rResult[$i][$aColumns[$j]];
                     }
                 }
@@ -6137,6 +6136,7 @@ class UserController extends Ep_Controller_Action
         $user_obj = new Ep_User_User();
         $articleprocess_obj = new EP_Delivery_ArticleProcess();
         $searchParams = $this->_request->getParams();
+
         $res = $participate_obj->writerStatsArticles($userId, $searchParams);
         if ($res != 'NO') {
             foreach ($res as $key1 => $value1) {
@@ -6147,7 +6147,13 @@ class UserController extends Ep_Controller_Action
                 $marksdetails = $articleprocess_obj->getFristVersionDate($res[$key1]['id']);
                 if ($marksdetails != 'NO')
                     $res[$key1]['marks'] = $marksdetails[0]['marks'];
-                $users = $user_obj->getAllUsersDetails($res[$key1]['created_user']);
+                /** Author: Thilagam **/
+                /** Date:16/05/2016 **/
+                /** Reason: DB error was displayed while edit **/
+                if($res[$key1]['created_user'])
+                {
+                    $users = $user_obj->getAllUsersDetails($res[$key1]['created_user']);
+                }
                 $res[$key1]['projectManager'] = $users[0]['first_name'] . " " . $users[0]['last_name'];
                 $parts = $participate_obj->crtParticipationDetails($res[$key1]['id']); //print_r($parts); exit;
                 if ($parts != 'NO') {

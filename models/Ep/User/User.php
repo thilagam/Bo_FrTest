@@ -175,8 +175,7 @@ class Ep_User_User extends Ep_Db_Identifier
         } else
             return false;
     }
-
-    //////////get count of all bo users/////////////
+//////////get count of all bo users/////////////
     public function getAllBoUsers()
     {
         $Query = "select u.identifier, u.login, up.first_name, up.last_name from User u LEFT JOIN UserPlus up ON up.user_id = u.identifier
