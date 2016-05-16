@@ -1,4 +1,4 @@
-<script src="/BO/theme/gebo/js/jquery.min.js"></script>
+<script src="/BO/theme/gebo/js/jquery.js"></script>
 <script src="/BO/theme/gebo/lib/chosen/chosen.jquery.min.js"></script>
 <script src="/BO/theme/gebo/lib/tiny_mce/jquery.tinymce.js"></script>
 <script src="/BO/theme/gebo/lib/uniform/jquery.uniform.min.js"></script>
@@ -682,8 +682,6 @@ function changeContribCount($artid)
                 </select>
             </div> 
             <div class="controls form-inline" id="contribs">
-
-
                 <select name="favcontribcheck[]" id="favcontribcheck" multiple="multiple" onchange="fngetmailcontent();">
                     {foreach from=$contriblistall1 item=contrib}
                     {if in_array($contrib.identifier,$contrib_array)}

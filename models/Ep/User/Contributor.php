@@ -296,7 +296,7 @@ class EP_User_Contributor extends Ep_Db_Identifier
     /**Author:Thilagam**/
     /**Date:13/5/2016**/
     /**Function:To get the list of participants who have already participated in the article**/
-    public function getWriterReplublish($ptype,$langs)
+    public function getWriterRepublish($ptype,$langs)
     {
         $langs = explode(",",$langs);
         $langs=implode("','",$langs);
