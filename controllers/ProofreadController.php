@@ -496,6 +496,7 @@ class ProofreadController extends Ep_Controller_Action
         $this->_view->refusevalidtemps = $res;
         $this->_view->plagdetails=$plagdetails;
         $this->_view->filename='<b>Title : </b><span style="color:green;font-weight: bold;font-size: large;">'.$xmlfileorgname.'</span></br>';
+        //When the article is validated directly
         if(isset($s0art_params["s0art_approve"]))
         {
             $artdetails = $article_obj->getArticleDetails($artId);
@@ -595,6 +596,15 @@ class ProofreadController extends Ep_Controller_Action
             /////////////end of article history////////////////
             $this->unlockonactionAction($artId);
             $this->_helper->FlashMessenger(utf8_decode('Article Approuvé avec succès'));
+
+            /**Author:Thilagam**/
+            /**Date:17/5/2016**/
+            /**Reason:To send email to the project manager when the article passes the stage 0**/
+            $message="Article ".$artdetails[0]['title']." is validated in S0 stage";
+            $subject="Article validated in S0 stage";
+            $automail->sendMailToPM($message,$subject);
+            /**End of code addition**/
+
             $this->_redirect("/proofread/stage-deliveries?submenuId=ML3-SL11");
         }
         ///to post selected refused valid temps in stage s0 correction////////

@@ -1144,5 +1144,19 @@ class Ep_Message_AutoEmails extends Ep_Db_Identifier
 				return true;  
 		}
 	}
+
+    /**Author:Thilagam**/
+    /**Date:17/5/2016**/
+    /**Function:To send the email to Project Manager when the article is validated in S0 stage**/
+    function sendMailToPM($body,$subject)
+    {
+        $mail_from='work@edit-place.com';
+        $mail = new Zend_Mail();
+        $mail->setBodyHtml($body)->setFrom($mail_from,'Workplace')->addTo("thilagam@edit-place.com")->setSubject($subject);
+        if($mail->send())
+        {
+           return true;
+        }
+    }
 }
 
