@@ -1503,7 +1503,7 @@ class CorrectionController extends Ep_Controller_Action
                     $mail->addHeader('Reply-To','support@edit-place.com');
                     $mail->setBodyHtml($Message)
                         ->setFrom('support@edit-place.com')
-                        ->addTo('chandu@edit-place.com')
+                        ->addTo('kmohan@edit-place.com')
                         ->addCc('rakeshm@edit-place.com')
                         //->addCc('claurent@edit-place.com')
                         ->setSubject("Plagiarism Results (fr test site)");
@@ -1531,7 +1531,7 @@ class CorrectionController extends Ep_Controller_Action
 		
         $partArtProcDetails =  $participate_obj->s0CorrectionArtProcDetails($s0correctionplag['participateId']);
         $recentversion= $artProcess_obj->getRecentVersion($s0correctionplag['participateId']);
-
+        //echo "<pre>";print_r($partArtProcDetails);echo $partArtProcDetails[0]['article_name']exit;
         require_once APP_PATH_ROOT.'nlibrary/script/filecontent.php';
 
         if($partArtProcDetails != 'NO')
@@ -1714,6 +1714,15 @@ class CorrectionController extends Ep_Controller_Action
                 $actparams['artId'] = $artId;
                 // $this->articleHistory(59,$actparams);
                 /////////////end of article history////////////////
+
+                /**Author:Thilagam**/
+                /**Date:17/5/2016**/
+                /**Reason:To send email to the project manager when the article passes the stage 0**/
+                $message="Article ".$partArtProcDetails[0]['article_name']." is validated in S0 stage through plagarism check";
+                $subject="Article validated in S0 stage";
+                $automail->sendMailToPM($message,$subject);
+                /**End of code addition**/
+
                 /// unlock the article///////////////
                 if($maxpercentage <= 20)
                     $this->unlockonactionAction($artId);
@@ -1747,7 +1756,7 @@ class CorrectionController extends Ep_Controller_Action
         $mail->addHeader('Reply-To','support@edit-place.com');
         $mail->setBodyHtml($Message)
             ->setFrom('support@edit-place.com')
-            ->addTo('chandu@edit-place.com')
+            ->addTo('kmohan@edit-place.com')
             ->addCc('rakeshm@edit-place.com')
            // ->addCc('claurent@edit-place.com')
             ->addCc('manohar@edit-place.com')
@@ -1778,7 +1787,7 @@ class CorrectionController extends Ep_Controller_Action
         $mail->addHeader('Reply-To','support@edit-place.com');
         $mail->setBodyHtml($Message)
             ->setFrom('support@edit-place.com')
-            ->addTo('chandu@edit-place.com')
+            ->addTo('kmohan@edit-place.com')
             ->addCc('rakeshm@edit-place.com')
            // ->addCc('claurent@edit-place.com')
             ->addCc('manohar@edit-place.com')
