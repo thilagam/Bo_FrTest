@@ -410,12 +410,70 @@ class Ep_Message_Ticket extends Ep_Db_Identifier
     /***Get Master Inbox OF all EP Users***/
     public function getMasterInboxEP($user=NULL)
     {
+        /**Author:Thilagam**/
+        /**Date:19/5/2016**/
+        /**Reason:Query Optimization**/
+        if($user)
+        {
+            $condition1 = "(t.sender_id='".$user."' and m.type='1')";
+            $condition2 = "(t.recipient_id='".$user."' and m.type='0')";
+        }
+        else
+        {
+            $condition1 = "(t.sender_id in (select identifier from User where type not in('client','contributor')  and m.type='1'))";
+            $condition2 = "(t.recipient_id in (select identifier from User where type not in('client','contributor') and m.type='0'))";
+        }
+        $msg_query = "( 
+select
+(
+    select IF(u.type='client',company_name,CONCAT(first_name,' ',last_name)) as sendername from User u
+    LEFT JOIN UserPlus up ON u.identifier=up.user_id
+    LEFT JOIN Client c ON u.identifier=c.user_id
+    where identifier= (IF(m.type='1',recipient_id,sender_id)) 
+) as sendername, 
+(
+    select IF(u.type='client',company_name,CONCAT(first_name,' ',last_name)) as sendername from User u
+    LEFT JOIN UserPlus up ON u.identifier=up.user_id
+    LEFT JOIN Client c ON u.identifier=c.user_id
+    where identifier= (IF(m.type='1',sender_id,recipient_id))
+) as recipient,
+DATE_FORMAT(m.created_at , '%d/%m/%Y %H:%i') as receivedDate,m.created_at,
+    m.id as messageId,m.type,m.ticket_id,t.sender_id,t.recipient_id,m.bo_user_type,
+    ( select login from User u where identifier= m.locked_user )AS locked_user_login,
+    t.title as Subject,m.content,m.created_at as receivedDate_sort,t.assigned_before,m.status from Ticket t
+    INNER JOIN Message m ON m.ticket_id=t.id
+    where ".$condition1." and t.status in ('0','1') and m.bo_replied_staus!='yes'
+    Group By t.sender_id,t.recipient_id,m.id ORDER BY  m.created_at DESC
+)
 
-       if($user)
+    UNION (
+    select
+(
+    select IF(u.type='client',company_name,CONCAT(first_name,' ',last_name)) as sendername from User u
+    LEFT JOIN UserPlus up ON u.identifier=up.user_id
+    LEFT JOIN Client c ON u.identifier=c.user_id
+    where identifier= (IF(m.type='1',recipient_id,sender_id)) 
+) as sendername, 
+(
+    select IF(u.type='client',company_name,CONCAT(first_name,' ',last_name)) as sendername from User u
+    LEFT JOIN UserPlus up ON u.identifier=up.user_id
+    LEFT JOIN Client c ON u.identifier=c.user_id
+    where identifier= (IF(m.type='1',sender_id,recipient_id))
+) as recipient,
+DATE_FORMAT(m.created_at , '%d/%m/%Y %H:%i') as receivedDate,m.created_at,
+    m.id as messageId,m.type,m.ticket_id,t.sender_id,t.recipient_id,m.bo_user_type,
+    ( select login from User u where identifier= m.locked_user )AS locked_user_login,
+    t.title as Subject,m.content,m.created_at as receivedDate_sort,t.assigned_before,m.status from Ticket t
+    INNER JOIN Message m ON m.ticket_id=t.id
+    where ".$condition2." and t.status in ('0','1') and m.bo_replied_staus!='yes'
+    Group By t.sender_id,t.recipient_id,m.id ORDER BY  m.created_at DESC
+)
+ORDER BY  created_at DESC";
+       /*if($user)
            $condition="((t.recipient_id='".$user."' and m.type='0') OR (t.sender_id='".$user."' and m.type='1'))";
        else
             $condition="((t.recipient_id in (select identifier from User where type not in('client','contributor') and m.type='0')) OR (t.sender_id in (select identifier from User where type not in('client','contributor')  and m.type='1')))";
-
+        */
       /*$msg_query="select
                         m.id as messageId,m.type,ticket_id,sender_id,recipient_id,IF(m.type='1',recipient_id,sender_id) as userid,
                         IF(m.type='1',sender_id,recipient_id) as receiverId,m.bo_user_type,m.locked_user,
@@ -429,7 +487,7 @@ class Ep_Message_Ticket extends Ep_Db_Identifier
                     where ".$condition." and t.status in ('0','1') and m.bo_replied_staus!='yes'
                     Group By t.sender_id,t.recipient_id,m.id ORDER BY  m.created_at DESC"; */
         /* *** optimized on 18.05.2016 *** */
-        $msg_query= "select
+        /*$msg_query= "select
                           (
 						  select IF(u.type='client',company_name,CONCAT(first_name,' ',last_name)) as sendername from User u
 		                    LEFT JOIN UserPlus up ON u.identifier=up.user_id
@@ -457,7 +515,7 @@ class Ep_Message_Ticket extends Ep_Db_Identifier
                         ".$condition." and t.status in ('0','1') and m.bo_replied_staus!='yes'
                         Group By t.sender_id,t.recipient_id,m.id
                         ORDER BY  m.created_at DESC";
-
+        */
         //echo $msg_query;exit;
 
        if(($result=$this->getQuery($msg_query,true))!=NULL)
