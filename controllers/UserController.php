@@ -7455,5 +7455,95 @@ class UserController extends Ep_Controller_Action
         }
     }
     /* end of added by naseer on 05-11-2015*/
+
+    /**Author:Thilagam**/
+    /**Date:24/5/2016**/
+    /**Function:To download the extracted list of Contributors**/
+    public function downloadContributorXlsAction()
+    {
+        $user_obj = new Ep_User_User();
+        $language = $this->_arrayDb->loadArrayv2("EP_LANGUAGES", $this->_lang);
+        $contributors = $user_obj->downloadContributorXls();
+        for ($i = 0; $i < count($contributors); $i++) 
+        {
+            if ($contributors[$i]["language_more"] != '')
+            {
+                $lang_list = array();
+                if ($contributors[$i]["language_more"] != '') 
+                {
+                    $laninfo = unserialize($contributors[$i]['language_more']);
+                    if ($laninfo != '') 
+                    {
+                        foreach ($laninfo as $key1 => $value1) 
+                        {
+                            $lang_list[] = $this->language_array[$key1];
+                        }
+                    }
+                    $row = implode(',', $lang_list);
+                } 
+                else
+                    $row = "-";
+            }
+            if($contributors[$i]['language'] != '')
+            {
+                foreach($language as $key=>$value)
+                {
+                    if($contributors[$i]['language'] == $key)
+                    {
+                       $contributors[$i]['language']=$value; 
+                    }
+                }
+            }
+            $contributors[$i]['language_more']=$row;
+        }
+        //echo "<pre>";print_r($contributors);exit;
+        $file = 'excelFile-' . date("Y-M-D") . "-" . time() . '.xls';
+        ob_start();
+        $content = " ";
+        $content .="<table>";
+            $content .="<tr>";
+                $content .="<th>Identifier</th>";
+                $content .="<th>First Name</th>";
+                $content .="<th>Last Name</th>";
+                $content .="<th>Email ID</th>";
+                $content .="<th>NativeLanguage</th>";
+                $content .="<th>Other Languages</th>";
+                $content .="<th>Number of Participation</th>";
+                $content .="<th>Date of last participation</th>";
+                $content .="<th>Royalties</th>";
+                $content .="<th>Translator</th>";
+                $content .="<th>Date of account created</th>";
+                $content .="<th>Status</th>";
+                $content .="<th>Date of last visited</th>";
+            $content .="</tr>";
+            for($j=0;$j<count($contributors);$j++):
+                $content .= "<tr>";
+                    $content .= "<td>".$contributors[$j]['identifier']."</td>";
+                    $content .= "<td>".$contributors[$j]['first_name']."</td>";
+                    $content .= "<td>".$contributors[$j]['last_name']."</td>";
+                    $content .= "<td>".$contributors[$j]['email']."</td>";
+                    $content .= "<td>".$contributors[$j]['language']."</td>";
+                    $content .= "<td>".$contributors[$j]['language_more']."</td>";
+                    $content .= "<td>".$contributors[$j]['times']."</td>";
+                    $content .= "<td>".$contributors[$j]['last']."</td>";
+                    $content .= "<td>".$contributors[$j]['royalty']."</td>";
+                    $content .= "<td>".$contributors[$j]['translator']."</td>";
+                    $content .= "<td>".$contributors[$j]['created_at']."</td>";
+                    $content .= "<td>".$contributors[$j]['status']."</td>";
+                    $content .= "<td>".$contributors[$j]['last_visit']."</td>";
+                $content .= "</tr>";
+            endfor;
+        $content .="</table>";
+        ob_end_clean();
+        header("Expires: 0");
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+        header("Cache-Control: no-store, no-cache, must-revalidate");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+        header("Content-type: application/vnd.ms-excel;charset:UTF-8");
+        header('Content-length: ' . strlen($content));
+        header('Content-disposition: attachment; filename=' . basename($file));
+        echo $content;
+    }
 }
 
