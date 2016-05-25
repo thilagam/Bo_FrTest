@@ -525,15 +525,31 @@ class Ep_Delivery_Delivery extends Ep_Db_Identifier
     /////////get delivery list for new ao list page which are ongoing///////////
     public function loadgetNewNonpremAos($sWhere, $sOrder, $sLimit, $type)
     {
-        if($type == '')
+        /* *** edited on 12.05.2016 *** */
+        // issue realted to ticket id = A01333 //
+        $subQuery = '';
+        $subJoin ='';
+        if($type == '') {
             $condition = " d.status_bo IS NULL ";
-        elseif($type == 'valid')
-            $condition = " d.status_bo = 'valid' AND a.paid_status = 'paid' AND ".$this->visibility." ";
-        elseif($type == 'acitve')
-            $condition = " d.status_bo = 'active' AND a.paid_status = 'notpaid' AND ".$this->visibility." ";
-        else
-            $condition = " d.status_bo = '".$type."' AND d.status_bo != 'valid' AND ".$this->visibility." ";
-        $query="SELECT d.id, d.id as delId, d.title, d.delivery_date, d.total_article, d.created_at, d.language, d.product, d.liberte_comments AS comments, u.email,
+        }
+        elseif($type == 'active') {
+            $subJoin = 'LEFT JOIN Participation p ON p.article_id=a.id';
+            $condition = "p.status IN ('bid','under_study','bid_nonpremium_timeout','bid_nonpremium')
+                        AND d.status_bo IN ('active', 'valid')
+                        AND a.status NOT IN ('closed_client','closed')
+                       ";
+            $condition2 = "d.id IN
+            (
+                SELECT `delivery_id` FROM `Article`
+                WHERE status_bo  = 'active' AND `id` NOT IN(
+                SELECT `article_id` FROM `Participation`
+                )
+            )
+             AND
+                            d.status_bo IN ('active', 'valid')
+                            AND a.status NOT IN ('closed_client','closed')
+            ";
+            $query2="SELECT DISTINCT(d.id), d.id as delId, d.title, d.delivery_date, d.total_article, d.created_at, d.language, d.product, d.liberte_comments AS comments, u.email,
               u.login,d.user_id, up.first_name,d.total_amount,d.created_by,d.quoteid, cl.company_name, u.created_at AS doj,
               IF(cl.company_name = '', u.email, cl.company_name) as clientName
                 FROM ".$this->_name." d
@@ -541,9 +557,54 @@ class Ep_Delivery_Delivery extends Ep_Db_Identifier
                 INNER JOIN User u ON u.identifier=d.user_id
                 LEFT JOIN UserPlus up ON up.user_id=d.user_id
                 LEFT JOIN Client cl ON cl.user_id = u.identifier
+                WHERE d.premium_option = '0'  AND ".$condition2." AND d.created_by !='BO'  ".$sWhere." ".$sOrder." ".$sLimit;
+            //echo "<pre>".$query;exit(0);
+            $result2 = $this->getQuery($query2,true);
+            //return $result2;
+            //p.status IN ('bid','under_study','bid_nonpremium_timeout','bid_nonpremium') AND a.status NOT IN ('closed','closed_client','published')
+        }
+        elseif($type == 'valid') {
+            $subJoin = 'LEFT JOIN Participation p ON p.article_id=a.id';
+            $condition = "p.status='published' AND
+                            d.status_bo IN ('active', 'valid')
+                             AND a.paid_status = 'paid' ";
+        }
+        elseif($type == 'cancel') {
+            $subJoin = 'LEFT JOIN Participation p ON p.article_id=a.id';
+            $condition = "p.status  IN ('closed','closed_client')
+                            AND
+                            d.status_bo IN ('active', 'valid')
+                             ";
+            $condition2 = "( d.status_bo = '" . $type . "' OR a.status IN ('closed_client','closed') )";
+            $query2="SELECT DISTINCT(d.id), d.id as delId, d.title, d.delivery_date, d.total_article, d.created_at, d.language, d.product, d.liberte_comments AS comments, u.email,
+              u.login,d.user_id, up.first_name,d.total_amount,d.created_by,d.quoteid, cl.company_name, u.created_at AS doj,
+              IF(cl.company_name = '', u.email, cl.company_name) as clientName
+                FROM ".$this->_name." d
+                INNER JOIN Article a ON a.delivery_id = d.id
+                INNER JOIN User u ON u.identifier=d.user_id
+                LEFT JOIN UserPlus up ON up.user_id=d.user_id
+                LEFT JOIN Client cl ON cl.user_id = u.identifier
+                WHERE d.premium_option = '0'  AND ".$condition2." AND d.created_by !='BO'  ".$sWhere." ".$sOrder." ".$sLimit;
+            $result2 = $this->getQuery($query2,true);
+        }
+        else{
+            $condition = " d.status_bo = '" . $type . "' ";
+        }
+        $query="SELECT DISTINCT(d.id), d.id as delId, d.title, d.delivery_date, d.total_article, d.created_at, d.language, d.product, d.liberte_comments AS comments, u.email,
+              u.login,d.user_id, up.first_name,d.total_amount,d.created_by,d.quoteid, cl.company_name, u.created_at AS doj,
+              IF(cl.company_name = '', u.email, cl.company_name) as clientName
+                FROM ".$this->_name." d
+                INNER JOIN Article a ON a.delivery_id = d.id
+                ".$subJoin."
+                INNER JOIN User u ON u.identifier=d.user_id
+                LEFT JOIN UserPlus up ON up.user_id=d.user_id
+                LEFT JOIN Client cl ON cl.user_id = u.identifier
                 WHERE d.premium_option = '0' AND ".$condition." AND d.created_by !='BO'  ".$sWhere." ".$sOrder." ".$sLimit;
-        //echo $query;exit(0);
+        //echo "<pre>".$query;exit(0);
         $result = $this->getQuery($query,true);
+        if($type == 'active' OR $type== 'cancel'){
+            $result = array_merge($result,$result2);
+        }
         return $result;
     }
     /////////get delivery list for new ao list page which are ongoing///////////
@@ -1336,9 +1397,6 @@ class Ep_Delivery_Delivery extends Ep_Db_Identifier
         return $resultall;
     }
 }
-
-
-
 
 
 

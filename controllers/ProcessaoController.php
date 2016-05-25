@@ -102,7 +102,7 @@ class ProcessaoController extends Ep_Controller_Action {
         else
             $aColumns = array('id', 'title','clientName','created_at','deltype','language','content_type','delId','status_bo','contributors',
                 'paid_status','actions','cost');
-        /* * Paging	 */
+         /* * Paging	 */
         $sLimit = "";
         if ( isset( $_GET['iDisplayStart'] ) && $_GET['iDisplayLength'] != '-1' )
         {
@@ -201,8 +201,8 @@ class ProcessaoController extends Ep_Controller_Action {
            // $rResult  = $del_obj->loadgetPaidNewAos($sWhere, $sOrder, $sLimit);
             $type = 'valid';
             $rResult  = $del_obj->loadgetNewNonpremAos($sWhere, $sOrder, $sLimit, $type);
-            if($rResult!= 'NO')
-            {
+           //if($rResult!= 'NO')
+            //{
                 /*foreach($rResult as $key=>$value)
                 {
                     $paidartscount = $art_obj->getPaidArticleCount($rResult[$key]['id']);
@@ -211,7 +211,7 @@ class ProcessaoController extends Ep_Controller_Action {
                 }
                 if($aoList != '')
                     $rResult = $del_obj->getNewNonpremPublishAos($aoList);*/
-            }
+            //}
         }elseif($libParams['type'] == 'refuse') {
             $type = 'refuse';
             $rResult  = $del_obj->loadgetNewNonpremAos($sWhere, $sOrder, $sLimit, $type);
@@ -323,7 +323,7 @@ class ProcessaoController extends Ep_Controller_Action {
                     $rResult[$key]['latestStatus'] = "Valid&eacute";
                     if($details[0]['status_bo'] == 'active' && $details[0]['paid_status'] == 'paid')
                         $rResult[$key]['latestStatus'] = "Paiement effectu&eacute;";
-                    elseif($details[0]['status_bo'] == 'valid' && $details[0]['paid_status'] == 'paid')
+                    elseif(($details[0]['status_bo'] == 'valid') && ($details[0]['paid_status'] == 'paid'))
                         $rResult[$key]['latestStatus'] = "Facture g&eacute;n&eacute;r&eacute;e";
                 }
                 elseif($libParams['type'] == 'refuse')  /////refused liberted aos //
@@ -352,6 +352,7 @@ class ProcessaoController extends Ep_Controller_Action {
             $countaos  = $del_obj->loadgetPaidNewAos($sWhere, $sOrder, $sLimit);
         else*/
         $countaos  = $del_obj->loadgetNewNonpremAos($sWhere, $sOrder, $sLimit, $type);
+        //echo "<pre>";print_r($countaos);exit;
         $iTotal = count($countaos);
 
         $output = array(
@@ -366,6 +367,7 @@ class ProcessaoController extends Ep_Controller_Action {
             $temp = $rResult;
             for( $i=0 ; $i<$rResultcount; $i++)
             {
+                //echo $rResult[$i]['deltype'];echo "<br>";
                 $row = array();
                 for ( $j=0 ; $j<count($aColumns) ; $j++ )
                 {
@@ -392,17 +394,22 @@ class ProcessaoController extends Ep_Controller_Action {
                         elseif($aColumns[$j] == 'status_bo'){
                             if($rResult[$i]['comments'] != NULL || $rResult[$i]['comments'] != '') {
                                 //$row[] = '<a class="hint--bottom hint--info" data-hint="' . $rResult[$i]['comments'] . '">' . $rResult[$i]['latestStatus'] . '</a>';
-                                $row[] = '<a class="pop_over" data-placement="left" data-original-title="Comments" data-html="true" data-content="' . $rResult[$i]['comments'] . '">' . $rResult[$i]['latestStatus'] . '</a>';
+                                $row[] = '<a class="pop_over" data-placement="left" data-original-title="Comments" data-html="true" data-content="' . $rResult[$i]['comments']. '">' . $rResult[$i]['latestStatus'] . '</a>';
                             }
                             else
                                 $row[] = $rResult[$i]['latestStatus'];
                         }
 
-                        elseif($aColumns[$j] == 'contributors' && $libParams['type'] != 'new')
-                            if($rResult[$i]["contributors"] == '0')
-                                $row[] = '<span class="label label-important">'.$rResult[$i]["contributors"].'</span>';
+                        elseif(($aColumns[$j] == 'contributors') && ($libParams['type'] != 'new')){
+                            /**Author:Thilagam**/
+                            /**Date:25/5/2016**/
+                            /**Reason: utf8_encode was required for $rResult[$i]['contributors']**/
+                           if($rResult[$i]["contributors"] == '0')
+                                $row[] = '<span class="label label-important">'.utf8_encode($rResult[$i]["contributors"]).'</span>';
                             else
-                                $row[] = '<a  data-hint="Participation details" onClick="refreshPop('.$rResult[$i]['delId'].');" ><i class="splashy-group_green"></i></a> <span class="label label-important"><a target="_blank" href="/user/contributor-edit?submenuId=ML10-SL6&amp;tab=viewcontrib&amp;userId='.$rResult[$i]["contributor_id"].'">'.$rResult[$i]["contributors"].'</a></span>';
+                                $row[] = '<a  data-hint="Participation details" onClick="refreshPop('.$rResult[$i]['delId'].');" ><i class="splashy-group_green"></i></a> <span class="label label-important"><a target="_blank" href="/user/contributor-edit?submenuId=ML10-SL6&amp;tab=viewcontrib&amp;userId='.$rResult[$i]["contributor_id"].'">'.utf8_encode($rResult[$i]["contributors"]).'</a></span>';
+                            
+                        }
                         elseif($aColumns[$j] == 'paid_status' && ($libParams['type'] != 'new' || $libParams['type'] != 'refuse'))
                             $row[] = $rResult[$i]['paid_status'];
                         elseif($aColumns[$j] == 'actions'){   // echo  $rResult[$i]['identifier']; exit;
@@ -421,13 +428,14 @@ class ProcessaoController extends Ep_Controller_Action {
                             $row[] = round($rResult[$i]['cost'], 2);
                         else
                             $row[] = $rResult[$i][ $aColumns[$j] ];
+
                     }
                 }
                 $output['aaData'][] = $row;
                 $count++;
             }
         }
-        echo json_encode( $output );
+       echo json_encode($output);
     }
     /// to display contributor details who participated in liberte ao  ///
     public function contribDetialsAction()

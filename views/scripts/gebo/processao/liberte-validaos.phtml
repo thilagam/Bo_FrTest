@@ -2,8 +2,7 @@
 
 <script type="text/javascript" >
 $(document).ready(function() {
-
-    $('#validmissionsgrid').dataTable({
+ $('#validmissionsgrid').dataTable({
         "bProcessing": true,
         "bServerSide": true,
         "sAjaxSource": "/processao/loadliberteallaos?type=valid",
@@ -19,6 +18,9 @@ $(document).ready(function() {
                 }
             ],
             "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+        },
+        "fnDrawCallback": function(){
+            $('.pop_over').popover({ trigger: "hover" });
         }
     } );
     $("#validmissionsgrid_length").css("float","left");
