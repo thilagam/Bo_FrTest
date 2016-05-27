@@ -1867,19 +1867,33 @@ class Ep_User_User extends Ep_Db_Identifier
     /**Function:To get the list of extracted Contributors**/
     public function downloadContributorXls()
     {
-        $query = "SELECT 
-		User.identifier,UserPlus.first_name, UserPlus.last_name, User.created_at, User.email, User.status,User.last_visit, 
-		Contributor.translator, Contributor.language, Contributor. language_more,
+        /*$query = "SELECT 
+		User.identifier,UserPlus.first_name, UserPlus.last_name, User.created_at, User.email, User.profile_type,User.last_visit, 
+		Contributor.translator, Contributor.language, Contributor.language_more,Contributor.writer_preference,Contributor.translator,Contributor.translator_type,Contributor.tva_number,
 		(SELECT count(Participation.user_id) from Participation WHERE Participation.user_id = User.identifier ) as times,
 		(SELECT Participation.created_at from Participation WHERE Participation.user_id = User.identifier GROUP BY User.identifier ORDER BY Participation.created_at DESC ) as last,
-		(select sum(price) from Royalties where user_id= User.identifier and invoiceID IS NULL) as royalty
+        (SELECT count(Participation.user_id) from Participation WHERE Participation.user_id = User.identifier and Participation.status = 'published' and Participation.current_stage = 'client') as selected,
+        (SELECT max(Participation.updated_at) from Participation WHERE Participation.user_id = User.identifier and Participation.status = 'published' and Participation.current_stage = 'client' GROUP BY User.identifier ORDER BY Participation.updated_at DESC) as select_date,
+		(select sum(price) from Royalties where user_id= User.identifier ) as royalty
 		FROM User 
 		LEFT JOIN UserPlus on User.identifier = UserPlus.user_id
 		LEFT JOIN Contributor on UserPlus.user_id = Contributor.user_id
 		LEFT JOIN Participation on UserPlus.user_id = Participation.user_id
-		where User.type = 'contributor'
+		where User.type = 'contributor' 
 		GROUP BY User.identifier
-		ORDER BY Participation.created_at DESC";
+		ORDER BY Participation.created_at DESC" ;*/
+        $query = "SELECT 
+        User.identifier,UserPlus.first_name, UserPlus.last_name, User.created_at, User.email, User.profile_type,User.last_visit, 
+        Contributor.translator, Contributor.language, Contributor.language_more,Contributor.writer_preference,Contributor.translator,Contributor.translator_type,Contributor.tva_number,
+        count(Participation.user_id) as times,Participation.created_at as last,
+        (select sum(price) from Royalties where user_id= User.identifier ) as royalty
+        FROM User 
+        LEFT JOIN UserPlus on User.identifier = UserPlus.user_id
+        LEFT JOIN Contributor on UserPlus.user_id = Contributor.user_id
+        LEFT JOIN Participation on UserPlus.user_id = Participation.user_id
+        where User.type = 'contributor' 
+        GROUP BY User.identifier
+        ORDER BY Participation.created_at DESC";
 		$result = $this->getQuery($query, true);
 		return $result;
     }
