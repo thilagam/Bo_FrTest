@@ -1893,7 +1893,7 @@ class Ep_User_User extends Ep_Db_Identifier
         LEFT JOIN Participation on UserPlus.user_id = Participation.user_id
         where User.type = 'contributor' 
         GROUP BY User.identifier
-        ORDER BY Participation.created_at DESC";
+        ORDER BY Participation.created_at DESC LIMIT";
 		$result = $this->getQuery($query, true);
 		return $result;
     }

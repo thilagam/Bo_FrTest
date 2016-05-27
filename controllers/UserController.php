@@ -7473,8 +7473,8 @@ class UserController extends Ep_Controller_Action
         ini_set('memory_limit', '-1');
         $user_obj = new Ep_User_User();
         $language = $this->_arrayDb->loadArrayv2("EP_LANGUAGES", $this->_lang);
-        //$contributors = $user_obj->downloadContributorXls();
-        $contributors = $_SESSION['contributors'] ;
+        $contributors = $user_obj->downloadContributorXls();
+        //$contributors = $_SESSION['contributors'] ;
         $lang_count = 0;
         $lang_list = array();
         for ($i = 0; $i < count($contributors); $i++) 
