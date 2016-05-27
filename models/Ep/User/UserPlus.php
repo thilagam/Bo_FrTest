@@ -120,7 +120,6 @@ class Ep_User_UserPlus extends Ep_Db_Identifier
                     WHERE u.type = 'client'
                     AND u.status = 'Active' " . (!empty($condition) ? 'AND ' . $condition : '') . "
                     ORDER BY u.updated_at DESC";
-
         /* Adding AO infos & date formatting */
         foreach ( $this->getQuery($query,true) as $client ) :
             $aoInfo =   $this->clientAoCount($client['identifier']) ;
@@ -134,7 +133,7 @@ class Ep_User_UserPlus extends Ep_Db_Identifier
             $client['last_visit']      =   date( "d/m/Y" , strtotime( $client['last_visit'] ) ) ;
 		    $result[]   =   $client ;
         endforeach ;
-		print_r($result); 
+		//print_r($result); 
         return $result;
     }
     /* Returns AO Count for a given user Id */

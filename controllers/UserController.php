@@ -1682,18 +1682,15 @@ class UserController extends Ep_Controller_Action
         $ao_obj = new Ep_Delivery_Delivery();
         $mail_obj = new Ep_Message_AutoEmails();
         $userId = $this->_request->getParam('userId');
-
         $user_details = $user_obj->getUserdetails($userId);
         $this->_view->user_detail = $user_details;
-
         //////edit client/////////////////////////////////
         //Favourite contributors
         $favcontribslist = array();
         $favcontribs = $user_obj->ListallfavContribs($userId);
         for ($f = 0; $f < count($favcontribs); $f++)
             $favcontribslist[] = $favcontribs[$f]['identifier'];
-
-        $this->_view->favcontribslist = $favcontribslist;
+         $this->_view->favcontribslist = $favcontribslist;
 
         //List of contributors
         $contribslist = array();
@@ -1710,10 +1707,12 @@ class UserController extends Ep_Controller_Action
         $this->_view->contribslist = $contribslist;
 
         //Client contact
+        //this is empty
         $this->_view->clcontacts = $user_obj->getclientcontact($userId);
 
 
-        if ($this->_request->getParam('submit_client') != '') {   //echo $user_details[0]['email'];  print_r($_REQUEST); exit;
+        if ($this->_request->getParam('submit_client') != '') {   
+            //echo $user_details[0]['email'];  print_r($_REQUEST); exit;
             $userId = $this->_request->getParam('userId');
             $user_details = $user_obj->getUserdetails($userId);
             if ($user_details[0]['paypercent'] != $_REQUEST['paypercent']) {
@@ -1789,6 +1788,58 @@ class UserController extends Ep_Controller_Action
         $this->_view->render("user_clientedit");
     }
 
+    /**Author:Thilagam**/
+    /*public function loadaolistAction()
+    {
+        $payment_obj = new Ep_Payment_Payment();
+        $ao_obj = new Ep_Delivery_Delivery();
+        $userId = $this->_request->getParam('userId');
+        $ao = $ao_obj->getAOviewinfo($userId);
+        if ($ao != '') {
+            $j = 0;
+            do {
+                $details = $payment_obj->getInvoices($ao[$j]['id']);
+                if (file_exists('/home/sites/site5/web/FO/invoice/client/' . $details[0]['user_id'] . '/' . $details[0]['invoice_id'] . '.pdf')) :
+                    $ao[$j]['inv'] = 1;
+                else :
+                    $ao[$j]['inv'] = 0;
+                endif;
+
+                $j++;
+            } while ($j < sizeof($ao));
+        }
+        $i = 0;
+        while($ao[$i])
+        {
+            $ao[$i]['slno']=$i+1;
+            $ao[$i]['title']="<a href='/ongoing/ao-details?submenuId=ML2-SL4&client_id=".$ao[$i]['user_id']."&ao_id=".$ao[$i]['id']."' target='_blank' title='".$ao[$i]['title']."'>".$ao[$i]['title']."</a>";
+            if($ao[$i]['premium_option'] == 'non-premium')
+            {
+                $ao[$i]['premium']="<label class='label label-info'>mission libert&eacute;</label>";
+            }
+            else
+            {
+                $ao[$i]['premium']="<label class='label label-warning'>Mission premium</label>";
+            }
+            if($ao[$i]['AOtype'] == 'private')
+            {
+                $ao[$i]['aotype'] ="<label class='label label-warning'>Private</label>";
+            }
+            else
+            {
+                $ao[$i]['aotype'] = "<label class='label label-success'>Private</label>";
+            }
+            $ao[$i]['options'] = "<a href='/ongoing/ao-details?submenuId=ML2-SL4&client_id=".$ao[$i]['user_id']."&ao_id=".$ao[$i]['id']."' target='_blank' ><i class='icon-pencil'></i></a>";
+            //if ($ao[$i]['inv'] == 1){
+                //$ao[$i]['options'].="&nbsp; / &nbsp;<a onclick='return downloadInvoices(".$ao[$i]['id'].");' href='javascript:void(0);>Download Invoices</a>";
+            //}
+            
+           $i++;
+        }
+        //print_r($ao);
+        echo json_encode($ao);
+        
+    }*/
     /*
     public function getPagesAction()
     {
@@ -3173,10 +3224,10 @@ class UserController extends Ep_Controller_Action
 
     public function clientsAction()
     {
-        $userdetails = new Ep_User_UserPlus();
-        $user_obj = new Ep_User_User();
-        $usergrp_obj = new Ep_User_UserGroupAccess();
-        $groups = $usergrp_obj->getAllUserGroupNames();
+        //$userdetails = new Ep_User_UserPlus();
+        //$user_obj = new Ep_User_User();
+        //$usergrp_obj = new Ep_User_UserGroupAccess();
+        //$groups = $usergrp_obj->getAllUserGroupNames();
         $this->render('user_clients');
     }
 
@@ -3269,13 +3320,17 @@ class UserController extends Ep_Controller_Action
             "iTotalDisplayRecords" => $iTotal,
             "aaData" => array()
         );
-        $count = 1;//print_r($rResult);
+        $count = 1;
+        //print_r($rResult);exit;
         if ($rResult != 'NO') //if non relavent data is given in search column//
         {
             for ($i = 0; $i < $rResultcount; $i++) {
                 $row = array();
                 for ($j = 0; $j < count($aColumns); $j++) {
-                    echo $aColumns[$j];
+                    /**Author: Thilagam**/
+                    /**Date:27/6/2016**/
+                    /**Reason:The list was not loading**/
+                    //echo $aColumns[$j];
                     if ($j == 0)
                         $row[] = $count;
                     else {
@@ -3293,7 +3348,7 @@ class UserController extends Ep_Controller_Action
                             else
                                 $row[] = '-';
                         } elseif ($aColumns[$j] == 'type') {
-                            $row[] = '<label class="label label-info">' . $rResult[$i]['type'] . '</label>';
+                            $row[] = '<label class="label label-info">' . utf8_encode($rResult[$i]['type']) . '</label>';
                         } elseif ($aColumns[$j] == 'actions') {
                             $email = $rResult[$i]['email'];
                             $password = $rResult[$i]['password'];
@@ -3318,7 +3373,7 @@ class UserController extends Ep_Controller_Action
                 $count++;
             }
         }
-        // print_r($output);  exit;
+        //echo "<pre>";print_r($output);  exit;
         echo json_encode($output);
 
     }

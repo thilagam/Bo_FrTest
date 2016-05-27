@@ -17,13 +17,15 @@ var ctype = getUrlVars()["counttype"];
 var count = getUrlVars()["count"];
 
 $(document).ready(function() {
+
     $("#clientstab").addClass('active');
     $(".uni_style").uniform();
-
+    /*$.get("/user/loadclient",function(data){
+        console.log(data);
+    });*/
     $('#clientsgrid').dataTable({
         "bProcessing": true,
-        //"bServerSide": true,
-        
+        "bServerSide": true,
 		"sAjaxSource": "/user/loadclient",
         "oTableTools": {
             "aButtons": [

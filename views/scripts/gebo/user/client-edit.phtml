@@ -4,6 +4,33 @@
 <script src="/BO/theme/gebo/lib/validation/jquery.validate.min.js"></script>
 <script language="javascript">
     $(document).ready(function() {
+        /*var userId = {/literal}{$smarty.get.userId}{literal};
+        
+        $(".aolist").click(function(){
+            $.ajax({
+                    type: "POST",
+                    url: "/user/loadaolist",
+                    contentType: "application/json; charset=utf-8",
+                    data: {
+                        userId:userId
+                    },
+                    dataType: "json",
+                    success:function(data){
+                        //console.log(data);
+                        if(data != '[ ]')
+                        {
+                            oTable = $('#aolisttable').dataTable({
+                                "bProcessing": true,
+                                "bServerSide": true,
+                                "aaData": data,
+                                "aoColumns": [{ "mDataProp": "slno" }, { "mDataProp": "title" },{ "mDataProp": "total_article" },{ "mDataProp": "create_at" },{ "mDataProp": "status_bo" },{ "mDataProp": "premium" },{ "mDataProp": "aotype" },{ "mDataProp": "options" }],
+                                "aaSorting": [[0, "asc"]],
+                            });
+                        }
+                    }
+                });
+        });*/
+        
         $('#aolisttable').dataTable({
             "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
@@ -19,6 +46,26 @@
                 { "sType": "natural" }
             ]
         });
+        /*$('#aolisttable').dataTable({
+        "bProcessing": true,
+        "bServerSide": true,
+        "sAjaxSource": "/user/loadaolist",
+        "oTableTools": {
+            "aButtons": [
+                "copy",
+                "print",
+                {
+                    "sExtends":    "collection",
+                    "sButtonText": 'Sauvegarder <span class="caret" />',
+                    "aButtons":    [ "csv", "xls", "pdf" ]
+                }
+            ],
+            "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+        }
+
+    } );
+
+    $("#aolisttable").css("float","left");*/
         var tab = getParameterByName('tab', $(location).attr('href'));
         $("#"+tab).addClass('active');
         $("#favcontribs").chosen({ allow_single_deselect: false,search_contains: true});
@@ -136,7 +183,7 @@
     function checkClientPicExist()  {
 
         var clnt = {/literal}{$smarty.get.userId}{literal};
-        var targeturl = '/ao/clientprofilepic?client='+clnt ;
+        var targeturl = '/ao/clientprofilepic?client='+clnt;
         $.post(targeturl, function(clientprof){
            // alert(clientprof) ;
             if(clientprof != 'yes')
@@ -345,7 +392,7 @@
       <ul class="nav nav-tabs">
           <li {if $smarty.get.tab == 'editclient'} class="active" {/if}><a href="#editclient" data-toggle="tab" class="lable-success"><strong><i class="icon-pencil"></i>&nbsp;Edit</strong></a></li>
           <li {if $smarty.get.tab == 'viewclient'} class="active" {/if}><a href="#viewclient" data-toggle="tab" class="lable-danger"><strong><i class="icon-eye-open"></i>&nbsp;View</strong></a></li>
-          <li {if $smarty.get.tab == 'aolistclient'} class="active" {/if}><a href="#aolistclient" data-toggle="tab" class="lable-danger"><strong><i class="splashy-view_thumbnail"></i>&nbsp;AO list</strong></a></li>
+          <li {if $smarty.get.tab == 'aolistclient'} class="active" {/if}><a href="#aolistclient" data-toggle="tab" class="lable-danger aolist"><strong><i class="splashy-view_thumbnail"></i>&nbsp;AO list</strong></a></li>
 		  <li {if $smarty.get.tab == 'invoiceclient'} class="active" {/if}><a href="#invoiceclient" data-toggle="tab" class="lable-danger"><strong><i class="splashy-document_letter_download"></i>&nbsp;Invoices</strong></a></li>
           <a class="label label-inverse pull-right" href="/user/users-list?submenuId=ML10-SL2&tab=clientstab">retour</a>
       </ul>
@@ -716,7 +763,7 @@
 		{/if}
       </div>
 
-      <!------------ ao list of client ---------------------->
+      <!-- ao list of client -->
       <div id="aolistclient" class="tab-pane">
           <h3 class="heading alert alert-info">
               {if $user_detail[0].first_name != ''}
@@ -752,11 +799,11 @@
                   </td>
               </tr>
               {/foreach}
-              </tbody>
+              </tbody> 
           </table>
       </div>
 	  
-	  <!-------------------------- Client Invoices---------------------------------->
+	  <!-- Client Invoices-->
 		
 		<div id="invoiceclient" class="tab-pane">
 			<h3 class="heading alert alert-info">
