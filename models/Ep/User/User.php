@@ -1882,20 +1882,31 @@ class Ep_User_User extends Ep_Db_Identifier
 		where User.type = 'contributor' 
 		GROUP BY User.identifier
 		ORDER BY Participation.created_at DESC" ;*/
-        $query = "SELECT 
-        User.identifier,UserPlus.first_name, UserPlus.last_name, User.created_at, User.email, User.profile_type,User.last_visit, 
-        Contributor.translator, Contributor.language, Contributor.language_more,Contributor.writer_preference,Contributor.translator,Contributor.translator_type,Contributor.tva_number,
-        count(Participation.user_id) as times,Participation.created_at as last,
-        (select sum(price) from Royalties where user_id= User.identifier ) as royalty
-        FROM User 
-        LEFT JOIN UserPlus on User.identifier = UserPlus.user_id
-        LEFT JOIN Contributor on UserPlus.user_id = Contributor.user_id
-        LEFT JOIN Participation on UserPlus.user_id = Participation.user_id
-        where User.type = 'contributor' 
-        GROUP BY User.identifier
-        ORDER BY Participation.created_at DESC LIMIT";
-		$result = $this->getQuery($query, true);
+        $query = "  SELECT
+        U.identifier,UP.first_name, UP.last_name, U.created_at, U.email, U.profile_type,U.last_visit,
+        C.translator, C.language, C.language_more,C.writer_preference,C.translator,C.translator_type,C.tva_number,
+
+        count(P.user_id) as times,P.created_at as last,
+        (select sum(price) from Royalties where user_id= U.identifier ) as royalty
+
+        FROM User AS U
+        LEFT JOIN UserPlus AS UP on U.identifier = UP.user_id
+        LEFT JOIN Contributor AS C on UP.user_id = C.user_id
+        LEFT JOIN Participation AS P on UP.user_id = P.user_id
+        where U.type = 'contributor'
+        GROUP BY U.identifier
+        ORDER BY U.identifier DESC";
+        $result = $this->getQuery($query, true);
 		return $result;
+    }
+    /**Author:Thilagam**/
+    /**Date:30/5/2016**/
+    /**Function:To check whether the user is superadmin or Alessia**/
+    public function checkBlackStatusEdit($id)
+    {
+        $query = "SELECT * FROM User where identifier = ".$id." AND (type = 'superadmin' or login IN ('astrinati')) ";
+        $result = $this->getQuery($query,true);
+        return $result;
     }
 }
 

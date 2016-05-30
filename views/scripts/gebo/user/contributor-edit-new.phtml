@@ -59,6 +59,19 @@
     $(document).ready(function() {
         var elem = $("#contributortestcomment_count");
         $("#contributortestcomment").limiter(70, elem);
+        /*var checkValue =$('input:radio[name=blackstatus]:checked').val();
+        $('input:radio[name=blackstatus]').change(function() {
+            
+            $.get("/user/check-bo-user",function(data){
+                console.log("check val "+checkValue);
+                if(data == 0)
+                {
+                    $("input:radio[name=blackstatus][value=" + checkValue + "]").prop('checked',true);
+                    alert("You do not have permission to change the Blacklist status");
+                    //$("input:radio[name=blackstatus][value=" + checkValue + "]").attr('checked', 'checked');
+                }
+            });
+        });*/
 
         var tab = getParameterByName('tab', $(location).attr('href'));
         $("#"+tab).addClass('active');

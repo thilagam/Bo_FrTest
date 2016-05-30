@@ -2783,6 +2783,16 @@ class UserController extends Ep_Controller_Action
         }
         $this->_view->quizlist = $quiz_list;
         $this->_view->contribCount = $userdetails->getStatsContributorsCount();
+        $data = $user_obj->checkBlackStatusEdit($_SESSION['userId']);
+        if(!empty($data))
+        {
+            $res = 1;
+        }
+        else
+        {
+            $res = 0;
+        }
+        $this->_view->edit = $res;
         $this->render('user_searchcontributors');
     }
 
@@ -2922,6 +2932,18 @@ class UserController extends Ep_Controller_Action
     public function loadcontributorAction()
     {
         $user_obj = new Ep_User_User();
+        /**Author:Thilagam**/
+        /**Date:30/5/2016**/
+        /**Reason:To check whether the user is superadmin or Alessia**/
+        $data = $user_obj->checkBlackStatusEdit($_SESSION['userId']);
+        if(!empty($data))
+        {
+            $res = 1;
+        }
+        else
+        {
+            $res = 0;
+        }
         $aColumns = array('identifier', 'full_name', 'email', 'profile_type', 'status', 'created_at', 'category_more', 'language', 'contributortest', 'actions');
         /* * Paging	 */
         $sLimit = "";
@@ -3155,9 +3177,18 @@ class UserController extends Ep_Controller_Action
                                    <a href="contributor-edit-new?submenuId=ML10-SL6&tab=viewcontrib&userId=' . $rResult[$i]['identifier'] . '" class="hint--left hint--info" data-hint="view profile" ><i class="icon-eye-open"></i></a>
                                   <a href="http://ep-test.edit-place.com/user/email-login?user=' . MD5("ep_login_" . $email) . '&hash=' . MD5("ep_login_" . $password) . '&type=' . $type . '&redirectpage=home" target="_blank"><i class="splashy-contact_blue"></i></a>';
                             } else {
+                                /**Author:Thilagam**/
+                                /**Date:30/5/2016**/
+                                /**Reason:To show edit only to the superadmins and Alessia**/
+                                if($res == 1):
                                 $row[] = '<a href="contributor-edit-new?submenuId=ML10-SL6&tab=editcontrib&userId=' . $rResult[$i]['identifier'] . '" class="hint--left hint--info" data-hint="edit profile"><i class="icon-pencil"></i> </a>
                                    <a href="contributor-edit-new?submenuId=ML10-SL6&tab=viewcontrib&userId=' . $rResult[$i]['identifier'] . '" class="hint--left hint--info" data-hint="view profile" ><i class="icon-eye-open"></i></a>
                                   <a href="http://ep-test.edit-place.com/user/email-login?user=' . MD5("ep_login_" . $email) . '&hash=' . MD5("ep_login_" . $password) . '&type=' . $type . '&redirectpage=home" target="_blank"><i class="splashy-contact_blue"></i></a>';
+                                else:
+                                    $row[] = '
+                                   <a href="contributor-edit-new?submenuId=ML10-SL6&tab=viewcontrib&userId=' . $rResult[$i]['identifier'] . '" class="hint--left hint--info" data-hint="view profile" ><i class="icon-eye-open"></i></a>
+                                  <a href="http://ep-test.edit-place.com/user/email-login?user=' . MD5("ep_login_" . $email) . '&hash=' . MD5("ep_login_" . $password) . '&type=' . $type . '&redirectpage=home" target="_blank"><i class="splashy-contact_blue"></i></a>';
+                                endif;
                             }
 
                         } else
@@ -8120,6 +8151,21 @@ class UserController extends Ep_Controller_Action
         header('Content-length: ' . strlen($content));
         header('Content-disposition: attachment; filename=' . basename($file));
         echo $content;
+    }
+
+    public function checkBoUser()
+    {
+        $user_obj =  new Ep_User_User();
+        $data = $user_obj->checkBlackStatusEdit($_SESSION['userId']);
+        if(!empty($data))
+        {
+            $res = 1;
+        }
+        else
+        {
+            $res = 0;
+        }
+        return $res;
     }
 }
 

@@ -57,7 +57,6 @@ class IndexController extends Ep_Controller_Action
     public function indexAction()
     {
         $this->adminLogin = Zend_Registry::get('adminLogin');  //its wholesome session variable //
-
         $Dates = new Date("", $this->_lang);
         $today = $Dates->getyear().$Dates->getMonth().$Dates->getDay();
         $this->adminLogin->xmlfile = $today.'.xml';
@@ -342,6 +341,10 @@ class IndexController extends Ep_Controller_Action
 
 
                 $this->adminLogin->userId = $LoggedUserDetails[0]->identifier;
+                /**Author:Thilagam**/
+                /**Date:30/5/2016**/
+                /**Reason:To set the logged in user identifier in session. For the edit contributor**/
+                $_SESSION['userId'] = $LoggedUserDetails[0]->identifier;
                 $this->adminLogin->groupId = $LoggedUserDetails[0]->groupId;
                 $this->adminLogin->type = $LoggedUserDetails[0]->type;
                 $this->adminLogin->loginEmail = $LoggedUserDetails[0]->email;
