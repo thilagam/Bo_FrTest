@@ -1788,63 +1788,7 @@ class UserController extends Ep_Controller_Action
         $this->_view->render("user_clientedit");
     }
 
-    /**Author:Thilagam**/
-    /**Date:30/5/2016**/
-    /**Reason:To load the Client's AO list through ajax**/
-    public function loadaolistAction()
-    {
-        $payment_obj = new Ep_Payment_Payment();
-        $ao_obj = new Ep_Delivery_Delivery();
-        $user = $this->_request->getParams('userId');
-        $userId = $user['userId'];
-       
-       $ao = $ao_obj->getAOviewinfo($userId,$sWhere,$sLimit);
-        if(!empty($ao))
-        {
-            $i = 0;
-            foreach($ao as $key=>$value)
-            {
-                $details = $payment_obj->getInvoices($ao[$key]['id']);
-                if (file_exists('/home/sites/site5/web/FO/invoice/client/' . $details[0]['user_id'] . '/' . $details[0]['invoice_id'] . '.pdf')) :
-                    $ao[$key]['inv'] = 1;
-                else :
-                    $ao[$key]['inv'] = 0;
-                endif;
-                $ao[$key]['slno'] = $i+1;
-                $ao[$key]['title'] = "<a href='/ongoing/ao-details?submenuId=ML2-SL4&client_id=".$ao[$key]['user_id']."&ao_id=".$ao[$key]['id']."' target='_blank' title='".utf8_encode($ao[$key]['title'])."'>".utf8_encode($ao[$key]['title'])."</a>";
-                if($ao[$key]['premium_option'] == 'non-premium')
-                {
-                    $ao[$key]['premium']="<label class='label label-info'>mission libert&eacute;</label>";
-                }
-                else
-                {
-                    $ao[$key]['premium']="<label class='label label-warning'>Mission premium</label>";
-                }
-                if($ao[$key]['AOtype'] == 'private')
-                {
-                    $ao[$key]['aotype'] ="<label class='label label-warning'>Private</label>";
-                }
-                else
-                {
-                     $ao[$key]['aotype'] = "<label class='label label-success'>Private</label>";
-                }
-                $ao[$key]['options'] = "<a href='/ongoing/ao-details?submenuId=ML2-SL4&client_id=".$ao[$key]['user_id']."&ao_id=".$ao[$key]['id']."' target='_blank' ><i class='icon-pencil'></i></a>";
-                if ($ao[$i]['inv'] == 1){
-                    $ao[$i]['options'].="&nbsp; / &nbsp;<a onclick='return downloadInvoices(".$ao[$i]['id'].");' href='javascript:void(0);>Download Invoices</a>";
-                }
-                $i++;
-            }
-            
-        }
-        $iTotal = count($ao);
-        $output = array(
-            "sEcho" => intval($_GET['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iTotal,
-            "aaData" => $ao
-        );
-        echo json_encode($output);
-    }
+
     /*
     public function getPagesAction()
     {
@@ -8073,6 +8017,109 @@ class UserController extends Ep_Controller_Action
             return false;
         }
         return true;
+    }
+    /**Author:Thilagam**/
+    /**Date:30/5/2016**/
+    /**Reason:To load the Client's AO list through ajax**/
+    public function loadaolistAction()
+    {
+        $payment_obj = new Ep_Payment_Payment();
+        $ao_obj = new Ep_Delivery_Delivery();
+        $user = $this->_request->getParams('userId');
+        $userId = $user['userId'];
+       
+       $ao = $ao_obj->getAOviewinfo($userId);
+        if(!empty($ao))
+        {
+            $i = 0;
+            foreach($ao as $key=>$value)
+            {
+                $details = $payment_obj->getInvoices($ao[$key]['id']);
+                if (file_exists('/home/sites/site5/web/FO/invoice/client/' . $details[0]['user_id'] . '/' . $details[0]['invoice_id'] . '.pdf')) :
+                    $ao[$key]['inv'] = 1;
+                else :
+                    $ao[$key]['inv'] = 0;
+                endif;
+                $ao[$key]['slno'] = $i+1;
+                $ao[$key]['title'] = "<a href='/ongoing/ao-details?submenuId=ML2-SL4&client_id=".$ao[$key]['user_id']."&ao_id=".$ao[$key]['id']."' target='_blank' title='".utf8_encode($ao[$key]['title'])."'>".utf8_encode($ao[$key]['title'])."</a>";
+                if($ao[$key]['premium_option'] == 'non-premium')
+                {
+                    $ao[$key]['premium']="<label class='label label-info'>mission libert&eacute;</label>";
+                }
+                else
+                {
+                    $ao[$key]['premium']="<label class='label label-warning'>Mission premium</label>";
+                }
+                if($ao[$key]['AOtype'] == 'private')
+                {
+                    $ao[$key]['aotype'] ="<label class='label label-warning'>Private</label>";
+                }
+                else
+                {
+                     $ao[$key]['aotype'] = "<label class='label label-success'>Private</label>";
+                }
+                $ao[$key]['options'] = "<a href='/ongoing/ao-details?submenuId=ML2-SL4&client_id=".$ao[$key]['user_id']."&ao_id=".$ao[$key]['id']."' target='_blank' ><i class='icon-pencil'></i></a>";
+                if ($ao[$i]['inv'] == 1){
+                    $ao[$i]['options'].="&nbsp; / &nbsp;<a onclick='return downloadInvoices(".$ao[$i]['id'].");' href='javascript:void(0);>Download Invoices</a>";
+                }
+                $i++;
+            }
+            
+        }
+        $iTotal = count($ao);
+        $output = array(
+            "sEcho" => intval($_GET['sEcho']),
+            "iTotalRecords" => $iTotal,
+            "iTotalDisplayRecords" => $iTotal,
+            "aaData" => $ao
+        );
+        echo json_encode($output);
+    }
+    /**Author:Thilagam**/
+    /**Date:30/5/2016**/
+    /**Reason:To download the AO list**/
+    public function downloadAoListAction()
+    {
+        $ao_obj = new Ep_Delivery_Delivery();
+        $user = $this->_request->getParams('userId');
+        $userId = $user['userId'];
+        $ao = $ao_obj->getAOviewinfo($userId);
+        $file = 'excelFile-' . date("Y-M-D") . "-" . time() . '.xls';
+        ob_start();
+        $content = " ";
+        $content .= "<table border='1'>";
+            $content .= "<tr>";
+                $content .= "<th>Slno</th>";
+                $content .= "<th>AO Title</th>";
+                $content .= "<th>Number of Articles</th>";
+                $content .= "<th>Created Date</th>";
+                $content .= "<th>Status</th>";
+                $content .= "<th>Prem/No-Prem</th>";
+                $content .= "<th>Public/Private</th>";
+            $content .= "</tr>";
+            for($i = 0;$i<count($ao);$i++):
+                $content .= "<tr>";
+                    $sl = $i+1;
+                    $content .= "<td>".$sl."</td>";
+                    $content .= "<td>".utf8_decode($ao[$i]['title'])."</td>";
+                    $content .= "<td>".$ao[$i]['total_article']."</td>";
+                    $content .= "<td>".$ao[$i]['created_at']."</td>";
+                    $content .= "<td>".ucfirst($ao[$i]['status_bo'])."</td>";
+                    $content .= "<td>".ucfirst($ao[$i]['premium_option'])."</td>";
+                    $content .= "<td>".ucfirst($ao[$i]['AOtype'])."</td>";
+                $content .= "</tr>";
+            endfor;
+        $content .= "</table>";
+        ob_end_clean();
+        header("Expires: 0");
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+        header("Cache-Control: no-store, no-cache, must-revalidate");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+        header("Content-type: application/vnd.ms-excel;charset:UTF-8");
+        header('Content-length: ' . strlen($content));
+        header('Content-disposition: attachment; filename=' . basename($file));
+        echo $content;
     }
 }
 

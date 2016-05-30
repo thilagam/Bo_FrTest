@@ -747,7 +747,12 @@
               {else}
               {$user_detail[0].company_name}
               {/if}
+              <!--Author:Thilagam -->
+              <!--Date:30/5/2016-->
+              <!-- Reason: Button to download the ao list-->
+              <a href="/user/download-ao-list?userId={$user_detail[0].identifier}"  class="label label-warning pull-right">Writers Info</a>
           </h3>
+
           <table class="table table-bordered table-striped table_vam" id="aolisttable">
               <thead>
               <tr>
