@@ -5867,7 +5867,21 @@ class UserController extends Ep_Controller_Action
         $mail_obj = new Ep_Message_AutoEmails();
         $userId = $this->_request->getParam('userId');
         $user_details = $user_obj->getContributordetails($userId);
-        /* *getting User expeience details**/
+        /**Author:Thilagam**/
+        /**Date:30/5/2016**/
+        /**Reason:To check whether the user is superadmin or Alessia**/
+        $data = $user_obj->checkBlackStatusEdit($_SESSION['userId']);
+        if(!empty($data))
+        {
+            $res = 1;
+        }
+        else
+        {
+            $res = 0;
+        }
+        $this->_view->edit = $res;
+        /* 
+        *getting User expeience details**/
         $jobDetails = $experience_obj->getExperienceDetails($userId, 'job');
         if ($jobDetails != "NO")
             $this->_view->jobDetails = $jobDetails;

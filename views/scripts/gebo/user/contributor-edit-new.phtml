@@ -1326,7 +1326,12 @@
     <div class="span12" style="">
         <div class="tabbable">
             <ul class="nav nav-tabs">
+            <!-- Author:Thilagam-->
+            <!-- Date:30/5/2016-->
+            <!-- Reason:To show and hide the edit option-->
+                {if $edit == '1'}
                 <li {if $smarty.get.tab == 'editcontrib' || $smarty.get.tab == ''} class="active" {/if}><a href="#editcontrib" data-toggle="tab" class="lable-success"><i class="icon-pencil"></i>&nbsp;<strong>Edit</strong></a></li>
+                {/if}
                 <li {if $smarty.get.tab == 'viewcontrib'} class="active" {/if}><a href="#viewcontrib" data-toggle="tab" class="lable-danger"><i class="icon-eye-open"></i>&nbsp;<strong>View</strong></a></li>
                 <li {if $smarty.get.tab == 'writerstats'} class="active" {/if}><a href="#writerstats" onclick="load_statistic('{$userId}','writer');" data-toggle="tab" class="lable-danger"><i class="icon-eye-open"></i>&nbsp;<strong>Statistiques R&eacute;dacteur</strong></a></li>
                 <li {if $smarty.get.tab == 'correctorstats'} class="active" {/if}><a href="#correctorstats" onclick="load_statistic('{$userId}','corrector');" data-toggle="tab" class="lable-danger"><i class="icon-eye-open"></i>&nbsp;<strong>Statistiques Correcteur</strong></a></li>
