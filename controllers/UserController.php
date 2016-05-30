@@ -1789,57 +1789,62 @@ class UserController extends Ep_Controller_Action
     }
 
     /**Author:Thilagam**/
-    /*public function loadaolistAction()
+    /**Date:30/5/2016**/
+    /**Reason:To load the Client's AO list through ajax**/
+    public function loadaolistAction()
     {
         $payment_obj = new Ep_Payment_Payment();
         $ao_obj = new Ep_Delivery_Delivery();
-        $userId = $this->_request->getParam('userId');
-        $ao = $ao_obj->getAOviewinfo($userId);
-        if ($ao != '') {
-            $j = 0;
-            do {
-                $details = $payment_obj->getInvoices($ao[$j]['id']);
-                if (file_exists('/home/sites/site5/web/FO/invoice/client/' . $details[0]['user_id'] . '/' . $details[0]['invoice_id'] . '.pdf')) :
-                    $ao[$j]['inv'] = 1;
-                else :
-                    $ao[$j]['inv'] = 0;
-                endif;
-
-                $j++;
-            } while ($j < sizeof($ao));
-        }
-        $i = 0;
-        while($ao[$i])
+        $user = $this->_request->getParams('userId');
+        $userId = $user['userId'];
+       
+       $ao = $ao_obj->getAOviewinfo($userId,$sWhere,$sLimit);
+        if(!empty($ao))
         {
-            $ao[$i]['slno']=$i+1;
-            $ao[$i]['title']="<a href='/ongoing/ao-details?submenuId=ML2-SL4&client_id=".$ao[$i]['user_id']."&ao_id=".$ao[$i]['id']."' target='_blank' title='".$ao[$i]['title']."'>".$ao[$i]['title']."</a>";
-            if($ao[$i]['premium_option'] == 'non-premium')
+            $i = 0;
+            foreach($ao as $key=>$value)
             {
-                $ao[$i]['premium']="<label class='label label-info'>mission libert&eacute;</label>";
+                $details = $payment_obj->getInvoices($ao[$key]['id']);
+                if (file_exists('/home/sites/site5/web/FO/invoice/client/' . $details[0]['user_id'] . '/' . $details[0]['invoice_id'] . '.pdf')) :
+                    $ao[$key]['inv'] = 1;
+                else :
+                    $ao[$key]['inv'] = 0;
+                endif;
+                $ao[$key]['slno'] = $i+1;
+                $ao[$key]['title'] = "<a href='/ongoing/ao-details?submenuId=ML2-SL4&client_id=".$ao[$key]['user_id']."&ao_id=".$ao[$key]['id']."' target='_blank' title='".utf8_encode($ao[$key]['title'])."'>".utf8_encode($ao[$key]['title'])."</a>";
+                if($ao[$key]['premium_option'] == 'non-premium')
+                {
+                    $ao[$key]['premium']="<label class='label label-info'>mission libert&eacute;</label>";
+                }
+                else
+                {
+                    $ao[$key]['premium']="<label class='label label-warning'>Mission premium</label>";
+                }
+                if($ao[$key]['AOtype'] == 'private')
+                {
+                    $ao[$key]['aotype'] ="<label class='label label-warning'>Private</label>";
+                }
+                else
+                {
+                     $ao[$key]['aotype'] = "<label class='label label-success'>Private</label>";
+                }
+                $ao[$key]['options'] = "<a href='/ongoing/ao-details?submenuId=ML2-SL4&client_id=".$ao[$key]['user_id']."&ao_id=".$ao[$key]['id']."' target='_blank' ><i class='icon-pencil'></i></a>";
+                if ($ao[$i]['inv'] == 1){
+                    $ao[$i]['options'].="&nbsp; / &nbsp;<a onclick='return downloadInvoices(".$ao[$i]['id'].");' href='javascript:void(0);>Download Invoices</a>";
+                }
+                $i++;
             }
-            else
-            {
-                $ao[$i]['premium']="<label class='label label-warning'>Mission premium</label>";
-            }
-            if($ao[$i]['AOtype'] == 'private')
-            {
-                $ao[$i]['aotype'] ="<label class='label label-warning'>Private</label>";
-            }
-            else
-            {
-                $ao[$i]['aotype'] = "<label class='label label-success'>Private</label>";
-            }
-            $ao[$i]['options'] = "<a href='/ongoing/ao-details?submenuId=ML2-SL4&client_id=".$ao[$i]['user_id']."&ao_id=".$ao[$i]['id']."' target='_blank' ><i class='icon-pencil'></i></a>";
-            //if ($ao[$i]['inv'] == 1){
-                //$ao[$i]['options'].="&nbsp; / &nbsp;<a onclick='return downloadInvoices(".$ao[$i]['id'].");' href='javascript:void(0);>Download Invoices</a>";
-            //}
             
-           $i++;
         }
-        //print_r($ao);
-        echo json_encode($ao);
-        
-    }*/
+        $iTotal = count($ao);
+        $output = array(
+            "sEcho" => intval($_GET['sEcho']),
+            "iTotalRecords" => $iTotal,
+            "iTotalDisplayRecords" => $iTotal,
+            "aaData" => $ao
+        );
+        echo json_encode($output);
+    }
     /*
     public function getPagesAction()
     {

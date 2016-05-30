@@ -953,6 +953,7 @@ class Ep_Delivery_Delivery extends Ep_Db_Identifier
         endforeach ;
         return $result;
     }
+    
     /* *Get contributors to send mails when approved an AO**/
     public function getCorrectorsWritersAO($profiles, $artlang)
     {

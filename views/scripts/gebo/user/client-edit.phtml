@@ -4,34 +4,29 @@
 <script src="/BO/theme/gebo/lib/validation/jquery.validate.min.js"></script>
 <script language="javascript">
     $(document).ready(function() {
-        /*var userId = {/literal}{$smarty.get.userId}{literal};
+        /**Author:Thilagam**/
+        /**Date:30/5/2016**/
+        /**Reason:To load the AO list through ajax on click of the tab**/
+        var userId = {/literal}{$smarty.get.userId}{literal};
         
         $(".aolist").click(function(){
-            $.ajax({
-                    type: "POST",
-                    url: "/user/loadaolist",
-                    contentType: "application/json; charset=utf-8",
-                    data: {
-                        userId:userId
-                    },
-                    dataType: "json",
-                    success:function(data){
-                        //console.log(data);
-                        if(data != '[ ]')
-                        {
-                            oTable = $('#aolisttable').dataTable({
-                                "bProcessing": true,
-                                "bServerSide": true,
-                                "aaData": data,
-                                "aoColumns": [{ "mDataProp": "slno" }, { "mDataProp": "title" },{ "mDataProp": "total_article" },{ "mDataProp": "create_at" },{ "mDataProp": "status_bo" },{ "mDataProp": "premium" },{ "mDataProp": "aotype" },{ "mDataProp": "options" }],
-                                "aaSorting": [[0, "asc"]],
-                            });
-                        }
-                    }
-                });
-        });*/
+            $('#aolisttable').dataTable({
+                "sAjaxSource": "/user/loadaolist?userId="+userId,
+                "aoColumns": [
+                    {mData: 'slno'},
+                    {mData: 'title'},
+                    {mData: 'total_article'},
+                    {mData: 'created_at'},
+                    {mData: 'status_bo'},
+                    {mData: 'premium'},
+                    {mData: 'aotype'},
+                    {mData: 'options'}
+                ]
+            });
+            
+        });
         
-        $('#aolisttable').dataTable({
+        /*$('#aolisttable').dataTable({
             "sDom": "<'row'<'span6'<'dt_actions'>l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "aaSorting": [[ 0, "asc" ]],
@@ -45,27 +40,8 @@
                 { "sType": "natural" },
                 { "sType": "natural" }
             ]
-        });
-        /*$('#aolisttable').dataTable({
-        "bProcessing": true,
-        "bServerSide": true,
-        "sAjaxSource": "/user/loadaolist",
-        "oTableTools": {
-            "aButtons": [
-                "copy",
-                "print",
-                {
-                    "sExtends":    "collection",
-                    "sButtonText": 'Sauvegarder <span class="caret" />',
-                    "aButtons":    [ "csv", "xls", "pdf" ]
-                }
-            ],
-            "sSwfPath": "/BO/theme/gebo/lib/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
-        }
-
-    } );
-
-    $("#aolisttable").css("float","left");*/
+        });*/
+        
         var tab = getParameterByName('tab', $(location).attr('href'));
         $("#"+tab).addClass('active');
         $("#favcontribs").chosen({ allow_single_deselect: false,search_contains: true});
@@ -786,7 +762,7 @@
               </tr>
               </thead>
               <tbody>
-              {foreach from=$ao item=ao name=ao_loop}
+              <!-- {foreach from=$ao item=ao name=ao_loop}
               <tr>
                   <td>{$smarty.foreach.ao_loop.index+1}</td>
                   <td><a href="/ongoing/ao-details?submenuId=ML2-SL4&client_id={$ao.user_id}&ao_id={$ao.id}" target="_blank" title="{$ao.title}">{$ao.title}</a></td>
@@ -798,7 +774,7 @@
                   <td><a href="/ongoing/ao-details?submenuId=ML2-SL4&client_id={$ao.user_id}&ao_id={$ao.id}" target="_blank" ><i class="icon-pencil"></i></a>{if $ao.inv eq '1'}&nbsp; / &nbsp;<a onclick="return downloadInvoices('{$ao.id}');" href="javascript:void(0);">Download Invoices</a>{/if}
                   </td>
               </tr>
-              {/foreach}
+              {/foreach} -->
               </tbody> 
           </table>
       </div>
