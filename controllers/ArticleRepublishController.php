@@ -442,24 +442,24 @@ class ArticleRepublishController extends Ep_Controller_Action {
         }
         //total counts of individual contribitors type////
         //$sclist = $contrib_obj->getContributorcount('senior');
-        $sclist = $contrib_obj->getWriterCountOnLang('senior',$articleDetails[0]['language']);
+        $sclist = $contrib_obj->getWriterCountOnLang('senior',$articleDetails[0]['language'],$articleDetails[0]['language_group'],$articleDetails[0]['AOtype']);
         $this->_view->sc_count= $sclist-$participatedsccount;
         $sclist= $sclist-$participatedsccount;
         //$jclist = $contrib_obj->getContributorcount('junior');
-        $jclist = $contrib_obj->getWriterCountOnLang('junior',$articleDetails[0]['language']);
+        $jclist = $contrib_obj->getWriterCountOnLang('junior',$articleDetails[0]['language'],$articleDetails[0]['language_group'],$articleDetails[0]['AOtype']);
         $this->_view->jc_count = $jclist-$participatedjccount;
         $jclist = $jclist-$participatedjccount;
         //$jc0list = $contrib_obj->getContributorcount('sub-junior');
-        $jc0list = $contrib_obj->getWriterCountOnLang('sub-junior',$articleDetails[0]['language']);
+        $jc0list = $contrib_obj->getWriterCountOnLang('sub-junior',$articleDetails[0]['language'],$articleDetails[0]['language_group'],$articleDetails[0]['AOtype']);
          $this->_view->jc0_count=  $jc0list-$participatedjc0count;
         $jc0list =  $jc0list-$participatedjc0count;
 
         /**Author:Thilagam**/
         /**Date:13/5/2016**/
         /**Reason:To get the list of participants who have already participated in the article**/
-        $scContrib = $contrib_obj->getWriterRepublish('senior',$articleDetails[0]['language']);
-        $jcContrib = $contrib_obj->getWriterRepublish('junior',$articleDetails[0]['language']);
-        $jc0Contrib = $contrib_obj->getWriterRepublish('sub-junior',$articleDetails[0]['language']);
+        $scContrib = $contrib_obj->getWriterReplublish('senior',$articleDetails[0]['language']);
+        $jcContrib = $contrib_obj->getWriterReplublish('junior',$articleDetails[0]['language']);
+        $jc0Contrib = $contrib_obj->getWriterReplublish('sub-junior',$articleDetails[0]['language']);
         //The final array with all the senior,junior and sub-junior participants
         $contrib = array();
         if(!empty($scContrib))
@@ -766,6 +766,7 @@ class ArticleRepublishController extends Ep_Controller_Action {
     {
         $delivery_obj = new Ep_Delivery_Delivery();
         $participate_obj = new EP_Participation_Participation();
+        $ongoing_obj = new Ep_Quote_Ongoing();
         $republishParams=$this->_request->getParams();
         $artId=$_REQUEST['artId'];
 		$artdeldetails = $delivery_obj->getArtDeliveryDetails($artId);
@@ -780,10 +781,20 @@ class ArticleRepublishController extends Ep_Controller_Action {
             }
         }
         $selectedcontribs = array_values($selectedcontribs);
-		if($artdeldetails[0]['product']=='translation')
+		
+        /*if($artdeldetails[0]['product']=='translation')
 			$contriblistall = $delivery_obj->getContribsByTypeLangCatTranslation($_REQUEST['type'],$_REQUEST['category'],$_REQUEST['language'],$artdeldetails[0]['language_source'],$artdeldetails[0]['sourcelang_nocheckart']);
 		else
-			$contriblistall = $delivery_obj->getContribsByTypeLangCat($_REQUEST['type'],$_REQUEST['category'],$_REQUEST['language']);
+			$contriblistall = $delivery_obj->getContribsByTypeLangCat($_REQUEST['type'],$_REQUEST['category'],$_REQUEST['language']);*/
+        $request['profiletype']=explode(",",str_replace("'","",$republishParams['type']));
+        $request['language_group']=$artdeldetails[0]['language_group'];
+        if($artdeldetails[0] === 'translation')
+            $contriblistall=$ongoing_obj->getAllTranslatorContribAO($request['profiletype'],$republishParams['language'],$artdeldetails[0]['language_source'],$artdeldetails[0]['sourcelang_nocheckart'],$request['language_group']);
+        else
+            $contriblistall=$ongoing_obj->getAllwritersAO($request['profiletype'],$republishParams['language'],$request['language_group']);
+                    
+
+
 		$contriblistall1=array();
         if($contriblist != 'NO')  {
             for ($i=0;$i<count($contriblistall);$i++)
@@ -2998,7 +3009,10 @@ class ArticleRepublishController extends Ep_Controller_Action {
             }
         }
         $selectedcontribs = array_values($selectedcontribs);
-		$contriblistall = $delivery_obj->getContribsByTypeLangCat($_REQUEST['type'],$_REQUEST['category'],$_REQUEST['language']);
+         $request['profiletype']=explode(",",str_replace("'","",$republishParams['type']));
+		//$contriblistall = $delivery_obj->getContribsByTypeLangCat($_REQUEST['type'],$_REQUEST['category'],$_REQUEST['language']);
+        $contriblistall = $delivery_obj->getCorrectorsByLangType($request['profiletype'],$republishParams['language'],$artdeldetails[0]['language_group']);
+        
 		$contriblistall1=array();
         if($contriblist != 'NO')  {
             for ($i=0;$i<count($contriblistall);$i++)
