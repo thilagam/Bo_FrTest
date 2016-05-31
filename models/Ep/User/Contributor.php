@@ -279,13 +279,26 @@ class EP_User_Contributor extends Ep_Db_Identifier
         else
             return 0;
     }
-    public function getWriterCountOnLang($ptype, $langs)
+    public function getWriterCountOnLang($ptype, $langs,$language_group=NULL,$AOtype)
     {
         $langs = explode(",",$langs);
         $langs=implode("','",$langs);
 
+        if($language_group)
+        {
+            $where.=" AND (c.language IN ('".$langs."') OR c.language IN (SELECT language FROM LanguageGroupsList WHERE group_id='".$language_group."')) ";  
+        }
+        else{
+            $where.=" AND c.language IN ('".$langs."')" ;
+        }
+
+        if($AOtype=='private')
+        {
+            $where.=" AND u.last_visit > '2015-08-01%'" ;
+        }
+
         $ContribQuery = "select count(u.identifier) as count FROM User u INNER JOIN Contributor c ON u.identifier=c.user_id
-                           WHERE u.profile_type IN ('".$ptype."') AND u.status='active' AND u.blackstatus='no' AND c.language IN ('".$langs."')" ;
+                           WHERE u.profile_type IN ('".$ptype."') AND u.status='active' AND u.blackstatus='no' $where" ;
 						
         if(($Contribresult = $this->getQuery($ContribQuery,true)) != NULL)
             return $Contribresult[0]['count'];

@@ -457,9 +457,9 @@ class ArticleRepublishController extends Ep_Controller_Action {
         /**Author:Thilagam**/
         /**Date:13/5/2016**/
         /**Reason:To get the list of participants who have already participated in the article**/
-        $scContrib = $contrib_obj->getWriterReplublish('senior',$articleDetails[0]['language']);
-        $jcContrib = $contrib_obj->getWriterReplublish('junior',$articleDetails[0]['language']);
-        $jc0Contrib = $contrib_obj->getWriterReplublish('sub-junior',$articleDetails[0]['language']);
+        $scContrib = $contrib_obj->getWriterRepublish('senior',$articleDetails[0]['language']);
+        $jcContrib = $contrib_obj->getWriterRepublish('junior',$articleDetails[0]['language']);
+        $jc0Contrib = $contrib_obj->getWriterRepublish('sub-junior',$articleDetails[0]['language']);
         //The final array with all the senior,junior and sub-junior participants
         $contrib = array();
         if(!empty($scContrib))
