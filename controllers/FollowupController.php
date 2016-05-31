@@ -140,13 +140,16 @@ class FollowupController extends Ep_Controller_Action
 			$view['currency'] =  $res[0]['sales_suggested_currency'];
 			$view['assigned'] = $res[0]['assigned_to'];
 			$view['quote_signed_at'] = date('d M Y',strtotime($quote_details[0]['signed_at']));
-			$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+			
+				$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+
 			if($res[0]['delivery_option']=='hours')
 			$no_days = ceil($res[0]['delivery_time']/24);
 			else
 			$no_days = $res[0]['delivery_time'];
 			/* to date from contractmissions(assinged date) plus number of days from techmissions */
-			$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
+			
+				$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
 
 			
 			/*tech tempo define*/
@@ -423,13 +426,16 @@ class FollowupController extends Ep_Controller_Action
 			$view['currency'] =  $quote_details[0]['sales_suggested_currency'];
 			$view['assigned'] = $res[0]['assigned_to'];
 			$view['quote_signed_at'] = date('d M Y',strtotime($quote_details[0]['signed_at']));
-			$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+			
+				$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+
 			if($res[0]['delivery_option']=='hours')
 			$no_days = ceil($res[0]['delivery_time']/24);
 			else
 			$no_days = $res[0]['delivery_time'];
 			
-			$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
+			
+				$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
 		
 			$user_obj=new Ep_User_User();
 			
@@ -627,13 +633,15 @@ class FollowupController extends Ep_Controller_Action
 			$view['currency'] =  $quote_details[0]['sales_suggested_currency'];
 			$view['assigned'] = $res[0]['assigned_to'];
 			$view['quote_signed_at'] = date('d M Y',strtotime($quote_details[0]['signed_at']));
-			$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+			
+				$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
 			if($res[0]['final_mission_length_option']=='hours')
 			$no_days = ceil($res[0]['final_mission_length']/24);
 			else
 			$no_days = $res[0]['final_mission_length'];
 			
-			$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
+			
+				$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
 		
 			$user_obj=new Ep_User_User();
 			
@@ -850,13 +858,15 @@ class FollowupController extends Ep_Controller_Action
 			}
 			else
 			$view['seo_name'] = "";
-			$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+			
+				$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
 			if($res[0]['mission_length_option']=='hours')
 			$no_days = ceil($res[0]['mission_length']/24);
 			else
 			$no_days = $res[0]['mission_length'];
 			
-			$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
+				$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
+
 			$view['quote_signed_at'] = date('d M Y',strtotime($quote_details[0]['signed_at']));
 			$user_obj=new Ep_User_User();
 			
@@ -1031,14 +1041,16 @@ class FollowupController extends Ep_Controller_Action
 			{
 				$view['title'] .= " ".$res[0]['product_type_other'];
 			}
-			$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+			
+				$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
 			/* Calculating to date from when missions was assigned plus the mission length from quotemission */
 			if($res[0]['mission_length_option']=='hours')
 			$no_days = ceil($res[0]['mission_length']/24);
 			else
 			$no_days = $res[0]['mission_length'];
 			
-			$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
+				$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
+
 			if($res[0]['privatedelivery']=='yes')
 			$view['mission_type'] = 'Private';
 			else
@@ -1214,13 +1226,14 @@ class FollowupController extends Ep_Controller_Action
 					else
 						$no_days = $row['delivery_time'];
 					
-					$techMissionDetails[$i]['to_date'] = date('d M Y',strtotime($contractMissionDetails[0]['assigned_at']."+ $no_days days"));
-					$techMissionDetails[$i]['from_date'] = date('d M Y',strtotime($contractMissionDetails[0]['assigned_at']));
+						$techMissionDetails[$i]['to_date'] = date('d M Y',strtotime($contractMissionDetails[0]['assigned_at']."+ $no_days days"));
+						$techMissionDetails[$i]['from_date'] = date('d M Y',strtotime($contractMissionDetails[0]['assigned_at']));	
+					
 				}
 				else
 				{
-					$techMissionDetails[$i]['to_date'] = date('d M Y',strtotime($res[0]['expected_launch_date']));
-					$techMissionDetails[$i]['from_date'] = date('d M Y',strtotime($res[0]['expected_end_date']));
+					$techMissionDetails[$i]['to_date'] = date('d M Y',strtotime($res[0]['expected_end_date']));
+					$techMissionDetails[$i]['from_date'] = date('d M Y',strtotime($res[0]['expected_launch_date']));
 				}
 				$i++;
 			endforeach;
@@ -1240,20 +1253,22 @@ class FollowupController extends Ep_Controller_Action
 				foreach($seoMissionDetails as $row)
 				{
 					$contractMissionDetails = $contract_obj->getContractMission($res[0]['quotecontractid'],'seo',$row['identifier']);
-					if($contractMissionDetails)
+										if($contractMissionDetails)
 					{
 						if($row['mission_length_option']=='hours')
 							$no_days = ceil($row['mission_length']/24);
 						else
 							$no_days = $row['mission_length'];
+
+							$seoMissionDetails[$inc]['to_date'] = date('d M Y',strtotime($contractMissionDetails[0]['assigned_at']."+ $no_days days"));
+							$seoMissionDetails[$inc]['from_date'] = date('d M Y',strtotime($contractMissionDetails[0]['assigned_at']));	
 						
-						$seoMissionDetails[$inc]['to_date'] = date('d M Y',strtotime($contractMissionDetails[0]['assigned_at']."+ $no_days days"));
-						$seoMissionDetails[$inc]['from_date'] = date('d M Y',strtotime($contractMissionDetails[0]['assigned_at']));
+						
 					}
 					else
 					{
-						$seoMissionDetails[$inc]['to_date'] = date('d M Y',strtotime($res[0]['expected_launch_date']));
-						$seoMissionDetails[$inc]['from_date'] = date('d M Y',strtotime($res[0]['expected_end_date']));
+						$seoMissionDetails[$inc]['to_date'] = date('d M Y',strtotime($res[0]['expected_end_date']));
+						$seoMissionDetails[$inc]['from_date'] = date('d M Y',strtotime($res[0]['expected_launch_date']));
 					}
 					$seoMissionDetails[$inc++]['title'] = "SEO Proposal $inc ".$this->product_array[$row['product']];	
 				}
@@ -1436,7 +1451,11 @@ class FollowupController extends Ep_Controller_Action
 		{
 			$request = $this->_request->getParams();
 			$quotecontract = new Ep_Quote_Quotecontract();
-			$mission_details = $quotecontract->getSeoMission($request['qmid']);
+			if($request['type']=='tech')
+				$mission_details =$quotecontract->getTechMission($request['qmid']);
+			else
+				$mission_details = $quotecontract->getSeoMission($request['qmid']);
+
 			$this->_view->mission_details = $mission_details[0];
 			if($mission_details[0]['oneshot']=="yes")
 			{
@@ -1458,45 +1477,75 @@ class FollowupController extends Ep_Controller_Action
 		if($this->_request->isPost() && $request['mid'])
 		{
 			$save = array();
-			$save['mission_length'] = $request['mission_length'];
-			$save['mission_length_option'] = $request['mission_length_option'];
 			$save['oneshot'] = $request['oneshot'];
-			$save['staff_time'] = $request['staff_time'];
-			$quote_contract = new Ep_Quote_Quotecontract();
-			if($save['oneshot']=="yes")
+			if($request['mission_type']=='tech')
 			{
-				//$contract_mission_id = $request['cmid'];
-				$articles = (array) $request['articles'];
-				$oneshot_length = (array) $request['oneshot_length'];
-				$oneshot_option = (array) $request['oneshot_option'];
-				$quote_contract->deleteTempoOneshots($request['cid'],$request['mid']);
-				for($i=0;$i<count($articles);$i++)
+				$save['delivery_time'] = $request['mission_length'];
+				$save['delivery_option'] = $request['mission_length_option'];
+				$quote_contract = new Ep_Quote_Quotecontract();
+				if($save['oneshot']=="yes")
 				{
-					$tm = array();
-					$tm['contract_id'] = $request['cid'];
-					$tm['mission_id'] = $request['mid'];
-					$tm['articles'] = $articles[$i];
-					$tm['oneshot_length'] = $oneshot_length[$i];
-					$tm['oneshot_option'] = $oneshot_option[$i];
-					$quote_contract->insertTempoOneshots($tm);
+					$save['volume_max'] = NULL;
+					$save['tempo'] = NULL;
+					$save['delivery_volume_option'] = NULL;
+					$save['tempo_length'] = NULL;
+					$save['tempo_length_option'] = NULL;
 				}
-				$save['volume_max'] = NULL;
-				$save['tempo'] = NULL;
-				$save['delivery_volume_option'] = NULL;
-				$save['tempo_length'] = NULL;
-				$save['tempo_length_option'] = NULL;
+				else
+				{
+					$save['volume_max'] = $request['volume_max'];
+					$save['tempo'] = $request['tempo'];
+					$save['delivery_volume_option'] = $request['delivery_volume_option'];
+					$save['tempo_length'] = $request['tempo_length'];
+					$save['tempo_length_option'] = $request['tempo_length_option'];
+				}
+				$mission_obj = new Ep_Quote_TechMissions();
+				$mission_obj->updateTechMission($save,$request['mid']);
 			}
 			else
 			{
-				$quote_contract->deleteTempoOneshots($request['cid'],$request['mid']);
-				$save['volume_max'] = $request['volume_max'];
-				$save['tempo'] = $request['tempo'];
-				$save['delivery_volume_option'] = $request['delivery_volume_option'];
-				$save['tempo_length'] = $request['tempo_length'];
-				$save['tempo_length_option'] = $request['tempo_length_option'];
+				$save['mission_length'] = $request['mission_length'];
+				$save['mission_length_option'] = $request['mission_length_option'];
+				$save['staff_time'] = $request['staff_time'];
+				$quote_contract = new Ep_Quote_Quotecontract();
+					if($save['oneshot']=="yes")
+					{
+						//$contract_mission_id = $request['cmid'];
+						$articles = (array) $request['articles'];
+						$oneshot_length = (array) $request['oneshot_length'];
+						$oneshot_option = (array) $request['oneshot_option'];
+						$quote_contract->deleteTempoOneshots($request['cid'],$request['mid']);
+						for($i=0;$i<count($articles);$i++)
+						{
+							$tm = array();
+							$tm['contract_id'] = $request['cid'];
+							$tm['mission_id'] = $request['mid'];
+							$tm['articles'] = $articles[$i];
+							$tm['oneshot_length'] = $oneshot_length[$i];
+							$tm['oneshot_option'] = $oneshot_option[$i];
+							$quote_contract->insertTempoOneshots($tm);
+						}
+						$save['volume_max'] = NULL;
+						$save['tempo'] = NULL;
+						$save['delivery_volume_option'] = NULL;
+						$save['tempo_length'] = NULL;
+						$save['tempo_length_option'] = NULL;
+					}
+					else
+					{
+						$quote_contract->deleteTempoOneshots($request['cid'],$request['mid']);
+						$save['volume_max'] = $request['volume_max'];
+						$save['tempo'] = $request['tempo'];
+						$save['delivery_volume_option'] = $request['delivery_volume_option'];
+						$save['tempo_length'] = $request['tempo_length'];
+						$save['tempo_length_option'] = $request['tempo_length_option'];
+					}
+					$mission_obj = new Ep_Quote_QuoteMissions();
+					$mission_obj->updateQuoteMission($save,$request['mid']);
 			}
-			$mission_obj = new Ep_Quote_QuoteMissions();
-			$mission_obj->updateQuoteMission($save,$request['mid']);
+			
+			
+			
 			$this->_helper->FlashMessenger('Updated tempo successfully');
 			if($request['cmid'])
 			$this->_redirect('/followup/prod?submenuId=ML13-SL4&cmid='.$request['cmid']);
@@ -1852,14 +1901,16 @@ class FollowupController extends Ep_Controller_Action
 				//echo "<pre>"; print_r($res); exit;
 				$view['contract_id'] = $res[0]['quotecontractid'];
 				$view['mission_id'] = $res[0]['tmid'];
-				
+
 				$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+
 				if($res[0]['delivery_option']=='hours')
 					$no_days = ceil($res[0]['delivery_time']/24);
 				else
 					$no_days = $res[0]['delivery_time'];
-				
-				$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
+
+									$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
+
 				$view['currency'] = $res[0]['sales_suggested_currency'];
 
 				$view['volume']=$res[0]['volume'];
@@ -2064,13 +2115,12 @@ class FollowupController extends Ep_Controller_Action
 				$view['production_cost'] = $res[0]['cost'];
 				$view['contract_id'] = $res[0]['quotecontractid'];
 				$view['mission_id'] = $res[0]['staff_missionId'];
-				
 				$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
 				if($res[0]['delivery_option']=='hours')
 					$no_days = ceil($res[0]['delivery_time']/24);
 				else
 					$no_days = $res[0]['delivery_time'];
-				
+
 				$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
 				$view['currency'] = $res[0]['currency'];
 				
@@ -2202,8 +2252,10 @@ class FollowupController extends Ep_Controller_Action
 				$view['production_cost'] = 0;
 				$view['contract_id'] = $res[0]['quotecontractid'];
 				$view['mission_id'] = $res[0]['contractmissionid'];
-				$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
-				$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+				
+					$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+					$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+				
 				$view['currency'] = $res[0]['currency'];
 				$this->_view->viewarray = $view;
 				$this->render('sales-task');
@@ -2329,12 +2381,14 @@ class FollowupController extends Ep_Controller_Action
 				$view['production_cost'] = $res[0]['cost'];
 				$view['contract_id'] = $res[0]['quotecontractid'];
 				$view['mission_id'] = $res[0]['qmid'];
-				$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
+				
+					$view['from_date'] = date('d M Y',strtotime($res[0]['assigned_at']));
 				if($res[0]['mission_length_option']=='hours')
 					$no_days = ceil($res[0]['mission_length']/24);
 				else
 					$no_days = $res[0]['mission_length'];
-				$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
+				
+					$view['to_date'] = date('d M Y',strtotime($res[0]['assigned_at']."+ $no_days days"));
 				$view['currency'] = $res[0]['sales_suggested_currency'];
 				if($view['seo_action']=="view")
 					$disabled="disabled";
@@ -2513,16 +2567,19 @@ class FollowupController extends Ep_Controller_Action
 		if($this->_request->isPost() && $_SERVER['HTTP_X_REQUESTED_WITH']=='XMLHttpRequest')
 		{
 			$task_obj = new Ep_Quote_Task();
+			$contract_obj = new Ep_Quote_Quotecontract();
+			$quote_obj = new Ep_Quote_Quotes();
 			$request = $this->_request->getParams();
 			//echo "<pre>"; print_r($request); exit;
 			$cmid = $request['cmid'];
-			
+
+			$contract=$contract_obj->getContract($request['contract_id']);
 		 	$update = array();
 			$update['cm_status'] = 'validated'; 
 			$update['validated_by'] = $this->_view->userId; 
 			$update['progress_percent'] = 100; 
 			$update['validated_at'] = date('Y-m-d H:i:s'); 
-			$contract_obj = new Ep_Quote_Quotecontract();
+			
 			$res = $contract_obj->updateContractMission($update,$cmid);
 			
 			//Insert into Logs
@@ -2607,58 +2664,160 @@ class FollowupController extends Ep_Controller_Action
 			$log_obj->insertLogs($log_array);
 			
 			/* Sending Mail */
-			$mail_obj=new Ep_Message_AutoEmails();
+			/*$mail_obj=new Ep_Message_AutoEmails();
 			$mail_content = $mail_obj->getAutoEmail(161);
 			$subject = $mail_content[0]['Object'];
-			$orgmessage = $mail_content[0]['Message'];
+			$orgmessage = $mail_content[0]['Message'];*/
+			
+			$email['title'] = $contract[0]['contractname'];
+            $email['validated'] = 'assigned';
+			$email['followup'] = 'validated';           
+			$quote_res = $quote_obj->getQuoteDetails($contract[0]['quoteid']);
+			$email['currency'] = $quote_res[0]['sales_suggested_currency'];						 
+			$email['client_id'] = $quote_res[0]['client_id'];
+			$email['company_name'] = $quote_res[0]['company_name'];
+			$email['comment'] = $contract[0]['comment'];
+			$email['contract_turnover']=$contract[0]['turnover'];
 			$mission_type = $request['type'];
 			$users = array();
+			$getmission=$contract_obj->getContractMission($request['contract_id'],$mission_type,$request['mission_id']);
 			if($mission_type=="seo" || $mission_type=="prod" || $mission_type=="staff")
 			{
+
 				$quoteMission_obj=new Ep_Quote_QuoteMissions();
 				$qmdetails =$quoteMission_obj->getMissionDetails(array('mission_id'=>$request['mission_id']));
 				if($qmdetails[0]['product']=='translation')
-					$mission_name = $this->product_array[$qmdetails[0]['product']]." ".$this->producttype_array[$qmdetails[0]['product_type']]." ".$this->getCustomName("EP_LANGUAGES",$qmdetails[0]['language_source'])." au ".$this->getCustomName("EP_LANGUAGES",$qmdetails[0]['language_dest']);
+				{
+					$email['mission_name'] = $this->product_array[$qmdetails[0]['product']]." ".$this->producttype_array[$qmdetails[0]['product_type']]." ".$this->getCustomName("EP_LANGUAGES",$qmdetails[0]['language_source'])." au ".$this->getCustomName("EP_LANGUAGES",$qmdetails[0]['language_dest']);
+					$email['mission_name_subject'] = $this->product_array[$qmdetails[0]['product']]." ".$this->producttype_array[$qmdetails[0]['product_type']]." ".$this->getCustomName("EP_LANGUAGES",$qmdetails[0]['language_source'])." au ".$this->getCustomName("EP_LANGUAGES",$qmdetails[0]['language_dest']);
+				}
 				else
-					$mission_name = $this->product_array[$qmdetails[0]['product']]." ".$this->producttype_array[$qmdetails[0]['product_type']]." in ".$this->getCustomName("EP_LANGUAGES",$qmdetails[0]['language_source']);
+				{
+					$email['mission_name'] = $this->product_array[$qmdetails[0]['product']]." ".$this->producttype_array[$qmdetails[0]['product_type']]." in ".$this->getCustomName("EP_LANGUAGES",$qmdetails[0]['language_source']);
+					$email['mission_name_subject'] = utf8_encode($this->product_array[$qmdetails[0]['product']])." ".$this->producttype_array[$qmdetails[0]['product_type']]." in ".$this->getCustomName("EP_LANGUAGES",$qmdetails[0]['language_source']);					
+				}
 					
 				if($mission_type=="seo")
 				{
-					//$users = $contract_obj->getUsers("seomanager");
-					$users = $client_obj->getQuoteUserDetails($this->adminLogin->userId);
-					$mission_link = "<a href='".$this->url."/followup/seo?submenuId=ML13-SL4&cmid=".$cmid."'>click here</a>";
+					
+					//$users = $client_obj->getQuoteUserDetails($this->adminLogin->userId);
+					$email['link'] = BO_DOMAIN_."/followup/seo?submenuId=ML13-SL4&cmid=".$cmid;
+					$email['seo_turnover'] = $qmdetails[0]['turnover'];
+						$seoMissionDetails[0]['product_name']=$this->product_array[$qmdetails[0]['product']];
+						$seoMissionDetails[0]['language_source_name']=$this->getCustomName("EP_LANGUAGES",$qmdetails[0]['language_source']);
+						$seoMissionDetails[0]['unit_price']=$qmdetails[0]['unit_price'];
+						$seoMissionDetails[0]['currency']=$qmdetails[0]['sales_suggested_currency'];
+						
+                        $email['seoMissionDetails']=$seoMissionDetails;
 				}
 				else
 				{
-					$users = $contract_obj->getUsers("multilingue");
-					$mission_link = "<a href='".$this->url."/followup/prod?submenuId=ML13-SL4&cmid=".$cmid."'>click here</a>";
+					
+					$email['link']= BO_DOMAIN_."/followup/prod?submenuId=ML13-SL4&cmid=".$cmid;
+						$missionDetails[0]['product_type_converted' ]= $this->product_array[$qmdetails[0]['product']];
+                        $missionDetails[0]['tempo_length_option_convert'] = $this->duration_array[$qmdetails[0]['tempo_length_option']];
+                        $missionDetails[0]['language_source_converted'] = $this->getCustomName("EP_LANGUAGES", $qmdetails[0]['language_source']);
+                        $missionDetails[0]['product_type_name'] = $this->producttype_array[$qmdetails[0]['product_type']];
+                        if ($qmdetails[0]['language_dest'])
+                            $missionDetails[0]['language_dest_converted'] = $this->getCustomName("EP_LANGUAGES", $qmdetails[0]['language_dest']);
+                        /* If package is team in Quote mission then add product of team fee and team packs to turnover */
+                        if ($qmdetails[0]['package'] == 'team')
+                            $email['editorial_turnover']= ($qmdetails[0]['team_fee'] * $qmdetails[0]['team_packs'])+ $qmdetails[0]['turnover'] ;
+                        else
+                        	$email['editorial_turnover']=$qmdetails[0]['turnover'];
+                        //$email['contract_turnover']=$email['editorial_turnover'];
+                        $missionDetails[0]['nb_words']=$qmdetails[0]['nb_words'];
+                        $missionDetails[0]['oneshot']=$qmdetails[0]['oneshot'];
+                        $missionDetails[0]['mission_length']=$qmdetails[0]['mission_length'];
+                        if($qmdetails[0]['oneshot']=='no')
+                        {
+                           $missionDetails[0]['volume_max']=$qmdetails[0]['volume_max'];
+	                       $missionDetails[0]['delivery_volume_option']=$qmdetails[0]['delivery_volume_option'];
+	                       $missionDetails[0]['tempo']=$qmdetails[0]['tempo'];
+	                       $missionDetails[0]['tempo_length']=$qmdetails[0]['tempo_length'];
+	                       $missionDetails[0]['tempo_length_option']=$qmdetails[0]['tempo_length_option'];
+	                       $missionDetails[0]['currency']=$qmdetails[0]['sales_suggested_currency'];
+					    }
+					    else
+					    {
+					    	$missionDetails[0]['staff_time']=$qmdetails[0]['staff_time'];	
+					    }
+                        $missionDetails[0]['product']=$qmdetails[0]['product'];
+                        $missionDetails[0]['volume']=$qmdetails[0]['volume'];
+                         $missionDetails[0]['unit_price']=$qmdetails[0]['unit_price'];
+
+                         $email['missiondetails']=$missionDetails;
 				}
+				//$email['contract_turnover']=$qmdetails[0]['turnover'];
 			}
 			elseif($mission_type=="tech")
 			{
 				$tech_obj=new Ep_Quote_TechMissions();
 				$techdetails = $tech_obj->getTechMissionDetails(array('identifier'=>$request['mission_id']));
-				$mission_name = $techdetails[0]['title'];
-				//$users = $contract_obj->getUsers("techmanager");
-				$users = $client_obj->getQuoteUserDetails($this->adminLogin->userId);
-				$mission_link = "<a href='".$this->url."/followup/tech?submenuId=ML13-SL4&cmid=".$cmid."'>click here</a>";
+				$email['mission_name'] = $techdetails[0]['title'];
+				
+				//$email['contract_turnover']=$techdetails[0]['turnover'];
+				$email['tech_turnover'] = $techdetails[0]['turnover'];
+				$email['techMissiondetails']=$techdetails;
+				//$users = $client_obj->getQuoteUserDetails($this->adminLogin->userId);
+				$email['link'] = BO_DOMAIN_."/followup/tech?submenuId=ML13-SL4&cmid=".$cmid;
 			}
-			$bo_user = $bo_user_details[0]['first_name']." ".$bo_user_details[0]['last_name'];
-			eval("\$subject= \"$subject\";");
+			//'superadmin' commended
+			$users = $contract_obj->getmissionuser("'facturation','contractowner'");
+			$client_obj=new Ep_Quote_Client();
+			$bo_user_details=$client_obj->getQuoteUserDetails($this->adminLogin->userId);
+			//echo "<pre>"; print_r($email);
+			if($email['mission_name_subject'])
+			{
+				$subject=$email['mission_name_subject'];
+			}
+			else
+			{
+				$subject=$email['mission_name'];
+			}
+			$email['subject']= $email['company_name'].': '.$subject." done";
+			$email['messageval']=" The ".$email['mission_name']." has been done and validated by
+			 ".$bo_user_details[0]['first_name'].' '.$bo_user_details[0]['last_name']." on ".$email['title'].". ";	
+
+
+			 // sending mail to Assigned User
+			 $userdetails=array($quote_res[0]['quote_by'],$request['assigned_to']);
+			if(count($getmission)>0)
+			{
+				if(!in_array($getmission[0]['assigned_by'], $userdetails))
+				array_push($userdetails,$getmission[0]['assigned_by']);
+			}
+			
+			array_unique($userdetails);
+			
+			/*$superadminUsers = $contract_obj->getmissionuser("'superadmin'");
+			foreach($superadminUsers as $suser)
+			{
+				if(!in_array($suser['identifier'], $userdetails))
+				array_push($userdetails,$suser['identifier']);
+			}
+			
+			array_unique($userdetails);*/
+			
+			foreach($userdetails as $createuser)
+			{
+				$Emdetails=$client_obj->getQuoteUserDetails($createuser);
+				$email['bo_name'] = $Emdetails[0]['first_name']." ".$Emdetails[0]['last_name'];
+				//$mail_obj->sendEMail($this->mail_from,$message,$bo_user_details[0]['email'],$subject);
+				$this->sendContractDetailEmails($email,$Emdetails[0]['email'],'assigned');
+			}
 			
 			foreach($users as $user)
 			{
-				$name = $user['first_name']." ".$user['last_name'];
-				eval("\$message= \"$orgmessage\";");
-				$mail_obj->sendEMail($this->mail_from,$message,$user['email'],$subject);
+				$year=Date('Y');
+				$email['userside']='fracturation';
+				$email['bo_name']= $user['first_name']." ".$user['last_name'];
+				$email['link'] = BO_DOMAIN_."turnover/real-month-client-focus?client=".$email['client_id']."&year=".$year;
+				$this->sendContractDetailEmails($email,$user['email'],'assigned');
+				//$mail_obj->sendEMail($this->mail_from,$message,$user['email'],$subject);
 			}
 			
-			// sending mail to Assigned User
-			$client_obj=new Ep_Quote_Client();
-			$bo_user_details=$client_obj->getQuoteUserDetails($request['assigned_to']);
-			$name = $bo_user_details[0]['first_name']." ".$bo_user_details[0]['last_name'];
-			eval("\$message= \"$orgmessage\";");
-			$mail_obj->sendEMail($this->mail_from,$message,$bo_user_details[0]['email'],$subject);
+			
 		}
 	}
 	
@@ -3188,6 +3347,52 @@ class FollowupController extends Ep_Controller_Action
 			$res1 = $contract_obj->updateContractMission($update,$missions['contract_mission_id']);
 		}
 	}
+
+	function sendContractDetailEmails($email,$users_list,$status){
+        
+        $this->_view->message = $email;
+        $email_content=$this->_view->renderHtml('contract-email-template');
+     // echo $email_content; exit;
+		  $mail_obj = new Ep_Message_AutoEmails();
+        if($status=='validate')
+        {
+        	
+        	 $subject = $email['company_name'].': '.$email['title']." contract ".$email['mission_count']." missions have to be assigned";
+
+        	 $mail_obj->sendEMail('work@edit-place.com',$email_content,$users_list,$subject);
+        }
+        elseif($status=='assigned')
+        {
+        	
+        	 $subject = $email['subject'];
+
+        	 $mail_obj->sendEMail('work@edit-place.com',$email_content,$users_list,$subject);
+        }
+        else
+        {
+			$p_array=array("mfouris@edit-place.com","jwolff@edit-place.com","tpellequer@edit-place.com");
+			$final_users_list=array_merge($users_list,$p_array);
+			
+			//echo "<pre>";print_r($email);print_r($final_users_list);
+			//echo  $email_content;exit;
+
+	        
+	        $subject = 'New Contract '.$email['company_name'].' : '.$email['title'];
+       
+	        $to_email =$final_users_list;
+	        
+	        //$destination = dirname(dirname($email['documents'][0]))."/documents-".rand(1000,10000).".zip";
+	        //$zipfile = $this->create_zip($email['documents'],$destination);//ziiping all the files to send through email//
+	      
+	        foreach($to_email as $to)
+			{
+	            $mail_obj->sendEMail('work@edit-place.com',$email_content,$to,$subject);
+			}	
+		}
+        //unlink($zipfile);
+    }
+
+    
 		
 }
 ?>
