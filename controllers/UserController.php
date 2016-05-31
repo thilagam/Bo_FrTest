@@ -7295,6 +7295,7 @@ class UserController extends Ep_Controller_Action
     public function updateContribAjaxAction()
     {
         $params = $this->_request->getParams();
+        //echo "<pre>";print_r($params);exit;
         $user_obj = new Ep_User_User();
         $userId = $this->_request->getParam('userId');
         //fetch the data before any changes are made//
@@ -7314,6 +7315,13 @@ class UserController extends Ep_Controller_Action
                 }
                 $uarr['profile_type2'] = $params['profile_type2'];
                 $uarr['blackstatus'] = $params['blackstatus'];
+                /**Author:Thilagam**/
+                /**Date:31/5/2016**/
+                /**Reason:To store the blackstatus comments**/
+                if($params['blackstatus'] == "yes")
+                {
+                    $uarr['blackstatuscomment'] = utf8_decode($params["contributorblackcomment"]);
+                }
                 $this->updateUserLogs($old_data[0], $uarr);//fucntion to insert userlogs if the old data is different from the request sent//
                 $response1 = $user_obj->updateContribBoOnlyUser($userId, $uarr);
 
@@ -7459,7 +7467,7 @@ class UserController extends Ep_Controller_Action
         $payment = array('paypal_id', 'bank_account_name', 'virement', 'rib_id');
         $payment_type = array('payment_type', 'options_flag');
         $subscription = array('alert_subscribe', 'subscribe');
-        $onlybo = array('status', 'profile_type', 'type2', 'profile_type2', 'blackstatus', 'contributortest', 'contributortestcomment', 'contributortestmarks','translator_type');
+        $onlybo = array('status', 'profile_type', 'type2', 'profile_type2', 'blackstatus', 'blackstatuscomment','contributortest', 'contributortestcomment', 'contributortestmarks','translator_type');
         // end arrays that will be used for log_type field//
         $userlogs_obj = new Ep_User_UserLogs();
         foreach ($new_data as $key => $value) {

@@ -59,6 +59,9 @@
     $(document).ready(function() {
         var elem = $("#contributortestcomment_count");
         $("#contributortestcomment").limiter(70, elem);
+        /**Author:Thilagam**/
+       // var limit = $("#contributorblackcomment_count");
+        //$("#contributortblackcomment").limiter(70, limit);
         /*var checkValue =$('input:radio[name=blackstatus]:checked').val();
         $('input:radio[name=blackstatus]').change(function() {
             
@@ -367,7 +370,12 @@
                     },
                     contributortestmarks:	{required: function(element) {
                         return $('input:radio[name=contributortest]:checked').val()=='yes'; }
-                    }
+                    },
+                    contributorblackcomment: {required: function(element) {
+                        return $('input:radio[name=blackstatus]:checked').val()=='yes'; },
+                        minlength:70
+                    },
+                    
                 },
                 invalidHandler: function(form, validator) {
                     $.sticky("There are some errors. Please corect them and submit again.", {autoclose : 5000, position: "top-center", type: "st-error" });
@@ -907,6 +915,16 @@
         else
             $("#remarksblock").hide();
     }
+    function showblackremarks(param){
+        if(param=='yes')
+        {
+            $("#blackremarksblock").show();
+        }
+        else
+        {
+            $("#blackremarksblock").hide();
+        }
+    }
     /* added by naseer on 31-07-2015 */
     function toggle_com_siren(){
         if($("#com_country").val() == 38){
@@ -945,6 +963,12 @@
             if (!$("input[name='blackstatus']:checked").val()) {
                 $("#blackstatus_error").show();
                 flag = false;
+            }
+            if($("#blackstatus_yes").is(':checked')){
+                if($("#contributorblackcomment").val().length < 70){
+                    $("#contributorblackcomment_error").show();
+                    flag = false;
+                }
             }
             if($("#contributortest_yes").is(':checked')){
                 if($("#contributortestcomment").val().length < 70){
@@ -1425,11 +1449,26 @@
                                             <div class="row-fluid">
                                                 <div class="span6 form-inline">
                                                     <label class="span4">Black list </label>
-                                                    <label class="uni-radio"><input type="radio" name="blackstatus" value="yes" class="uni_style" {if $user_detail[0].blackstatus == "yes"}checked{/if}/>Yes&nbsp; </label>
-                                                    <label class="uni-radio"><input type="radio" name="blackstatus" value="no" class="uni_style" {if $user_detail[0].blackstatus == "no"}checked{/if}/>No</label>
+                                                    <label class="uni-radio"><input type="radio" name="blackstatus" value="yes" id="blackstatus_yes" class="uni_style" {if $user_detail[0].blackstatus == "yes"}checked{/if}/ onClick="showblackremarks('yes');"> Yes&nbsp; </label>
+                                                    <label class="uni-radio"><input type="radio" name="blackstatus" value="no" class="uni_style" {if $user_detail[0].blackstatus == "no"}checked{/if}/ onClick="showblackremarks('no');"> No</label>
                                                     <br />
                                                     <span class="error hide" id="blackstatus_error">obligatoire</span>
                                                 </div>
+
+                                                <!--Author:Thilagam -->
+                                                <!--Date:31/5/2016 -->
+                                                <!-- Reason:Option for storing blackstatus comments-->
+                                                <div class="span6 form-inline" id="blackremarksblock" {if $user_detail[0].blackstatus=="no"}style="display:none;"{/if}>
+                                                <div >
+                                                    <label class="span3">Comments</label>
+                                                    <textarea name="contributorblackcomment" id="contributorblackcomment" placeholder="Commentaire (Obligatoire, 70 caract&egrave;res minimum)" rows="5" style="width:300px">{$user_detail[0].blackstatuscomment}</textarea>
+                                                    <span id="contributorblackcomment_count" style="vertical-align:top"></span>
+                                                    <br />
+                                                    <span class="error hide"  id="contributortblackcomment_error" >S'il vous pla&icirc; t entrer au moins 70 caract&egrave;res.</span>
+                                                </div>
+                                                </div>
+                                                <!--End of code addition-->
+
                                             </div>
                                         </div>
                                         <hr />
