@@ -1753,7 +1753,7 @@ class UserController extends Ep_Controller_Action
         ///////////////////client aos list /////////////////////////////////////
         $payment_obj = new Ep_Payment_Payment();
 
-        $ao = $ao_obj->getAOviewinfo($userId);
+        /*$ao = $ao_obj->getAOviewinfo($userId);
         if ($ao != '') {
             $i = 0;
             do {
@@ -1767,7 +1767,7 @@ class UserController extends Ep_Controller_Action
                 $i++;
             } while ($i < sizeof($ao));
             $this->_view->ao = $ao;
-        }
+        }*/
 
         ///////////////////////////////////Client Invoices////////////////////////////////
         $montharray = array("1" => "January", "2" => "February", "3" => "March", "4" => "April", "5" => "May", "6" => "June", "7" => "July", "8" => "August", "9" => "September", "10" => "October", "11" => "November", "12" => "December");

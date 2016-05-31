@@ -10,6 +10,7 @@
         var userId = {/literal}{$smarty.get.userId}{literal};
         
         $(".aolist").click(function(){
+            $('#aolisttable').dataTable().fnDestroy();
             $('#aolisttable').dataTable({
                 "sAjaxSource": "/user/loadaolist?userId="+userId,
                 "aoColumns": [
@@ -21,7 +22,8 @@
                     {mData: 'premium'},
                     {mData: 'aotype'},
                     {mData: 'options'}
-                ]
+                ],
+                "fnDrawCallback":callback
             });
             
         });
@@ -41,7 +43,9 @@
                 { "sType": "natural" }
             ]
         });*/
-        
+        function callback() {
+            $(".table").css("width","100%");
+        }
         var tab = getParameterByName('tab', $(location).attr('href'));
         $("#"+tab).addClass('active');
         $("#favcontribs").chosen({ allow_single_deselect: false,search_contains: true});
