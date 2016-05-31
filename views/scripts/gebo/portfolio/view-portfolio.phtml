@@ -3,6 +3,7 @@
 <script src="/BO/theme/lbd/js/portfolio-scripts.js"></script>
 <!-- js file to create download export image -->
 <script src="/BO/theme/lbd/lib/html2canvas/dist/html2canvas.js"></script>
+
 <!-- **********************
          STAR NEW CODE
      ********************** -->
@@ -91,9 +92,12 @@
                             <div class="content">
                                 <h3> {if $result.random_client|@count lte '1'} A travaill&eacute; pour...{else} {$result.random_client|@count} clients lui font confiance{/if}</h3>
                                 {foreach from=$result.random_client item=client_id name=client_pics}
-                                <a href="/portfolio/download-lastest-article-zip?clinetId={$client_id|strip}&contribId={$result.identifier}">
-                                    <img id="client_pics_{$smarty.foreach.client_pics.index}" src="{$url}/profiles/clients/logos/{$client_id|strip}/{$client_id|strip}.png" alt="Logo Custommers">
-                                </a>
+                                <span class="client-details"  >
+                                    <a href="/portfolio/download-lastest-article-zip?clinetId={$client_id|strip}&contribId={$result.identifier}">
+                                        <img id="client_pics_{$smarty.foreach.client_pics.index}" src="{$url}/profiles/clients/logos/{$client_id|strip}/{$client_id|strip}.png" alt="Logo Custommers">
+                                    </a>
+                                    <span >{$result.random_name[$smarty.foreach.client_pics.index]}</span>
+                                </span>
                                 {/foreach}
                                 <p class="onePortfolioCustomersClic"><span class="glyphicon glyphicon-info-sign"></span> Click on a logo to download articles</p>
                             </div> <!-- Content -->

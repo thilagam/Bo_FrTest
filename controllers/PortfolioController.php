@@ -477,10 +477,10 @@ class PortfolioController extends Ep_Controller_Action
 
         if (count($valid_files)) {
             $zip = new ZipArchive();
-            if ($zip->open($destination, $overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
+            if($zip->open($destination,$overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) != true) {
                 return false;
             }
-
+            $zip->open($destination,ZIPARCHIVE::CREATE);
             foreach ($valid_files as $file) {
                 $zip->addFile($file, basename($file));
             }
@@ -565,7 +565,6 @@ class PortfolioController extends Ep_Controller_Action
         $params=$this->_request->getParams();
         $export_files = explode(",",$params['export_files']);
         $downloadfilename = ASSETS.'temp_zip/export_contributors_' . time() . '.zip';
-        //echo $downloadfilename;
         $zip = $this->create_zip($export_files, $downloadfilename);
         if($zip){
             echo '<a href="/BO/download-files.php?function=downloadFile&fullPath='.$downloadfilename.'" id="downloadZipLink">Click to download ZIP file</a>';

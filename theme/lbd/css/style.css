@@ -1,0 +1,471 @@
+#searchPortfolio{
+	background: url('../../../../BO/theme/lbd/img/bg.jpg');
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+	background-size: cover;
+	font-family: 'Roboto', sans-serif;
+	height: calc(100vh - 52px);
+	width: 100%;
+	text-align: center;
+}
+
+
+#searchPortfolio h1{
+	font-weight: 300;
+	font-size: 50px;
+	color: #fff;
+	margin: 0px;
+	padding-top: 110px;
+	padding-bottom: 30px;
+}
+
+#searchPortfolio span{
+	font-size: 32px;
+	font-weight: 300;
+	color: #cdcdcd;
+}
+
+
+#searchPortfolio .portfolioHPSelect{
+	width: auto;
+	vertical-align: top;
+}
+
+#searchPortfolio .portfolioHPSelect .btn{
+	border: none;
+	border-bottom: 2px solid #fff;
+	border-radius: 0px;
+	padding: 0 5px;
+	margin: 0 5px;
+	opacity: 1;
+}
+
+#searchPortfolio .portfolioHPSelect .filter-option{
+	color: #fff;
+}
+
+#searchPortfolio .select.open .dropdown-menu{
+	margin-top: 20px !important;
+}
+
+#searchPortfolio .select.open .dropdown-menu span{
+	font-size: 20px !important;
+	color: #7B7B7B;
+}
+
+#searchPortfolio .dropdown-menu > li.selected > a{
+	background: #448AFF;
+}
+
+#searchPortfolio .dropdown-menu > li.selected > a span{
+	color: #fff !important;
+}
+
+#searchPortfolio .portfolioHPSelect .caret{
+	display: none;
+}
+
+#searchPortfolio .portfolioHPSubmit{
+	margin-top: 25px;
+}
+
+
+
+
+
+/********** GENERAL PORTFOLIO **********/
+
+#resultPortfolio{
+    background: #efefef;
+    background-size: 100% 100%;
+}
+
+#resultPortfolio .vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+    margin: 0 -4px;
+}
+
+#resultPortfolio h3{
+    font-weight: 300;
+    color: #595959;
+    margin: 2px 0px 12px 0px;
+}
+
+#resultPortfolio #titlePortfolio .card{
+    margin-bottom: 0px;
+}
+
+/********** TITLE PORTFOLIO **********/
+
+#resultPortfolio #titlePortfolio{
+    margin-top: 15px
+}
+
+#resultPortfolio .nbrPortfolio{
+    font-size: 80px;
+}
+
+#resultPortfolio .nbrLabelPortfolio{
+    font-size: 26px;
+    font-weight: 300;
+}
+
+#resultPortfolio .chiefEditor{
+    background: #383D49;
+    color: #fff;
+}
+
+#resultPortfolio .chiefEditor span{
+    font-weight: 300;
+    font-size: 13px;
+}
+
+#resultPortfolio .chiefEditor p{
+    margin: 10px 0 0 0;
+}
+
+#resultPortfolio .chiefEditor img{
+    border-radius: 50%;
+    border: 3px #fff solid;
+    width: 80px;
+    height: auto;
+}
+
+#resultPortfolio .portfolioFilter{
+    cursor: pointer;
+    position: absolute;
+    top: 12px;
+    left: 24px;
+}
+
+#resultPortfolio .portfolioExport{
+    cursor: pointer;
+    color: #448AFF;
+    position: absolute;
+    top: 12px;
+    left: 24px;
+}
+
+#resultPortfolio .portfolioExport i, #resultPortfolio .portfolioFilter i{
+    font-size: 26px;
+}
+
+
+#resultPortfolio #portfolioExport .modal-body div{
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#resultPortfolio #portfolioExport .modal-body button{
+    width: 35%;
+    margin: 0 6px;
+}
+
+
+/********** DIAGRAMM PORTFOLIO **********/
+
+
+#resultPortfolio .digramEvolNbrContrib{
+    background: #1fbba6;
+}
+
+#resultPortfolio .digramEvolNbrContrib img, #resultPortfolio .digramComparSJ img{
+    height: 200px
+}
+
+
+/********** BESTCONTRIB PORTFOLIO **********/
+
+#resultPortfolio #containerBestContrib .containerBestContribCard{
+    height: 352px;
+    position: relative;
+    overflow: hidden;
+}
+
+#resultPortfolio #containerBestContrib img.containerBestContribCardPP{
+    width: 100%;
+    transition: all .4s ease-in-out;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribName{
+    font-size: 22px;
+    padding-top: 8px;
+    margin-bottom: 4px;
+    padding-left: 15px;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribStatus{
+    padding-left: 15px;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribInfo{
+    position: relative;
+    background: #fff;
+    width: 100%;
+    height: 300px;
+    top: -12px;
+    transition: all .5s ease-in-out;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribCard:hover .containerBestContribInfo{
+    top: -40%;
+    transition: all .5s ease-in-out;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribContact{
+    padding: 0 0 15px 15px;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribContact i.material-icons {
+    font-size: 16px;
+    vertical-align: text-bottom;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribClient {
+    padding: 0 15px;
+}
+#resultPortfolio #containerBestContrib .containerBestContribClient img {
+    width: 25%;
+    padding: 0 2px 4px 2px;
+    display: block;
+    float: left;
+    box-sizing: border-box;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribhide{
+    opacity: 0;
+    transition: all .3s ease-in-out;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribCard:hover .containerBestContribhide{
+    opacity: 1;
+    transition: all .7s ease-in-out;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribCard:hover .containerBestContribCardPP{
+    -webkit-filter: brightness(40%);
+    filter: brightness(40%);
+    transition: all .4s ease-in-out;
+}
+
+
+/********** TABLE Small PORTFOLIO **********/
+
+#resultPortfolio .smallTableContribTitle{
+    font-weight: 500;
+}
+
+#resultPortfolio #containerSmallTableContrib tr:nth-child(even) {
+    background: #f8f8f8;
+}
+
+#resultPortfolio #containerSmallTableContrib td.smallTableContribFlag{
+    width: 80px;
+    padding: 12px 0;
+}
+
+
+/********** TABLE Big PORTFOLIO **********/
+
+#resultPortfolio #containerBigTableContrib td {
+    vertical-align: middle;
+    width: 28%;
+}
+
+#resultPortfolio #containerBigTableContrib tr:nth-child(even) {
+    background: #f8f8f8;
+}
+
+#resultPortfolio #containerBigTableContrib td.BigTableContribPicture {
+    width: 16%;
+}
+
+#resultPortfolio #containerBigTableContrib td.BigTableContribPicture img{
+    border-radius: 50%;
+    border: 3px solid #fff;
+    max-width: 80px;
+    margin: auto;
+
+}
+
+
+/********** FILTRE PORTFOLIO FIXED **********/
+
+#portfolioFilterFixed {
+    text-align: center;
+}
+
+#portfolioFilterFixed .content{
+    padding: 15px 40px;
+}
+
+#portfolioFilterFixed select{
+    display: inline-block;
+    margin: 0 15px;
+    border: none;
+    background: transparent;
+}
+
+
+/********** FILTRE PORTFOLIO LABEL **********/
+
+#portfolioFilterLabel .card{
+    margin-top: -30px;
+}
+
+#portfolioFilterLabel span.label{
+    background: #f2f0f0;
+    color: #595959;
+    font-weight: 400;
+    padding: 4px 8px 4px 8px;
+    margin-right: 8px;
+}
+
+#portfolioFilterLabel span.label i{
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+
+/********** FILTRE PORTFOLIO MODAL **********/
+
+#portfolioFilterModal select, #portfolioFilterModal input[type="text"]{
+    width: 90%  !important;
+}
+
+.marginB20{
+    margin-bottom: 20px;
+}
+
+#portfolioFilterModal{
+    display: none;
+}
+
+#portfolioFilterModal .card{
+    margin-top: -30px;
+}
+
+#portfolioFilterModal label{
+    font-weight: 500;
+}
+
+#portfolioFilterModal label.beforeSelect{
+    padding-top: 12px;
+}
+
+#portfolioFilterModal .btnFiltreAdd{
+    margin-top: 10px;
+    padding: 4px 6px;
+}
+
+#portfolioFilterModal .btnFiltreAdd i{
+    vertical-align: sub;
+    font-size: 16px;
+}
+
+#portfolioFilterModal .btnFiltreValide button{
+    margin: 10px 25px 0 25px;
+}
+
+
+
+/********** Export PORTFOLIO MODAL **********/
+
+#portfolioExport .modal-content button{
+    width: 20%;
+    margin: 5px 15px;
+
+}
+
+#portfolioExport .modal-content{
+    text-align: center;
+}
+
+#portfolioExport .modal-content .portfolioExportBtnArticle {
+    border-top: solid 1px rgba(0,0,0,0.1);
+    margin-top: 13px;
+    padding-top: 10px;
+}
+
+#portfolioExport .modal-content .portfolioExportBtnArticle button{
+    width: calc(40% + 32px);
+}
+
+/* added on 13.04.2016 */
+.containerBestContribName, .containerBestContribStatus{text-transform: capitalize;}
+
+
+
+
+/* added on 15.04.2016 */
+
+#resultPortfolio .containerBestContribCard a.bestContribLinkIMG{
+    display: block;
+    height: 263px;
+}
+
+.containerBestContribContainerCard .numberCircle{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 9999;
+    background: rgba(0,0,0,0.3);
+    font-weight: 600;
+    width: 28px;
+    height: 28px;
+    line-height: 25px;
+    font-size: 14px;
+    color: #fff;
+    padding: 2px 4px 0 5px;
+    border-radius: 30px;
+    text-align: center;
+}
+
+#resultPortfolio #containerBestContrib .containerBestContribCardCheckbox{
+    padding: 5px 15px 15px 15px;
+    background: #fff;
+}
+
+
+#resultPortfolio #containerBestContrib .containerBestContribContainerCard{
+    margin-bottom: 30px;
+}
+
+
+#share_icon,#donwload_icon{cursor: pointer;color: #448AFF;font-size: 32px;width:32px;height: 32px;}
+#stick{
+    position:fixed;
+    bottom:50%;
+    right:100px;
+    margin-bottom:-100px;
+    margin-right:-100px;
+    background-color: #cccccc;
+    padding:10px;
+    border-top-left-radius:25px ;
+    border-bottom-left-radius:25px ;
+    z-index: 1010;
+}
+#download_zip{
+    position:fixed;
+    bottom:60%;
+    right:100px;
+    margin-bottom:-100px;
+    margin-right:-100px;
+    background-color: #2962FF;
+    padding:10px;
+    border-top-left-radius:25px ;
+    border-bottom-left-radius:25px ;
+    z-index: 1011;
+    color:#000000;
+    font-weight: bold;
+    font-size:16px;
+}
+#download_zip a{color:#FFF;font-weight: bold;text-decoration: underline;}
+.success{color: #008200;}
+.failed{color: #bb0502;}
+#exportStatus{
+    z-index:10000;
+}

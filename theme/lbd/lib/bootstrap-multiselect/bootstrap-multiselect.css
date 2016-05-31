@@ -1,0 +1,26 @@
+.multiselect-container{position:absolute;list-style-type:none;margin:0;padding:0}.multiselect-container .input-group{margin:5px}.multiselect-container>li{padding:0}.multiselect-container>li>a.multiselect-all label{font-weight:700}.multiselect-container>li.multiselect-group label{margin:0;padding:3px 20px;height:100%;font-weight:700}.multiselect-container>li.multiselect-group-clickable label{cursor:pointer}.multiselect-container>li>a{padding:0}.multiselect-container>li>a>label{margin:0;height:100%;cursor:pointer;font-weight:400;padding:3px 20px 3px 40px}.multiselect-container>li>a>label.radio,.multiselect-container>li>a>label.checkbox{margin:0}.multiselect-container>li>a>label>input[type=checkbox]{margin-bottom:5px}.filter .btn{padding:6px 3px}.btn-group>.btn-group:nth-child(2)>.multiselect.btn{border-top-left-radius:4px;border-bottom-left-radius:4px}.form-inline .multiselect-container label.checkbox,.form-inline .multiselect-container label.radio{padding:3px 20px 3px 40px}.form-inline .multiselect-container li a label.checkbox input[type=checkbox],.form-inline .multiselect-container li a label.radio input[type=radio]{margin-left:-20px;margin-right:0}
+/*added by arun*/
+.multi-img{
+width:32px;
+padding-left: 3px;
+border-radius: 30px;
+}
+.filter {
+    background-color: #fff !important;
+    height: 100%;
+    left: 0;
+    opacity: 1;
+    position: relative !important;
+    text-align: center;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+}
+.open .form-control {
+    border-bottom-color: 1px solid #aaaaaa !important;
+    border-radius: 4px 4px 0 0;
+}
+
+.multiselect-container input{
+display:inline !important;
+}

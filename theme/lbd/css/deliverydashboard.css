@@ -1,0 +1,77 @@
+@charset "utf-8";
+/* CSS Document */
+.delivery{ 
+	top: 18px;
+	margin:0px 0px 20px 0px;
+	background-color:#ffffff;
+	border:1px solid #e3e3e3;
+	border-radius:4px;
+	-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,.05);
+	box-shadow:inset 0 1px 1px rgba(0,0,0,.05)
+}
+
+.blk{
+	height: 80px;
+	padding:10px 10px 0px 10px;
+}
+ 
+#delivery_title { 
+	margin-top: 2px;
+}
+	
+#delivery_head { 
+	margin-top: 10px;	
+}
+
+#missionlist { 
+	height: 100px;	
+}
+
+.missiontracking{
+	background-color:#ffffff;
+}
+
+.missionbasic{
+	background-color:#000000;
+	min-height:150px;
+	margin-top: 20px;
+	padding-top: 30px;
+}
+
+.missioninfo{
+	 font-size: 22px;
+	 color: #ffffff;
+}
+
+.border{
+	padding: 30px 0px 30px 0px;
+	border-right: 1px solid #ffffff;	
+}
+ul.navbar-nav a { 
+	color: #000000; 
+	border-style: solid; 
+	border-width: 0 0 2px 0; 
+	border-color: #ffffff; 
+}
+
+ul.navbar-nav a.active,ul.navbar-nav a:hover { 
+	border-color: #448aff; 
+}
+
+.Writers{
+	background-image: url("/BO/theme/lbd/img/frmap.png");
+	background-repeat: no-repeat;
+	background-size: 100%;
+}
+
+.writersList{
+	margin: 4px 4px 4px 4px;
+	height:60px; 
+	width:60px;
+}
+
+div.scroll {
+    width: 98%;
+    height: 100%;
+    overflow-x: scroll;
+}
