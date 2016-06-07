@@ -23,6 +23,28 @@ $(document).ready(function() {
     /*$.get("/user/loadclient",function(data){
         console.log(data);
     });*/
+    /*
+    $('#clientsgrid').dataTable().fnDestroy();
+    $('#clientsgrid').dataTable({
+        "sAjaxSource": "/user/loadclient",
+        "aoColumns": [
+            {mData: 'slno'},
+            {mData: 'company_name'},
+            {mData: 'email'},
+            {mData: 'created_at'},
+            {mData: 'type'},
+            {mData: 'ao_count'},
+            {mData: 'art_count'},
+            {mData: 'art_pcount'},
+            {mData: 'download'},
+            {mData: 'options'}
+        ],
+        "fnDrawCallback":callback
+    });
+    function callback() {
+            $(".table").css("width","100%");
+        }
+    */
     $('#clientsgrid').dataTable({
         "bProcessing": true,
         "bServerSide": true,
