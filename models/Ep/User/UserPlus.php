@@ -171,6 +171,7 @@ class Ep_User_UserPlus extends Ep_Db_Identifier
                     WHERE u.type in ('client','superclient', 'sccontact')
                     AND u.status = 'Active' " . (!empty($condition) ? 'AND ' . $condition : '') . "
                     ".$sWhere." ".$sOrder." ".$sLimit."";
+                //return $query;
 		//echo $query;  exit;
         /* Adding AO infos & date formatting */
         if(($result=$this->getQuery($query,true))!=NULL)

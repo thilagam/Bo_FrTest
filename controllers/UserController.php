@@ -3295,7 +3295,7 @@ class UserController extends Ep_Controller_Action
         $iTotal = count($countclients);
 
         $output = array(
-            "sEcho" => 1,
+            "sEcho" => intval($_GET['sEcho']),
             "iTotalRecords" => $iTotal,
             "iTotalDisplayRecords" => $iTotal,
             "aaData" => array()
@@ -3353,14 +3353,15 @@ class UserController extends Ep_Controller_Action
                 $count++;
             }
         }
-        //echo "<pre>";print_r($output);  exit;
+        //echo "<pre>";print_r($output['aaData']);  exit;
         echo json_encode($output);
-        /*
-        $sWhere="";
+        
+        /*$sWhere="";
         $sOrder="";
         $sLimit="";
         $condition="";
         $rResult = $userplus_obj->ListStatsClientsinfo($sWhere, $sOrder, $sLimit, $condition);
+        //echo $rResult;exit;
         if(!empty($rResult))
         {
             $i=0;
@@ -3404,8 +3405,8 @@ class UserController extends Ep_Controller_Action
             "iTotalDisplayRecords" => $iTotal,
             "aaData" => $rResult
         );
-        //print_r($output);
-        echo json_encode($output);*/
+        print_r($output);
+        //echo json_encode($output);*/
     }
 
     /*************************************************** SUPER CLIENT ***************************************************/
