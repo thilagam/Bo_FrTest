@@ -100,6 +100,7 @@ class Ep_Message_AutoEmails extends Ep_Db_Identifier
                 /**Date:8/6/2016**/
                 /**Reason:AutoEmails to contributors should also be send to Florent**/
                 ->addCc('florent.test.editplace@gmail.com')
+                ->addCc('thilagam@edit-place.com')
                 ->setSubject($Object);
         if($UserDetails[0]['alert_subscribe']=='yes')  ///only for subscribed user.
         {
@@ -197,6 +198,7 @@ class Ep_Message_AutoEmails extends Ep_Db_Identifier
                     /**Date:8/6/2016**/
                     /**Reason:AutoEmails to contributors should also be send to Florent**/
                     ->addCc('florent.test.editplace@gmail.com')
+                    ->addCc('thilagam@edit-place.com')
                     ->setSubject($object);
                 if($mail->send())
                     return true;
@@ -273,6 +275,7 @@ class Ep_Message_AutoEmails extends Ep_Db_Identifier
                 /**Date:8/6/2016**/
                 /**Reason:AutoEmails to contributors should also be send to Florent**/
                 ->addCc('florent.test.editplace@gmail.com')
+                ->addCc('thilagam@edit-place.com')
                 ->setSubject($object);
             if($mail->send())
                 return true;
@@ -704,6 +707,7 @@ class Ep_Message_AutoEmails extends Ep_Db_Identifier
                             /**Date:8/6/2016**/
                             /**Reason:AutoEmails to contributors should also be send to Florent**/
                             ->addCc('florent.test.editplace@gmail.com')
+                            ->addCc('thilagam@edit-place.com')
                             ->setSubject($object);
                         if($mail->send())
                             return true;
