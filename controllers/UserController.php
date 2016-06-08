@@ -3353,20 +3353,23 @@ class UserController extends Ep_Controller_Action
                 $count++;
             }
         }
-        //echo "<pre>";print_r($output['aaData']);  exit;
+        //echo "<pre>";print_r($output);  exit;
         echo json_encode($output);
         
         /*$sWhere="";
         $sOrder="";
         $sLimit="";
         $condition="";
-        $rResult = $userplus_obj->ListStatsClientsinfo($sWhere, $sOrder, $sLimit, $condition);
+        //$rResult = $userplus_obj->ListStatsClientsinfo($sWhere, $sOrder, $sLimit, $condition);
+        $rResult = $userplus_obj->loadClientList();
         //echo $rResult;exit;
         if(!empty($rResult))
         {
             $i=0;
             foreach($rResult as $key=>$value)
             {
+                $type = utf8_encode($rResult[$key]['type']);
+                //echo $rResult[$key]['type'];echo "<br>";
                 $rResult[$key]['slno']=$i+1;
                 $rResult[$key]['first_name']=utf8_encode($rResult[$key]['first_name']);
                 $rResult[$key]['last_name']=utf8_encode($rResult[$key]['last_name']);
@@ -3378,22 +3381,25 @@ class UserController extends Ep_Controller_Action
                 $rResult[$key]['type']='<label class="label label-info">' . utf8_encode($rResult[$key]['type']) . '</label>';
                 $rResult[$key]['company_name']=utf8_encode($rResult[$i]['company_name']);
                 $email = utf8_encode($rResult[$key]['email']);
-                $password = $rResult[$key]['password'];
-                if ($rResult[$key]['ao_count'] != 0)
+                $password = utf8_encode($rResult[$key]['password']);
+                if ($rResult[$key]['ao_count'] != 0){
                     $rResult[$key]['download'] = '<a href="http://ep-test.edit-place.com/getClientArticles.php?client_id=' . $rResult[$key]['identifier'] . '">Download</a>';
-                else
+                }
+                else{
                     $rResult[$key]['download'] = '-';
-                $type = utf8_encode($rResult[$key]['type']);
-                if ($type == 'client') 
+                }
+                if ($type == utf8_encode("client")) 
                 {
                     $rResult[$key]['options'] = '<a href="client-edit?submenuId=ML10-SL2&tab=editclient&userId=' . $rResult[$key]['identifier'] . '" class="hint--left hint--info" data-hint="edit profile"><i class="icon-pencil"></i> </a>
                         <a href="client-edit?submenuId=ML10-SL2&tab=viewclient&userId=' . $rResult[$key]['identifier'] . '" class="hint--left hint--info" data-hint="view profile"><i class="icon-eye-open"></i></a>
                          <a href="http://ep-test.edit-place.com/user/email-login?user=' . MD5("ep_login_" . $email) . '&hash=' . MD5("ep_login_" . $password) . '&type=' . $type . '&redirectpage=home" target="_blank"><i class="splashy-contact_blue"></i></a>';
                 }
-                if ($type == 'superclient')
+                if ($type == utf8_encode("superclient")){
                     $rResult[$key]['options'] = '<a href="superclientcreate-step1?submenuId=ML9-SL1&uaction=edit&userId=' . $rResult[$key]['identifier'] . '" class="hint--left hint--info" data-hint="edit profile"><i class="icon-pencil"></i> </a>';
-                if ($type == 'sccontact')
+                }
+                if ($type == utf8_encode("sccontact")){
                     $rResult[$key]['options'] = '';
+                }
             $i++;
 
             }
@@ -3405,10 +3411,14 @@ class UserController extends Ep_Controller_Action
             "iTotalDisplayRecords" => $iTotal,
             "aaData" => $rResult
         );
-        print_r($output);
-        //echo json_encode($output);*/
+        //echo "<pre>";print_r($output);
+        echo json_encode($output);*/
     }
-
+    public function testclientAction()
+    {
+        $userplus_obj = new Ep_User_UserPlus();
+        $data = $userplus_obj->loadClientList();
+    }
     /*************************************************** SUPER CLIENT ***************************************************/
 
     //Super client creation page

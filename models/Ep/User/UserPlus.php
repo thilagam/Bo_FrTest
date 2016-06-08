@@ -171,7 +171,6 @@ class Ep_User_UserPlus extends Ep_Db_Identifier
                     WHERE u.type in ('client','superclient', 'sccontact')
                     AND u.status = 'Active' " . (!empty($condition) ? 'AND ' . $condition : '') . "
                     ".$sWhere." ".$sOrder." ".$sLimit."";
-                //return $query;
 		//echo $query;  exit;
         /* Adding AO infos & date formatting */
         if(($result=$this->getQuery($query,true))!=NULL)
@@ -184,6 +183,29 @@ class Ep_User_UserPlus extends Ep_Db_Identifier
         endforeach ;
           print_r($result);     exit;
       //  return $result;*/
+    }
+    public function loadClientList()
+    {
+        $query = "SELECT Delivery.id FROM Delivery LEFT JOIN User ON Delivery.user_id = User.identifier";
+        $result=$this->getQuery($query,true);
+        $dIDS = $result[0];
+        $dids="'".implode("','",$dIDS)."'";
+        $query1 = "SELECT u.identifier,up.first_name,up.last_name,u.email,u.password,u.type,
+u.profile_type,u.created_at,u.last_visit,u.created_by,u.created_user,c.company_name,
+(SELECT COUNT(id) AS aoCount FROM Delivery d WHERE d.user_id = u.identifier) AS ao_count,
+(SELECT COUNT(id) AS artCount FROM Article a WHERE a.delivery_id IN (".$dids.")) AS art_count,
+(SELECT COUNT(a.id) AS pubartCount FROM Article a LEFT JOIN Participation p ON a.id=p.article_id WHERE a.delivery_id IN (".$dids.") AND p.status='published') AS art_pcount,
+(SELECT COUNT(identifier) AS clientcontact FROM ClientContacts cc WHERE cc.client_id = u.identifier) AS clientcontact
+FROM User u
+LEFT JOIN UserPlus up ON u.identifier = up.user_id
+LEFT JOIN Client c ON c.user_id = u.identifier
+WHERE u.type in ('client','superclient', 'sccontact')
+AND u.status = 'Active'";
+//echo $query1;exit;
+if(($result1=$this->getQuery($query1,true))!=NULL)
+            return $result1;
+        else
+            return "NO";
     }
     /* Returns AO Count for a given user Id */
     public function clientAoCountOptimise($clientIds)
