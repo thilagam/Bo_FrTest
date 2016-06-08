@@ -69,6 +69,15 @@ class QuotedeliveryController extends ContractmissionController
 					$this->delivery_creation[$session_id]->prod_step1['premium_total']=$delivery['premium_total'];
 					$this->delivery_creation[$session_id]->prod_step1['premium_option']=$delivery['premium_option'];
 					$this->delivery_creation[$session_id]->prod_step1['AOtype']=$delivery['AOtype'];
+
+
+					/*language group*/
+					$this->delivery_creation[$session_id]->prod_step1['language_group']=$delivery['language_group'];
+					$this->delivery_creation[$session_id]->prod_step1['language_group_corrector']=$delivery['language_group_corrector'];
+
+					$this->delivery_creation[$session_id]->prod_step1['refusalreasons']=explode("|",$delivery['refusalreasons']);
+
+
 					$this->delivery_creation[$session_id]->prod_step1['correction_type']=$delivery['correction_type'];
 					$this->delivery_creation[$session_id]->prod_step1['status_bo']=$delivery['status_bo'];
 					$this->delivery_creation[$session_id]->prod_step1['created_by']=$delivery['created_by'];
@@ -146,7 +155,15 @@ class QuotedeliveryController extends ContractmissionController
 								if($article['view_to'])
 									$this->delivery_creation[$session_id]->prod_step2['articles'][$i]['view_to']=explode(",",$article['view_to']);
 								if($article['corrector_list'])
-									$this->delivery_creation[$session_id]->prod_step2['articles'][$i]['corrector_list']=explode(",",$article['corrector_list']);
+								{
+									if($article['corrector_list']=='CB')
+										$this->delivery_creation[$session_id]->prod_step2['articles'][$i]['corrector_list']=array("sc","jc");
+									else if($article['corrector_list']=='CSC')
+										$this->delivery_creation[$session_id]->prod_step2['articles'][$i]['corrector_list']=array("sc");
+									else if($article['corrector_list']=='CJC')
+										$this->delivery_creation[$session_id]->prod_step2['articles'][$i]['corrector_list']=array("jc");
+									//$this->delivery_creation[$session_id]->prod_step2['articles'][$i]['corrector_list']=explode(",",$article['corrector_list']);
+								}
 								
 								
 								//submission times
@@ -521,17 +538,41 @@ class QuotedeliveryController extends ContractmissionController
 
 
 				}
+				/*getting all language groups*/
+				if($this->delivery_creation[$session_id]->prod_step1['product']=='translation')
+				{
+					$lanuageArt=$this->delivery_creation[$session_id]->prod_step1['language_dest'];
+				}
+				else{
+					$lanuageArt=$this->delivery_creation[$session_id]->prod_step1['language'];
+				}				
+
+				
+				/*language group update*/
+				$langObj=new Ep_Quote_LanguageGroups();
+				$langParameters['language']=$lanuageArt;
+				$languageGroups=$langObj->getLanguageGroups($langParameters);
+
+				$this->_view->languageGroups=$languageGroups;
+				if(count($languageGroups)>0)
+				{
+					$this->_view->allowGroups=1;
+				}
+				//echo '<pre>';print_r($languageGroups);exit;
+
+
+
                 /* *** added on 24.02.2016 *** */
 
-                    $bnp_obj = new Ep_Bnp_Bnp();
-                    $citys = (array) $bnp_obj->getCity();
-                    $scitys = array();
-                    foreach($citys as $city)
-                    {
-                        $scitys[$city['city_id']] = $city['city_name'];
-                    }
-                    $this->_view->scitys = $scitys;
-                    $this->_view->bnp_delivery = true;
+                $bnp_obj = new Ep_Bnp_Bnp();
+                $citys = (array) $bnp_obj->getCity();
+                $scitys = array();
+                foreach($citys as $city)
+                {
+                    $scitys[$city['city_id']] = $city['city_name'];
+                }
+                $this->_view->scitys = $scitys;
+                $this->_view->bnp_delivery = true;
 
 				$this->_view->prod_step1=$this->delivery_creation[$session_id]->prod_step1;
 				$this->_view->misssionQuoteDetails=$misssionQuoteDetails;
@@ -651,6 +692,23 @@ class QuotedeliveryController extends ContractmissionController
 
 				
 				$this->delivery_creation[$session_id]->prod_step1['refusalreasons']=$step1Params['refusalreasons'];
+
+
+				/*language Group*/
+				if($step1Params['lang_group_check']=='yes')
+					$this->delivery_creation[$session_id]->prod_step1['language_group']= $step1Params['language_group'];
+				else
+					$this->delivery_creation[$session_id]->prod_step1['language_group']=0;
+
+
+				if($step1Params['lang_group_corrector_check']=='yes')
+					$this->delivery_creation[$session_id]->prod_step1['language_group_corrector']= $step1Params['language_group_corrector'];
+				else
+					$this->delivery_creation[$session_id]->prod_step1['language_group_corrector']=0;
+
+
+
+				
 
 
 				if($this->adminLogin->type=='superadmin')
@@ -1015,6 +1073,7 @@ class QuotedeliveryController extends ContractmissionController
 
 			//get all writers list
 			$searchParameters['profile_type']=$article_details['view_to'];
+			$searchParameters['language_group']=$this->delivery_creation[$session_id]->prod_step1['language_group'];
 			
 			if($this->delivery_creation[$session_id]->prod_step1['product']=='translation')
 			{
@@ -1022,12 +1081,13 @@ class QuotedeliveryController extends ContractmissionController
 				$searchParameters['language']=$this->delivery_creation[$session_id]->prod_step1['language_dest'];
 				$searchParameters['language_source']=$this->delivery_creation[$session_id]->prod_step1['language'];
 				$searchParameters['sourcelang_nocheck']=$this->delivery_creation[$session_id]->prod_step1['sourcelang_nocheck'];
+				
 				$writersList=$deliveryObj->getTranslatorList($searchParameters);	
 			}			
 			else
 			{
-				$searchParameters['language']=$this->delivery_creation[$session_id]->prod_step1['language'];
-				$writersList=$deliveryObj->getContributorsList($searchParameters);
+				$searchParameters['language']=$this->delivery_creation[$session_id]->prod_step1['language'];				
+				$writersList=$deliveryObj->getContributorsListPrivate($searchParameters);
 			}
 
 			//echo "<pre>";print_r($writersList);exit;
@@ -1070,9 +1130,9 @@ class QuotedeliveryController extends ContractmissionController
 
 			//get profile type counts of writers
 			if($this->delivery_creation[$session_id]->prod_step1['product']=='translation')
-				$profileCountWriter=$deliveryObj->getProfileTypeCountTranslators($searchParameters['language'],$searchParameters['language_source'],$searchParameters['sourcelang_nocheck']);
+				$profileCountWriter=$deliveryObj->getProfileTypeCountTranslators($searchParameters['language'],$searchParameters['language_source'],$searchParameters['sourcelang_nocheck'],$searchParameters['language_group']);
 			else	
-				$profileCountWriter=$deliveryObj->getProfileTypeCountWriters($searchParameters['language']);
+				$profileCountWriter=$deliveryObj->getProfileTypeCountWriters($searchParameters['language'],$searchParameters['language_group']);
 				
 			if($profileCountWriter)
 				$this->_view->profileCountWriter=$profileCountWriter;	
@@ -1083,6 +1143,7 @@ class QuotedeliveryController extends ContractmissionController
 
 			//get all correctors list
 			$csearchParameters['profile_type2']=$article_details['corrector_list'];
+			$csearchParameters['language_group']=$this->delivery_creation[$session_id]->prod_step1['language_group_corrector'];
 			
 			if($this->delivery_creation[$session_id]->prod_step1['product']=='translation')
 			{
@@ -1121,9 +1182,9 @@ class QuotedeliveryController extends ContractmissionController
 
 			//get profile type counts of correctors
 			if($this->delivery_creation[$session_id]->prod_step1['product']=='translation')
-				$profileCountCorrectors=$deliveryObj->getProfileTypeCountTranslatorCorrectors($csearchParameters['language'],$csearchParameters['language_source'],$csearchParameters['sourcelang_nocheck_correction']);
+				$profileCountCorrectors=$deliveryObj->getProfileTypeCountTranslatorCorrectors($csearchParameters['language'],$csearchParameters['language_source'],$csearchParameters['sourcelang_nocheck_correction'],$csearchParameters['language_group']);
 			else
-				$profileCountCorrectors=$deliveryObj->getProfileTypeCountCorrectors($csearchParameters['language']);
+				$profileCountCorrectors=$deliveryObj->getProfileTypeCountCorrectors($csearchParameters['language'],$csearchParameters['language_group']);
 				
 			if($profileCountCorrectors)
 				$this->_view->profileCountCorrectors=$profileCountCorrectors;	
@@ -1155,21 +1216,23 @@ class QuotedeliveryController extends ContractmissionController
 
 				//get all writers list
 				$searchParameters['profile_type']=explode(",",$view_to);
+				$searchParameters['language_group']=$this->delivery_creation[$session_id]->prod_step1['language_group'];
 				
 				if($this->delivery_creation[$session_id]->prod_step1['product']=='translation')
 				{
 					$searchParameters['product']=$this->delivery_creation[$session_id]->prod_step1['product'];
 					$searchParameters['language']=$this->delivery_creation[$session_id]->prod_step1['language_dest'];
 					$searchParameters['language_source']=$this->delivery_creation[$session_id]->prod_step1['language'];
-					$searchParameters['sourcelang_nocheck']=$this->delivery_creation[$session_id]->prod_step1['sourcelang_nocheck'];
+					$searchParameters['sourcelang_nocheck']=$this->delivery_creation[$session_id]->prod_step1['sourcelang_nocheck'];					
 					$writersList=$deliveryObj->getTranslatorList($searchParameters);	
 				}			
 				else
 				{
-					$searchParameters['language']=$this->delivery_creation[$session_id]->prod_step1['language'];
-					$writersList=$deliveryObj->getContributorsList($searchParameters);
+					$searchParameters['language']=$this->delivery_creation[$session_id]->prod_step1['language'];					
+					$writersList=$deliveryObj->getContributorsListPrivate($searchParameters);
 				}
 				
+				$options='';
 				if($writersList)
 				{
 
@@ -1189,6 +1252,7 @@ class QuotedeliveryController extends ContractmissionController
 
 				//get all writers list
 				$csearchParameters['profile_type2']=explode(",",$corrector_list);
+				$csearchParameters['language_group']=$this->delivery_creation[$session_id]->prod_step1['language_group_corrector'];
 				
 				if($this->delivery_creation[$session_id]->prod_step1['product']=='translation')
 				{
@@ -1205,7 +1269,7 @@ class QuotedeliveryController extends ContractmissionController
 				}
 
 				//$correctorsList=$deliveryObj->getCorrectorsList($csearchParameters);
-
+				$options='';
 				if($correctorsList)
 				{
 
@@ -1846,6 +1910,12 @@ class QuotedeliveryController extends ContractmissionController
 			$delivery_array["published_at"] = time();
 
 			$delivery_array["AOtype"]=$this->delivery_creation[$session_id]->prod_step1['AOtype'];
+			
+
+			/*language group*/
+			$delivery_array["language_group"]=$this->delivery_creation[$session_id]->prod_step1['language_group'];		
+			$delivery_array["language_group_corrector"]=$this->delivery_creation[$session_id]->prod_step1['language_group_corrector'];
+
 			$delivery_array["plagiarism_check"]="yes";
 			$delivery_array["writer_notify"]='yes';
 
@@ -1976,7 +2046,8 @@ class QuotedeliveryController extends ContractmissionController
 					//Insert Article
 					$article_array = array(); 			
 					$article_array["delivery_id"]= $delivery_identifier;
-					$article_array["title"] 	 = utf8dec($article_details['title']);
+					//$article_array["title"] 	 = utf8dec($article_details['title']);
+					$article_array["title"] 	 = utf8_decode($article_details['title']);
 					//$article_array["language"] 	 = $this->delivery_creation[$session_id]->prod_step1['language'];
 					$article_array["category"]   = $this->delivery_creation[$session_id]->prod_step1['category'];
 					$article_array["type"]       = $this->delivery_creation[$session_id]->prod_step1['type'];
@@ -1991,6 +2062,11 @@ class QuotedeliveryController extends ContractmissionController
 
 					$article_array["product"] = $this->delivery_creation[$session_id]->prod_step1['product'];
 					$article_array["files_pack"]=$this->delivery_creation[$session_id]->prod_step1['files_pack'];
+
+
+					/*language group*/
+					$article_array["language_group"]=$this->delivery_creation[$session_id]->prod_step1['language_group'];
+					$article_array["language_group_corrector"]=$this->delivery_creation[$session_id]->prod_step1['language_group_corrector'];	
 					
 
 					if($this->delivery_creation[$session_id]->prod_step1['product']=="translation")
@@ -2281,11 +2357,13 @@ class QuotedeliveryController extends ContractmissionController
 								$searchParameters['language']=$this->delivery_creation[$session_id]->prod_step1['language_dest'];
 								$searchParameters['language_source']=$this->delivery_creation[$session_id]->prod_step1['language'];
 								$searchParameters['sourcelang_nocheck']=$this->delivery_creation[$session_id]->prod_step1['sourcelang_nocheck'];
+								$searchParameters['language_group']=$this->delivery_creation[$session_id]->prod_step1['language_group'];
 								$writersList=$delivery_obj->getTranslatorList($searchParameters);		
 							}
 							else	
 							{
 								$searchParameters['language']=$this->delivery_creation[$session_id]->prod_step1['language'];
+								$searchParameters['language_group']=$this->delivery_creation[$session_id]->prod_step1['language_group'];
 								$writersList=$delivery_obj->getContributorsList($searchParameters);		
 							}
 							//print_r($writersList);exit;
@@ -2331,6 +2409,8 @@ class QuotedeliveryController extends ContractmissionController
 									$searchParameters['language']=$this->delivery_creation[$session_id]->prod_step1['language_dest'];
 								else	
 									$searchParameters['language']=$this->delivery_creation[$session_id]->prod_step1['language'];
+
+								$searchParameters['language_group']=$this->delivery_creation[$session_id]->prod_step1['language_group_corrector'];
 
 								$correctorList=$delivery_obj->getCorrectorsList($searchParameters);									
 								
